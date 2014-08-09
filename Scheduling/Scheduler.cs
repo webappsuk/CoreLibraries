@@ -1,6 +1,32 @@
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -21,14 +47,21 @@ namespace WebApplications.Utilities.Scheduling
         /// Holds all scheduled actions.
         /// </summary>
         [NotNull]
-        private readonly ConcurrentDictionary<CombGuid, ScheduledAction> _actions = new ConcurrentDictionary<CombGuid, ScheduledAction>();
+        private readonly ConcurrentDictionary<CombGuid, ScheduledAction> _actions =
+            new ConcurrentDictionary<CombGuid, ScheduledAction>();
 
         /// <summary>
         /// Holds constructors for creating type specific scheduled function objects.
         /// </summary>
         [NotNull]
-        private readonly ConcurrentDictionary<Type, Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction>> _scheduledFunctionConstructors = new ConcurrentDictionary<Type, Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction>>();
-        
+        private readonly
+            ConcurrentDictionary
+                <Type, Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction>>
+            _scheduledFunctionConstructors =
+                new ConcurrentDictionary
+                    <Type, Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction>>
+                    ();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler"/> class.
         /// </summary>
@@ -48,7 +81,12 @@ namespace WebApplications.Utilities.Scheduling
             if (!info.IsFunction)
             {
                 // Create action
-                scheduledAction = new ScheduledAction(this, schedule, action, info, maximumHistory < 1 ? DefaultMaximumHistory : maximumHistory);
+                scheduledAction = new ScheduledAction(
+                    this,
+                    schedule,
+                    action,
+                    info,
+                    maximumHistory < 1 ? DefaultMaximumHistory : maximumHistory);
             }
             else
             {
@@ -56,21 +94,27 @@ namespace WebApplications.Utilities.Scheduling
                 Debug.Assert(info.FunctionReturnType != null);
 
                 // Need to create relevant generic function type.
-                Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction> constructor =
+                Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction> constructor
+                    =
                     _scheduledFunctionConstructors.GetOrAdd(
                         info.FunctionReturnType,
                         ft =>
-                            {
-                                Type sfType = typeof (ScheduledFunction<>).MakeGenericType(ft);
-                                return
-                                    sfType.ConstructorFunc
-                                        <IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int,
-                                            ScheduledAction>
-                                        ();
-                            });
+                        {
+                            Type sfType = typeof(ScheduledFunction<>).MakeGenericType(ft);
+                            return
+                                sfType.ConstructorFunc
+                                    <IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int,
+                                        ScheduledAction>
+                                    ();
+                        });
                 Debug.Assert(constructor != null);
 
-                scheduledAction = constructor(this, schedule, action, info, maximumHistory < 1 ? DefaultMaximumHistory : maximumHistory);
+                scheduledAction = constructor(
+                    this,
+                    schedule,
+                    action,
+                    info,
+                    maximumHistory < 1 ? DefaultMaximumHistory : maximumHistory);
             }
             Debug.Assert(scheduledAction != null);
 
@@ -81,7 +125,10 @@ namespace WebApplications.Utilities.Scheduling
         }
 
         /// <inheritdoc/>
-        public IScheduledFunction<T> Add<T>(ISchedule schedule, ISchedulableFunction<T> function, int maximumHistory = -1)
+        public IScheduledFunction<T> Add<T>(
+            ISchedule schedule,
+            ISchedulableFunction<T> function,
+            int maximumHistory = -1)
         {
             return (IScheduledFunction<T>)Add(schedule, (ISchedulableAction)function, maximumHistory);
         }
@@ -114,6 +161,7 @@ namespace WebApplications.Utilities.Scheduling
         public bool Enabled { get; set; }
 
         private int _defaultMaximumHistory;
+
         /// <inheritdoc/>
         public int DefaultMaximumHistory
         {
@@ -121,7 +169,11 @@ namespace WebApplications.Utilities.Scheduling
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException("value", "The default maximum history for a scheduler cannot be negative.");
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "value",
+                        "The default maximum history for a scheduler cannot be negative.");
+                }
                 _defaultMaximumHistory = value;
             }
         }

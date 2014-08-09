@@ -1,3 +1,30 @@
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -18,7 +45,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
-        IScheduledAction Add([NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, int maximumHistory = -1);
+        IScheduledAction Add([NotNull] ISchedule schedule, [NotNull] ISchedulableAction action, int maximumHistory = -1);
 
         /// <summary>
         /// Adds the function to be run on the specified schedule.
@@ -30,7 +57,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns></returns>
         /// <remarks>This is a utility overload that ensures consistency of return type with functions.</remarks>
         [NotNull]
-        IScheduledFunction<T> Add<T>([NotNull]ISchedule schedule, [NotNull]ISchedulableFunction<T> function, int maximumHistory = -1);
+        IScheduledFunction<T> Add<T>(
+            [NotNull] ISchedule schedule,
+            [NotNull] ISchedulableFunction<T> function,
+            int maximumHistory = -1);
 
         /// <summary>
         /// Removes the scheduled action (or function).
@@ -52,7 +82,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <para>In the default non-concurrent case, then executing the action immediately can effect the next time the action will run (depending on
         /// the <see cref="ISchedule">schedule</see>.</para>
         /// </remarks>
-        bool Execute([NotNull]IScheduledAction scheduledAction);
+        bool Execute([NotNull] IScheduledAction scheduledAction);
 
         /// <summary>
         /// Executes the specified scheduled action (or function) asynchronously.
@@ -67,7 +97,7 @@ namespace WebApplications.Utilities.Scheduling
         /// the <see cref="ISchedule">schedule</see>.</para>
         /// </remarks>
         [NotNull]
-        Task<bool> ExecuteAsync([NotNull]IScheduledAction scheduledAction);
+        Task<bool> ExecuteAsync([NotNull] IScheduledAction scheduledAction);
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="IScheduler"/> is enabled.

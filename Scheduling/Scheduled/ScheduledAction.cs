@@ -1,27 +1,31 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Solution: WebApplications.Utilities.Scheduling 
-// Project: WebApplications.Utilities.Scheduling
-// File: ScheduledAction.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -47,7 +51,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         private static readonly Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult>
             _actionResultCreator =
                 (due, started, duration, exception, cancelled, result) =>
-                new ScheduledActionResult(due, started, duration, exception, cancelled);
+                    new ScheduledActionResult(due, started, duration, exception, cancelled);
 
         /// <summary>
         /// Unique identifier for the action.
@@ -82,7 +86,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Holds constructor for creating a result for an action.
         /// </summary>
         [NotNull]
-        private readonly Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult> _resultCreator;
+        private readonly Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult>
+            _resultCreator;
 
         /// <summary>
         /// The maximum history.
@@ -98,7 +103,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="actionInfo">The action info.</param>
         /// <param name="maximumHistory">The maximum history.</param>
         /// <remarks></remarks>
-        internal ScheduledAction([NotNull]IScheduler scheduler, [NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, [NotNull]SchedulableActionInfo actionInfo, int maximumHistory = -1)
+        internal ScheduledAction(
+            [NotNull] IScheduler scheduler,
+            [NotNull] ISchedule schedule,
+            [NotNull] ISchedulableAction action,
+            [NotNull] SchedulableActionInfo actionInfo,
+            int maximumHistory = -1)
             : this(scheduler, schedule, action, actionInfo, maximumHistory, _actionResultCreator)
         {
         }
@@ -114,7 +124,13 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="functionReturnType">Type of the function return.</param>
         /// <param name="resultCreator">The result creator.</param>
         /// <remarks></remarks>
-        protected ScheduledAction([NotNull]IScheduler scheduler, [NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, [NotNull]SchedulableActionInfo actionInfo, int maximumHistory, [NotNull]Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult> resultCreator)
+        protected ScheduledAction(
+            [NotNull] IScheduler scheduler,
+            [NotNull] ISchedule schedule,
+            [NotNull] ISchedulableAction action,
+            [NotNull] SchedulableActionInfo actionInfo,
+            int maximumHistory,
+            [NotNull] Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult> resultCreator)
         {
             _scheduler = scheduler;
             _lastExecutionFinished = DateTime.MinValue;
@@ -167,13 +183,19 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         }
 
         /// <inheritdoc/>
-        public ISchedulableAction Action { get { return _action; } }
+        public ISchedulableAction Action
+        {
+            get { return _action; }
+        }
 
         /// <inheritdoc/>
         public bool Enabled { get; set; }
 
         /// <inheritdoc/>
-        public int MaximumHistory { get { return _maximumHistory; } }
+        public int MaximumHistory
+        {
+            get { return _maximumHistory; }
+        }
 
         /// <inheritdoc/>
         public bool IsFunction
@@ -232,7 +254,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <inheritdoc/>
         public bool Execute()
         {
-            if (!Enabled || !Scheduler.Enabled)
+            if (!Enabled ||
+                !Scheduler.Enabled)
                 return false;
 
             // If the action is asynchronous and cancellable, then run it asynchronously
@@ -243,7 +266,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 task.Wait();
                 return task.Result;
             }
-            
+
             DateTime started = DateTime.Now;
             DateTime due = NextDue;
 
@@ -267,7 +290,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 // Mark execution finish.
                 LastExecutionFinished = DateTime.Now;
             }
-            else 
+            else
                 executed = false;
 
             // Decrement the execution counter.
@@ -284,7 +307,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <inheritdoc/>
         public Task<bool> ExecuteAsync(CancellationToken cancellationToken)
         {
-            if (!Enabled || !Scheduler.Enabled)
+            if (!Enabled ||
+                !Scheduler.Enabled)
                 return TaskResult.False;
 
             DateTime started = DateTime.Now;
@@ -297,7 +321,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             ISchedule schedule = Schedule;
 
             // Only execute if we allow concurrency or we're not executing already.
-            if (!schedule.Options.HasFlag(ScheduleOptions.AllowConcurrent) && (executing >= 1))
+            if (!schedule.Options.HasFlag(ScheduleOptions.AllowConcurrent) &&
+                (executing >= 1))
             {
                 Interlocked.Decrement(ref _executing);
                 return TaskResult.False;
@@ -313,54 +338,69 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             return executeTask
                 .ContinueWith(
                     t =>
+                    {
+                        Debug.Assert(t != null);
+
+                        // Decrement the execution counter.
+                        Interlocked.Decrement(ref _executing);
+
+                        // Increment the execution count.
+                        Interlocked.Increment(ref _executionCount);
+
+                        // Mark execution finish.
+                        LastExecutionFinished = DateTime.Now;
+
+                        ScheduledActionResult result;
+                        switch (t.Status)
                         {
-                            Debug.Assert(t != null);
+                            case TaskStatus.RanToCompletion:
+                                result = t.Result;
+                                break;
+                            case TaskStatus.Canceled:
+                                result = _resultCreator(
+                                    due,
+                                    started,
+                                    DateTime.Now - started,
+                                    null,
+                                    true,
+                                    FunctionReturnType != null
+                                        ? FunctionReturnType.Default()
+                                        : null);
+                                break;
+                            case TaskStatus.Faulted:
+                                result = _resultCreator(
+                                    due,
+                                    started,
+                                    DateTime.Now - started,
+                                    t.Exception,
+                                    false,
+                                    FunctionReturnType != null
+                                        ? FunctionReturnType.Default()
+                                        : null);
+                                break;
+                            default:
+                                result = _resultCreator(
+                                    due,
+                                    started,
+                                    DateTime.Now - started,
+                                    new ArgumentOutOfRangeException(
+                                        String.Format(
+                                            "Invalid task status '{0}' in scheduled action continuation.",
+                                            t.Status)),
+                                    false,
+                                    FunctionReturnType != null
+                                        ? FunctionReturnType.Default()
+                                        : null);
+                                break;
+                        }
 
-                            // Decrement the execution counter.
-                            Interlocked.Decrement(ref _executing);
+                        // Enqueue history item.
+                        if (_history != null)
+                            _history.Enqueue(result);
 
-                            // Increment the execution count.
-                            Interlocked.Increment(ref _executionCount);
-
-                            // Mark execution finish.
-                            LastExecutionFinished = DateTime.Now;
-
-                            ScheduledActionResult result;
-                            switch (t.Status)
-                            {
-                                case TaskStatus.RanToCompletion:
-                                    result = t.Result;
-                                    break;
-                                case TaskStatus.Canceled:
-                                    result = _resultCreator(due, started, DateTime.Now - started, null, true,
-                                                            FunctionReturnType != null
-                                                                ? FunctionReturnType.Default()
-                                                                : null);
-                                    break;
-                                case TaskStatus.Faulted:
-                                    result = _resultCreator(due, started, DateTime.Now - started, t.Exception, false,
-                                                            FunctionReturnType != null
-                                                                ? FunctionReturnType.Default()
-                                                                : null);
-                                    break;
-                                default:
-                                    result = _resultCreator(due, started, DateTime.Now - started,
-                                                            new ArgumentOutOfRangeException(
-                                                                String.Format(
-                                                                    "Invalid task status '{0}' in scheduled action continuation.",
-                                                                    t.Status)), false,
-                                                            FunctionReturnType != null
-                                                                ? FunctionReturnType.Default()
-                                                                : null);
-                                    break;
-                            }
-
-                            // Enqueue history item.
-                            if (_history != null)
-                                _history.Enqueue(result);
-
-                            return true;
-                        }, TaskContinuationOptions.ExecuteSynchronously);
+                        return true;
+                    },
+                    TaskContinuationOptions.ExecuteSynchronously);
         }
 
         /// <summary>
@@ -399,7 +439,10 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <returns>The result.</returns>
         /// <remarks></remarks>
         [NotNull]
-        protected virtual Task<ScheduledActionResult> DoExecuteAsync(DateTime due, DateTime started, CancellationToken cancellationToken)
+        protected virtual Task<ScheduledActionResult> DoExecuteAsync(
+            DateTime due,
+            DateTime started,
+            CancellationToken cancellationToken)
         {
             // Quick cancellation check.
             if (cancellationToken.IsCancellationRequested)
@@ -423,13 +466,19 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
             // Add task continuation.
             return actionTask
-                .ContinueWith(t =>
-                                  {
-                                      Debug.Assert(t != null);
-                                      stopwatch.Stop();
-                                      return new ScheduledActionResult(due, started, stopwatch.Elapsed, t.Exception,
-                                                                       cancellationToken.IsCancellationRequested);
-                                  }, TaskContinuationOptions.ExecuteSynchronously);
+                .ContinueWith(
+                    t =>
+                    {
+                        Debug.Assert(t != null);
+                        stopwatch.Stop();
+                        return new ScheduledActionResult(
+                            due,
+                            started,
+                            stopwatch.Elapsed,
+                            t.Exception,
+                            cancellationToken.IsCancellationRequested);
+                    },
+                    TaskContinuationOptions.ExecuteSynchronously);
         }
 
         /// <summary>
@@ -458,6 +507,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         }
 
         private long _executionCount = 0;
+
         /// <inheritdoc/>
         public long ExecutionCount
         {

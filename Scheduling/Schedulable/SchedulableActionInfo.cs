@@ -1,3 +1,30 @@
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,26 +45,27 @@ namespace WebApplications.Utilities.Scheduling.Schedulable
         [NotNull]
         private static readonly IEnumerable<SchedulableActionInfo> _infos =
             new List<SchedulableActionInfo>
-                {
-                    new SchedulableActionInfo(typeof (ISchedulableFunctionCancellableAsync<>), true, true, true),
-                    new SchedulableActionInfo(typeof (ISchedulableActionCancellableAsync), false, true, true),
-                    new SchedulableActionInfo(typeof (ISchedulableFunctionAsync<>), true, true, false),
-                    new SchedulableActionInfo(typeof (ISchedulableActionAsync), false, true, false),
-                    new SchedulableActionInfo(typeof (ISchedulableFunction<>), true, false, false),
-                    new SchedulableActionInfo(typeof (ISchedulableAction), false, false, false),
-                    new SchedulableActionInfo(typeof (ISchedulableFunctionCancellableAsync<>), true, true, true),
-                    new SchedulableActionInfo(typeof (ISchedulableActionCancellableAsync), false, true, true),
-                    new SchedulableActionInfo(typeof (ISchedulableFunctionAsync<>), true, true, false),
-                    new SchedulableActionInfo(typeof (ISchedulableActionAsync), false, true, false),
-                    new SchedulableActionInfo(typeof (ISchedulableFunction<>), true, false, false),
-                    new SchedulableActionInfo(typeof (ISchedulableAction), false, false, false),
-                };
+            {
+                new SchedulableActionInfo(typeof(ISchedulableFunctionCancellableAsync<>), true, true, true),
+                new SchedulableActionInfo(typeof(ISchedulableActionCancellableAsync), false, true, true),
+                new SchedulableActionInfo(typeof(ISchedulableFunctionAsync<>), true, true, false),
+                new SchedulableActionInfo(typeof(ISchedulableActionAsync), false, true, false),
+                new SchedulableActionInfo(typeof(ISchedulableFunction<>), true, false, false),
+                new SchedulableActionInfo(typeof(ISchedulableAction), false, false, false),
+                new SchedulableActionInfo(typeof(ISchedulableFunctionCancellableAsync<>), true, true, true),
+                new SchedulableActionInfo(typeof(ISchedulableActionCancellableAsync), false, true, true),
+                new SchedulableActionInfo(typeof(ISchedulableFunctionAsync<>), true, true, false),
+                new SchedulableActionInfo(typeof(ISchedulableActionAsync), false, true, false),
+                new SchedulableActionInfo(typeof(ISchedulableFunction<>), true, false, false),
+                new SchedulableActionInfo(typeof(ISchedulableAction), false, false, false),
+            };
 
         /// <summary>
         /// Caches lookups for performance.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<Type, SchedulableActionInfo> _cache = new ConcurrentDictionary<Type, SchedulableActionInfo>();
+        private static readonly ConcurrentDictionary<Type, SchedulableActionInfo> _cache =
+            new ConcurrentDictionary<Type, SchedulableActionInfo>();
 
         /// <summary>
         /// The interface type.
@@ -74,7 +102,12 @@ namespace WebApplications.Utilities.Scheduling.Schedulable
         /// <param name="isAsynchronous">if set to <see langword="true"/> [is asynchronous].</param>
         /// <param name="isCancellable">if set to <see langword="true"/> [is cancellable].</param>
         /// <remarks></remarks>
-        private SchedulableActionInfo([NotNull]Type interfaceType, bool isFunction, bool isAsynchronous, bool isCancellable, Type functionReturnType = null)
+        private SchedulableActionInfo(
+            [NotNull] Type interfaceType,
+            bool isFunction,
+            bool isAsynchronous,
+            bool isCancellable,
+            Type functionReturnType = null)
         {
             InterfaceType = interfaceType;
             IsFunction = isFunction;
@@ -90,7 +123,7 @@ namespace WebApplications.Utilities.Scheduling.Schedulable
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
-        public static SchedulableActionInfo Get([NotNull]ISchedulableAction action)
+        public static SchedulableActionInfo Get([NotNull] ISchedulableAction action)
         {
             SchedulableActionInfo info = Get(action.GetType());
             Debug.Assert(info != null);
@@ -118,41 +151,44 @@ namespace WebApplications.Utilities.Scheduling.Schedulable
         /// <returns></returns>
         /// <remarks></remarks>
         [CanBeNull]
-        public static SchedulableActionInfo Get([NotNull]Type actionType)
+        public static SchedulableActionInfo Get([NotNull] Type actionType)
         {
             // Find the first info that the action is assignable to.
             return _cache.GetOrAdd(
                 actionType,
                 at =>
+                {
+                    foreach (SchedulableActionInfo info in _infos)
                     {
-                        foreach (SchedulableActionInfo info in _infos)
+                        Debug.Assert(info != null);
+                        if (!info.IsFunction)
                         {
-                            Debug.Assert(info != null);
-                            if (!info.IsFunction)
-                            {
-                                if (info.InterfaceType.IsAssignableFrom(actionType))
-                                    return info;
-                                continue;
-                            }
-
-                            Type t = actionType;
-                            while (t != null)
-                            {
-                                var interfaceType = t.GetInterfaces().Where(it => it.IsGenericType).
-                                    FirstOrDefault(
-                                        it => info.InterfaceType.IsAssignableFrom(it.GetGenericTypeDefinition()));
-                                if (interfaceType != null)
-                                {
-                                    return new SchedulableActionInfo(interfaceType, true, info.IsAsynchronous,
-                                                                     info.IsCancellable,
-                                                                     interfaceType.GetGenericArguments()[0]);
-                                }
-
-                                t = t.BaseType;
-                            }
+                            if (info.InterfaceType.IsAssignableFrom(actionType))
+                                return info;
+                            continue;
                         }
-                        return null;
-                    });
+
+                        Type t = actionType;
+                        while (t != null)
+                        {
+                            Type interfaceType = t.GetInterfaces().Where(it => it.IsGenericType).
+                                FirstOrDefault(
+                                    it => info.InterfaceType.IsAssignableFrom(it.GetGenericTypeDefinition()));
+                            if (interfaceType != null)
+                            {
+                                return new SchedulableActionInfo(
+                                    interfaceType,
+                                    true,
+                                    info.IsAsynchronous,
+                                    info.IsCancellable,
+                                    interfaceType.GetGenericArguments()[0]);
+                            }
+
+                            t = t.BaseType;
+                        }
+                    }
+                    return null;
+                });
         }
     }
 }

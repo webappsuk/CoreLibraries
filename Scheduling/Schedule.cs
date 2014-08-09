@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: Utilities.Scheduling 
-// Project: Utilities.Scheduling
-// File: ScheduleExtensions.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -49,13 +54,13 @@ namespace WebApplications.Utilities.Scheduling
         public static IEnumerable<int> Months(this Month month)
         {
             // Cast to an integer
-            ulong m = (ulong) month;
+            ulong m = (ulong)month;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 1; i < 13; i++)
             {
-                ulong bit = (ulong) 1 << i;
+                ulong bit = (ulong)1 << i;
                 if ((m & bit) == bit)
                     valid.Add(i);
             }
@@ -79,7 +84,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Month">Month enum</see>.</returns>
         public static Month Months(this IEnumerable<int> months)
         {
-            return (Month) months.Aggregate<int, ulong>(0, (current, m) => current | (ulong) 1 << m);
+            return (Month)months.Aggregate<int, ulong>(0, (current, m) => current | (ulong)1 << m);
         }
         #endregion
 
@@ -93,13 +98,13 @@ namespace WebApplications.Utilities.Scheduling
         public static IEnumerable<int> Days(this Day day)
         {
             // Cast to an integer
-            ulong d = (ulong) day;
+            ulong d = (ulong)day;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 1; i < 32; i++)
             {
-                ulong bit = (ulong) 1 << i;
+                ulong bit = (ulong)1 << i;
                 if ((d & bit) == bit)
                     valid.Add(i);
             }
@@ -123,7 +128,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Day">Day enum</see>.</returns>
         public static Day Days(this IEnumerable<int> days)
         {
-            return (Day) days.Aggregate<int, ulong>(0, (current, d) => current | (ulong) 1 << d);
+            return (Day)days.Aggregate<int, ulong>(0, (current, d) => current | (ulong)1 << d);
         }
         #endregion
 
@@ -137,13 +142,13 @@ namespace WebApplications.Utilities.Scheduling
         public static IEnumerable<int> Weeks(this Week week)
         {
             // Cast to an integer
-            ulong d = (ulong) week;
+            ulong d = (ulong)week;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 0; i < 53; i++)
             {
-                ulong bit = (ulong) 1 << i;
+                ulong bit = (ulong)1 << i;
                 if ((d & bit) == bit)
                     valid.Add(i);
             }
@@ -167,7 +172,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="WeekNumber">Week enum</see>.</returns>
         public static Week Weeks(this IEnumerable<int> weeks)
         {
-            return (Week) weeks.Aggregate<int, ulong>(0, (current, d) => current | (ulong) 1 << d);
+            return (Week)weeks.Aggregate<int, ulong>(0, (current, d) => current | (ulong)1 << d);
         }
         #endregion
 
@@ -264,13 +269,13 @@ namespace WebApplications.Utilities.Scheduling
         public static IEnumerable<int> Hours(this Hour hour)
         {
             // Cast to an integer
-            ulong h = (ulong) hour;
+            ulong h = (ulong)hour;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 0; i < 24; i++)
             {
-                ulong bit = (ulong) 1 << i;
+                ulong bit = (ulong)1 << i;
                 if ((h & bit) == bit)
                     valid.Add(i);
             }
@@ -294,7 +299,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Hour">Hour enum</see>.</returns>
         public static Hour Hours(this IEnumerable<int> hours)
         {
-            return (Hour) hours.Aggregate<int, ulong>(0, (current, h) => current | (ulong) 1 << h);
+            return (Hour)hours.Aggregate<int, ulong>(0, (current, h) => current | (ulong)1 << h);
         }
         #endregion
 
@@ -308,13 +313,13 @@ namespace WebApplications.Utilities.Scheduling
         public static IEnumerable<int> Minutes(this Minute minute)
         {
             // Cast to an integer
-            ulong m = (ulong) minute;
+            ulong m = (ulong)minute;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 0; i < 60; i++)
             {
-                ulong bit = (ulong) 1 << i;
+                ulong bit = (ulong)1 << i;
                 if ((m & bit) == bit)
                     valid.Add(i);
             }
@@ -338,7 +343,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Minute">Minute enum</see>.</returns>
         public static Minute Minutes(this IEnumerable<int> minutes)
         {
-            return (Minute) minutes.Aggregate<int, ulong>(0, (current, m) => current | (ulong) 1 << m);
+            return (Minute)minutes.Aggregate<int, ulong>(0, (current, m) => current | (ulong)1 << m);
         }
         #endregion
 
@@ -352,13 +357,13 @@ namespace WebApplications.Utilities.Scheduling
         public static IEnumerable<int> Seconds(this Second second)
         {
             // Cast to an integer
-            ulong s = (ulong) second;
+            ulong s = (ulong)second;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 0; i < 60; i++)
             {
-                ulong bit = (ulong) 1 << i;
+                ulong bit = (ulong)1 << i;
                 if ((s & bit) == bit)
                     valid.Add(i);
             }
@@ -382,7 +387,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Second">Second enum</see>.</returns>
         public static Second Seconds(this IEnumerable<int> seconds)
         {
-            return (Second) seconds.Aggregate<int, ulong>(0, (current, s) => current | (ulong) 1 << s);
+            return (Second)seconds.Aggregate<int, ulong>(0, (current, s) => current | (ulong)1 << s);
         }
         #endregion
 
@@ -428,10 +433,8 @@ namespace WebApplications.Utilities.Scheduling
             DateTime firstDay = new DateTime(year, 1, 7, calendar);
 
             while (calendar.GetDayOfWeek(firstDay) != firstDayOfWeek ||
-                   WeekNumber(firstDay, calendar, calendarWeekRule, firstDayOfWeek)%52 > 1)
-            {
+                   WeekNumber(firstDay, calendar, calendarWeekRule, firstDayOfWeek) % 52 > 1)
                 firstDay = calendar.AddDays(firstDay, -1);
-            }
 
             // Add the week
             return (week != 1) ? calendar.AddWeeks(firstDay, week - 1) : firstDay;
@@ -470,8 +473,11 @@ namespace WebApplications.Utilities.Scheduling
             bool inclusive = false)
         {
             // Never case, if any are set to never, we'll never get a valid date.
-            if ((month == Month.Never) || (week == Week.Never) ||
-                (day == Day.Never) || (weekDay == WeekDay.Never) || (hour == Hour.Never) ||
+            if ((month == Month.Never) ||
+                (week == Week.Never) ||
+                (day == Day.Never) ||
+                (weekDay == WeekDay.Never) ||
+                (hour == Hour.Never) ||
                 (minute == Minute.Never) ||
                 (second == Second.Never))
                 return DateTime.MaxValue;
@@ -481,13 +487,22 @@ namespace WebApplications.Utilities.Scheduling
 
             // Set the time to this second (or the next one if not inclusive), remove fractions of a second.
             dateTime = new DateTime(
-                dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
+                dateTime.Year,
+                dateTime.Month,
+                dateTime.Day,
+                dateTime.Hour,
+                dateTime.Minute,
+                dateTime.Second);
             if (!inclusive)
                 dateTime = calendar.AddSeconds(dateTime, 1);
 
             // Every second case.
-            if ((month == Month.Every) && (day == Day.Every) && (weekDay == WeekDay.Every) && (hour == Hour.Every) &&
-                (minute == Minute.Every) && (second == Second.Every) &&
+            if ((month == Month.Every) &&
+                (day == Day.Every) &&
+                (weekDay == WeekDay.Every) &&
+                (hour == Hour.Every) &&
+                (minute == Minute.Every) &&
+                (second == Second.Every) &&
                 (week == Week.Every))
                 return calendar.AddSeconds(dateTime, 1);
 
@@ -541,7 +556,8 @@ namespace WebApplications.Utilities.Scheduling
                         d = currentDay;
 
                         // Check day is valid for this month.
-                        if ((d > 28) && (d > calendar.GetDaysInMonth(y, m)))
+                        if ((d > 28) &&
+                            (d > calendar.GetDaysInMonth(y, m)))
                             break;
 
                         // We have a potential day, check week and week day

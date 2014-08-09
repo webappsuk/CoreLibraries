@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: Utilities.Scheduling 
-// Project: Utilities.Scheduling.Test
-// File: TestSchedule.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -33,29 +38,34 @@ namespace WebApplications.Utilities.Scheduling.Test
     [TestClass]
     public class TestSchedule
     {
-
         [TestMethod]
         public void TestEnums()
         {
-            Trace.WriteLine((Day.First | Day.TwentyFourth | Day.ThirtyFirst).Days().Aggregate(String.Empty,
-                                                                                              (s, i) => s + " " + i));
+            Trace.WriteLine(
+                (Day.First | Day.TwentyFourth | Day.ThirtyFirst).Days().Aggregate(
+                    String.Empty,
+                    (s, i) => s + " " + i));
         }
-        
+
         [TestMethod]
         public void TestNextValidInclusiveSecondWrap()
         {
             Assert.AreEqual(
                 new DateTime(2013, 1, 1, 0, 0, 1),
-                (new DateTime(2012, 12, 31, 23, 59, 59)).NextValid(inclusive: false,
-                                                                   hour: Hour.Every, minute: Minute.Every,
-                                                                   second: Second.Every)
+                (new DateTime(2012, 12, 31, 23, 59, 59)).NextValid(
+                    inclusive: false,
+                    hour: Hour.Every,
+                    minute: Minute.Every,
+                    second: Second.Every)
                 );
 
             Assert.AreEqual(
                 new DateTime(2013, 1, 1),
-                (new DateTime(2012, 12, 31, 23, 59, 59)).NextValid(inclusive: true,
-                                                                   hour: Hour.Every, minute: Minute.Every,
-                                                                   second: Second.Every)
+                (new DateTime(2012, 12, 31, 23, 59, 59)).NextValid(
+                    inclusive: true,
+                    hour: Hour.Every,
+                    minute: Minute.Every,
+                    second: Second.Every)
                 );
         }
 
@@ -135,7 +145,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             // Get next leap year
             int currentYear = DateTime.Now.Year;
             int nextLeapYear = currentYear + (4 - (currentYear % 4));
-            
+
             Assert.AreEqual(
                 new DateTime(nextLeapYear, 2, 29),
                 DateTime.Now.NextValid(Month.February, day: Day.TwentyNinth),
@@ -150,7 +160,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             int currentYear = DateTime.Now.Year;
             int nextLeapYear = currentYear + (4 - (currentYear % 4));
             int leapYearAfterNext = nextLeapYear + 4;
-            
+
             Assert.AreEqual(
                 new DateTime(leapYearAfterNext, 2, 29),
                 (new DateTime(nextLeapYear, 2, 29, 0, 0, 1)).NextValid(Month.February, day: Day.TwentyNinth)
@@ -444,258 +454,288 @@ namespace WebApplications.Utilities.Scheduling.Test
             Calendar calendar = CultureInfo.CurrentCulture.Calendar;
 
             Action<int> testAction = iteration =>
-                                         {
-                                             // Random initial DateTime
-                                             int year = random.Next(1, 9999);
-                                             int month = random.Next(1, 13);
-                                             int daysInMonth = calendar.GetDaysInMonth(year, month);
-                                             int day = random.Next(1, daysInMonth);
-                                             DateTime startDateTime = new DateTime(year, month, day,
-                                                                                   random.Next(24), random.Next(60),
-                                                                                   random.Next(60));
+            {
+                // Random initial DateTime
+                int year = random.Next(1, 9999);
+                int month = random.Next(1, 13);
+                int daysInMonth = calendar.GetDaysInMonth(year, month);
+                int day = random.Next(1, daysInMonth);
+                DateTime startDateTime = new DateTime(
+                    year,
+                    month,
+                    day,
+                    random.Next(24),
+                    random.Next(60),
+                    random.Next(60));
 
-                                             // Random incrementation
-                                             int incrementationType = random.Next(5);
-                                             string incrementationTypeName;
-                                             int incrementationAmount;
-                                             DateTime expectedDateTime;
-                                             switch (incrementationType)
-                                             {
-                                                 default:
-                                                 case 0:
-                                                     incrementationTypeName = "Month";
-                                                     incrementationAmount = random.Next(12 - startDateTime.Month);
-                                                     expectedDateTime = calendar.AddMonths(startDateTime,
-                                                                                           incrementationAmount);
-                                                     if (incrementationAmount > 0)
-                                                     {
-                                                         expectedDateTime = new DateTime(expectedDateTime.Year,
-                                                                                         expectedDateTime.Month, 1, 0, 0,
-                                                                                         0);
-                                                     }
-                                                     break;
+                // Random incrementation
+                int incrementationType = random.Next(5);
+                string incrementationTypeName;
+                int incrementationAmount;
+                DateTime expectedDateTime;
+                switch (incrementationType)
+                {
+                    default:
+                    case 0:
+                        incrementationTypeName = "Month";
+                        incrementationAmount = random.Next(12 - startDateTime.Month);
+                        expectedDateTime = calendar.AddMonths(
+                            startDateTime,
+                            incrementationAmount);
+                        if (incrementationAmount > 0)
+                        {
+                            expectedDateTime = new DateTime(
+                                expectedDateTime.Year,
+                                expectedDateTime.Month,
+                                1,
+                                0,
+                                0,
+                                0);
+                        }
+                        break;
 
-                                                 case 1:
-                                                     incrementationTypeName = "Day";
-                                                     incrementationAmount = random.Next(daysInMonth - startDateTime.Day);
-                                                     expectedDateTime = calendar.AddDays(startDateTime,
-                                                                                         incrementationAmount);
-                                                     if (incrementationAmount > 0)
-                                                     {
-                                                         expectedDateTime = new DateTime(expectedDateTime.Year,
-                                                                                         expectedDateTime.Month,
-                                                                                         expectedDateTime.Day, 0, 0, 0);
-                                                     }
-                                                     break;
+                    case 1:
+                        incrementationTypeName = "Day";
+                        incrementationAmount = random.Next(daysInMonth - startDateTime.Day);
+                        expectedDateTime = calendar.AddDays(
+                            startDateTime,
+                            incrementationAmount);
+                        if (incrementationAmount > 0)
+                        {
+                            expectedDateTime = new DateTime(
+                                expectedDateTime.Year,
+                                expectedDateTime.Month,
+                                expectedDateTime.Day,
+                                0,
+                                0,
+                                0);
+                        }
+                        break;
 
-                                                 case 2:
-                                                     incrementationTypeName = "Hour";
-                                                     incrementationAmount = random.Next(24 - startDateTime.Hour);
-                                                     expectedDateTime = calendar.AddHours(startDateTime,
-                                                                                          incrementationAmount);
-                                                     if (incrementationAmount > 0)
-                                                     {
-                                                         expectedDateTime = new DateTime(expectedDateTime.Year,
-                                                                                         expectedDateTime.Month,
-                                                                                         expectedDateTime.Day,
-                                                                                         expectedDateTime.Hour, 0, 0);
-                                                     }
-                                                     break;
+                    case 2:
+                        incrementationTypeName = "Hour";
+                        incrementationAmount = random.Next(24 - startDateTime.Hour);
+                        expectedDateTime = calendar.AddHours(
+                            startDateTime,
+                            incrementationAmount);
+                        if (incrementationAmount > 0)
+                        {
+                            expectedDateTime = new DateTime(
+                                expectedDateTime.Year,
+                                expectedDateTime.Month,
+                                expectedDateTime.Day,
+                                expectedDateTime.Hour,
+                                0,
+                                0);
+                        }
+                        break;
 
-                                                 case 3:
-                                                     incrementationTypeName = "Minute";
-                                                     incrementationAmount = random.Next(60 - startDateTime.Minute);
-                                                     expectedDateTime = calendar.AddMinutes(startDateTime,
-                                                                                            incrementationAmount);
-                                                     if (incrementationAmount > 0)
-                                                     {
-                                                         expectedDateTime = new DateTime(expectedDateTime.Year,
-                                                                                         expectedDateTime.Month,
-                                                                                         expectedDateTime.Day,
-                                                                                         expectedDateTime.Hour,
-                                                                                         expectedDateTime.Minute, 0);
-                                                     }
-                                                     break;
+                    case 3:
+                        incrementationTypeName = "Minute";
+                        incrementationAmount = random.Next(60 - startDateTime.Minute);
+                        expectedDateTime = calendar.AddMinutes(
+                            startDateTime,
+                            incrementationAmount);
+                        if (incrementationAmount > 0)
+                        {
+                            expectedDateTime = new DateTime(
+                                expectedDateTime.Year,
+                                expectedDateTime.Month,
+                                expectedDateTime.Day,
+                                expectedDateTime.Hour,
+                                expectedDateTime.Minute,
+                                0);
+                        }
+                        break;
 
-                                                 case 4:
-                                                     incrementationTypeName = "Second";
-                                                     incrementationAmount = random.Next(60 - startDateTime.Second);
-                                                     expectedDateTime = calendar.AddSeconds(startDateTime,
-                                                                                            incrementationAmount);
-                                                     break;
-                                             }
+                    case 4:
+                        incrementationTypeName = "Second";
+                        incrementationAmount = random.Next(60 - startDateTime.Second);
+                        expectedDateTime = calendar.AddSeconds(
+                            startDateTime,
+                            incrementationAmount);
+                        break;
+                }
 
-                                             // Random week start day
-                                             DayOfWeek weekStartDay;
-                                             string weekStartDayName;
-                                             switch (random.Next(7))
-                                             {
-                                                 default:
-                                                 case 0:
-                                                     weekStartDayName = "Monday";
-                                                     weekStartDay = DayOfWeek.Monday;
-                                                     break;
+                // Random week start day
+                DayOfWeek weekStartDay;
+                string weekStartDayName;
+                switch (random.Next(7))
+                {
+                    default:
+                    case 0:
+                        weekStartDayName = "Monday";
+                        weekStartDay = DayOfWeek.Monday;
+                        break;
 
-                                                 case 1:
-                                                     weekStartDayName = "Tuesday";
-                                                     weekStartDay = DayOfWeek.Tuesday;
-                                                     break;
+                    case 1:
+                        weekStartDayName = "Tuesday";
+                        weekStartDay = DayOfWeek.Tuesday;
+                        break;
 
-                                                 case 2:
-                                                     weekStartDayName = "Wednesday";
-                                                     weekStartDay = DayOfWeek.Wednesday;
-                                                     break;
+                    case 2:
+                        weekStartDayName = "Wednesday";
+                        weekStartDay = DayOfWeek.Wednesday;
+                        break;
 
-                                                 case 3:
-                                                     weekStartDayName = "Thursday";
-                                                     weekStartDay = DayOfWeek.Thursday;
-                                                     break;
+                    case 3:
+                        weekStartDayName = "Thursday";
+                        weekStartDay = DayOfWeek.Thursday;
+                        break;
 
-                                                 case 4:
-                                                     weekStartDayName = "Friday";
-                                                     weekStartDay = DayOfWeek.Friday;
-                                                     break;
+                    case 4:
+                        weekStartDayName = "Friday";
+                        weekStartDay = DayOfWeek.Friday;
+                        break;
 
-                                                 case 5:
-                                                     weekStartDayName = "Saturday";
-                                                     weekStartDay = DayOfWeek.Saturday;
-                                                     break;
+                    case 5:
+                        weekStartDayName = "Saturday";
+                        weekStartDay = DayOfWeek.Saturday;
+                        break;
 
-                                                 case 6:
-                                                     weekStartDayName = "Sunday";
-                                                     weekStartDay = DayOfWeek.Sunday;
-                                                     break;
-                                             }
+                    case 6:
+                        weekStartDayName = "Sunday";
+                        weekStartDay = DayOfWeek.Sunday;
+                        break;
+                }
 
-                                             if (incrementationAmount > 0)
-                                             {
-                                                 // Test
-                                                 DateTime resultantDateTime;
-                                                 switch (incrementationType)
-                                                 {
-                                                     default:
-                                                     case 0:
-                                                         resultantDateTime = startDateTime.NextValid(inclusive: true,
-                                                                                                     firstDayOfWeek:
-                                                                                                         weekStartDay,
-                                                                                                     month:
-                                                                                                         Schedule
-                                                                                                         .Months(
-                                                                                                             startDateTime
-                                                                                                                 .Month +
-                                                                                                             incrementationAmount),
-                                                                                                     hour: Hour.Every,
-                                                                                                     minute:
-                                                                                                         Minute.Every,
-                                                                                                     second:
-                                                                                                         Second.Every);
-                                                         break;
+                if (incrementationAmount > 0)
+                {
+                    // Test
+                    DateTime resultantDateTime;
+                    switch (incrementationType)
+                    {
+                        default:
+                        case 0:
+                            resultantDateTime = startDateTime.NextValid(
+                                inclusive: true,
+                                firstDayOfWeek:
+                                    weekStartDay,
+                                month:
+                                    Schedule
+                                    .Months(
+                                        startDateTime
+                                            .Month +
+                                        incrementationAmount),
+                                hour: Hour.Every,
+                                minute:
+                                    Minute.Every,
+                                second:
+                                    Second.Every);
+                            break;
 
-                                                     case 1:
-                                                         resultantDateTime = startDateTime.NextValid(inclusive: true,
-                                                                                                     firstDayOfWeek:
-                                                                                                         weekStartDay,
-                                                                                                     day:
-                                                                                                         Schedule
-                                                                                                         .Days(
-                                                                                                             startDateTime
-                                                                                                                 .Day +
-                                                                                                             incrementationAmount),
-                                                                                                     hour: Hour.Every,
-                                                                                                     minute:
-                                                                                                         Minute.Every,
-                                                                                                     second:
-                                                                                                         Second.Every);
-                                                         break;
+                        case 1:
+                            resultantDateTime = startDateTime.NextValid(
+                                inclusive: true,
+                                firstDayOfWeek:
+                                    weekStartDay,
+                                day:
+                                    Schedule
+                                    .Days(
+                                        startDateTime
+                                            .Day +
+                                        incrementationAmount),
+                                hour: Hour.Every,
+                                minute:
+                                    Minute.Every,
+                                second:
+                                    Second.Every);
+                            break;
 
-                                                     case 2:
-                                                         resultantDateTime = startDateTime.NextValid(inclusive: true,
-                                                                                                     firstDayOfWeek:
-                                                                                                         weekStartDay,
-                                                                                                     hour:
-                                                                                                         Schedule
-                                                                                                         .Hours(
-                                                                                                             startDateTime
-                                                                                                                 .Hour +
-                                                                                                             incrementationAmount),
-                                                                                                     minute:
-                                                                                                         Minute.Every,
-                                                                                                     second:
-                                                                                                         Second.Every);
-                                                         break;
+                        case 2:
+                            resultantDateTime = startDateTime.NextValid(
+                                inclusive: true,
+                                firstDayOfWeek:
+                                    weekStartDay,
+                                hour:
+                                    Schedule
+                                    .Hours(
+                                        startDateTime
+                                            .Hour +
+                                        incrementationAmount),
+                                minute:
+                                    Minute.Every,
+                                second:
+                                    Second.Every);
+                            break;
 
-                                                     case 3:
-                                                         resultantDateTime = startDateTime.NextValid(inclusive: true,
-                                                                                                     firstDayOfWeek:
-                                                                                                         weekStartDay,
-                                                                                                     minute:
-                                                                                                         Schedule
-                                                                                                         .Minutes(
-                                                                                                             startDateTime
-                                                                                                                 .Minute +
-                                                                                                             incrementationAmount),
-                                                                                                     hour: Hour.Every,
-                                                                                                     second:
-                                                                                                         Second.Every);
-                                                         break;
+                        case 3:
+                            resultantDateTime = startDateTime.NextValid(
+                                inclusive: true,
+                                firstDayOfWeek:
+                                    weekStartDay,
+                                minute:
+                                    Schedule
+                                    .Minutes(
+                                        startDateTime
+                                            .Minute +
+                                        incrementationAmount),
+                                hour: Hour.Every,
+                                second:
+                                    Second.Every);
+                            break;
 
-                                                     case 4:
-                                                         resultantDateTime = startDateTime.NextValid(inclusive: true,
-                                                                                                     firstDayOfWeek:
-                                                                                                         weekStartDay,
-                                                                                                     hour: Hour.Every,
-                                                                                                     minute:
-                                                                                                         Minute.Every,
-                                                                                                     second:
-                                                                                                         Schedule
-                                                                                                         .Seconds(
-                                                                                                             startDateTime
-                                                                                                                 .Second +
-                                                                                                             incrementationAmount));
-                                                         break;
-                                                 }
+                        case 4:
+                            resultantDateTime = startDateTime.NextValid(
+                                inclusive: true,
+                                firstDayOfWeek:
+                                    weekStartDay,
+                                hour: Hour.Every,
+                                minute:
+                                    Minute.Every,
+                                second:
+                                    Schedule
+                                    .Seconds(
+                                        startDateTime
+                                            .Second +
+                                        incrementationAmount));
+                            break;
+                    }
 
-                                                 // Report
-                                                 Assert.AreEqual(
-                                                     expectedDateTime,
-                                                     resultantDateTime,
-                                                     string.Format(
-                                                         "Started:<{0}>. Iteration: #{1}, Search: {2} {3} ahead, Week start day: {4}",
-                                                         startDateTime, iteration, incrementationAmount,
-                                                         incrementationAmount > 1
-                                                             ? incrementationTypeName + "s"
-                                                             : incrementationTypeName,
-                                                         weekStartDayName)
-                                                     );
-                                             }
-                                         };
+                    // Report
+                    Assert.AreEqual(
+                        expectedDateTime,
+                        resultantDateTime,
+                        string.Format(
+                            "Started:<{0}>. Iteration: #{1}, Search: {2} {3} ahead, Week start day: {4}",
+                            startDateTime,
+                            iteration,
+                            incrementationAmount,
+                            incrementationAmount > 1
+                                ? incrementationTypeName + "s"
+                                : incrementationTypeName,
+                            weekStartDayName)
+                        );
+                }
+            };
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             if (parallel)
-            {
                 Parallel.For(0, numberOfIterations, testAction);
-            }
             else
             {
                 for (int iteration = 0; iteration < numberOfIterations; iteration++)
-                {
                     testAction(iteration);
-                }
             }
             stopwatch.Stop();
 
             if (parallel)
             {
-                Trace.WriteLine(string.Format("{0} random iterations took {1}ms", numberOfIterations,
-                                              stopwatch.ElapsedMilliseconds));
+                Trace.WriteLine(
+                    string.Format(
+                        "{0} random iterations took {1}ms",
+                        numberOfIterations,
+                        stopwatch.ElapsedMilliseconds));
             }
             else
             {
-                Trace.WriteLine(string.Format("{0} random iterations took {1}ms (~{2}ms per iteration)",
-                                              numberOfIterations,
-                                              stopwatch.ElapsedMilliseconds,
-                                              stopwatch.ElapsedMilliseconds/numberOfIterations));
+                Trace.WriteLine(
+                    string.Format(
+                        "{0} random iterations took {1}ms (~{2}ms per iteration)",
+                        numberOfIterations,
+                        stopwatch.ElapsedMilliseconds,
+                        stopwatch.ElapsedMilliseconds / numberOfIterations));
             }
         }
 
@@ -746,8 +786,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2010, 12, 31),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Friday,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Friday,
+                    inclusive: true)
                 );
         }
 
@@ -758,8 +800,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 1),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Saturday,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Saturday,
+                    inclusive: true)
                 );
         }
 
@@ -770,8 +814,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 2),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Sunday,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Sunday,
+                    inclusive: true)
                 );
         }
 
@@ -782,8 +828,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 3),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Monday,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Monday,
+                    inclusive: true)
                 );
         }
 
@@ -794,8 +842,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 4),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Tuesday,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Tuesday,
+                    inclusive: true)
                 );
         }
 
@@ -806,8 +856,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 5),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Wednesday,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Wednesday,
+                    inclusive: true)
                 );
         }
 
@@ -818,8 +870,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 6),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Thursday,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Thursday,
+                    inclusive: true)
                 );
         }
 
@@ -841,8 +895,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2010, 12, 31),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.WeekDay,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.WeekDay,
+                    inclusive: true)
                 );
         }
 
@@ -853,8 +909,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 3),
-                (new DateTime(2011, 1, 1)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.WeekDay,
-                                                     inclusive: true)
+                (new DateTime(2011, 1, 1)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.WeekDay,
+                    inclusive: true)
                 );
         }
 
@@ -865,8 +923,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 1),
-                (new DateTime(2010, 12, 31)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Weekend,
-                                                       inclusive: true)
+                (new DateTime(2010, 12, 31)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Weekend,
+                    inclusive: true)
                 );
         }
 
@@ -877,8 +937,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 new DateTime(2011, 1, 1),
-                (new DateTime(2011, 1, 1)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Weekend,
-                                                     inclusive: true)
+                (new DateTime(2011, 1, 1)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Weekend,
+                    inclusive: true)
                 );
         }
 
@@ -889,8 +951,10 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(
                 DateTime.MaxValue,
-                (new DateTime(2011, 1, 1)).NextValid(firstDayOfWeek: DayOfWeek.Monday, weekDay: WeekDay.Never,
-                                                     inclusive: true)
+                (new DateTime(2011, 1, 1)).NextValid(
+                    firstDayOfWeek: DayOfWeek.Monday,
+                    weekDay: WeekDay.Never,
+                    inclusive: true)
                 );
         }
 
@@ -994,8 +1058,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 7),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Monday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Monday)
                 );
         }
 
@@ -1004,8 +1071,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 14),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Monday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Monday)
                 );
         }
 
@@ -1014,8 +1084,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 29),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Monday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Monday)
                 );
         }
 
@@ -1024,8 +1097,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 1),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Tuesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Tuesday)
                 );
         }
 
@@ -1034,8 +1110,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 8),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Tuesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Tuesday)
                 );
         }
 
@@ -1044,8 +1123,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 23),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Tuesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Tuesday)
                 );
         }
 
@@ -1054,8 +1136,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 2),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Wednesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Wednesday)
                 );
         }
 
@@ -1064,8 +1149,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 9),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Wednesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Wednesday)
                 );
         }
 
@@ -1074,8 +1162,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 24),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Wednesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Wednesday)
                 );
         }
 
@@ -1084,8 +1175,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 3),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Thursday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Thursday)
                 );
         }
 
@@ -1094,8 +1188,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 10),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Thursday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Thursday)
                 );
         }
 
@@ -1104,8 +1201,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 25),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Thursday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Thursday)
                 );
         }
 
@@ -1114,8 +1214,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 4),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Friday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Friday)
                 );
         }
 
@@ -1124,8 +1227,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 11),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Friday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Friday)
                 );
         }
 
@@ -1134,8 +1240,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 26),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Friday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Friday)
                 );
         }
 
@@ -1144,8 +1253,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 5),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Saturday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Saturday)
                 );
         }
 
@@ -1154,8 +1266,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 12),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Saturday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Saturday)
                 );
         }
 
@@ -1164,8 +1279,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 27),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Saturday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Saturday)
                 );
         }
 
@@ -1174,8 +1292,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 6),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Sunday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Sunday)
                 );
         }
 
@@ -1184,8 +1305,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 13),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Sunday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Sunday)
                 );
         }
 
@@ -1194,8 +1318,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 28),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                                                     firstDayOfWeek: DayOfWeek.Sunday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
+                    firstDayOfWeek: DayOfWeek.Sunday)
                 );
         }
 
@@ -1204,8 +1331,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2007, 12, 31),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Monday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Monday)
                 );
         }
 
@@ -1214,8 +1344,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 7),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Monday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Monday)
                 );
         }
 
@@ -1224,8 +1357,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 22),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Monday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Monday)
                 );
         }
 
@@ -1234,8 +1370,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 1),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Tuesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Tuesday)
                 );
         }
 
@@ -1244,8 +1383,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 8),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Tuesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Tuesday)
                 );
         }
 
@@ -1254,8 +1396,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 23),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Tuesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Tuesday)
                 );
         }
 
@@ -1264,8 +1409,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2007, 12, 26),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Wednesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Wednesday)
                 );
         }
 
@@ -1274,8 +1422,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 2),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Wednesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Wednesday)
                 );
         }
 
@@ -1284,8 +1435,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 17),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Wednesday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Wednesday)
                 );
         }
 
@@ -1294,8 +1448,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2007, 12, 27),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Thursday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Thursday)
                 );
         }
 
@@ -1304,8 +1461,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 3),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Thursday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Thursday)
                 );
         }
 
@@ -1314,8 +1474,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 18),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Thursday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Thursday)
                 );
         }
 
@@ -1324,8 +1487,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2007, 12, 28),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Friday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Friday)
                 );
         }
 
@@ -1334,8 +1500,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 4),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Friday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Friday)
                 );
         }
 
@@ -1344,8 +1513,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 19),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Friday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Friday)
                 );
         }
 
@@ -1354,8 +1526,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2007, 12, 29),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Saturday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Saturday)
                 );
         }
 
@@ -1364,8 +1539,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 5),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Saturday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Saturday)
                 );
         }
 
@@ -1374,8 +1552,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 20),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Saturday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Saturday)
                 );
         }
 
@@ -1384,8 +1565,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2007, 12, 30),
-                Schedule.GetFirstDayOfWeek(2008, 1, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Sunday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    1,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Sunday)
                 );
         }
 
@@ -1394,8 +1578,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 1, 6),
-                Schedule.GetFirstDayOfWeek(2008, 2, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Sunday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    2,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Sunday)
                 );
         }
 
@@ -1404,8 +1591,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 new DateTime(2008, 12, 21),
-                Schedule.GetFirstDayOfWeek(2008, 52, calendarWeekRule: CalendarWeekRule.FirstDay,
-                                                     firstDayOfWeek: DayOfWeek.Sunday)
+                Schedule.GetFirstDayOfWeek(
+                    2008,
+                    52,
+                    calendarWeekRule: CalendarWeekRule.FirstDay,
+                    firstDayOfWeek: DayOfWeek.Sunday)
                 );
         }
 
