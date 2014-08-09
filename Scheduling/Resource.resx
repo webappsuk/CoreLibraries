@@ -104,4 +104,16 @@
   <data name="AggregateSchedule_Next_Schedule_DateTime_Past" xml:space="preserve">
     <value>Schedule '{0}' returned a DateTime in the past.</value>
   </data>
+  <data name="AggregateSchedule_Different_Options" xml:space="preserve">
+    <value>Cannot create an aggregate schedule out of schedules which have different options.</value>
+  </data>
+  <data name="ScheduledAction_Null_Schedule" xml:space="preserve">
+    <value>Cannot set a schedule to null.</value>
+  </data>
+  <data name="Scheduler_DefaultMaximumHistory_Negative" xml:space="preserve">
+    <value>The default maximum history for a scheduler cannot be negative.</value>
+  </data>
+  <data name="ScheduledAction_ExecuteAsync_Invalid_Task_Status" xml:space="preserve">
+    <value>Invalid task status '{0}' in scheduled action continuation.</value>
+  </data>
 </root>

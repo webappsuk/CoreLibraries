@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
@@ -54,9 +55,11 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="scheduleCollection">A collection of schedules.</param>
         /// <param name="name">An optional name for the schedule.</param>
-        public AggregateSchedule([NotNull] IEnumerable<ISchedule> scheduleCollection, string name = null)
+        public AggregateSchedule([NotNull] IEnumerable<ISchedule> scheduleCollection, [CanBeNull] string name = null)
         {
-            _scheduleCollection = scheduleCollection.ToList();
+            Contract.Requires(scheduleCollection != null);
+            // Duplicate collection
+            _scheduleCollection = scheduleCollection.ToArray();
             _name = name;
             if (!_scheduleCollection.Any())
             {
@@ -69,11 +72,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             foreach (ISchedule schedule in _scheduleCollection)
             {
                 if (schedule == null)
-                {
-                    throw new ArgumentException(
-                        "Cannot have null schedules in schedule collection.",
-                        "scheduleCollection");
-                }
+                    continue;
 
                 if (first)
                 {
@@ -82,11 +81,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                     continue;
                 }
                 if (schedule.Options != _options)
-                {
-                    throw new ArgumentException(
-                        "Cannot create an aggregate schedule out of schedules which have different options.",
-                        "scheduleCollection");
-                }
+                    throw new LoggingException(() => Resource.AggregateSchedule_Different_Options);
             }
         }
 

@@ -61,6 +61,15 @@ namespace WebApplications.Utilities.Scheduling {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create an aggregate schedule out of schedules which have different options..
+        /// </summary>
+        internal static string AggregateSchedule_Different_Options {
+            get {
+                return ResourceManager.GetString("AggregateSchedule_Different_Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Schedule &apos;{0}&apos; returned a DateTime in the past..
         /// </summary>
         internal static string AggregateSchedule_Next_Schedule_DateTime_Past {
@@ -70,11 +79,38 @@ namespace WebApplications.Utilities.Scheduling {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid task status &apos;{0}&apos; in scheduled action continuation..
+        /// </summary>
+        internal static string ScheduledAction_ExecuteAsync_Invalid_Task_Status {
+            get {
+                return ResourceManager.GetString("ScheduledAction_ExecuteAsync_Invalid_Task_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot set a schedule to null..
+        /// </summary>
+        internal static string ScheduledAction_Null_Schedule {
+            get {
+                return ResourceManager.GetString("ScheduledAction_Null_Schedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to recalculate next due date for schedule..
         /// </summary>
         internal static string ScheduledAction_RecalculateNextDue_Failed {
             get {
                 return ResourceManager.GetString("ScheduledAction_RecalculateNextDue_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default maximum history for a scheduler cannot be negative..
+        /// </summary>
+        internal static string Scheduler_DefaultMaximumHistory_Negative {
+            get {
+                return ResourceManager.GetString("Scheduler_DefaultMaximumHistory_Negative", resourceCulture);
             }
         }
     }

@@ -174,7 +174,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("value", "Cannot set a schedule to null.");
+                    throw new LoggingException(() => Resource.ScheduledAction_Null_Schedule);
                 if (_schedule == value)
                     return;
                 _schedule = value;
@@ -383,10 +383,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                                     due,
                                     started,
                                     DateTime.Now - started,
-                                    new ArgumentOutOfRangeException(
-                                        String.Format(
-                                            "Invalid task status '{0}' in scheduled action continuation.",
-                                            t.Status)),
+                                    new LoggingException(
+                                        () => Resource.ScheduledAction_ExecuteAsync_Invalid_Task_Status,
+                                        t.Status),
                                     false,
                                     FunctionReturnType != null
                                         ? FunctionReturnType.Default()

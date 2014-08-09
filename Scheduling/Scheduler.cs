@@ -31,6 +31,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Scheduling.Schedulable;
 using WebApplications.Utilities.Scheduling.Scheduled;
 
@@ -169,11 +170,7 @@ namespace WebApplications.Utilities.Scheduling
             set
             {
                 if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        "value",
-                        "The default maximum history for a scheduler cannot be negative.");
-                }
+                    throw new LoggingException(()=>Resource.Scheduler_DefaultMaximumHistory_Negative);
                 _defaultMaximumHistory = value;
             }
         }
