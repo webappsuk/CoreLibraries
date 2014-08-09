@@ -37,7 +37,7 @@ namespace WebApplications.Utilities.Scheduling
     public interface ISchedulableActionAsync : ISchedulableAction
     {
         /// <summary>
-        /// Gets a task that will complete the scheduled action asychronously.
+        /// Gets a task that will complete the scheduled action asynchronously.
         /// </summary>
         /// <returns></returns>
         /// <remarks></remarks>

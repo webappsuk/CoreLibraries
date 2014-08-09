@@ -43,7 +43,7 @@
       <FileName>Schedulable\SchedulableActionCancellableAsync.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WebApplications.Utilities.Scheduling.ScheduledFunctions.SchedulableActionBase" Collapsed="true">
+  <Class Name="WebApplications.Utilities.Scheduling.ScheduledFunctions.SchedulableActionBase">
     <Position X="1.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>

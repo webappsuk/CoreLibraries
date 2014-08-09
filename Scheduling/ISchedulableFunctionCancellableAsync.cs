@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Scheduling
     public interface ISchedulableFunctionCancellableAsync<T> : ISchedulableFunctionAsync<T>
     {
         /// <summary>
-        /// Gets a task that will complete the scheduled action asychronously.
+        /// Gets a task that will complete the scheduled action asynchronously.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>

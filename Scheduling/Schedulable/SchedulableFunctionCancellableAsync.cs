@@ -33,7 +33,7 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Scheduling.Schedulable
 {
     /// <summary>
-    /// Creates a cancellable asyncrhonous schedulable function from a <see cref="Func{TResult}"/>.
+    /// Creates a cancellable asynchronous schedulable function from a <see cref="Func{TResult}"/>.
     /// </summary>
     /// <remarks></remarks>
     public class SchedulableFunctionCancellableAsync<T> : SchedulableFunctionCancellableAsyncBase<T>
