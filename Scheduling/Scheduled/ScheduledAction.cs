@@ -32,6 +32,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Logging;
@@ -146,7 +147,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets a value indicating whether this instance is a function.
         /// </summary>
         /// <value><see langword="true" /> if this instance is function; otherwise, <see langword="false" />.</value>
-        public bool IsFunction {get { return !ReferenceEquals(ReturnType, null); }}
+        public bool IsFunction { get { return !ReferenceEquals(ReturnType, null); } }
 
         /// <summary>
         /// Gets the execution history.
@@ -191,7 +192,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [PublicAPI]
         public bool Enabled;
 
-        
+
         /// <summary>
         /// Execution counter indicates how many concurrent executions are occurring.
         /// </summary>
@@ -211,7 +212,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
             // Grab schedule as the property can be changed.
             ISchedule schedule = _schedule;
-            
+
             // Mark this action as executing.
             int executing = Interlocked.Increment(ref _executing);
             // Only execute if we allow concurrency or we're not executing already.
@@ -263,7 +264,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// The next time the action is due.
         /// </summary>
-        private long _nextDueTicks;
+        private long _nextDueTicks = Scheduler.MaxTicks;
 
         /// <summary>
         /// Gets the next due date and time (UTC).
@@ -276,6 +277,19 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             {
                 long ndt = Interlocked.Read(ref _nextDueTicks);
                 return new DateTime(ndt, DateTimeKind.Utc);
+            }
+        }
+
+        /// <summary>
+        /// Gets the next due date and time (UTC) in ticks.
+        /// </summary>
+        /// <value>The next due date and time.</value>
+        [PublicAPI]
+        public long NextDueTicks
+        {
+            get
+            {
+                return Interlocked.Read(ref _nextDueTicks);
             }
         }
 
@@ -312,62 +326,50 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Lock used in the case optimistic setting fails.
         /// </summary>
-        private SpinLock _calculatorLock = new SpinLock();
+        private int _calculatorLock;
 
         /// <summary>
         /// Recalculates the next due date.
         /// </summary>
-        /// <param name="withLock">if set to <see langword="true"/> uses a lock.</param>
-        /// <remarks></remarks>
-        private void RecalculateNextDue(bool withLock = false)
+        private void RecalculateNextDue()
         {
-            bool hasLock = false;
-            if (withLock)
-                _calculatorLock.Enter(ref hasLock);
-
-            DateTime now = DateTime.UtcNow;
-            // Optimistic update strategy, to avoid locks.
-
-            // Grab current value for nextDue.
-            long ndt = Interlocked.Read(ref _nextDueTicks);
-            DateTime nd = new DateTime(ndt, DateTimeKind.Utc);
-
-            // If we're due now, we're done.
-            if (nd == now) return;
-
-            // Ask schedule for next due time.
-            DateTime newNextDue = Schedule.Next(now > _lastExecutionFinished ? now : _lastExecutionFinished);
-            
-            // If the next due is in the past, set it to due now.
-            if (newNextDue < now) newNextDue = now;
-
-            // If the new due date is the existing one we're done.
-            if (newNextDue == nd)
+            // Only calculate one at a time.
+            if (Interlocked.Exchange(ref _calculatorLock, 1) > 0)
                 return;
-
-            long nndt = newNextDue.Ticks;
-
-            // If we successfully update next ticks we're done.
-            if (Interlocked.CompareExchange(ref _nextDueTicks, nndt, ndt) != ndt)
+            try
             {
-                if (!withLock)
-                {
-                    // Try again with a spin lock.
-                    RecalculateNextDue(true);
-                    return;
-                }
-                Log.Add(LoggingLevel.Critical, () => Resource.ScheduledAction_RecalculateNextDue_Failed);
-            }
+                long ndt = Interlocked.Read(ref _nextDueTicks);
+                DateTime now = DateTime.UtcNow;
+                long nt = now.Ticks;
 
-            if (hasLock)
-                _calculatorLock.Exit();
+                // If next due is in future, ask schedule when we're next due.
+                if (ndt > nt)
+                    ndt = Schedule.Next(now).Ticks;
+
+                // If the next due is in the past, set it to due now.
+                if (ndt < nt) ndt = nt;
+                // If it's more than the max clamp to max.
+                else if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
+
+                // Update next due
+                Interlocked.Exchange(ref _nextDueTicks, ndt);
+            }
+            catch (LoggingException)
+            {
+            }
+            catch (Exception e)
+            {
+                // Create new logging exception
+                new LoggingException(e);
+            }
+            finally
+            {
+                // Mark update as done.
+                Interlocked.Exchange(ref _calculatorLock, 0);
+            }
 
             // Notify the scheduler that we've changed our due date.
-            if (nndt < Scheduler.MaxTicks)
-            {
-                Trace.WriteLine(string.Format("Recalc: {0:ss.fffffff}", now, NextDue));
-                Scheduler.CheckSchedule();
-            }
+            Scheduler.CheckSchedule();
         }
 
         /// <summary>

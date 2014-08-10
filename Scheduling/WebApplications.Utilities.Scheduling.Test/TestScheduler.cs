@@ -38,8 +38,6 @@ namespace WebApplications.Utilities.Scheduling.Test
         [TestMethod]
         public void TestSeconds()
         {
-            SchedulerTester.WaitForStartOfSecond();
-
             SchedulerTester schedulerTester = new SchedulerTester();
 
             PeriodicSchedule schedule = new PeriodicSchedule(
@@ -60,6 +58,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             };
             schedulerTester.AddTest(schedule, expectedResults);
 
+            SchedulerTester.WaitForStartOfSecond();
             schedulerTester.Run();
         }
 
@@ -94,8 +93,6 @@ namespace WebApplications.Utilities.Scheduling.Test
         [TestMethod]
         public void TestDoubleSchedule()
         {
-            SchedulerTester.WaitForStartOfSecond(true);
-
             SchedulerTester schedulerTester = new SchedulerTester();
 
             PeriodicSchedule schedule = new PeriodicSchedule(
@@ -126,6 +123,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             };
             schedulerTester.AddTest(schedule, expectedResults);
 
+            SchedulerTester.WaitForStartOfSecond(true);
             schedulerTester.Run();
         }
 

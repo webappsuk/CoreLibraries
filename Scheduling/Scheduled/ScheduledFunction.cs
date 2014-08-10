@@ -179,12 +179,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 try
                 {
                     // Execute function (ensuring cancellation).
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     result = await _function(due, tokenSource.Token).WithCancellation(tokenSource.Token);
                     stopwatch.Stop();
                 }
-                catch (Exception e)
+                catch (LoggingException l)
                 {
-                    // We had an exception retrieving the task, so fail.
                     stopwatch.Stop();
 
                     // ReSharper disable once AssignNullToNotNullAttribute
@@ -192,8 +192,25 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         due,
                         started,
                         stopwatch.Elapsed,
-                        e,
-                        tokenSource.IsCancellationRequested || e is TaskCanceledException,
+                        l,
+                        tokenSource.IsCancellationRequested,
+                        default(T));
+
+                }
+                catch (Exception e)
+                {
+                    stopwatch.Stop();
+
+                    bool cancelledException = e is TaskCanceledException || e is OperationCanceledException;
+
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    return new ScheduledFunctionResult<T>(
+                        due,
+                        started,
+                        stopwatch.Elapsed,
+                        // Wrap non-logging exceptions, except the cancelled exception.
+                        cancelledException ? e : new LoggingException(e),
+                        cancelledException || tokenSource.IsCancellationRequested,
                         default(T));
                 }
 

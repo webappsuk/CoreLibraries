@@ -88,15 +88,6 @@ namespace WebApplications.Utilities.Scheduling {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to recalculate next due date for schedule..
-        /// </summary>
-        internal static string ScheduledAction_RecalculateNextDue_Failed {
-            get {
-                return ResourceManager.GetString("ScheduledAction_RecalculateNextDue_Failed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The scheduled function returned a null task..
         /// </summary>
         internal static string ScheduledFunction_DoExecuteAsync_Null_Task {

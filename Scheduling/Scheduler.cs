@@ -29,7 +29,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -56,9 +55,9 @@ namespace WebApplications.Utilities.Scheduling
         internal static readonly long MaxTicks = DateTime.MaxValue.Ticks;
 
         /// <summary>
-        /// The maximum time span supported by a timer.
+        /// The maximum time span supported by a timer (in milliseconds).
         /// </summary>
-        internal static readonly TimeSpan MaxTimeSpan = TimeSpan.FromMilliseconds(0xfffffffe);
+        private const long MaxTimerMs = 0xfffffffe;
 
         /// <summary>
         /// Holds all scheduled actions.
@@ -535,7 +534,7 @@ namespace WebApplications.Utilities.Scheduling
             do
             {
                 Timer ticker;
-                TimeSpan wait;
+                long wait;
                 do
                 {
                     ticker = _ticker;
@@ -550,7 +549,7 @@ namespace WebApplications.Utilities.Scheduling
                     // Ensure ticker is stopped.
                     ticker.Change(Timeout.Infinite, Timeout.Infinite);
 
-                    DateTime ndt = DateTime.MaxValue;
+                    long ndt = MaxTicks;
 
                     // Set our tick state to 1, we're about to do a complete check of the actions if any other tick calls
                     // come in from this point onwards we will need to recheck.
@@ -560,15 +559,17 @@ namespace WebApplications.Utilities.Scheduling
                     {
                         Contract.Assert(action != null);
                         if (!action.Enabled) continue;
-                        
-                        if (action.NextDue < DateTime.UtcNow)
+
+                        long andt = action.NextDueTicks;
+
+                        if (andt < DateTime.UtcNow.Ticks)
                             // Due now so kick of an execution (shouldn't block).
                             action.ExecuteAsync();
-                        else if (action.NextDue < ndt)
+                        else if (andt < ndt)
                         {
                             // Update the next due time.
                             nextScheduledAction = action;
-                            ndt = action.NextDue;
+                            ndt = andt;
                         }
                     }
 
@@ -581,34 +582,55 @@ namespace WebApplications.Utilities.Scheduling
                     }
 
                     // If the next due time is max value, we're never due
-                    if (ndt == DateTime.MaxValue)
+                    if (ndt >= MaxTicks)
                     {
                         // Set to infinite wait.
-                        wait = Timeout.InfiniteTimeSpan;
+                        wait = long.MaxValue;
 
                         // Update properties.
-                        _nextDueTicks = MaxTicks;
-                        _nextScheduledAction = null;
+                        Interlocked.Exchange(ref _nextDueTicks, MaxTicks);
+                        Interlocked.Exchange(ref _nextScheduledAction, null);
                         break;
                     }
-
-                    DateTime now = DateTime.UtcNow;
-
-                    // If we're due in past continue.
-                    if (ndt <= now) continue;
-
-                    // Next due is in future
-                    wait = ndt - now;
-
+                    
                     // Update properties.
-                    _nextDueTicks = ndt.Ticks;
-                    _nextScheduledAction = nextScheduledAction;
+                    Interlocked.Exchange(ref _nextDueTicks, ndt);
+                    Interlocked.Exchange(ref _nextScheduledAction, nextScheduledAction);
 
-                    // Ensure the wait duration doesn't exceed the maximum supported by Timer.
-                    if (wait > MaxTimeSpan)
-                        wait = MaxTimeSpan;
-                    break;
+                    long now = DateTime.UtcNow.Ticks;
+
+                    // If we're due in the future calculate how long to wait.
+                    if (ndt > now)
+                    {
+                        long wt = ndt - now;
+                        if (wt > 0)
+                        {
+                            // Check we're waiting at least a millisecond.
+                            if (wt > TimeSpan.TicksPerMillisecond)
+                            {
+                                // Calculate number of milliseconds to wait.
+                                wait = (ndt - now) / TimeSpan.TicksPerMillisecond;
+                                // Ensure the wait duration doesn't exceed the maximum supported by Timer.
+                                if (wait > MaxTimerMs)
+                                    wait = MaxTimerMs;
+                                break;
+                            }
+
+                            // Use a spin wait instead.
+                            SpinWait s = new SpinWait();
+                            while (wt > 0)
+                            {
+                                s.SpinOnce();
+                                wt = ndt - DateTime.UtcNow.Ticks;
+                            }
+                        }
+                    }
+
+                    // We're due in the past so try again.
+                    Thread.Yield();
                 } while (true);
+                
+                Trace.WriteLine(string.Format("Wait for {0}ms", wait));
 
                 // Set the ticker to run after the wait period.
                 ticker = _ticker;
@@ -617,12 +639,13 @@ namespace WebApplications.Utilities.Scheduling
                     Interlocked.Exchange(ref _tickState, 0);
                     return;
                 }
-                ticker.Change(wait, Timeout.InfiniteTimeSpan);
+                ticker.Change(wait <= MaxTimerMs ? wait : Timeout.Infinite, Timeout.Infinite);
 
                 // Try to set the tick state back to 0, from 1 and finish
                 if (Interlocked.CompareExchange(ref _tickState, 0, 1) == 1)
                     return;
 
+                Trace.WriteLine("Cancel wait.");
                 // The tick state managed to increase from 1 before we could exit, so we need to clear the ticker and recheck.
                 ticker = _ticker;
                 if (ticker == null)
@@ -630,7 +653,7 @@ namespace WebApplications.Utilities.Scheduling
                     Interlocked.Exchange(ref _tickState, 0);
                     return;
                 }
-                ticker.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+                ticker.Change(Timeout.Infinite, Timeout.Infinite);
             } while (true);
         }
 
