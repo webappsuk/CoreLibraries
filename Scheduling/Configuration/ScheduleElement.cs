@@ -26,7 +26,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Configuration;
@@ -43,17 +45,47 @@ namespace WebApplications.Utilities.Scheduling.Configuration
     public class ScheduleElement : ConfigurationElement
     {
         /// <summary>
+        /// The calendars by name.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly IReadOnlyDictionary<string, Calendar> Calendars =
+            new Dictionary<string, Calendar>(StringComparer.InvariantCultureIgnoreCase)
+            {
+                { "ChineseLunisolar", new ChineseLunisolarCalendar() },
+                { "Gregorian", new GregorianCalendar() },
+                { "Hebrew", new HebrewCalendar() },
+                { "Hijri", new HijriCalendar() },
+                { "Japanese", new JapaneseCalendar() },
+                { "JapaneseLunisolar", new JapaneseLunisolarCalendar() },
+                { "Julian", new JulianCalendar() },
+                { "Korean", new KoreanCalendar() },
+                { "KoreanLunisolar", new KoreanLunisolarCalendar() },
+                { "Persian", new PersianCalendar() },
+                { "Taiwan", new TaiwanCalendar() },
+                { "TaiwanLunisolar", new TaiwanLunisolarCalendar() },
+                { "ThaiBuddhist", new ThaiBuddhistCalendar() },
+                { "UmAlQura", new UmAlQuraCalendar() }
+            };
+
+        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
         /// <remarks></remarks>
-        [ConfigurationProperty("name", DefaultValue = "", IsRequired = false)]
+        [ConfigurationProperty("name", IsRequired = true)]
         [StringValidator(MinLength = 0)]
         [NotNull]
+        [PublicAPI]
         public string Name
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("name"); }
-            set { SetProperty("name", value); }
+            set
+            {
+                Contract.Requires(value != null);
+                SetProperty("name", value);
+            }
         }
 
         /// <summary>
@@ -62,6 +94,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The month.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("month", DefaultValue = Month.Every, IsRequired = false)]
+        [PublicAPI]
         public Month Month
         {
             get { return GetProperty<Month>("month"); }
@@ -74,6 +107,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The week.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("week", DefaultValue = Week.Every, IsRequired = false)]
+        [PublicAPI]
         public Week Week
         {
             get { return GetProperty<Week>("week"); }
@@ -86,6 +120,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The day.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("day", DefaultValue = Day.Every, IsRequired = false)]
+        [PublicAPI]
         public Day Day
         {
             get { return GetProperty<Day>("day"); }
@@ -98,6 +133,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The week day.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("weekDay", DefaultValue = WeekDay.Every, IsRequired = false)]
+        [PublicAPI]
         public WeekDay WeekDay
         {
             get { return GetProperty<WeekDay>("weekDay"); }
@@ -110,6 +146,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The hour.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("hour", DefaultValue = Hour.Every, IsRequired = false)]
+        [PublicAPI]
         public Hour Hour
         {
             get { return GetProperty<Hour>("hour"); }
@@ -122,6 +159,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The minute.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("minute", DefaultValue = Minute.Every, IsRequired = false)]
+        [PublicAPI]
         public Minute Minute
         {
             get { return GetProperty<Minute>("minute"); }
@@ -134,6 +172,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The second.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("second", DefaultValue = Second.Every, IsRequired = false)]
+        [PublicAPI]
         public Second Second
         {
             get { return GetProperty<Second>("second"); }
@@ -145,12 +184,13 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// </summary>
         /// <value>The time span.</value>
         /// <remarks></remarks>
-        [ConfigurationProperty("timeSpan", IsRequired = false)]
+        [ConfigurationProperty("minimumGap", IsRequired = false)]
         [TimeSpanValidator(MinValueString = "00:00:00")]
-        public TimeSpan TimeSpan
+        [PublicAPI]
+        public TimeSpan MinimumGap
         {
-            get { return GetProperty<TimeSpan>("timeSpan"); }
-            set { SetProperty("timeSpan", value); }
+            get { return GetProperty<TimeSpan>("minimumGap"); }
+            set { SetProperty("minimumGap", value); }
         }
 
         /// <summary>
@@ -158,8 +198,8 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// </summary>
         /// <value>The calendar week rule.</value>
         /// <remarks></remarks>
-        [ConfigurationProperty("calendarWeekRule", DefaultValue = CalendarWeekRule.FirstFourDayWeek, IsRequired = false)
-        ]
+        [ConfigurationProperty("calendarWeekRule", DefaultValue = CalendarWeekRule.FirstFourDayWeek, IsRequired = false)]
+        [PublicAPI]
         public CalendarWeekRule CalendarWeekRule
         {
             get { return GetProperty<CalendarWeekRule>("calendarWeekRule"); }
@@ -172,6 +212,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The first day of week.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("firstDayOfWeek", DefaultValue = DayOfWeek.Sunday, IsRequired = false)]
+        [PublicAPI]
         public DayOfWeek FirstDayOfWeek
         {
             get { return GetProperty<DayOfWeek>("firstDayOfWeek"); }
@@ -179,29 +220,73 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Scheduling.Configuration.ScheduleElement"/>
-        /// to <see cref="PeriodicSchedule"/>.
+        /// Gets or sets the calendar.
         /// </summary>
-        /// <param name="element">The element.</param>
-        /// <returns>The result of the conversion.</returns>
+        /// <value>The first day of week.</value>
         /// <remarks></remarks>
-        [NotNull]
-        public static implicit operator PeriodicSchedule(ScheduleElement element)
+        [ConfigurationProperty("calendar", DefaultValue = null, IsRequired = false)]
+        [CanBeNull]
+        [PublicAPI]
+        public string Calendar
         {
-            return
-                element == null
-                    ? new PeriodicSchedule()
-                    : new PeriodicSchedule(
-                        month: element.Month,
-                        week: element.Week,
-                        day: element.Day,
-                        weekDay: element.WeekDay,
-                        hour: element.Hour,
-                        minute: element.Minute,
-                        second: element.Second,
-                        minimumGap: element.TimeSpan,
-                        calendarWeekRule: element.CalendarWeekRule,
-                        firstDayOfWeek: element.FirstDayOfWeek);
+            get { return GetProperty<string>("calendar"); }
+            set { SetProperty("calendar", value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the first day of week.
+        /// </summary>
+        /// <value>The first day of week.</value>
+        /// <remarks></remarks>
+        [ConfigurationProperty("options", DefaultValue = ScheduleOptions.None, IsRequired = false)]
+        [PublicAPI]
+        public ScheduleOptions Options
+        {
+            get { return GetProperty<ScheduleOptions>("options"); }
+            set { SetProperty("ScheduleOptions", value); }
+        }
+
+        /// <summary>
+        /// Gets or sets a fixed date and time.
+        /// </summary>
+        /// <value>The first day of week.</value>
+        /// <remarks></remarks>
+        [ConfigurationProperty("dateTime", DefaultValue = null, IsRequired = false)]
+        [PublicAPI]
+        public string DateTime
+        {
+            get { return GetProperty<DateTime>("dateTime"); }
+            set { SetProperty("dateTime", value); }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="ISchedule"/> from the element.
+        /// </summary>
+        /// <returns>The result of the conversion.</returns>
+        [NotNull]
+        [PublicAPI]
+        public ISchedule GetSchedule()
+        {
+            // TODO DateTime validation/etc.
+
+            string cname = Calendar;
+            Calendar calender = null;
+            if (cname != null) Calendars.TryGetValue(cname, out calender);
+
+            return new PeriodicSchedule(
+                Month,
+                Week,
+                Day,
+                WeekDay,
+                Hour,
+                Minute,
+                Second,
+                MinimumGap,
+                calender,
+                CalendarWeekRule,
+                FirstDayOfWeek,
+                Options,
+                Name);
         }
     }
 }

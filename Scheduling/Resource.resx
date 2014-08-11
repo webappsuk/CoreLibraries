@@ -132,4 +132,7 @@
   <data name="ScheduledFunction_DoExecuteAsync_Null_Task" xml:space="preserve">
     <value>The scheduled function returned a null task.</value>
   </data>
+  <data name="Scheduler_GetSchedule_NotFound" xml:space="preserve">
+    <value>The '{0}' schedule was not found.</value>
+  </data>
 </root>

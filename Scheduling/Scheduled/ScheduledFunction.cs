@@ -161,7 +161,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         protected override async Task<ScheduledActionResult> DoExecuteAsync(DateTime due, CancellationToken cancellationToken)
         {
             // Combine cancellation token with Timeout to ensure no action runs beyond the Scheduler's limit.
-            using (ITokenSource tokenSource = cancellationToken.WithTimeout(Scheduler.MaximumActionDuration))
+            using (ITokenSource tokenSource = cancellationToken.WithTimeout(Scheduler.DefaultMaximumDuration))
             {
                 // Quick cancellation check.
                 if (tokenSource.IsCancellationRequested)

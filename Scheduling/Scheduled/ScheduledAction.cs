@@ -125,11 +125,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="scheduler">The scheduler.</param>
         /// <param name="schedule">The schedule.</param>
         /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="returnType">Type of the return (if a function).</param>
         protected ScheduledAction(
             [NotNull] Scheduler scheduler,
             [NotNull] ISchedule schedule,
             int maximumHistory,
-            Type returnType)
+            [CanBeNull] Type returnType)
         {
             Contract.Requires(scheduler != null);
             Contract.Requires(schedule != null);
@@ -326,47 +327,53 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Lock used in the case optimistic setting fails.
         /// </summary>
-        private int _calculatorLock;
+        private int _calculatorCount;
 
         /// <summary>
         /// Recalculates the next due date.
         /// </summary>
         private void RecalculateNextDue()
         {
-            // Only calculate one at a time.
-            if (Interlocked.Exchange(ref _calculatorLock, 1) > 0)
+            // Increment recalculate counter, only let first increment continue.
+            if (Interlocked.Increment(ref _calculatorCount) > 1)
                 return;
-            try
-            {
-                long ndt = Interlocked.Read(ref _nextDueTicks);
-                DateTime now = DateTime.UtcNow;
-                long nt = now.Ticks;
 
-                // If next due is in future, ask schedule when we're next due.
-                if (ndt > nt)
-                    ndt = Schedule.Next(now).Ticks;
+            do
+            {
+                try
+                {
+                    long ndt = Interlocked.Read(ref _nextDueTicks);
+                    DateTime now = DateTime.UtcNow;
+                    long nt = now.Ticks;
 
-                // If the next due is in the past, set it to due now.
-                if (ndt < nt) ndt = nt;
-                // If it's more than the max clamp to max.
-                else if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
+                    // If next due is in future, ask schedule when we're next due.
+                    if (ndt > nt)
+                        ndt = Schedule.Next(now).Ticks;
 
-                // Update next due
-                Interlocked.Exchange(ref _nextDueTicks, ndt);
-            }
-            catch (LoggingException)
-            {
-            }
-            catch (Exception e)
-            {
-                // Create new logging exception
-                new LoggingException(e);
-            }
-            finally
-            {
-                // Mark update as done.
-                Interlocked.Exchange(ref _calculatorLock, 0);
-            }
+                    // If the next due is in the past, set it to due now.
+                    if (ndt < nt) ndt = nt;
+                        // If it's more than the max clamp to max.
+                    else if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
+
+                    // Update next due
+                    Interlocked.Exchange(ref _nextDueTicks, ndt);
+                }
+                catch (LoggingException)
+                {
+                }
+                catch (Exception e)
+                {
+                    // Create new logging exception
+                    new LoggingException(e);
+                }
+                finally
+                {
+                    // Mark update as done.
+                    Interlocked.Decrement(ref _calculatorCount);
+                }
+
+                // Keep going if we need to recalculate.
+            } while (_calculatorCount < 0); 
 
             // Notify the scheduler that we've changed our due date.
             Scheduler.CheckSchedule();

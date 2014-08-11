@@ -104,5 +104,14 @@ namespace WebApplications.Utilities.Scheduling {
                 return ResourceManager.GetString("Scheduler_DefaultMaximumHistory_Negative", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; schedule was not found..
+        /// </summary>
+        internal static string Scheduler_GetSchedule_NotFound {
+            get {
+                return ResourceManager.GetString("Scheduler_GetSchedule_NotFound", resourceCulture);
+            }
+        }
     }
 }

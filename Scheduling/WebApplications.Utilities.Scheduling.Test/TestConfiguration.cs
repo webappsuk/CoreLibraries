@@ -40,31 +40,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         [TestMethod]
         public void TestMethod1()
         {
-            ScheduleConfiguration configuration = ScheduleConfiguration.Active;
-            foreach (PeriodicSchedule schedule in configuration.Schedules)
-                Trace.WriteLine(schedule);
-        }
-    }
-
-    /// <summary>
-    /// Test schedule configuration.
-    /// </summary>
-    /// <remarks></remarks>
-    public class ScheduleConfiguration : ConfigurationSection<ScheduleConfiguration>
-    {
-        [ConfigurationProperty("schedule", IsRequired = true)]
-        public ScheduleElement Schedule
-        {
-            get { return (ScheduleElement)this["schedule"]; }
-            set { this["schedule"] = value; }
-        }
-
-        [ConfigurationProperty("schedules", IsRequired = true, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof(ScheduleCollection))]
-        public ScheduleCollection Schedules
-        {
-            get { return (ScheduleCollection)this["schedules"]; }
-            set { this["schedules"] = value; }
+            var schedule = Scheduler.Default.GetSchedule("1");
         }
     }
 }
