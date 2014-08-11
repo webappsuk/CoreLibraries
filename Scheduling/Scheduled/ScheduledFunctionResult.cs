@@ -27,6 +27,7 @@
 
 using System;
 using JetBrains.Annotations;
+using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
@@ -53,9 +54,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="result">The result.</param>
         /// <remarks></remarks>
         internal ScheduledFunctionResult(
-            DateTime due,
-            DateTime started,
-            TimeSpan duration,
+            Instant due,
+            Instant started,
+            Duration duration,
             [CanBeNull] Exception exception,
             bool cancelled,
             TResult result)

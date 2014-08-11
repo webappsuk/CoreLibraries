@@ -27,6 +27,7 @@
 
 using System;
 using JetBrains.Annotations;
+using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
@@ -39,13 +40,13 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// When the execution was due.
         /// </summary>
         [PublicAPI]
-        public readonly DateTime Due;
+        public readonly Instant Due;
 
         /// <summary>
         /// How long the execution took.
         /// </summary>
         [PublicAPI]
-        public TimeSpan Duration;
+        public Duration Duration;
 
         /// <summary>
         /// Any exception that was thrown by the function.
@@ -57,7 +58,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// When the execution actually started.
         /// </summary>
         [PublicAPI]
-        public DateTime Started;
+        public Instant Started;
 
         /// <summary>
         /// Whether this action was cancelled.
@@ -75,9 +76,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="cancelled">if set to <see langword="true"/> the action was cancelled.</param>
         /// <remarks></remarks>
         protected ScheduledActionResult(
-            DateTime due,
-            DateTime started,
-            TimeSpan duration,
+            Instant due,
+            Instant started,
+            Duration duration,
             [CanBeNull] Exception exception,
             bool cancelled)
         {

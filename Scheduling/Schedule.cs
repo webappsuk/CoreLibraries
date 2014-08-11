@@ -27,9 +27,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using NodaTime;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling
@@ -42,7 +44,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <summary>
         /// A schedule that will never run.
         /// </summary>
-        public static readonly ISchedule Never = new OneOffSchedule(DateTime.MinValue, "Never");
+        [NotNull]
+        [PublicAPI]
+        public static readonly ISchedule Never = new OneOffSchedule(Instant.MaxValue, "Never");
+
+        /// <summary>
+        /// The one second <see cref="Duration"/>.
+        /// </summary>
+        [PublicAPI]
+        public static readonly Duration OneSecond = Duration.FromSeconds(1);
+
+        /// <summary>
+        /// The one standard day <see cref="Duration"/>.
+        /// </summary>
+        [PublicAPI]
+        public static readonly Duration OneStandardDay = Duration.FromStandardDays(1);
 
         #region Months
         /// <summary>
@@ -51,8 +67,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="month">The month.</param>
         /// <returns>An enumeration of month integers.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<int> Months(this Month month)
         {
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong m = (ulong)month;
 
@@ -72,8 +90,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="months">The months.</param>
         /// <returns>A <see cref="Month">Month enum</see>.</returns>
-        public static Month Months(params int[] months)
+        [PublicAPI]
+        public static Month Months([NotNull] params int[] months)
         {
+            Contract.Requires(months != null);
             return months.Months();
         }
 
@@ -82,8 +102,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="months">The months.</param>
         /// <returns>A <see cref="Month">Month enum</see>.</returns>
-        public static Month Months(this IEnumerable<int> months)
+        [PublicAPI]
+        public static Month Months([NotNull] this IEnumerable<int> months)
         {
+            Contract.Requires(months != null);
             return (Month)months.Aggregate<int, ulong>(0, (current, m) => current | (ulong)1 << m);
         }
         #endregion
@@ -95,8 +117,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="day">The day.</param>
         /// <returns>An enumeration of day integers.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<int> Days(this Day day)
         {
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong d = (ulong)day;
 
@@ -116,8 +140,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="days">The days.</param>
         /// <returns>A <see cref="Day">Day enum</see>.</returns>
-        public static Day Days(params int[] days)
+        [PublicAPI]
+        public static Day Days([NotNull] params int[] days)
         {
+            Contract.Requires(days != null);
             return days.Days();
         }
 
@@ -126,8 +152,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="days">The days.</param>
         /// <returns>A <see cref="Day">Day enum</see>.</returns>
-        public static Day Days(this IEnumerable<int> days)
+        [PublicAPI]
+        public static Day Days([NotNull] this IEnumerable<int> days)
         {
+            Contract.Requires(days != null);
             return (Day)days.Aggregate<int, ulong>(0, (current, d) => current | (ulong)1 << d);
         }
         #endregion
@@ -139,8 +167,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="week">The week.</param>
         /// <returns>An enumeration of week integers.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<int> Weeks(this Week week)
         {
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong d = (ulong)week;
 
@@ -156,22 +186,26 @@ namespace WebApplications.Utilities.Scheduling
         }
 
         /// <summary>
-        /// Converts an array of integers into a <see cref="WeekNumber">Week enum</see>.
+        /// Converts an array of integers into a <see cref="Week">Week enum</see>.
         /// </summary>
         /// <param name="weeks">The weeks.</param>
-        /// <returns>A <see cref="WeekNumber">Week enum</see>.</returns>
-        public static Week Weeks(params int[] weeks)
+        /// <returns>A <see cref="Week">Week enum</see>.</returns>
+        [PublicAPI]
+        public static Week Weeks([NotNull] params int[] weeks)
         {
+            Contract.Requires(weeks != null);
             return weeks.Weeks();
         }
 
         /// <summary>
-        /// Converts an enumeration of integers into a <see cref="WeekNumber">Week enum</see>.
+        /// Converts an enumeration of integers into a <see cref="Week">Week enum</see>.
         /// </summary>
         /// <param name="weeks">The weeks.</param>
-        /// <returns>A <see cref="WeekNumber">Week enum</see>.</returns>
-        public static Week Weeks(this IEnumerable<int> weeks)
+        /// <returns>A <see cref="Week">Week enum</see>.</returns>
+        [PublicAPI]
+        public static Week Weeks([NotNull] this IEnumerable<int> weeks)
         {
+            Contract.Requires(weeks != null);
             return (Week)weeks.Aggregate<int, ulong>(0, (current, d) => current | (ulong)1 << d);
         }
         #endregion
@@ -183,30 +217,32 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="weekDay">The week day.</param>
         /// <returns>An enumeration of <see cref="DayOfWeek"/>.</returns>
         [NotNull]
-        public static IEnumerable<DayOfWeek> WeekDays(this WeekDay weekDay)
+        [PublicAPI]
+        public static IEnumerable<IsoDayOfWeek> WeekDays(this WeekDay weekDay)
         {
-            List<DayOfWeek> valid = new List<DayOfWeek>();
+            Contract.Ensures(Contract.Result<IEnumerable<IsoDayOfWeek>>() != null);
+            List<IsoDayOfWeek> valid = new List<IsoDayOfWeek>();
             if (WeekDay.Sunday ==
                 (weekDay & WeekDay.Sunday))
-                valid.Add(DayOfWeek.Sunday);
+                valid.Add(IsoDayOfWeek.Sunday);
             if (WeekDay.Monday ==
                 (weekDay & WeekDay.Monday))
-                valid.Add(DayOfWeek.Monday);
+                valid.Add(IsoDayOfWeek.Monday);
             if (WeekDay.Tuesday ==
                 (weekDay & WeekDay.Tuesday))
-                valid.Add(DayOfWeek.Tuesday);
+                valid.Add(IsoDayOfWeek.Tuesday);
             if (WeekDay.Wednesday ==
                 (weekDay & WeekDay.Wednesday))
-                valid.Add(DayOfWeek.Wednesday);
+                valid.Add(IsoDayOfWeek.Wednesday);
             if (WeekDay.Thursday ==
                 (weekDay & WeekDay.Thursday))
-                valid.Add(DayOfWeek.Thursday);
+                valid.Add(IsoDayOfWeek.Thursday);
             if (WeekDay.Friday ==
                 (weekDay & WeekDay.Friday))
-                valid.Add(DayOfWeek.Friday);
+                valid.Add(IsoDayOfWeek.Friday);
             if (WeekDay.Saturday ==
                 (weekDay & WeekDay.Saturday))
-                valid.Add(DayOfWeek.Saturday);
+                valid.Add(IsoDayOfWeek.Saturday);
             return valid;
         }
 
@@ -215,8 +251,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="daysOfWeek">The weekDays.</param>
         /// <returns>A <see cref="WeekDay">WeekDay enum</see>.</returns>
-        public static WeekDay WeekDays(params DayOfWeek[] daysOfWeek)
+        [PublicAPI]
+        public static WeekDay WeekDays([NotNull] params IsoDayOfWeek[] daysOfWeek)
         {
+            Contract.Requires(daysOfWeek != null);
             return daysOfWeek.WeekDays();
         }
 
@@ -225,34 +263,38 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="daysOfWeek">The weekDays.</param>
         /// <returns>A <see cref="WeekDay">WeekDay enum</see>.</returns>
-        public static WeekDay WeekDays(this IEnumerable<DayOfWeek> daysOfWeek)
+        [PublicAPI]
+        public static WeekDay WeekDays([NotNull] this IEnumerable<IsoDayOfWeek> daysOfWeek)
         {
+            Contract.Requires(daysOfWeek != null);
             WeekDay weekDay = WeekDay.Never;
-            foreach (DayOfWeek dayOfWeek in daysOfWeek)
+            foreach (IsoDayOfWeek dayOfWeek in daysOfWeek)
             {
                 switch (dayOfWeek)
                 {
-                    case DayOfWeek.Sunday:
+                    case IsoDayOfWeek.Sunday:
                         weekDay |= WeekDay.Sunday;
                         break;
-                    case DayOfWeek.Monday:
+                    case IsoDayOfWeek.Monday:
                         weekDay |= WeekDay.Monday;
                         break;
-                    case DayOfWeek.Tuesday:
+                    case IsoDayOfWeek.Tuesday:
                         weekDay |= WeekDay.Tuesday;
                         break;
-                    case DayOfWeek.Wednesday:
+                    case IsoDayOfWeek.Wednesday:
                         weekDay |= WeekDay.Wednesday;
                         break;
-                    case DayOfWeek.Thursday:
+                    case IsoDayOfWeek.Thursday:
                         weekDay |= WeekDay.Thursday;
                         break;
-                    case DayOfWeek.Friday:
+                    case IsoDayOfWeek.Friday:
                         weekDay |= WeekDay.Friday;
                         break;
-                    case DayOfWeek.Saturday:
+                    case IsoDayOfWeek.Saturday:
                         weekDay |= WeekDay.Saturday;
                         break;
+                    default:
+                        continue;
                 }
             }
             return weekDay;
@@ -266,8 +308,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="hour">The hour.</param>
         /// <returns>An enumeration of hour integers.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<int> Hours(this Hour hour)
         {
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong h = (ulong)hour;
 
@@ -287,8 +331,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="hours">The hours.</param>
         /// <returns>A <see cref="Hour">Hour enum</see>.</returns>
-        public static Hour Hours(params int[] hours)
+        [PublicAPI]
+        public static Hour Hours([NotNull] params int[] hours)
         {
+            Contract.Requires(hours != null);
             return hours.Hours();
         }
 
@@ -297,8 +343,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="hours">The hours.</param>
         /// <returns>A <see cref="Hour">Hour enum</see>.</returns>
-        public static Hour Hours(this IEnumerable<int> hours)
+        [PublicAPI]
+        public static Hour Hours([NotNull] this IEnumerable<int> hours)
         {
+            Contract.Requires(hours != null);
             return (Hour)hours.Aggregate<int, ulong>(0, (current, h) => current | (ulong)1 << h);
         }
         #endregion
@@ -310,8 +358,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="minute">The minute.</param>
         /// <returns>An enumeration of minute integers.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<int> Minutes(this Minute minute)
         {
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong m = (ulong)minute;
 
@@ -331,8 +381,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="minutes">The minutes.</param>
         /// <returns>A <see cref="Minute">Minute enum</see>.</returns>
-        public static Minute Minutes(params int[] minutes)
+        [PublicAPI]
+        public static Minute Minutes([NotNull] params int[] minutes)
         {
+            Contract.Requires(minutes != null);
             return minutes.Minutes();
         }
 
@@ -341,8 +393,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="minutes">The minutes.</param>
         /// <returns>A <see cref="Minute">Minute enum</see>.</returns>
-        public static Minute Minutes(this IEnumerable<int> minutes)
+        [PublicAPI]
+        public static Minute Minutes([NotNull] this IEnumerable<int> minutes)
         {
+            Contract.Requires(minutes != null);
             return (Minute)minutes.Aggregate<int, ulong>(0, (current, m) => current | (ulong)1 << m);
         }
         #endregion
@@ -354,8 +408,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="second">The second.</param>
         /// <returns>An enumeration of second integers.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<int> Seconds(this Second second)
         {
+            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong s = (ulong)second;
 
@@ -375,8 +431,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="seconds">The seconds.</param>
         /// <returns>A <see cref="Second">Second enum</see>.</returns>
-        public static Second Seconds(params int[] seconds)
+        [PublicAPI]
+        public static Second Seconds([NotNull] params int[] seconds)
         {
+            Contract.Requires(seconds != null);
             return seconds.Seconds();
         }
 
@@ -385,65 +443,30 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="seconds">The seconds.</param>
         /// <returns>A <see cref="Second">Second enum</see>.</returns>
-        public static Second Seconds(this IEnumerable<int> seconds)
+        [PublicAPI]
+        public static Second Seconds([NotNull] this IEnumerable<int> seconds)
         {
+            Contract.Requires(seconds != null);
             return (Second)seconds.Aggregate<int, ulong>(0, (current, s) => current | (ulong)1 << s);
         }
         #endregion
 
         /// <summary>
-        /// Get's this week for a date.
+        /// Floors the specified instant to the second.
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
-        /// <param name="calendar">The calendar.</param>
-        /// <param name="calendarWeekRule">The calendar week rule.</param>
-        /// <param name="firstDayOfWeek">The first day of week.</param>
-        /// <returns>The week.</returns>
-        public static int WeekNumber(
-            this DateTime dateTime,
-            Calendar calendar = null,
-            CalendarWeekRule calendarWeekRule = CalendarWeekRule.FirstFourDayWeek,
-            DayOfWeek firstDayOfWeek = DayOfWeek.Sunday)
+        /// <param name="instant">The instant.</param>
+        /// <returns>Instant.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static Instant Floor(this Instant instant)
         {
-            if (calendar == null)
-                calendar = CultureInfo.CurrentCulture.Calendar;
-            int weekNum = calendar.GetWeekOfYear(dateTime, calendarWeekRule, firstDayOfWeek);
-            return ((weekNum > 51) && (calendar.GetMonth(dateTime) < 12)) ? 0 : weekNum;
+            return new Instant((instant.Ticks / NodaConstants.TicksPerSecond) * NodaConstants.TicksPerSecond);
         }
 
         /// <summary>
-        /// Gets the first day of a week.
+        /// Gets the next valid second after the current <paramref name="instant" />.
         /// </summary>
-        /// <param name="year">The year.</param>
-        /// <param name="week">The week.</param>
-        /// <param name="calendar">The calendar.</param>
-        /// <param name="calendarWeekRule">The calendar week rule.</param>
-        /// <param name="firstDayOfWeek">The first day of week.</param>
-        /// <returns>The date of the first day in the week.</returns>
-        public static DateTime GetFirstDayOfWeek(
-            int year,
-            int week,
-            Calendar calendar = null,
-            CalendarWeekRule calendarWeekRule = CalendarWeekRule.FirstFourDayWeek,
-            DayOfWeek firstDayOfWeek = DayOfWeek.Sunday)
-        {
-            if (calendar == null)
-                calendar = CultureInfo.CurrentCulture.Calendar;
-
-            DateTime firstDay = new DateTime(year, 1, 7, calendar);
-
-            while (calendar.GetDayOfWeek(firstDay) != firstDayOfWeek ||
-                   WeekNumber(firstDay, calendar, calendarWeekRule, firstDayOfWeek) % 52 > 1)
-                firstDay = calendar.AddDays(firstDay, -1);
-
-            // Add the week
-            return (week != 1) ? calendar.AddWeeks(firstDay, week - 1) : firstDay;
-        }
-
-        /// <summary>
-        /// Get's the next valid second after the current .
-        /// </summary>
-        /// <param name="dateTime">The date time (fractions of a second are removed).</param>
+        /// <param name="instant">The date time (fractions of a second are removed).</param>
         /// <param name="month">The month.</param>
         /// <param name="week">The week.</param>
         /// <param name="day">The day.</param>
@@ -451,15 +474,13 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="hour">The hour.</param>
         /// <param name="minute">The minute.</param>
         /// <param name="second">The second.</param>
-        /// <param name="calendar">The calendar.</param>
-        /// <param name="calendarWeekRule">The calendar week rule.</param>
-        /// <param name="firstDayOfWeek">The first day of week.</param>
+        /// <param name="calendarSystem">The calendar (defaults to ISO-8601 standard).</param>
+        /// <param name="timeZone">The time zone (defaults to UTC).</param>
         /// <param name="inclusive">if set to <c>true</c> can return the time specified, otherwise, starts at the next second..</param>
-        /// <returns>
-        /// The next valid date (or <see cref="DateTime.MaxValue"/> if none).
-        /// </returns>
-        public static DateTime NextValid(
-            this DateTime dateTime,
+        /// <returns>The next valid date (or <see cref="DateTime.MaxValue" /> if none).</returns>
+        [PublicAPI]
+        public static Instant NextValid(
+            this Instant instant,
             Month month = Month.Every,
             Week week = Week.Every,
             Day day = Day.Every,
@@ -467,11 +488,12 @@ namespace WebApplications.Utilities.Scheduling
             Hour hour = Hour.Zeroth,
             Minute minute = Minute.Zeroth,
             Second second = Second.Zeroth,
-            Calendar calendar = null,
-            CalendarWeekRule calendarWeekRule = CalendarWeekRule.FirstFourDayWeek,
-            DayOfWeek firstDayOfWeek = DayOfWeek.Sunday,
+            [CanBeNull] CalendarSystem calendarSystem = null,
+            [CanBeNull] DateTimeZone timeZone = null,
             bool inclusive = false)
         {
+            Contract.Ensures(Contract.Result<Instant>() >= instant);
+
             // Never case, if any are set to never, we'll never get a valid date.
             if ((month == Month.Never) ||
                 (week == Week.Never) ||
@@ -480,21 +502,19 @@ namespace WebApplications.Utilities.Scheduling
                 (hour == Hour.Never) ||
                 (minute == Minute.Never) ||
                 (second == Second.Never))
-                return DateTime.MaxValue;
+                return Instant.MaxValue;
 
-            if (calendar == null)
-                calendar = CultureInfo.CurrentCulture.Calendar;
+            if (calendarSystem == null)
+                calendarSystem = CalendarSystem.Iso;
+            if (timeZone == null)
+                timeZone = DateTimeZone.Utc;
+            Contract.Assert(calendarSystem != null);
+            Contract.Assert(timeZone != null);
 
-            // Set the time to this second (or the next one if not inclusive), remove fractions of a second.
-            dateTime = new DateTime(
-                dateTime.Year,
-                dateTime.Month,
-                dateTime.Day,
-                dateTime.Hour,
-                dateTime.Minute,
-                dateTime.Second);
+            // Remove fractions of a second from instant
+            instant = Floor(instant);
             if (!inclusive)
-                dateTime = calendar.AddSeconds(dateTime, 1);
+                instant += OneSecond;
 
             // Every second case.
             if ((month == Month.Every) &&
@@ -504,36 +524,37 @@ namespace WebApplications.Utilities.Scheduling
                 (minute == Minute.Every) &&
                 (second == Second.Every) &&
                 (week == Week.Every))
-                return calendar.AddSeconds(dateTime, 1);
+                return instant + OneSecond;
 
             // Get days and months.
-            IEnumerable<int> days = Days(day).OrderBy(dy => dy);
-            IEnumerable<int> months = month.Months();
-
+            int[] days = Days(day).OrderBy(dy => dy).ToArray();
+            int[] months = month.Months().ToArray();
+            
             // Remove months where the first day isn't in the month.
             int firstDay = days.First();
             if (firstDay > 28)
             {
                 // 2000 is a leap year, so February has 29 days.
-                months = months.Where(mn => calendar.GetDaysInMonth(2000, mn) >= firstDay);
-                if (!months.Any())
-                    return DateTime.MaxValue;
+                months = months.Where(mn => calendarSystem.GetDaysInMonth(2000, mn) >= firstDay).ToArray();
+                if (months.Length < 1)
+                    return Instant.MaxValue;
             }
 
-            // Get remaining date components.
-            int y = calendar.GetYear(dateTime);
-            int m = calendar.GetMonth(dateTime);
-            int d = calendar.GetDayOfMonth(dateTime);
+            // Get zoned date time.
+            ZonedDateTime zdt = new ZonedDateTime(instant, timeZone, calendarSystem);
+            int y = zdt.Year;
+            int m = zdt.Month;
+            int d = zdt.Day;
+            int h = zdt.Hour;
+            int n = zdt.Minute;
+            int s = zdt.Second;
 
-            int h = calendar.GetHour(dateTime);
-            int n = calendar.GetMinute(dateTime);
-            int s = calendar.GetSecond(dateTime);
+            int[] weeks = week.Weeks().ToArray();
 
-            IEnumerable<int> weeks = week.Weeks();
-            IEnumerable<DayOfWeek> weekDays = weekDay.WeekDays();
-            IEnumerable<int> hours = hour.Hours().OrderBy(i => i);
-            IEnumerable<int> minutes = minute.Minutes().OrderBy(i => i);
-            IEnumerable<int> seconds = second.Seconds();
+            IsoDayOfWeek[] weekDays = weekDay.WeekDays().ToArray();
+            int[] hours = hour.Hours().OrderBy(i => i).ToArray();
+            int[] minutes = minute.Minutes().OrderBy(i => i).ToArray();
+            int[] seconds = second.Seconds().ToArray();
 
             do
             {
@@ -556,17 +577,16 @@ namespace WebApplications.Utilities.Scheduling
                         d = currentDay;
 
                         // Check day is valid for this month.
-                        if ((d > 28) &&
-                            (d > calendar.GetDaysInMonth(y, m)))
+                        if (d > calendarSystem.GetDaysInMonth(y, m))
                             break;
 
                         // We have a potential day, check week and week day
-                        dateTime = new DateTime(y, m, d, h, n, s);
+                        zdt = timeZone.AtLeniently(new LocalDateTime(y, m, d, h, n, s, calendarSystem));
                         if ((week != Week.Every) &&
-                            (!weeks.Contains(dateTime.WeekNumber(calendar, calendarWeekRule, firstDayOfWeek))))
+                            (!weeks.Contains(zdt.WeekOfWeekYear)))
                             continue;
                         if ((weekDay != WeekDay.Every) &&
-                            (!weekDays.Contains(calendar.GetDayOfWeek(dateTime))))
+                            (!weekDays.Contains(zdt.IsoDayOfWeek)))
                             continue;
 
                         // We have a date match, check time.
@@ -585,7 +605,7 @@ namespace WebApplications.Utilities.Scheduling
                                 foreach (int currentSecond in seconds)
                                 {
                                     if (currentSecond < s) continue;
-                                    return new DateTime(y, m, d, h, n, currentSecond, calendar);
+                                    return timeZone.AtLeniently(new LocalDateTime(y, m, d, h, n, currentSecond, calendarSystem)).ToInstant();
                                 }
                                 n = s = 0;
                             }
@@ -599,8 +619,8 @@ namespace WebApplications.Utilities.Scheduling
                 y++;
 
                 // Don't bother checking max year.
-                if (y > 9998)
-                    return DateTime.MaxValue;
+                if (y >= calendarSystem.MaxYear)
+                    return Instant.MaxValue;
 
                 // Start next year
                 m = d = 1;

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
+using NodaTime;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
@@ -89,18 +90,16 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         private readonly ScheduleOptions _options;
 
         /// <inheritdoc/>
-        public DateTime Next(DateTime last)
+        public Instant Next(Instant last)
         {
-            DateTime next = DateTime.MaxValue;
+            Instant next = Instant.MaxValue;
             foreach (ISchedule schedule in _scheduleCollection)
             {
                 Contract.Assert(schedule != null);
-                DateTime scheduleNext = schedule.Next(last);
+                Instant scheduleNext = schedule.Next(last);
                 if (scheduleNext < last)
-                {
-                    Log.Add(() => Resource.AggregateSchedule_Next_Schedule_DateTime_Past, schedule.Name);
-                    continue;
-                }
+                    return last;
+
                 if (scheduleNext < next)
                     next = scheduleNext;
             }
@@ -116,7 +115,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public override string ToString()
         {
-            return "Next Run at " + Next(DateTime.UtcNow);
+            return "Next Run at " + Next(Scheduler.Clock.Now);
         }
     }
 }

@@ -26,8 +26,9 @@
 #endregion
 
 using System;
-using System.Globalization;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
+using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -40,14 +41,15 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// The calendar.
         /// </summary>
         [PublicAPI]
-        [CanBeNull]
-        public readonly Calendar Calendar;
+        [NotNull]
+        public readonly CalendarSystem CalendarSystem;
 
         /// <summary>
-        /// The calendar week rule.
+        /// The time zone.
         /// </summary>
         [PublicAPI]
-        public readonly CalendarWeekRule CalendarWeekRule;
+        [NotNull]
+        public readonly DateTimeZone TimeZone;
 
         /// <summary>
         /// The day.
@@ -71,7 +73,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// The minimum gap, added to all supplied date times.
         /// </summary>
         [PublicAPI]
-        public readonly TimeSpan MinimumGap;
+        public readonly Duration MinimumGap;
 
         /// <summary>
         /// The minute.
@@ -104,29 +106,40 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         public readonly WeekDay WeekDay;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PeriodicSchedule"/> class.
+        /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class.
         /// </summary>
         /// <param name="gap">The gap.</param>
+        /// <param name="calendarSystem">The calendar.</param>
+        /// <param name="timeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         /// <param name="name">The name.</param>
-        /// <remarks></remarks>
         [PublicAPI]
         public PeriodicSchedule(
-            TimeSpan gap,
+            Duration gap = default(Duration),
+            [CanBeNull] CalendarSystem calendarSystem = null,
+            [CanBeNull] DateTimeZone timeZone = null,
             ScheduleOptions options = ScheduleOptions.None,
             [CanBeNull] string name = null)
             : this(
-                hour: Hour.Every,
-                minute: Minute.Every,
-                second: Second.Every,
-                minimumGap: gap,
-                name: name,
-                options: options)
+                name,
+                Month.Every,
+                Week.Every,
+                Day.Every,
+                WeekDay.Every,
+                Hour.Every,
+                Minute.Every,
+                Second.Every,
+                gap < Duration.Zero ? Duration.Zero : gap,
+                // ReSharper disable AssignNullToNotNullAttribute
+                calendarSystem ?? CalendarSystem.Iso,
+                timeZone ?? DateTimeZone.Utc,
+                // ReSharper restore AssignNullToNotNullAttribute
+                options)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PeriodicSchedule"/> class.
+        /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class.
         /// </summary>
         /// <param name="month">The month.</param>
         /// <param name="week">The week.</param>
@@ -136,12 +149,10 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="minute">The minute.</param>
         /// <param name="second">The second.</param>
         /// <param name="minimumGap">The minimum gap.</param>
-        /// <param name="calendar">The calendar.</param>
-        /// <param name="calendarWeekRule">The calendar week rule.</param>
-        /// <param name="firstDayOfWeek">The first day of week.</param>
+        /// <param name="calendarSystem">The calendar.</param>
+        /// <param name="timeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         /// <param name="name">The name.</param>
-        /// <remarks></remarks>
         [PublicAPI]
         public PeriodicSchedule(
             Month month = Month.Every,
@@ -151,12 +162,58 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Hour hour = Hour.Zeroth,
             Minute minute = Minute.Zeroth,
             Second second = Second.Zeroth,
-            TimeSpan minimumGap = default(TimeSpan),
-            [CanBeNull] Calendar calendar = null,
-            CalendarWeekRule calendarWeekRule = CalendarWeekRule.FirstFourDayWeek,
-            DayOfWeek firstDayOfWeek = DayOfWeek.Sunday,
+            Duration minimumGap = default(Duration),
+            [CanBeNull] CalendarSystem calendarSystem = null,
+            [CanBeNull] DateTimeZone timeZone = null,
             ScheduleOptions options = ScheduleOptions.None,
             [CanBeNull] string name = null)
+            : this(
+                name,
+                month,
+                week,
+                day,
+                weekDay,
+                hour,
+                minute,
+                second,
+                minimumGap < Duration.Zero ? Duration.Zero : minimumGap,
+                // ReSharper disable AssignNullToNotNullAttribute
+                calendarSystem ?? CalendarSystem.Iso,
+                timeZone ?? DateTimeZone.Utc,
+                // ReSharper restore AssignNullToNotNullAttribute
+                options)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="month">The month.</param>
+        /// <param name="week">The week.</param>
+        /// <param name="day">The day.</param>
+        /// <param name="weekDay">The week day.</param>
+        /// <param name="hour">The hour.</param>
+        /// <param name="minute">The minute.</param>
+        /// <param name="second">The second.</param>
+        /// <param name="minimumGap">The minimum gap.</param>
+        /// <param name="calendarSystem">The calendar.</param>
+        /// <param name="timeZone">The time zone.</param>
+        /// <param name="options">The options.</param>
+        [PublicAPI]
+        private PeriodicSchedule(
+            [CanBeNull] string name,
+            Month month,
+            Week week,
+            Day day,
+            WeekDay weekDay,
+            Hour hour,
+            Minute minute,
+            Second second,
+            Duration minimumGap,
+            [NotNull] CalendarSystem calendarSystem,
+            [NotNull] DateTimeZone timeZone,
+            ScheduleOptions options)
             : base(
                 CreateFunction(
                     month,
@@ -167,22 +224,13 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                     minute,
                     second,
                     minimumGap,
-                    calendar,
-                    calendarWeekRule,
-                    firstDayOfWeek),
+                    calendarSystem,
+                    timeZone),
                 options,
                 name)
         {
-            // If minimum gap is negative, set to zero.
-            if (minimumGap < TimeSpan.Zero)
-                minimumGap = TimeSpan.Zero;
-
-            MinimumGap = minimumGap;
-
-            // Needed in case calendar is not provided
-            if (calendar == null)
-                calendar = CultureInfo.CurrentCulture.Calendar;
-
+            Contract.Requires(calendarSystem != null);
+            Contract.Requires(timeZone != null);
             Month = month;
             Week = week;
             Day = day;
@@ -190,9 +238,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Hour = hour;
             Minute = minute;
             Second = second;
-            Calendar = calendar;
-            CalendarWeekRule = calendarWeekRule;
-            FirstDayOfWeek = firstDayOfWeek;
+            MinimumGap = minimumGap;
+            CalendarSystem = calendarSystem;
+            TimeZone = timeZone;
         }
 
         /// <summary>
@@ -206,13 +254,11 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="minute">The minute.</param>
         /// <param name="second">The second.</param>
         /// <param name="minimumGap">The minimum gap.</param>
-        /// <param name="calendar">The calendar.</param>
-        /// <param name="calendarWeekRule">The calendar week rule.</param>
-        /// <param name="firstDayOfWeek">The first day of week.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <param name="calendarSystem">The calendar.</param>
+        /// <param name="timeZone">The time zone.</param>
+        /// <returns>Func&lt;DateTime, DateTime&gt;.</returns>
         [NotNull]
-        private static Func<DateTime, DateTime> CreateFunction(
+        private static Func<Instant, Instant> CreateFunction(
             Month month,
             Week week,
             Day day,
@@ -220,11 +266,14 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Hour hour,
             Minute minute,
             Second second,
-            TimeSpan minimumGap,
-            [CanBeNull] Calendar calendar,
-            CalendarWeekRule calendarWeekRule,
-            DayOfWeek firstDayOfWeek)
+            Duration minimumGap,
+            [NotNull] CalendarSystem calendarSystem,
+            [NotNull] DateTimeZone timeZone)
         {
+            Contract.Requires(minimumGap != null);
+            Contract.Requires(calendarSystem != null);
+            Contract.Requires(timeZone != null);
+            Contract.Ensures(Contract.Result<Func<Instant, Instant>>() != null);
             // Never case
             if ((month == Month.Never) ||
                 (week == Week.Never) ||
@@ -233,11 +282,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 (hour == Hour.Never) ||
                 (minute == Minute.Never) ||
                 (second == Second.Never))
-                return dt => DateTime.MaxValue;
-
-            // Needed in case calendar is not provided
-            if (calendar == null)
-                calendar = CultureInfo.CurrentCulture.Calendar;
+                return dt => Instant.MaxValue;
 
             // Every second case.
             if ((month == Month.Every) &&
@@ -248,51 +293,19 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 (minute == Minute.Every) &&
                 (second == Second.Every))
             {
-                return minimumGap > TimeSpan.Zero
-                    ? (Func<DateTime, DateTime>)
-                        (dt =>
-                            dt < (DateTime.MaxValue - minimumGap)
-                                ? calendar.AddSeconds(
-                                    new DateTime(
-                                        dt.Year,
-                                        dt.Month,
-                                        dt.Day,
-                                        dt.Hour,
-                                        dt.Minute,
-                                        dt.Second),
-                                    1).Add(
-                                        minimumGap)
-                                : DateTime.MaxValue)
-                    : (dt => calendar.AddSeconds(
-                        new DateTime(
-                            dt.Year,
-                            dt.Month,
-                            dt.Day,
-                            dt.Hour,
-                            dt.Minute,
-                            dt.Second),
-                        1));
+                return minimumGap <= Duration.Zero
+                    ? i => i + Schedule.OneSecond
+                    : (Func<Instant, Instant>)
+                        (i =>
+                            i < (Instant.MaxValue - minimumGap)
+                                ? (i + minimumGap).Floor()
+                                : Instant.MaxValue);
             }
 
             // Use NextValid extension method
-            return minimumGap > TimeSpan.Zero
-                ? (Func<DateTime, DateTime>)
-                    (dt =>
-                        dt < (DateTime.MaxValue - minimumGap)
-                            ? dt.Add(minimumGap).NextValid(
-                                month,
-                                week,
-                                day,
-                                weekDay,
-                                hour,
-                                minute,
-                                second,
-                                calendar,
-                                calendarWeekRule,
-                                firstDayOfWeek)
-                            : DateTime.MaxValue)
-                : (dt =>
-                    dt.NextValid(
+            return minimumGap <= Duration.Zero
+                ? i =>
+                    i.NextValid(
                         month,
                         week,
                         day,
@@ -300,9 +313,22 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                         hour,
                         minute,
                         second,
-                        calendar,
-                        calendarWeekRule,
-                        firstDayOfWeek));
+                        calendarSystem,
+                        timeZone)
+                : (Func<Instant, Instant>)
+                    (i =>
+                        i < (Instant.MaxValue - minimumGap)
+                            ? (i + minimumGap).NextValid(
+                                month,
+                                week,
+                                day,
+                                weekDay,
+                                hour,
+                                minute,
+                                second,
+                                calendarSystem,
+                                timeZone)
+                            : Instant.MaxValue);
         }
     }
 }

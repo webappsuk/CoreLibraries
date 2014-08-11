@@ -29,6 +29,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
+using NodaTime;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
@@ -66,11 +67,11 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         ///   Gets the default maximum duration of a scheduled action/function.
         /// </summary>
         [ConfigurationProperty("defaultMaximumDuration", DefaultValue = "00:10:00", IsRequired = false)]
-        [TimeSpanValidator(MinValueString = "00:00:00.01", MaxValueString = "1.00:00:00")]
+        [TimeSpanValidator(MinValueString = "00:00:00.01", MaxValueString = "1.00:00:00")] // TODO Duration
         [PublicAPI]
-        public TimeSpan DefaultMaximumDuration
+        public Duration DefaultMaximumDuration
         {
-            get { return GetProperty<TimeSpan>("defaultMaximumDuration"); }
+            get { return GetProperty<Duration>("defaultMaximumDuration"); }
             set { SetProperty("defaultMaximumDuration", value); }
         }
 

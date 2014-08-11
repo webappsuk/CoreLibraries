@@ -27,6 +27,7 @@
 
 using System;
 using JetBrains.Annotations;
+using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling
 {
@@ -42,11 +43,11 @@ namespace WebApplications.Utilities.Scheduling
         string Name { get; }
 
         /// <summary>
-        /// Gets the next date and time (UTC) scheduled event.
+        /// Gets the next scheduled event.
         /// </summary>
-        /// <param name="last">The last date and time (UTC) the action was completed.</param>
-        /// <returns>The next date and time (UTC) in the schedule.</returns>
-        DateTime Next(DateTime last);
+        /// <param name="last">The last <see cref="Instant"/> the action was completed.</param>
+        /// <returns>The next <see cref="Instant"/> in the schedule, or <see cref="Instant.MaxValue"/> for never/end of time.</returns>
+        Instant Next(Instant last);
 
         /// <summary>
         /// Gets the options.

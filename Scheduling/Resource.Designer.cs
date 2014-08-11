@@ -70,15 +70,6 @@ namespace WebApplications.Utilities.Scheduling {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Schedule &apos;{0}&apos; returned a DateTime in the past..
-        /// </summary>
-        internal static string AggregateSchedule_Next_Schedule_DateTime_Past {
-            get {
-                return ResourceManager.GetString("AggregateSchedule_Next_Schedule_DateTime_Past", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Invalid task status &apos;{0}&apos; in scheduled action continuation..
         /// </summary>
         internal static string ScheduledAction_ExecuteAsync_Invalid_Task_Status {

@@ -31,6 +31,7 @@ using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using JetBrains.Annotations;
+using NodaTime;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Scheduling.Schedules;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
@@ -44,29 +45,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
     /// <remarks></remarks>
     public class ScheduleElement : ConfigurationElement
     {
-        /// <summary>
-        /// The calendars by name.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static readonly IReadOnlyDictionary<string, Calendar> Calendars =
-            new Dictionary<string, Calendar>(StringComparer.InvariantCultureIgnoreCase)
-            {
-                { "ChineseLunisolar", new ChineseLunisolarCalendar() },
-                { "Gregorian", new GregorianCalendar() },
-                { "Hebrew", new HebrewCalendar() },
-                { "Hijri", new HijriCalendar() },
-                { "Japanese", new JapaneseCalendar() },
-                { "JapaneseLunisolar", new JapaneseLunisolarCalendar() },
-                { "Julian", new JulianCalendar() },
-                { "Korean", new KoreanCalendar() },
-                { "KoreanLunisolar", new KoreanLunisolarCalendar() },
-                { "Persian", new PersianCalendar() },
-                { "Taiwan", new TaiwanCalendar() },
-                { "TaiwanLunisolar", new TaiwanLunisolarCalendar() },
-                { "ThaiBuddhist", new ThaiBuddhistCalendar() },
-                { "UmAlQura", new UmAlQuraCalendar() }
-            };
 
         /// <summary>
         /// Gets or sets the name.
@@ -185,25 +163,12 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <value>The time span.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("minimumGap", IsRequired = false)]
-        [TimeSpanValidator(MinValueString = "00:00:00")]
+        [TimeSpanValidator(MinValueString = "00:00:00")] // TODO Duration validator
         [PublicAPI]
-        public TimeSpan MinimumGap
+        public Duration MinimumGap
         {
-            get { return GetProperty<TimeSpan>("minimumGap"); }
+            get { return GetProperty<Duration>("minimumGap"); }
             set { SetProperty("minimumGap", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the calendar week rule.
-        /// </summary>
-        /// <value>The calendar week rule.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("calendarWeekRule", DefaultValue = CalendarWeekRule.FirstFourDayWeek, IsRequired = false)]
-        [PublicAPI]
-        public CalendarWeekRule CalendarWeekRule
-        {
-            get { return GetProperty<CalendarWeekRule>("calendarWeekRule"); }
-            set { SetProperty("calendarWeekRule", value); }
         }
 
         /// <summary>
@@ -251,12 +216,12 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// </summary>
         /// <value>The first day of week.</value>
         /// <remarks></remarks>
-        [ConfigurationProperty("dateTime", DefaultValue = null, IsRequired = false)]
+        [ConfigurationProperty("instant", DefaultValue = "", IsRequired = false)]
         [PublicAPI]
-        public string DateTime
+        public Instant Instant
         {
-            get { return GetProperty<DateTime>("dateTime"); }
-            set { SetProperty("dateTime", value); }
+            get { return GetProperty<Instant>("instant"); }
+            set { SetProperty("instant", value); }
         }
 
         /// <summary>
@@ -269,10 +234,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         {
             // TODO DateTime validation/etc.
 
-            string cname = Calendar;
-            Calendar calender = null;
-            if (cname != null) Calendars.TryGetValue(cname, out calender);
-
             return new PeriodicSchedule(
                 Month,
                 Week,
@@ -282,9 +243,8 @@ namespace WebApplications.Utilities.Scheduling.Configuration
                 Minute,
                 Second,
                 MinimumGap,
-                calender,
-                CalendarWeekRule,
-                FirstDayOfWeek,
+                null, // TODO CalendarSystem,
+                null, // TODO TimeZone
                 Options,
                 Name);
         }

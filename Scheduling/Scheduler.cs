@@ -25,13 +25,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using NodaTime;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Scheduling.Configuration;
 using WebApplications.Utilities.Scheduling.Scheduled;
@@ -42,18 +42,12 @@ namespace WebApplications.Utilities.Scheduling
     /// Implements a scheduler
     /// </summary>
     /// <remarks></remarks>
-    public sealed class Scheduler : IDisposable
+    public static class Scheduler
     {
-        /// <summary>
-        /// The default <see cref="Scheduler"/>.
-        /// </summary>
-        [NotNull]
-        public static readonly Scheduler Default = new Scheduler();
-
         /// <summary>
         /// The maximum ticks.
         /// </summary>
-        internal static readonly long MaxTicks = DateTime.MaxValue.Ticks;
+        internal static readonly long MaxTicks = Instant.MaxValue.Ticks;
 
         /// <summary>
         /// The maximum time span supported by a timer (in milliseconds).
@@ -64,13 +58,13 @@ namespace WebApplications.Utilities.Scheduling
         /// The named schedules.
         /// </summary>
         [NotNull]
-        private readonly ConcurrentDictionary<string, ISchedule> _schedules = new ConcurrentDictionary<string, ISchedule>();
+        private static readonly ConcurrentDictionary<string, ISchedule> _schedules = new ConcurrentDictionary<string, ISchedule>();
 
         /// <summary>
         /// Holds all scheduled actions.
         /// </summary>
         [NotNull]
-        private readonly ConcurrentDictionary<CombGuid, ScheduledAction> _actions =
+        private static readonly ConcurrentDictionary<CombGuid, ScheduledAction> _actions =
             new ConcurrentDictionary<CombGuid, ScheduledAction>();
 
         /// <summary>
@@ -79,13 +73,15 @@ namespace WebApplications.Utilities.Scheduling
         /// 1 = Running
         /// 2 = 
         /// </summary>
-        private int _tickState;
-        private Timer _ticker;
+        private static int _tickState;
+
+        [NotNull]
+        private readonly static Timer _ticker;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler" /> class.
         /// </summary>
-        private Scheduler()
+        static Scheduler()
         {
             Contract.Requires(SchedulerConfiguration.Active != null);
             // ReSharper disable PossibleNullReferenceException
@@ -100,6 +96,7 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper restore PossibleNullReferenceException
         }
 
+        #region Named Schedules
         /// <summary>
         /// Gets the schedule with the specific name.
         /// </summary>
@@ -107,7 +104,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>ISchedule.</returns>
         [NotNull]
         [PublicAPI]
-        public ISchedule GetSchedule([NotNull] string name)
+        public static ISchedule GetSchedule([NotNull] string name)
         {
             Contract.Requires(name != null);
             Contract.Ensures(Contract.Result<ISchedule>() != null);
@@ -127,7 +124,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns><see langword="true" /> if found, <see langword="false" /> otherwise.</returns>
         [ContractAnnotation("=>true,schedule:notnull;=>false,schedule:null")]
         [PublicAPI]
-        public bool TryGetSchedule([NotNull] string name, out ISchedule schedule)
+        public static bool TryGetSchedule([NotNull] string name, out ISchedule schedule)
         {
             Contract.Requires(name != null);
             Contract.Ensures((Contract.ValueAtReturn(out schedule) == null) == !Contract.Result<bool>());
@@ -142,7 +139,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>The <see cref="ISchedule" /> removed, if any; otherwise <see langword="null" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ISchedule AddSchedule([NotNull]ISchedule schedule)
+        public static ISchedule AddSchedule([NotNull]ISchedule schedule)
         {
             Contract.Requires(schedule != null);
             Contract.Requires(schedule.Name != null);
@@ -158,7 +155,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="ISchedule"/> removed, if any; otherwise <see langword="null"/>.</returns>
         [CanBeNull]
-        public ISchedule RemoveSchedule([NotNull] string name)
+        public static ISchedule RemoveSchedule([NotNull] string name)
         {
             Contract.Requires(name != null);
             ISchedule schedule;
@@ -166,6 +163,7 @@ namespace WebApplications.Utilities.Scheduling
                 ? schedule
                 : null;
         }
+        #endregion
 
         #region Add Actions Overloads
         #region Add using named schedule
@@ -174,14 +172,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableAction action,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(scheduleName != null);
@@ -196,7 +196,8 @@ namespace WebApplications.Utilities.Scheduling
                     return TaskResult.True;
                 },
                 GetSchedule(scheduleName),
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -206,14 +207,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction"/>.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableDueAction action,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(scheduleName != null);
@@ -228,7 +231,8 @@ namespace WebApplications.Utilities.Scheduling
                     return TaskResult.True;
                 },
                 GetSchedule(scheduleName),
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -238,14 +242,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableActionAsync action,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(scheduleName != null);
@@ -256,7 +262,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action().ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 GetSchedule(scheduleName),
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -266,14 +273,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableDueActionAsync action,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(scheduleName != null);
@@ -284,7 +293,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action(d).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 GetSchedule(scheduleName),
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -294,14 +304,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableCancellableActionAsync action,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(scheduleName != null);
@@ -312,7 +324,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action(t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 GetSchedule(scheduleName),
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -322,14 +335,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableDueCancellableActionAsync action,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(scheduleName != null);
@@ -340,7 +355,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action(d, t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 GetSchedule(scheduleName),
-                maximumHistory);
+                maximumHistory, 
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -351,19 +367,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableFunction function,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => Task.FromResult(function()), GetSchedule(scheduleName), maximumHistory);
+            return Add(true, (d, t) => Task.FromResult(function()), GetSchedule(scheduleName), maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -372,19 +390,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableDueFunction function,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => Task.FromResult(function(d)), GetSchedule(scheduleName), maximumHistory);
+            return Add(true, (d, t) => Task.FromResult(function(d)), GetSchedule(scheduleName), maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -393,19 +413,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableFunctionAsync function,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => function(), GetSchedule(scheduleName), maximumHistory);
+            return Add(true, (d, t) => function(), GetSchedule(scheduleName), maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -414,19 +436,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableDueFunctionAsync function,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => function(d), GetSchedule(scheduleName), maximumHistory);
+            return Add(true, (d, t) => function(d), GetSchedule(scheduleName), maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -435,19 +459,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableCancellableFunctionAsync function,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => function(t), GetSchedule(scheduleName), maximumHistory);
+            return Add(true, (d, t) => function(t), GetSchedule(scheduleName), maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -456,19 +482,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="scheduleName">Name of the schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableDueCancellableFunctionAsync function,
             [NotNull] string scheduleName,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, function, GetSchedule(scheduleName), maximumHistory);
+            return Add(true, function, GetSchedule(scheduleName), maximumHistory, maximumDuration);
         }
         #endregion
 
@@ -478,14 +506,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableAction action,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(schedule != null);
@@ -500,7 +530,8 @@ namespace WebApplications.Utilities.Scheduling
                     return TaskResult.True;
                 },
                 schedule,
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -510,14 +541,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableDueAction action,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(schedule != null);
@@ -532,7 +565,8 @@ namespace WebApplications.Utilities.Scheduling
                     return TaskResult.True;
                 },
                 schedule,
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -542,14 +576,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableActionAsync action,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(schedule != null);
@@ -560,7 +596,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action().ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 schedule,
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -570,14 +607,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableDueActionAsync action,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(schedule != null);
@@ -588,7 +627,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action(d).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 schedule,
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -598,14 +638,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableCancellableActionAsync action,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(schedule != null);
@@ -616,7 +658,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action(t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 schedule,
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -626,14 +669,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledAction" />.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledAction Add(
+        public static ScheduledAction Add(
             [NotNull] ScheduledAction.SchedulableDueCancellableActionAsync action,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(action != null);
             Contract.Requires(schedule != null);
@@ -644,7 +689,8 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action(d, t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 schedule,
-                maximumHistory);
+                maximumHistory,
+                maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException
         }
@@ -655,19 +701,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}"/>.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableFunction function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => Task.FromResult(function()), schedule, maximumHistory);
+            return Add(true, (d, t) => Task.FromResult(function()), schedule, maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -676,19 +724,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}"/>.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableDueFunction function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => Task.FromResult(function(d)), schedule, maximumHistory);
+            return Add(true, (d, t) => Task.FromResult(function(d)), schedule, maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -697,19 +747,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}"/>.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableFunctionAsync function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => function(), schedule, maximumHistory);
+            return Add(true, (d, t) => function(), schedule, maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -718,19 +770,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}"/>.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableDueFunctionAsync function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => function(d), schedule, maximumHistory);
+            return Add(true, (d, t) => function(d), schedule, maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -739,19 +793,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}"/>.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableCancellableFunctionAsync function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => function(t), schedule, maximumHistory);
+            return Add(true, (d, t) => function(t), schedule, maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -760,19 +816,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <typeparam name="T">The return type</typeparam>
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}"/>.</returns>
         [NotNull]
         [PublicAPI]
-        public ScheduledFunction<T> Add<T>(
+        public static ScheduledFunction<T> Add<T>(
             [NotNull] ScheduledFunction<T>.SchedulableDueCancellableFunctionAsync function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, function, schedule, maximumHistory);
+            return Add(true, function, schedule, maximumHistory, maximumDuration);
         }
 
         /// <summary>
@@ -782,15 +840,17 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="isFunction">if set to <see langword="true" /> [is function].</param>
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumHistory">The maximum history (default to <see cref="DefaultMaximumHistory"/>).</param>
+        /// <param name="maximumDuration">The maximum duration (default to <see cref="DefaultMaximumDuration"/>).</param>
         /// <returns>A <see cref="ScheduledFunction{T}" />.</returns>
         [NotNull]
         [PublicAPI]
-        private ScheduledFunction<T> Add<T>(
+        private static ScheduledFunction<T> Add<T>(
             bool isFunction,
             [NotNull] ScheduledFunction<T>.SchedulableDueCancellableFunctionAsync function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1)
+            int maximumHistory = -1,
+            Duration maximumDuration = default(Duration))
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
@@ -798,9 +858,9 @@ namespace WebApplications.Utilities.Scheduling
             ScheduledFunction<T> sf = new ScheduledFunction<T>(
                 isFunction,
                 function,
-                this,
                 schedule,
-                maximumHistory < 0 ? DefaultMaximumHistory : maximumHistory);
+                maximumHistory < 0 ? DefaultMaximumHistory : maximumHistory,
+                maximumDuration);
             // Update actions dictionary
             _actions.AddOrUpdate(sf.ID, sf, (i, a) => sf);
             return sf;
@@ -815,7 +875,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="scheduledAction">The scheduled action.</param>
         /// <returns><see langword="true" /> if removed, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        public bool Remove([NotNull]ScheduledAction scheduledAction)
+        public static bool Remove([NotNull]ScheduledAction scheduledAction)
         {
             Contract.Requires(scheduledAction != null);
             ScheduledAction a;
@@ -830,7 +890,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="scheduledFunction">The scheduled action.</param>
         /// <returns><see langword="true" /> if removed, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        public bool Remove<T>([NotNull]ScheduledFunction<T> scheduledFunction)
+        public static bool Remove<T>([NotNull]ScheduledFunction<T> scheduledFunction)
         {
             Contract.Requires(scheduledFunction != null);
             ScheduledAction a;
@@ -841,17 +901,36 @@ namespace WebApplications.Utilities.Scheduling
         #endregion
 
         /// <summary>
+        /// Gets or sets the clock.
+        /// </summary>
+        /// <value>The clock.</value>
+        [NotNull]
+        public static IClock Clock
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<IClock>() != null);
+                return _clock;
+            }
+            set
+            {
+                Contract.Requires(value != null);
+                _clock = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the maximum duration of an action.
         /// </summary>
         /// <value>The maximum duration of any action.</value>
         [PublicAPI]
-        public TimeSpan DefaultMaximumDuration
+        public static Duration DefaultMaximumDuration
         {
             get { return _defaultMaximumDuration; }
             set
             {
-                Contract.Requires(value >= TimeSpan.FromMilliseconds(10));
-                Contract.Requires(value <= TimeSpan.FromDays(1));
+                Contract.Requires(value >= Duration.FromMilliseconds(10));
+                Contract.Requires(value <= Duration.FromStandardDays(1));
                 _defaultMaximumDuration = value;
             }
         }
@@ -861,7 +940,7 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <value><see langword="true" /> if enabled; otherwise, <see langword="false" />.</value>
         [PublicAPI]
-        public bool Enabled
+        public static bool Enabled
         {
             get { return _enabled; }
             set
@@ -872,14 +951,14 @@ namespace WebApplications.Utilities.Scheduling
             }
         }
 
-        private int _defaultMaximumHistory;
+        private static int _defaultMaximumHistory;
         /// <summary>
         /// Gets or sets the default maximum history.
         /// </summary>
         /// <value>The default maximum history.</value>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
         [PublicAPI]
-        public int DefaultMaximumHistory
+        public static int DefaultMaximumHistory
         {
             get { return _defaultMaximumHistory; }
             set
@@ -890,34 +969,37 @@ namespace WebApplications.Utilities.Scheduling
             }
         }
 
-        private ScheduledAction _nextScheduledAction;
+        private static ScheduledAction _nextScheduledAction;
         /// <summary>
         /// Gets the next scheduled action (if any).
         /// </summary>
         /// <value>The next scheduled action.</value>
         [PublicAPI]
         [CanBeNull]
-        public ScheduledAction NextScheduledAction { get { return _nextScheduledAction; } }
+        public static ScheduledAction NextScheduledAction { get { return _nextScheduledAction; } }
 
         /// <summary>
         /// The next time the action is due.
         /// </summary>
-        private long _nextDueTicks;
+        private static long _nextDueTicks;
 
-        private TimeSpan _defaultMaximumDuration;
-        private bool _enabled;
+        private static Duration _defaultMaximumDuration;
+        private static bool _enabled;
+
+        [NotNull]
+        private static IClock _clock;
 
         /// <summary>
         /// Gets the next due date and time (UTC).
         /// </summary>
         /// <value>The next due date and time.</value>
         [PublicAPI]
-        public DateTime NextDue
+        public static Instant NextDue
         {
             get
             {
                 long ndt = Interlocked.Read(ref _nextDueTicks);
-                return new DateTime(ndt, DateTimeKind.Utc);
+                return new Instant(ndt);
             }
         }
 
@@ -925,7 +1007,7 @@ namespace WebApplications.Utilities.Scheduling
         /// Called when the scheduling timer is retrieved.
         /// </summary>
         /// <param name="state">The state.</param>
-        internal void CheckSchedule([CanBeNull] object state = null)
+        internal static void CheckSchedule([CanBeNull] object state = null)
         {
             // Only allow one check to run at a time, namely the check that caused the tick state to move from 0 to 1.
             // The increment will force any currently executing check to recheck.
@@ -933,21 +1015,18 @@ namespace WebApplications.Utilities.Scheduling
 
             do
             {
-                Timer ticker;
                 long wait;
                 do
                 {
-                    ticker = _ticker;
-                    // Check if we're disposed or disabled.
-                    if (ticker == null ||
-                        !_enabled)
+                    // Check if we're disabled.
+                    if (!_enabled)
                     {
                         Interlocked.Exchange(ref _tickState, 0);
                         return;
                     }
 
                     // Ensure ticker is stopped.
-                    ticker.Change(Timeout.Infinite, Timeout.Infinite);
+                    _ticker.Change(Timeout.Infinite, Timeout.Infinite);
 
                     long ndt = MaxTicks;
 
@@ -962,7 +1041,7 @@ namespace WebApplications.Utilities.Scheduling
 
                         long andt = action.NextDueTicks;
 
-                        if (andt < DateTime.UtcNow.Ticks)
+                        if (andt < Clock.Now.Ticks)
                             // Due now so kick of an execution (shouldn't block).
                             action.ExecuteAsync();
                         else if (andt < ndt)
@@ -997,7 +1076,7 @@ namespace WebApplications.Utilities.Scheduling
                     Interlocked.Exchange(ref _nextDueTicks, ndt);
                     Interlocked.Exchange(ref _nextScheduledAction, nextScheduledAction);
 
-                    long now = DateTime.UtcNow.Ticks;
+                    long now = Clock.Now.Ticks;
 
                     // If we're due in the future calculate how long to wait.
                     if (ndt > now)
@@ -1006,10 +1085,10 @@ namespace WebApplications.Utilities.Scheduling
                         if (wt > 0)
                         {
                             // Check we're waiting at least a millisecond.
-                            if (wt > TimeSpan.TicksPerMillisecond)
+                            if (wt > NodaConstants.TicksPerMillisecond)
                             {
                                 // Calculate number of milliseconds to wait.
-                                wait = (ndt - now) / TimeSpan.TicksPerMillisecond;
+                                wait = (ndt - now) / NodaConstants.TicksPerMillisecond;
                                 // Ensure the wait duration doesn't exceed the maximum supported by Timer.
                                 if (wait > MaxTimerMs)
                                     wait = MaxTimerMs;
@@ -1021,7 +1100,7 @@ namespace WebApplications.Utilities.Scheduling
                             while (wt > 0)
                             {
                                 s.SpinOnce();
-                                wt = ndt - DateTime.UtcNow.Ticks;
+                                wt = ndt - Clock.Now.Ticks;
                             }
                         }
                     }
@@ -1033,13 +1112,7 @@ namespace WebApplications.Utilities.Scheduling
                 Trace.WriteLine(string.Format("Wait for {0}ms", wait));
 
                 // Set the ticker to run after the wait period.
-                ticker = _ticker;
-                if (ticker == null)
-                {
-                    Interlocked.Exchange(ref _tickState, 0);
-                    return;
-                }
-                ticker.Change(wait <= MaxTimerMs ? wait : Timeout.Infinite, Timeout.Infinite);
+                _ticker.Change(wait <= MaxTimerMs ? wait : Timeout.Infinite, Timeout.Infinite);
 
                 // Try to set the tick state back to 0, from 1 and finish
                 if (Interlocked.CompareExchange(ref _tickState, 0, 1) == 1)
@@ -1047,24 +1120,8 @@ namespace WebApplications.Utilities.Scheduling
 
                 Trace.WriteLine("Cancel wait.");
                 // The tick state managed to increase from 1 before we could exit, so we need to clear the ticker and recheck.
-                ticker = _ticker;
-                if (ticker == null)
-                {
-                    Interlocked.Exchange(ref _tickState, 0);
-                    return;
-                }
-                ticker.Change(Timeout.Infinite, Timeout.Infinite);
+                _ticker.Change(Timeout.Infinite, Timeout.Infinite);
             } while (true);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Timer ticker = Interlocked.Exchange(ref _ticker, null);
-            if (ticker != null)
-                ticker.Dispose();
         }
     }
 }

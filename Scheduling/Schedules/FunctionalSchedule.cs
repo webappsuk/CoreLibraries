@@ -28,6 +28,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
+using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -41,7 +42,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         private readonly string _name;
 
         [NotNull]
-        private readonly Func<DateTime, DateTime> _function;
+        private readonly Func<Instant, Instant> _function;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FunctionalSchedule"/> class.
@@ -52,7 +53,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <remarks></remarks>
         [PublicAPI]
         public FunctionalSchedule(
-            [NotNull] Func<DateTime, DateTime> function,
+            [NotNull] Func<Instant, Instant> function,
             ScheduleOptions options = ScheduleOptions.None,
             [CanBeNull] string name = null)
         {
@@ -69,16 +70,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         }
 
         /// <inheritdoc/>
-        public DateTime Next(DateTime last)
+        public Instant Next(Instant last)
         {
-            try
-            {
-                return _function(last);
-            }
-            catch
-            {
-                return DateTime.MaxValue;
-            }
+            return _function(last);
         }
 
         /// <inheritdoc/>
@@ -90,7 +84,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public override string ToString()
         {
-            return "Next Run at " + Next(DateTime.UtcNow);
+            return "Next Run at " + Next(Scheduler.Clock.Now);
         }
     }
 }

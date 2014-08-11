@@ -27,6 +27,7 @@
 
 using System;
 using JetBrains.Annotations;
+using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -36,10 +37,10 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     public class OneOffSchedule : ISchedule
     {
         /// <summary>
-        /// The Schedule DateTime
+        /// An instant in time.
         /// </summary>
         [PublicAPI]
-        public readonly DateTime ScheduleDateTime;
+        public readonly Instant Instant;
 
         /// <summary>
         /// The schedules optional name.
@@ -55,19 +56,55 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
+        /// <param name="instant">The instant.</param>
         /// <param name="name">An optional name for the schedule.</param>
         [PublicAPI]
-        public OneOffSchedule(DateTime dateTime, [CanBeNull] string name = null)
+        public OneOffSchedule(Instant instant, [CanBeNull] string name = null)
         {
-            ScheduleDateTime = dateTime.ToUniversalTime();
+            Instant = instant;
+            _name = name;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="dateTime">The date and time.</param>
+        /// <param name="name">An optional name for the schedule.</param>
+        [PublicAPI]
+        public OneOffSchedule(ZonedDateTime dateTime, [CanBeNull] string name = null)
+        {
+            Instant = dateTime.ToInstant();
+            _name = name;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="dateTimeUTC">The date and time (UTC).</param>
+        /// <param name="name">An optional name for the schedule.</param>
+        [PublicAPI]
+        public OneOffSchedule(DateTime dateTimeUTC, [CanBeNull] string name = null)
+        {
+            Instant = Instant.FromDateTimeUtc(dateTimeUTC);
+            _name = name;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="dateTime">The date and time.</param>
+        /// <param name="name">An optional name for the schedule.</param>
+        [PublicAPI]
+        public OneOffSchedule(DateTimeOffset dateTime, [CanBeNull] string name = null)
+        {
+            Instant = Instant.FromDateTimeOffset(dateTime);
             _name = name;
         }
 
         /// <inheritdoc/>
-        public DateTime Next(DateTime last)
+        public Instant Next(Instant last)
         {
-            return ScheduleDateTime > DateTime.UtcNow ? ScheduleDateTime : DateTime.MaxValue;
+            return Instant > last ? Instant : Instant.MaxValue;
         }
 
         /// <inheritdoc/>
@@ -79,7 +116,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public override string ToString()
         {
-            return "Run Once at " + ScheduleDateTime;
+            return "Run Once at " + Instant;
         }
     }
 }

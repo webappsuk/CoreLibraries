@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AggregateSchedule_Next_Schedule_DateTime_Past" xml:space="preserve">
-    <value>Schedule '{0}' returned a DateTime in the past.</value>
-  </data>
   <data name="AggregateSchedule_Different_Options" xml:space="preserve">
     <value>Cannot create an aggregate schedule out of schedules which have different options.</value>
   </data>

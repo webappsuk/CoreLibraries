@@ -48,7 +48,7 @@ namespace WebApplications.Utilities.Scheduling.Test
 
         public SchedulerTester()
         {
-            Scheduler.Default.Enabled = false;
+            Scheduler.Enabled = false;
         }
 
         public static void WaitForStartOfSecond(bool requireEven = false)
@@ -63,7 +63,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.IsNotNull(schedule);
             Assert.IsNotNull(expectedResults);
-            return AddTest(Scheduler.Default.Add(function ?? TestFunction, schedule, expectedResults.Count()), expectedResults);
+            return AddTest(Scheduler.Add(function ?? TestFunction, schedule, expectedResults.Count()), expectedResults);
         }
 
         public ScheduledFunction<DateTime> AddTest(
@@ -89,12 +89,12 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void Start()
         {
             SetStartTime();
-            Scheduler.Default.Enabled = true;
+            Scheduler.Enabled = true;
         }
 
         public void Stop()
         {
-            Scheduler.Default.Enabled = false;
+            Scheduler.Enabled = false;
         }
 
         public bool Completed()

@@ -32,8 +32,8 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using JetBrains.Annotations;
+using NodaTime;
 using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Logging;
 
@@ -55,9 +55,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Delegate describing a schedulable action which accepts a due date and time.
         /// </summary>
-        /// <param name="due">The due date and time (UTC) which indicates when the action was scheduled to run.</param>
+        /// <param name="due">The due date and time which indicates when the action was scheduled to run.</param>
         /// <returns>An awaitable task.</returns>
-        public delegate void SchedulableDueAction(DateTime due);
+        public delegate void SchedulableDueAction(Instant due);
 
         /// <summary>
         /// Delegate describing an asynchronous schedulable action.
@@ -68,9 +68,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Delegate describing an asynchronous schedulable action which accepts a due date and time.
         /// </summary>
-        /// <param name="due">The due date and time (UTC) which indicates when the action was scheduled to run.</param>
+        /// <param name="due">The due date and time which indicates when the action was scheduled to run.</param>
         /// <returns>An awaitable task.</returns>
-        public delegate Task SchedulableDueActionAsync(DateTime due);
+        public delegate Task SchedulableDueActionAsync(Instant due);
 
         /// <summary>
         /// Delegate describing an asynchronous schedulable action which supports cancellation.
@@ -82,23 +82,16 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Delegate describing an asynchronous schedulable action which accepts a due date and time and supports cancellation.
         /// </summary>
-        /// <param name="due">The due date and time (UTC) which indicates when the action was scheduled to run.</param>
+        /// <param name="due">The due date and time which indicates when the action was scheduled to run.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns>An awaitable task.</returns>
-        public delegate Task SchedulableDueCancellableActionAsync(DateTime due, CancellationToken token);
+        public delegate Task SchedulableDueCancellableActionAsync(Instant due, CancellationToken token);
         #endregion
 
         /// <summary>
         /// Unique identifier for the action.
         /// </summary>
         internal readonly CombGuid ID = CombGuid.NewCombGuid();
-
-        /// <summary>
-        /// Holds the scheduler.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly Scheduler Scheduler;
 
         /// <summary>
         /// Internal list of results.
@@ -122,21 +115,17 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduledAction" /> class.
         /// </summary>
-        /// <param name="scheduler">The scheduler.</param>
         /// <param name="schedule">The schedule.</param>
         /// <param name="maximumHistory">The maximum history.</param>
         /// <param name="returnType">Type of the return (if a function).</param>
         protected ScheduledAction(
-            [NotNull] Scheduler scheduler,
             [NotNull] ISchedule schedule,
             int maximumHistory,
             [CanBeNull] Type returnType)
         {
-            Contract.Requires(scheduler != null);
             Contract.Requires(schedule != null);
             Enabled = true;
-            Scheduler = scheduler;
-            _lastExecutionFinished = DateTime.MinValue;
+            _lastExecutionFinished = Instant.MinValue;
             _schedule = schedule;
             MaximumHistory = maximumHistory;
             ReturnType = returnType;
@@ -226,7 +215,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
             // Get the due date, and set to not due.
             long ndt = Interlocked.Exchange(ref _nextDueTicks, Scheduler.MaxTicks);
-            DateTime due = new DateTime(ndt, DateTimeKind.Utc);
+            Instant due = new Instant(ndt);
 
             // Add continuation task to store result on completion.
             return DoExecuteAsync(due, cancellationToken)
@@ -242,7 +231,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         Interlocked.Increment(ref _executionCount);
 
                         // Mark execution finish (and calculate next due).
-                        LastExecutionFinished = DateTime.UtcNow;
+                        LastExecutionFinished = Scheduler.Clock.Now;
 
                         // Enqueue history item.
                         if (HistoryQueue != null &&
@@ -256,11 +245,11 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Performs the asynchronous execution.
         /// </summary>
-        /// <param name="due">The due date and time (UTC).</param>
+        /// <param name="due">The due date and time.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;ScheduledActionResult&gt;.</returns>
         [NotNull]
-        protected abstract Task<ScheduledActionResult> DoExecuteAsync(DateTime due, CancellationToken cancellationToken);
+        protected abstract Task<ScheduledActionResult> DoExecuteAsync(Instant due, CancellationToken cancellationToken);
 
         /// <summary>
         /// The next time the action is due.
@@ -272,12 +261,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// </summary>
         /// <value>The next due date and time.</value>
         [PublicAPI]
-        public DateTime NextDue
+        public Instant NextDue
         {
             get
             {
                 long ndt = Interlocked.Read(ref _nextDueTicks);
-                return new DateTime(ndt, DateTimeKind.Utc);
+                return new Instant(ndt);
             }
         }
 
@@ -294,14 +283,14 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             }
         }
 
-        private DateTime _lastExecutionFinished;
+        private Instant _lastExecutionFinished;
 
         /// <summary>
         /// Gets the date and time (UTC) that the last execution finished.
         /// </summary>
         /// <value>The last execution finished date and time.</value>
         [PublicAPI]
-        public DateTime LastExecutionFinished
+        public Instant LastExecutionFinished
         {
             get { return _lastExecutionFinished; }
             private set
@@ -343,16 +332,16 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 try
                 {
                     long ndt = Interlocked.Read(ref _nextDueTicks);
-                    DateTime now = DateTime.UtcNow;
+                    Instant now = Scheduler.Clock.Now;
                     long nt = now.Ticks;
 
                     // If next due is in future, ask schedule when we're next due.
                     if (ndt > nt)
-                        ndt = Schedule.Next(now).Ticks;
+                        ndt = Schedule.Next(Scheduler.Clock.Now).Ticks;
 
                     // If the next due is in the past, set it to due now.
                     if (ndt < nt) ndt = nt;
-                        // If it's more than the max clamp to max.
+                    // If it's more than the max clamp to max.
                     else if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
 
                     // Update next due
@@ -364,6 +353,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 catch (Exception e)
                 {
                     // Create new logging exception
+                    // ReSharper disable once ObjectCreationAsStatement
                     new LoggingException(e);
                 }
                 finally
@@ -373,7 +363,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 }
 
                 // Keep going if we need to recalculate.
-            } while (_calculatorCount < 0); 
+            } while (_calculatorCount < 0);
 
             // Notify the scheduler that we've changed our due date.
             Scheduler.CheckSchedule();
