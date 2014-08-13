@@ -88,75 +88,40 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
         /// </summary>
-        /// <param name="dateTime">The date and time.</param>
+        /// <param name="zonedDateTime">The date and time.</param>
         /// <param name="options">The options.</param>
         [PublicAPI]
-        public OneOffSchedule(ZonedDateTime dateTime, ScheduleOptions options = ScheduleOptions.None)
+        public OneOffSchedule(ZonedDateTime zonedDateTime, ScheduleOptions options = ScheduleOptions.None)
         {
-            Instant = dateTime.ToInstant();
+            Instant = zonedDateTime.ToInstant();
+            _options = options;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="zonedDateTime">The date and time.</param>
+        /// <param name="options">The options.</param>
+        [PublicAPI]
+        public OneOffSchedule([CanBeNull] string name, ZonedDateTime zonedDateTime, ScheduleOptions options = ScheduleOptions.None)
+        {
+            _name = name;
+            Instant = zonedDateTime.ToInstant();
+            _options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class, used by configuration system.
         /// </summary>
         /// <param name="name">An optional name for the schedule.</param>
         /// <param name="dateTime">The date and time.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
-        public OneOffSchedule([CanBeNull] string name, ZonedDateTime dateTime, ScheduleOptions options = ScheduleOptions.None)
+        [UsedImplicitly]
+        private OneOffSchedule([CanBeNull] string name, DateTimeOffset dateTime, ScheduleOptions options = ScheduleOptions.None)
         {
             _name = name;
-            Instant = dateTime.ToInstant();
-            _options = options;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
-        /// </summary>
-        /// <param name="dateTimeUTC">The date and time (UTC).</param>
-        [PublicAPI]
-        public OneOffSchedule(DateTime dateTimeUTC)
-        {
-            Instant = Instant.FromDateTimeUtc(dateTimeUTC);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
-        /// </summary>
-        /// <param name="name">An optional name for the schedule.</param>
-        /// <param name="dateTimeUTC">The date and time (UTC).</param>
-        /// <param name="options">The options.</param>
-        [PublicAPI]
-        public OneOffSchedule([CanBeNull] string name, DateTime dateTimeUTC, ScheduleOptions options = ScheduleOptions.None)
-        {
-            _name = name;
-            Instant = Instant.FromDateTimeUtc(dateTimeUTC);
-            _options = options;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
-        /// </summary>
-        /// <param name="dateTimeOffset">The date and time.</param>
-        /// <param name="options">The options.</param>
-        [PublicAPI]
-        public OneOffSchedule(DateTimeOffset dateTimeOffset, ScheduleOptions options = ScheduleOptions.None)
-        {
-            Instant = Instant.FromDateTimeOffset(dateTimeOffset);
-            _options = options;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
-        /// </summary>
-        /// <param name="name">An optional name for the schedule.</param>
-        /// <param name="dateTimeOffset">The date and time.</param>
-        /// <param name="options">The options.</param>
-        [PublicAPI]
-        public OneOffSchedule([CanBeNull] string name, DateTimeOffset dateTimeOffset, ScheduleOptions options = ScheduleOptions.None)
-        {
-            _name = name;
-            Instant = Instant.FromDateTimeOffset(dateTimeOffset);
+            Instant = Instant.FromDateTimeOffset(dateTime);
             _options = options;
         }
         #endregion

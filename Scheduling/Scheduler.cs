@@ -1111,8 +1111,6 @@ namespace WebApplications.Utilities.Scheduling
                     Thread.Yield();
                 } while (true);
 
-                Trace.WriteLine(string.Format("Wait for {0}ms", wait));
-
                 // Set the ticker to run after the wait period.
                 _ticker.Change(wait <= MaxTimerMs ? wait : Timeout.Infinite, Timeout.Infinite);
 

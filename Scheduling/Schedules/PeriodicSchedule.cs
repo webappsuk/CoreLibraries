@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         [PublicAPI]
         [NotNull]
-        public readonly DateTimeZone TimeZone;
+        public readonly DateTimeZone DateTimeZone;
 
         /// <summary>
         /// The day.
@@ -104,6 +104,55 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         [PublicAPI]
         public readonly WeekDay WeekDay;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class, used by configuration system.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="month">The month.</param>
+        /// <param name="week">The week.</param>
+        /// <param name="day">The day.</param>
+        /// <param name="weekDay">The week day.</param>
+        /// <param name="hour">The hour.</param>
+        /// <param name="minute">The minute.</param>
+        /// <param name="second">The second.</param>
+        /// <param name="minimumTimeSpan">The minimum gap.</param>
+        /// <param name="calendar">The calendar ID.</param>
+        /// <param name="timeZone">The time zone ID.</param>
+        /// <param name="options">The options.</param>
+        [UsedImplicitly]
+        private PeriodicSchedule(
+            [CanBeNull] string name,
+            Month month = Month.Every,
+            Week week = Week.Every,
+            Day day = Day.Every,
+            WeekDay weekDay = WeekDay.Every,
+            Hour hour = Hour.Zeroth,
+            Minute minute = Minute.Zeroth,
+            Second second = Second.Zeroth,
+            TimeSpan minimumTimeSpan = default(TimeSpan),
+            [CanBeNull] string calendar = null,
+            [CanBeNull] string timeZone = null,
+            ScheduleOptions options = ScheduleOptions.None)
+            : this(
+                month,
+                week,
+                day,
+                weekDay,
+                hour,
+                minute,
+                second,
+                minimumTimeSpan < TimeSpan.Zero ? Duration.Zero : Duration.FromTimeSpan(minimumTimeSpan),
+                // ReSharper disable PossibleNullReferenceException
+                // ReSharper disable AssignNullToNotNullAttribute
+                string.IsNullOrWhiteSpace(calendar) ? CalendarSystem.Iso : CalendarSystem.ForId(calendar),
+                string.IsNullOrWhiteSpace(timeZone) ? DateTimeZone.Utc : DateTimeZoneProviders.Tzdb[timeZone],
+                // ReSharper restore PossibleNullReferenceException
+                // ReSharper restore AssignNullToNotNullAttribute
+                options,
+                name)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class.
@@ -117,7 +166,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="second">The second.</param>
         /// <param name="minimumGap">The minimum gap.</param>
         /// <param name="calendarSystem">The calendar.</param>
-        /// <param name="timeZone">The time zone.</param>
+        /// <param name="dateTimeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         [PublicAPI]
         public PeriodicSchedule(
@@ -130,7 +179,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Second second = Second.Zeroth,
             Duration minimumGap = default(Duration),
             [CanBeNull] CalendarSystem calendarSystem = null,
-            [CanBeNull] DateTimeZone timeZone = null,
+            [CanBeNull] DateTimeZone dateTimeZone = null,
             ScheduleOptions options = ScheduleOptions.None)
             : this(
                 month,
@@ -143,7 +192,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 minimumGap < Duration.Zero ? Duration.Zero : minimumGap,
                 // ReSharper disable AssignNullToNotNullAttribute
                 calendarSystem ?? CalendarSystem.Iso,
-                timeZone ?? DateTimeZone.Utc,
+                dateTimeZone ?? DateTimeZone.Utc,
                 // ReSharper restore AssignNullToNotNullAttribute
                 options,
                 null)
@@ -163,7 +212,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="second">The second.</param>
         /// <param name="minimumGap">The minimum gap.</param>
         /// <param name="calendarSystem">The calendar.</param>
-        /// <param name="timeZone">The time zone.</param>
+        /// <param name="dateTimeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         [PublicAPI]
         public PeriodicSchedule(
@@ -177,7 +226,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Second second = Second.Zeroth,
             Duration minimumGap = default(Duration),
             [CanBeNull] CalendarSystem calendarSystem = null,
-            [CanBeNull] DateTimeZone timeZone = null,
+            [CanBeNull] DateTimeZone dateTimeZone = null,
             ScheduleOptions options = ScheduleOptions.None)
             : this(
                 month,
@@ -190,7 +239,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 minimumGap < Duration.Zero ? Duration.Zero : minimumGap,
                 // ReSharper disable AssignNullToNotNullAttribute
                 calendarSystem ?? CalendarSystem.Iso,
-                timeZone ?? DateTimeZone.Utc,
+                dateTimeZone ?? DateTimeZone.Utc,
                 // ReSharper restore AssignNullToNotNullAttribute
                 options,
                 name)
@@ -210,7 +259,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="second">The second.</param>
         /// <param name="minimumGap">The minimum gap.</param>
         /// <param name="calendarSystem">The calendar.</param>
-        /// <param name="timeZone">The time zone.</param>
+        /// <param name="dateTimeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         [PublicAPI]
         private PeriodicSchedule(
@@ -223,7 +272,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Second second,
             Duration minimumGap,
             [NotNull] CalendarSystem calendarSystem,
-            [NotNull] DateTimeZone timeZone,
+            [NotNull] DateTimeZone dateTimeZone,
             ScheduleOptions options,
             [CanBeNull] string name)
             : base(
@@ -238,11 +287,11 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                     second,
                     minimumGap,
                     calendarSystem,
-                    timeZone),
+                    dateTimeZone),
                 options)
         {
             Contract.Requires(calendarSystem != null);
-            Contract.Requires(timeZone != null);
+            Contract.Requires(dateTimeZone != null);
             Month = month;
             Week = week;
             Day = day;
@@ -252,7 +301,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Second = second;
             MinimumGap = minimumGap;
             CalendarSystem = calendarSystem;
-            TimeZone = timeZone;
+            DateTimeZone = dateTimeZone;
         }
 
         /// <summary>

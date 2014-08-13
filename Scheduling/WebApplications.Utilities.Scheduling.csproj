@@ -92,7 +92,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalendarSystems.cs" />
     <Compile Include="Configuration\DurationConverter.cs" />
     <Compile Include="Configuration\DurationValidator.cs" />
     <Compile Include="Configuration\DurationValidatorAttribute.cs" />

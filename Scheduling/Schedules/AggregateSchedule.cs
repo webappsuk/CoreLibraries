@@ -52,12 +52,126 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AggregateSchedule" /> class, used by configuration system.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="schedule1">The schedule1.</param>
+        /// <param name="schedule2">The schedule2.</param>
+        /// <param name="schedule3">The schedule3.</param>
+        /// <param name="schedule4">The schedule4.</param>
+        /// <param name="schedule5">The schedule5.</param>
+        /// <param name="schedule6">The schedule6.</param>
+        /// <param name="schedule7">The schedule7.</param>
+        /// <param name="schedule8">The schedule8.</param>
+        /// <param name="schedule9">The schedule9.</param>
+        /// <param name="schedule10">The schedule10.</param>
+        /// <param name="schedule11">The schedule11.</param>
+        /// <param name="schedule12">The schedule12.</param>
+        /// <param name="schedule13">The schedule13.</param>
+        /// <param name="schedule14">The schedule14.</param>
+        /// <param name="schedule15">The schedule15.</param>
+        /// <param name="schedule16">The schedule16.</param>
+        /// <param name="schedule17">The schedule17.</param>
+        /// <param name="schedule18">The schedule18.</param>
+        /// <param name="schedule19">The schedule19.</param>
+        /// <param name="schedule20">The schedule20.</param>
+        /// <param name="schedule21">The schedule21.</param>
+        /// <param name="schedule22">The schedule22.</param>
+        /// <param name="schedule23">The schedule23.</param>
+        /// <param name="schedule24">The schedule24.</param>
+        /// <param name="schedule25">The schedule25.</param>
+        /// <param name="schedule26">The schedule26.</param>
+        /// <param name="schedule27">The schedule27.</param>
+        /// <param name="schedule28">The schedule28.</param>
+        /// <param name="schedule29">The schedule29.</param>
+        /// <param name="schedule30">The schedule30.</param>
+        /// <param name="schedule31">The schedule31.</param>
+        /// <param name="schedule32">The schedule32.</param>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [UsedImplicitly]
+        private AggregateSchedule(
+            [CanBeNull] string name,
+            [CanBeNull] string schedule1,
+            [CanBeNull] string schedule2 = null,
+            [CanBeNull] string schedule3 = null,
+            [CanBeNull] string schedule4 = null,
+            [CanBeNull] string schedule5 = null,
+            [CanBeNull] string schedule6 = null,
+            [CanBeNull] string schedule7 = null,
+            [CanBeNull] string schedule8 = null,
+            [CanBeNull] string schedule9 = null,
+            [CanBeNull] string schedule10 = null,
+            [CanBeNull] string schedule11 = null,
+            [CanBeNull] string schedule12 = null,
+            [CanBeNull] string schedule13 = null,
+            [CanBeNull] string schedule14 = null,
+            [CanBeNull] string schedule15 = null,
+            [CanBeNull] string schedule16 = null,
+            [CanBeNull] string schedule17 = null,
+            [CanBeNull] string schedule18 = null,
+            [CanBeNull] string schedule19 = null,
+            [CanBeNull] string schedule20 = null,
+            [CanBeNull] string schedule21 = null,
+            [CanBeNull] string schedule22 = null,
+            [CanBeNull] string schedule23 = null,
+            [CanBeNull] string schedule24 = null,
+            [CanBeNull] string schedule25 = null,
+            [CanBeNull] string schedule26 = null,
+            [CanBeNull] string schedule27 = null,
+            [CanBeNull] string schedule28 = null,
+            [CanBeNull] string schedule29 = null,
+            [CanBeNull] string schedule30 = null,
+            [CanBeNull] string schedule31 = null,
+            [CanBeNull] string schedule32 = null)
+            : this(name,
+                   new[]
+                   {
+                       schedule1,
+                       schedule2,
+                       schedule3,
+                       schedule4,
+                       schedule5,
+                       schedule6,
+                       schedule7,
+                       schedule8,
+                       schedule9,
+                       schedule10,
+                       schedule11,
+                       schedule12,
+                       schedule13,
+                       schedule14,
+                       schedule15,
+                       schedule16,
+                       schedule17,
+                       schedule18,
+                       schedule19,
+                       schedule20,
+                       schedule21,
+                       schedule22,
+                       schedule23,
+                       schedule24,
+                       schedule25,
+                       schedule26,
+                       schedule27,
+                       schedule28,
+                       schedule29,
+                       schedule30,
+                       schedule31,
+                       schedule32
+                   }
+                       .Where(n => !string.IsNullOrEmpty(n))
+                       .Select(Scheduler.GetSchedule)
+                       .ToArray())
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AggregateSchedule"/> class.
         /// </summary>
         /// <param name="schedules">An enumeration of schedules.</param>
         [PublicAPI]
         public AggregateSchedule([NotNull] IEnumerable<ISchedule> schedules)
-            : this (null, schedules.ToArray())
+            : this(null, schedules.ToArray())
         {
             Contract.Requires(schedules != null);
         }
