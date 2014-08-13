@@ -48,452 +48,456 @@ namespace WebApplications.Testing
         /// <summary>
         /// Creates one random generator per thread.
         /// </summary>
-        [NotNull] private static readonly ThreadLocal<Random> _randomGenerators =
+        [NotNull]
+        private static readonly ThreadLocal<Random> _randomGenerators =
             new ThreadLocal<Random>(() => new Random());
 
         /// <summary>
         /// Valid SqlDbTypes for random generator.
         /// </summary>
-        [NotNull] private static readonly SqlDbType[] _sqlDbTypes =
-            new[]
-                {
-                    SqlDbType.BigInt,
-                    SqlDbType.Binary,
-                    SqlDbType.Bit,
-                    SqlDbType.Char,
-                    SqlDbType.DateTime,
-                    SqlDbType.Decimal,
-                    SqlDbType.Float,
-                    SqlDbType.Image,
-                    SqlDbType.Int,
-                    SqlDbType.Money,
-                    SqlDbType.NChar,
-                    SqlDbType.NText,
-                    SqlDbType.NVarChar,
-                    SqlDbType.Real,
-                    SqlDbType.UniqueIdentifier,
-                    SqlDbType.SmallDateTime,
-                    SqlDbType.SmallInt,
-                    SqlDbType.SmallMoney,
-                    SqlDbType.Text,
-                    SqlDbType.Timestamp,
-                    SqlDbType.TinyInt,
-                    SqlDbType.VarBinary,
-                    SqlDbType.VarChar,
-                    SqlDbType.Xml,
-                    SqlDbType.Udt,
-                    SqlDbType.Date,
-                    SqlDbType.Time,
-                    SqlDbType.DateTime2,
-                    SqlDbType.DateTimeOffset,
-                };
+        [NotNull]
+        private static readonly SqlDbType[] _sqlDbTypes =
+        {
+            SqlDbType.BigInt,
+            SqlDbType.Binary,
+            SqlDbType.Bit,
+            SqlDbType.Char,
+            SqlDbType.DateTime,
+            SqlDbType.Decimal,
+            SqlDbType.Float,
+            SqlDbType.Image,
+            SqlDbType.Int,
+            SqlDbType.Money,
+            SqlDbType.NChar,
+            SqlDbType.NText,
+            SqlDbType.NVarChar,
+            SqlDbType.Real,
+            SqlDbType.UniqueIdentifier,
+            SqlDbType.SmallDateTime,
+            SqlDbType.SmallInt,
+            SqlDbType.SmallMoney,
+            SqlDbType.Text,
+            SqlDbType.Timestamp,
+            SqlDbType.TinyInt,
+            SqlDbType.VarBinary,
+            SqlDbType.VarChar,
+            SqlDbType.Xml,
+            SqlDbType.Udt,
+            SqlDbType.Date,
+            SqlDbType.Time,
+            SqlDbType.DateTime2,
+            SqlDbType.DateTimeOffset
+        };
 
         #region validSrids
-        [NotNull] private static readonly int[] _validSrids = new[]
-            {
-                4120,
-                4121,
-                4122,
-                4123,
-                4124,
-                4127,
-                4128,
-                4129,
-                4130,
-                4131,
-                4132,
-                4133,
-                4134,
-                4135,
-                4136,
-                4137,
-                4138,
-                4139,
-                4141,
-                4142,
-                4143,
-                4144,
-                4145,
-                4146,
-                4147,
-                4148,
-                4149,
-                4150,
-                4151,
-                4152,
-                4153,
-                4154,
-                4155,
-                4156,
-                4157,
-                4158,
-                4159,
-                4160,
-                4161,
-                4162,
-                4163,
-                4164,
-                4165,
-                4166,
-                4167,
-                4168,
-                4169,
-                4170,
-                4171,
-                4173,
-                4174,
-                4175,
-                4176,
-                4178,
-                4179,
-                4180,
-                4181,
-                4182,
-                4183,
-                4184,
-                4188,
-                4189,
-                4190,
-                4191,
-                4192,
-                4193,
-                4194,
-                4195,
-                4196,
-                4197,
-                4198,
-                4199,
-                4200,
-                4201,
-                4202,
-                4203,
-                4204,
-                4205,
-                4206,
-                4207,
-                4208,
-                4209,
-                4210,
-                4211,
-                4212,
-                4213,
-                4214,
-                4215,
-                4216,
-                4218,
-                4219,
-                4220,
-                4221,
-                4222,
-                4223,
-                4224,
-                4225,
-                4227,
-                4229,
-                4230,
-                4231,
-                4232,
-                4236,
-                4237,
-                4238,
-                4239,
-                4240,
-                4241,
-                4242,
-                4243,
-                4244,
-                4245,
-                4246,
-                4247,
-                4248,
-                4249,
-                4250,
-                4251,
-                4252,
-                4253,
-                4254,
-                4255,
-                4256,
-                4257,
-                4258,
-                4259,
-                4261,
-                4262,
-                4263,
-                4265,
-                4266,
-                4267,
-                4268,
-                4269,
-                4270,
-                4271,
-                4272,
-                4273,
-                4274,
-                4275,
-                4276,
-                4277,
-                4278,
-                4279,
-                4280,
-                4281,
-                4282,
-                4283,
-                4284,
-                4285,
-                4286,
-                4288,
-                4289,
-                4292,
-                4293,
-                4295,
-                4297,
-                4298,
-                4299,
-                4300,
-                4301,
-                4302,
-                4303,
-                4304,
-                4306,
-                4307,
-                4308,
-                4309,
-                4310,
-                4311,
-                4312,
-                4313,
-                4314,
-                4315,
-                4316,
-                4317,
-                4318,
-                4319,
-                4322,
-                4324,
-                4326,
-                4600,
-                4601,
-                4602,
-                4603,
-                4604,
-                4605,
-                4606,
-                4607,
-                4608,
-                4609,
-                4610,
-                4611,
-                4612,
-                4613,
-                4614,
-                4615,
-                4616,
-                4617,
-                4618,
-                4619,
-                4620,
-                4621,
-                4622,
-                4623,
-                4624,
-                4625,
-                4626,
-                4627,
-                4628,
-                4629,
-                4630,
-                4632,
-                4633,
-                4636,
-                4637,
-                4638,
-                4639,
-                4640,
-                4641,
-                4642,
-                4643,
-                4644,
-                4646,
-                4657,
-                4658,
-                4659,
-                4660,
-                4661,
-                4662,
-                4663,
-                4664,
-                4665,
-                4666,
-                4667,
-                4668,
-                4669,
-                4670,
-                4671,
-                4672,
-                4673,
-                4674,
-                4675,
-                4676,
-                4677,
-                4678,
-                4679,
-                4680,
-                4682,
-                4683,
-                4684,
-                4686,
-                4687,
-                4688,
-                4689,
-                4690,
-                4691,
-                4692,
-                4693,
-                4694,
-                4695,
-                4696,
-                4697,
-                4698,
-                4699,
-                4700,
-                4701,
-                4702,
-                4703,
-                4704,
-                4705,
-                4706,
-                4707,
-                4708,
-                4709,
-                4710,
-                4711,
-                4712,
-                4713,
-                4714,
-                4715,
-                4716,
-                4717,
-                4718,
-                4719,
-                4720,
-                4721,
-                4722,
-                4723,
-                4724,
-                4725,
-                4726,
-                4727,
-                4728,
-                4729,
-                4730,
-                4732,
-                4733,
-                4734,
-                4735,
-                4736,
-                4737,
-                4738,
-                4739,
-                4740,
-                4741,
-                4742,
-                4743,
-                4744,
-                4745,
-                4746,
-                4747,
-                4748,
-                4749,
-                4750,
-                4751,
-                4752,
-                4753,
-                4754,
-                4755,
-                4756,
-                4757,
-                4758,
-                4801,
-                4802,
-                4803,
-                4804,
-                4805,
-                4806,
-                4807,
-                4808,
-                4809,
-                4810,
-                4811,
-                4813,
-                4814,
-                4815,
-                4816,
-                4817,
-                4818,
-                4820,
-                4821,
-                4895,
-                4898,
-                4900,
-                4901,
-                4902,
-                4903,
-                4904,
-                4907,
-                4909,
-                4921,
-                4923,
-                4925,
-                4927,
-                4929,
-                4931,
-                4933,
-                4935,
-                4937,
-                4939,
-                4941,
-                4943,
-                4945,
-                4947,
-                4949,
-                4951,
-                4953,
-                4955,
-                4957,
-                4959,
-                4961,
-                4963,
-                4965,
-                4967,
-                4971,
-                4973,
-                4975,
-                4977,
-                4979,
-                4981,
-                4983,
-                4985,
-                4987,
-                4989,
-                4991,
-                4993,
-                4995,
-                4997,
-                4999,
-                104001
-            };
+        [NotNull]
+        private static readonly int[] _validSrids =
+        {
+            4120,
+            4121,
+            4122,
+            4123,
+            4124,
+            4127,
+            4128,
+            4129,
+            4130,
+            4131,
+            4132,
+            4133,
+            4134,
+            4135,
+            4136,
+            4137,
+            4138,
+            4139,
+            4141,
+            4142,
+            4143,
+            4144,
+            4145,
+            4146,
+            4147,
+            4148,
+            4149,
+            4150,
+            4151,
+            4152,
+            4153,
+            4154,
+            4155,
+            4156,
+            4157,
+            4158,
+            4159,
+            4160,
+            4161,
+            4162,
+            4163,
+            4164,
+            4165,
+            4166,
+            4167,
+            4168,
+            4169,
+            4170,
+            4171,
+            4173,
+            4174,
+            4175,
+            4176,
+            4178,
+            4179,
+            4180,
+            4181,
+            4182,
+            4183,
+            4184,
+            4188,
+            4189,
+            4190,
+            4191,
+            4192,
+            4193,
+            4194,
+            4195,
+            4196,
+            4197,
+            4198,
+            4199,
+            4200,
+            4201,
+            4202,
+            4203,
+            4204,
+            4205,
+            4206,
+            4207,
+            4208,
+            4209,
+            4210,
+            4211,
+            4212,
+            4213,
+            4214,
+            4215,
+            4216,
+            4218,
+            4219,
+            4220,
+            4221,
+            4222,
+            4223,
+            4224,
+            4225,
+            4227,
+            4229,
+            4230,
+            4231,
+            4232,
+            4236,
+            4237,
+            4238,
+            4239,
+            4240,
+            4241,
+            4242,
+            4243,
+            4244,
+            4245,
+            4246,
+            4247,
+            4248,
+            4249,
+            4250,
+            4251,
+            4252,
+            4253,
+            4254,
+            4255,
+            4256,
+            4257,
+            4258,
+            4259,
+            4261,
+            4262,
+            4263,
+            4265,
+            4266,
+            4267,
+            4268,
+            4269,
+            4270,
+            4271,
+            4272,
+            4273,
+            4274,
+            4275,
+            4276,
+            4277,
+            4278,
+            4279,
+            4280,
+            4281,
+            4282,
+            4283,
+            4284,
+            4285,
+            4286,
+            4288,
+            4289,
+            4292,
+            4293,
+            4295,
+            4297,
+            4298,
+            4299,
+            4300,
+            4301,
+            4302,
+            4303,
+            4304,
+            4306,
+            4307,
+            4308,
+            4309,
+            4310,
+            4311,
+            4312,
+            4313,
+            4314,
+            4315,
+            4316,
+            4317,
+            4318,
+            4319,
+            4322,
+            4324,
+            4326,
+            4600,
+            4601,
+            4602,
+            4603,
+            4604,
+            4605,
+            4606,
+            4607,
+            4608,
+            4609,
+            4610,
+            4611,
+            4612,
+            4613,
+            4614,
+            4615,
+            4616,
+            4617,
+            4618,
+            4619,
+            4620,
+            4621,
+            4622,
+            4623,
+            4624,
+            4625,
+            4626,
+            4627,
+            4628,
+            4629,
+            4630,
+            4632,
+            4633,
+            4636,
+            4637,
+            4638,
+            4639,
+            4640,
+            4641,
+            4642,
+            4643,
+            4644,
+            4646,
+            4657,
+            4658,
+            4659,
+            4660,
+            4661,
+            4662,
+            4663,
+            4664,
+            4665,
+            4666,
+            4667,
+            4668,
+            4669,
+            4670,
+            4671,
+            4672,
+            4673,
+            4674,
+            4675,
+            4676,
+            4677,
+            4678,
+            4679,
+            4680,
+            4682,
+            4683,
+            4684,
+            4686,
+            4687,
+            4688,
+            4689,
+            4690,
+            4691,
+            4692,
+            4693,
+            4694,
+            4695,
+            4696,
+            4697,
+            4698,
+            4699,
+            4700,
+            4701,
+            4702,
+            4703,
+            4704,
+            4705,
+            4706,
+            4707,
+            4708,
+            4709,
+            4710,
+            4711,
+            4712,
+            4713,
+            4714,
+            4715,
+            4716,
+            4717,
+            4718,
+            4719,
+            4720,
+            4721,
+            4722,
+            4723,
+            4724,
+            4725,
+            4726,
+            4727,
+            4728,
+            4729,
+            4730,
+            4732,
+            4733,
+            4734,
+            4735,
+            4736,
+            4737,
+            4738,
+            4739,
+            4740,
+            4741,
+            4742,
+            4743,
+            4744,
+            4745,
+            4746,
+            4747,
+            4748,
+            4749,
+            4750,
+            4751,
+            4752,
+            4753,
+            4754,
+            4755,
+            4756,
+            4757,
+            4758,
+            4801,
+            4802,
+            4803,
+            4804,
+            4805,
+            4806,
+            4807,
+            4808,
+            4809,
+            4810,
+            4811,
+            4813,
+            4814,
+            4815,
+            4816,
+            4817,
+            4818,
+            4820,
+            4821,
+            4895,
+            4898,
+            4900,
+            4901,
+            4902,
+            4903,
+            4904,
+            4907,
+            4909,
+            4921,
+            4923,
+            4925,
+            4927,
+            4929,
+            4931,
+            4933,
+            4935,
+            4937,
+            4939,
+            4941,
+            4943,
+            4945,
+            4947,
+            4949,
+            4951,
+            4953,
+            4955,
+            4957,
+            4959,
+            4961,
+            4963,
+            4965,
+            4967,
+            4971,
+            4973,
+            4975,
+            4977,
+            4979,
+            4981,
+            4983,
+            4985,
+            4987,
+            4989,
+            4991,
+            4993,
+            4995,
+            4997,
+            4999,
+            104001
+        };
         #endregion validSrids
 
         /// <summary>
         /// A random number generator.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static Random RandomGenerator
         {
             get
             {
                 Contract.Ensures(Contract.Result<Random>() != null);
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return _randomGenerators.Value;
             }
         }
@@ -501,8 +505,19 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random boolean.
         /// </summary>
+        /// <returns>A random <see cref="System.Boolean" />.</returns>
+        [PublicAPI]
+        public static bool RandomBoolean()
+        {
+            return RandomGenerator.Next(2) == 1;
+        }
+
+        /// <summary>
+        /// Generates a random boolean.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Boolean"/>.</returns>
+        [PublicAPI]
         public static bool RandomBoolean([CanBeNull]this Random random)
         {
             return (random ?? RandomGenerator).Next(2) == 1;
@@ -511,11 +526,32 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random byte.
         /// </summary>
+        /// <returns>A random <see cref="System.Byte" />.</returns>
+        [PublicAPI]
+        public static byte RandomByte()
+        {
+            return (byte)RandomGenerator.Next(0x100);
+        }
+
+        /// <summary>
+        /// Generates a random byte.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Byte"/>.</returns>
+        [PublicAPI]
         public static byte RandomByte([CanBeNull]this Random random)
         {
-            return (byte) (random ?? RandomGenerator).Next(0x100);
+            return (byte)(random ?? RandomGenerator).Next(0x100);
+        }
+
+        /// <summary>
+        /// Generates a random char.
+        /// </summary>
+        /// <returns>A random <see cref="System.Char"/>.</returns>
+        [PublicAPI]
+        public static char RandomChar()
+        {
+            return (char)RandomGenerator.Next(0x10000);
         }
 
         /// <summary>
@@ -523,9 +559,22 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Char"/>.</returns>
+        [PublicAPI]
         public static char RandomChar([CanBeNull]this Random random)
         {
-            return (char) (random ?? RandomGenerator).Next(0x10000);
+            return (char)(random ?? RandomGenerator).Next(0x10000);
+        }
+
+        /// <summary>
+        /// Generates a random Int16.
+        /// </summary>
+        /// <returns>A random <see cref="System.Int16" />.</returns>
+        [PublicAPI]
+        public static short RandomInt16()
+        {
+            byte[] bytes = new byte[2];
+            RandomGenerator.NextBytes(bytes);
+            return BitConverter.ToInt16(bytes, 0);
         }
 
         /// <summary>
@@ -533,6 +582,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Int16"/>.</returns>
+        [PublicAPI]
         public static short RandomInt16([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[2];
@@ -543,8 +593,21 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random Int32.
         /// </summary>
+        /// <returns>A random <see cref="System.Int32" />.</returns>
+        [PublicAPI]
+        public static int RandomInt32()
+        {
+            byte[] bytes = new byte[4];
+            RandomGenerator.NextBytes(bytes);
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
+        /// <summary>
+        /// Generates a random Int32.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Int32"/>.</returns>
+        [PublicAPI]
         public static int RandomInt32([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[4];
@@ -555,8 +618,21 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random Int64.
         /// </summary>
+        /// <returns>A random <see cref="System.Int64" />.</returns>
+        [PublicAPI]
+        public static long RandomInt64()
+        {
+            byte[] bytes = new byte[8];
+            RandomGenerator.NextBytes(bytes);
+            return BitConverter.ToInt64(bytes, 0);
+        }
+
+        /// <summary>
+        /// Generates a random Int64.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Int64"/>.</returns>
+        [PublicAPI]
         public static long RandomInt64([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[8];
@@ -567,8 +643,21 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random float.
         /// </summary>
+        /// <returns>A random <see cref="System.Single" />.</returns>
+        [PublicAPI]
+        public static float RandomFloat()
+        {
+            byte[] bytes = new byte[4];
+            RandomGenerator.NextBytes(bytes);
+            return BitConverter.ToSingle(bytes, 0);
+        }
+
+        /// <summary>
+        /// Generates a random float.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Single"/>.</returns>
+        [PublicAPI]
         public static float RandomFloat([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[4];
@@ -579,8 +668,21 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random double.
         /// </summary>
+        /// <returns>A random <see cref="System.Double" />.</returns>
+        [PublicAPI]
+        public static double RandomDouble()
+        {
+            byte[] bytes = new byte[8];
+            RandomGenerator.NextBytes(bytes);
+            return BitConverter.ToDouble(bytes, 0);
+        }
+
+        /// <summary>
+        /// Generates a random double.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Double"/>.</returns>
+        [PublicAPI]
         public static double RandomDouble([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[8];
@@ -591,8 +693,40 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random decimal.
         /// </summary>
+        /// <returns>A random <see cref="System.Decimal" />.</returns>
+        [PublicAPI]
+        public static decimal RandomDecimal()
+        {
+            // Calculate last byte
+            // We need a scale from 0-28 and a sign, so calculate a random number between -28 & 28.
+            // This makes +'ves sligthly more common (as 0 is positive) but is faster.
+            int scale = -28 + RandomGenerator.Next(57);
+            int sign = 0;
+            if (scale < 0)
+            {
+                sign = unchecked((int)0x80000000);
+                scale = -scale;
+            }
+
+            // Now we can create msb.
+            int msb = sign + (scale << 16);
+
+            return
+                new decimal(new[]
+                                {
+                                    RandomGenerator.RandomInt32(),
+                                    RandomGenerator.RandomInt32(),
+                                    RandomGenerator.RandomInt32(),
+                                    msb
+                                });
+        }
+
+        /// <summary>
+        /// Generates a random decimal.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Decimal"/>.</returns>
+        [PublicAPI]
         public static decimal RandomDecimal([CanBeNull]this Random random)
         {
             random = random ?? RandomGenerator;
@@ -604,7 +738,7 @@ namespace WebApplications.Testing
             int sign = 0;
             if (scale < 0)
             {
-                sign = unchecked((int) 0x80000000);
+                sign = unchecked((int)0x80000000);
                 scale = -scale;
             }
 
@@ -624,9 +758,28 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random date time, with a specific <see cref="DateTimeKind" />.
         /// </summary>
+        /// <param name="kind">The <see cref="DateTimeKind" />.</param>
+        /// <returns>A random <see cref="System.DateTime" />.</returns>
+        [PublicAPI]
+        public static DateTime RandomDateTime(DateTimeKind kind)
+        {
+            // Last two bits are used internally by date time.
+            long ticks = RandomInt64() & 0x3FFFFFFFFFFFFFFF;
+
+            // If ticks is more than max value, just and it to ensure less than max value.
+            if (ticks > 0x2bca2875f4373fff)
+                ticks &= 0x2bca2875f4373fff;
+
+            return new DateTime(ticks, kind);
+        }
+
+        /// <summary>
+        /// Generates a random date time, with a specific <see cref="DateTimeKind" />.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <param name="kind">The <see cref="DateTimeKind" />.</param>
-        /// <returns>A random <see cref="System.DateTime"/>.</returns>
+        /// <returns>A random <see cref="System.DateTime" />.</returns>
+        [PublicAPI]
         public static DateTime RandomDateTime([CanBeNull]this Random random, DateTimeKind kind)
         {
             // Last two bits are used internally by date time.
@@ -642,9 +795,42 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random date time.
         /// </summary>
+        /// <returns>A random <see cref="System.DateTime" />.</returns>
+        /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
+        [PublicAPI]
+        public static DateTime RandomDateTime()
+        {
+            // Last two bits are used internally by date time.
+            long ticks = RandomInt64() & 0x3FFFFFFFFFFFFFFF;
+
+            // If ticks is more than max value, just and it to ensure less than max value.
+            if (ticks > 0x2bca2875f4373fff)
+                ticks &= 0x2bca2875f4373fff;
+
+            DateTimeKind kind;
+            switch (RandomGenerator.Next(3))
+            {
+                case 0:
+                    kind = DateTimeKind.Utc;
+                    break;
+                case 1:
+                    kind = DateTimeKind.Local;
+                    break;
+                default:
+                    kind = DateTimeKind.Unspecified;
+                    break;
+            }
+
+            return new DateTime(ticks, kind);
+        }
+
+        /// <summary>
+        /// Generates a random date time.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.DateTime"/>.</returns>
         /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
+        [PublicAPI]
         public static DateTime RandomDateTime([CanBeNull]this Random random)
         {
             random = random ?? RandomGenerator;
@@ -675,9 +861,37 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random date time.
         /// </summary>
+        /// <returns>A random <see cref="System.DateTimeOffset" />.</returns>
+        /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
+        [PublicAPI]
+        public static DateTimeOffset RandomDateTimeOffset()
+        {
+            // Last two bits are used internally by date time.
+            long ticks = RandomInt64() & 0x3FFFFFFFFFFFFFFF;
+
+            // If ticks is more than max value, just and it to ensure less than max value.
+            if (ticks > 0x2bca2875f4373fff)
+                ticks &= 0x2bca2875f4373fff;
+
+            // Calculate random offset +/- 14 hours in minutes (offsets must be in minutes)
+            long offsetTicks = (TimeSpan.TicksPerHour * -14) + (TimeSpan.TicksPerMinute * RandomGenerator.Next(1680));
+
+            // Ensure offsetTicks don't take us outside of the DateTime range.
+            // We could decrease/increase ticks and round to nearest minute, but it is easier just to set to 0.
+            long ticksOffset = offsetTicks - ticks;
+            if ((ticksOffset < 0) ||
+                (ticksOffset > 0x2bca2875f4373fff)) offsetTicks = 0;
+
+            return new DateTimeOffset(ticks, TimeSpan.FromTicks(offsetTicks));
+        }
+
+        /// <summary>
+        /// Generates a random date time.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.DateTimeOffset"/>.</returns>
         /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
+        [PublicAPI]
         public static DateTimeOffset RandomDateTimeOffset([CanBeNull]this Random random)
         {
             random = random ?? RandomGenerator;
@@ -689,7 +903,7 @@ namespace WebApplications.Testing
                 ticks &= 0x2bca2875f4373fff;
 
             // Calculate random offset +/- 14 hours in minutes (offsets must be in minutes)
-            long offsetTicks = (TimeSpan.TicksPerHour*-14) + (TimeSpan.TicksPerMinute*random.Next(1680));
+            long offsetTicks = (TimeSpan.TicksPerHour * -14) + (TimeSpan.TicksPerMinute * random.Next(1680));
 
             // Ensure offsetTicks don't take us outside of the DateTime range.
             // We could decrease/increase ticks and round to nearest minute, but it is easier just to set to 0.
@@ -703,12 +917,54 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random string.
         /// </summary>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <param name="unicode">if set to <see langword="true" /> string is UTF16; otherwise it uses ASCII.</param>
+        /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
+        /// <param name="minLength">The minimum length.</param>
+        /// <returns>A random <see cref="System.String" />.</returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static string RandomString(int maxLength = 8001, bool unicode = true,
+                                          double nullProbability = 0.0, int minLength = 0)
+        {
+            // Check for random nulls
+            if ((nullProbability > 0.0) &&
+                (RandomGenerator.NextDouble() < nullProbability))
+                return null;
+
+            // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
+            if (maxLength < 0)
+                maxLength = 8001;
+            if (minLength < 0)
+                minLength = 0;
+            int length = RandomGenerator.Next(maxLength - minLength) + minLength;
+            if (length < 1)
+                return String.Empty;
+
+            if (!unicode)
+            {
+                byte[] bytes = new byte[length];
+                RandomGenerator.NextBytes(bytes);
+                return new ASCIIEncoding().GetString(bytes);
+            }
+
+            StringBuilder stringBuilder = new StringBuilder(length);
+            for (int charIndex = 0; charIndex < length; ++charIndex)
+                stringBuilder.Append(RandomGenerator.RandomUnicodeCharacter());
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Generates a random string.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <param name="unicode">if set to <see langword="true" /> string is UTF16; otherwise it uses ASCII.</param>
         /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
         /// <param name="minLength">The minimum length.</param>
         /// <returns>A random <see cref="System.String" />.</returns>
+        [CanBeNull]
+        [PublicAPI]
         public static string RandomString([CanBeNull]this Random random, int maxLength = 8001, bool unicode = true,
                                           double nullProbability = 0.0, int minLength = 0)
         {
@@ -743,9 +999,46 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random Unicode character.
         /// </summary>
+        /// <param name="supplementaryPlaneProbability">The probability of the character coming from a random supplementary plane (0.0 for a Basic Multilingual Plane character).</param>
+        /// <returns>A random unicode character.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static char[] RandomUnicodeCharacter(double supplementaryPlaneProbability = 0.1)
+        {
+            if (supplementaryPlaneProbability > 0.0 && RandomGenerator.NextDouble() < supplementaryPlaneProbability)
+                return new[]
+                           {
+                               (char)RandomGenerator.Next(0xD800, 0xDBFF),
+                               (char)RandomGenerator.Next(0xDC00, 0xDFFF)
+                           };
+            int character = RandomGenerator.Next(0xF7E1);
+            switch (character)
+            {
+                case 0:
+                    character = 0x0009;
+                    break;
+                case 1:
+                    character = 0x000A;
+                    break;
+                case 2:
+                    character = 0x000D;
+                    break;
+                default:
+                    // Other valid characters are 0x0020-0xD7FF and 0xE000-0xFFFD:
+                    character += character < 0xD7E3 ? 0x001D : 0x081D;
+                    break;
+            }
+            return new[] { (char)character };
+        }
+
+        /// <summary>
+        /// Generates a random Unicode character.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <param name="supplementaryPlaneProbability">The probability of the character coming from a random supplementary plane (0.0 for a Basic Multilingual Plane character).</param>
         /// <returns>A random unicode character.</returns>
+        [NotNull]
+        [PublicAPI]
         public static char[] RandomUnicodeCharacter([CanBeNull]this Random random, double supplementaryPlaneProbability = 0.1)
         {
             random = random ?? RandomGenerator;
@@ -772,15 +1065,25 @@ namespace WebApplications.Testing
                     character += character < 0xD7E3 ? 0x001D : 0x081D;
                     break;
             }
-            return new char[] { (char)character };
+            return new[] { (char)character };
         }
 
+        /// <summary>
+        /// Generates a random <see cref="SqlDbType" /> for a column.
+        /// </summary>
+        /// <returns>A random <see cref="SqlDbType" />.</returns>
+        [PublicAPI]
+        public static SqlDbType RandomSqlDbTypeForColumn()
+        {
+            return _sqlDbTypes[RandomGenerator.Next(_sqlDbTypes.Length)];
+        }
 
         /// <summary>
         /// Generates a random <see cref="SqlDbType"/> for a column.
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="SqlDbType"/>.</returns>
+        [PublicAPI]
         public static SqlDbType RandomSqlDbTypeForColumn([CanBeNull]this Random random)
         {
             return _sqlDbTypes[(random ?? RandomGenerator).Next(_sqlDbTypes.Length)];
@@ -789,12 +1092,44 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random SRID.
         /// </summary>
+        /// <returns>A random SRID.</returns>
+        [PublicAPI]
+// ReSharper disable once InconsistentNaming
+        public static int RandomSRID()
+        {
+            return _validSrids[RandomGenerator.Next(_validSrids.Length)];
+        }
+
+        /// <summary>
+        /// Generates a random SRID.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random SRID.</returns>
+        [PublicAPI]
+        // ReSharper disable once InconsistentNaming
         public static int RandomSRID([CanBeNull]this Random random)
         {
             return _validSrids[(random ?? RandomGenerator).Next(_validSrids.Length)];
         }
+
+        /// <summary>
+        /// Generates the random SQL value.
+        /// </summary>
+        /// <param name="sqlDbType">Type of the SQL db.</param>
+        /// <param name="length">The length (if fixed length).</param>
+        /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) [Defaults to 0.0 = 0%].</param>
+        /// <param name="fill">if set to <see langword="true" /> expects the column to be full (only appropriate for fixed length columns).</param>
+        /// <returns>A random SQL value.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <remarks>Does not support SqlDbType.Structured.</remarks>
+        [CanBeNull]
+        [PublicAPI]
+        public static object RandomSqlValue(SqlDbType sqlDbType, int length = -1,
+            double nullProbability = 0.1, bool fill = false)
+        {
+            return RandomSqlValue(RandomGenerator, sqlDbType, length, nullProbability, fill);
+        }
+
 
         /// <summary>
         /// Generates the random SQL value.
@@ -807,6 +1142,8 @@ namespace WebApplications.Testing
         /// <returns>A random SQL value.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks>Does not support SqlDbType.Structured.</remarks>
+        [CanBeNull]
+        [PublicAPI]
         public static object RandomSqlValue([CanBeNull]this Random random, SqlDbType sqlDbType, int length = -1,
                                             double nullProbability = 0.1, bool fill = false)
         {
@@ -854,7 +1191,7 @@ namespace WebApplications.Testing
                 case SqlDbType.NChar:
                 case SqlDbType.NText:
                 case SqlDbType.NVarChar:
-                    return random.RandomString(length/2);
+                    return random.RandomString(length / 2);
                 case SqlDbType.UniqueIdentifier:
                     return Guid.NewGuid();
                 case SqlDbType.SmallDateTime:
@@ -863,7 +1200,7 @@ namespace WebApplications.Testing
                 case SqlDbType.SmallInt:
                     return random.RandomInt16();
                 case SqlDbType.SmallMoney:
-                    return (decimal) random.RandomInt32()/10000;
+                    return (decimal)random.RandomInt32() / 10000;
                 case SqlDbType.TinyInt:
                     return random.RandomByte();
                 case SqlDbType.Char:
@@ -874,18 +1211,18 @@ namespace WebApplications.Testing
                     // Generate an object of random type - but don't allow nulls this time (as we've already had a shot at being null).
                     return random.RandomSqlValue(random.RandomSqlDbTypeForColumn(), length, 0, fill);
                 case SqlDbType.Xml:
-                    // TODO code technically generate a random document here.
+                    // TODO could technically generate a random document here.
                     return "<TestDocument><Node attribute=\"attributeValue\">Node value</Node></TestDocument>";
                 case SqlDbType.Udt:
                     switch (random.Next(3))
                     {
                         case 0:
-                            return SqlGeography.Point(-90 + (random.Next(180000)/1000),
-                                                      -15069.0 + (random.Next(3013800)/100),
+                            return SqlGeography.Point(-90 + ((double)random.Next(180000) / 1000),
+                                                      -15069.0 + ((double)random.Next(3013800) / 100),
                                                       random.RandomSRID());
                         case 1:
-                            return SqlGeometry.Point(-90 + (random.Next(180000)/1000),
-                                                     -15069.0 + (random.Next(3013800)/100),
+                            return SqlGeometry.Point(-90 + ((double)random.Next(180000) / 1000),
+                                                     -15069.0 + ((double)random.Next(3013800) / 100),
                                                      random.RandomSRID());
                         default:
                             // TODO this does not generate every possible variation, but it's robust.
@@ -915,11 +1252,40 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random record set definition
         /// </summary>
+        /// <param name="columns">The columns (if less than one, is random).</param>
+        /// <returns>A random <see cref="RecordSetDefinition" />.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        [NotNull]
+        [PublicAPI]
+        public static RecordSetDefinition RandomRecordSetDefinition(int columns = 0)
+        {
+            if (columns < 1)
+                columns = RandomGenerator.Next(100) + 1;
+
+            ColumnDefinition[] columnDefinitions = new ColumnDefinition[columns];
+            for (int c = 0; c < columns; c++)
+            {
+                SqlDbType type = RandomSqlDbTypeForColumn();
+                bool isNullable = RandomBoolean();
+                object defaultValue = RandomSqlValue(type, nullProbability: isNullable ? 0.5 : 0);
+                columnDefinitions[c] = new ColumnDefinition("Column " + (c + 1),
+                                                            type,
+                                                            isNullable: isNullable,
+                                                            defaultValue: defaultValue);
+            }
+
+            return new RecordSetDefinition(columnDefinitions);
+        }
+
+        /// <summary>
+        /// Generates a random record set definition
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <param name="columns">The columns (if less than one, is random).</param>
         /// <returns>A random <see cref="RecordSetDefinition"/>.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         [NotNull]
+        [PublicAPI]
         public static RecordSetDefinition RandomRecordSetDefinition([CanBeNull]this Random random, int columns = 0)
         {
             random = random ?? RandomGenerator;
@@ -958,6 +1324,7 @@ namespace WebApplications.Testing
         /// </exception>
         [StringFormatMethod("format")]
         [NotNull]
+        [PublicAPI]
         public static string ToString([NotNull] this Stopwatch stopwatch, [CanBeNull] string format = null,
                                       [NotNull] params object[] parameters)
         {
@@ -978,7 +1345,7 @@ namespace WebApplications.Testing
                 }
             }
 
-            return String.Format("{0} completed in {1}ms.", format, (stopwatch.ElapsedTicks*1000M)/Stopwatch.Frequency);
+            return String.Format("{0} completed in {1}ms.", format, (stopwatch.ElapsedTicks * 1000M) / Stopwatch.Frequency);
         }
 
         /// <summary>
@@ -989,6 +1356,7 @@ namespace WebApplications.Testing
         /// <param name="predicate">The optional predicate.</param>
         /// <returns>A random element or default.</returns>
         [CanBeNull]
+        [PublicAPI]
         public static T RandomOrDefault<T>([NotNull] this IEnumerable<T> enumeration, [CanBeNull]Func<T, bool> predicate = null)
         {
             Contract.Requires(enumeration != null);
@@ -1010,6 +1378,7 @@ namespace WebApplications.Testing
         /// <param name="predicate">The optional predicate.</param>
         /// <returns>A random element.</returns>
         [CanBeNull]
+        [PublicAPI]
         public static T Random<T>([NotNull] this IEnumerable<T> enumeration, [CanBeNull] Func<T, bool> predicate = null)
         {
             Contract.Requires(enumeration != null);
@@ -1030,6 +1399,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
+        [PublicAPI]
         public static bool IsNull([CanBeNull]this object value)
         {
             if (value == null || DBNull.Value == value)
@@ -1044,6 +1414,7 @@ namespace WebApplications.Testing
         /// <param name="dbType">Type of the database.</param>
         /// <returns>SqlDbType.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">dbType</exception>
+        [PublicAPI]
         public static SqlDbType ToSqlDbType(this DbType dbType)
         {
             switch (dbType)
@@ -1097,11 +1468,12 @@ namespace WebApplications.Testing
         }
 
         /// <summary>
-        /// Get's the SQL null value for the type.
+        /// Gets the SQL null value for the type.
         /// </summary>
         /// <param name="sqlDbType">Type of the SQL db.</param>
         /// <returns>The null value for the specified SQL type.</returns>
         [NotNull]
+        [PublicAPI]
         public static object NullValue(this SqlDbType sqlDbType)
         {
             switch (sqlDbType)
@@ -1151,13 +1523,15 @@ namespace WebApplications.Testing
         }
 
         /// <summary>
-        /// The minumum value for SmallDateTime.
+        /// The minimum value for SmallDateTime.
         /// </summary>
+        [PublicAPI]
         public static readonly DateTime MinSmallDateTime = new DateTime(1990, 1, 1);
 
         /// <summary>
         /// The maximum value for SmallDateTime.
         /// </summary>
+        [PublicAPI]
         public static readonly DateTime MaxSmallDateTime = new DateTime(2079, 6, 7) - new TimeSpan(1);
     }
 }
