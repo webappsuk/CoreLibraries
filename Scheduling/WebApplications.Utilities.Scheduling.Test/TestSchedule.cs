@@ -26,11 +26,8 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NodaTime;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling.Test
@@ -39,30 +36,27 @@ namespace WebApplications.Utilities.Scheduling.Test
     public class TestSchedule
     {
         [TestMethod]
-        public void TestEnums()
+        public void TestNextValidSecond()
         {
-            Trace.WriteLine(
-                (Day.First | Day.TwentyFourth | Day.ThirtyFirst).Days().Aggregate(
-                    String.Empty,
-                    (s, i) => s + " " + i));
-        }
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
-        [TestMethod]
-        public void TestNextValidInclusiveSecondWrap()
-        {
             Assert.AreEqual(
-                new DateTime(2013, 1, 1, 0, 0, 1),
-                (new DateTime(2012, 12, 31, 23, 59, 59)).NextValid(
-                    inclusive: false,
+                i,
+                (i - Duration.FromTicks(1)).NextValid(
                     hour: Hour.Every,
                     minute: Minute.Every,
                     second: Second.Every)
                 );
-
             Assert.AreEqual(
-                new DateTime(2013, 1, 1),
-                (new DateTime(2012, 12, 31, 23, 59, 59)).NextValid(
-                    inclusive: true,
+                i,
+                i.NextValid(
+                    hour: Hour.Every,
+                    minute: Minute.Every,
+                    second: Second.Every)
+                );
+            Assert.AreEqual(
+                i + Schedule.OneSecond,
+                (i + Duration.FromTicks(1)).NextValid(
                     hour: Hour.Every,
                     minute: Minute.Every,
                     second: Second.Every)
@@ -70,43 +64,121 @@ namespace WebApplications.Utilities.Scheduling.Test
         }
 
         [TestMethod]
-        public void TestNextValidInclusiveMinute()
+        public void TestNextValidMinute()
         {
-            Assert.AreEqual(
-                new DateTime(2013, 1, 1, 0, 1, 0),
-                (new DateTime(2013, 1, 1)).NextValid(inclusive: false, minute: Minute.Every)
-                );
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
             Assert.AreEqual(
-                new DateTime(2013, 1, 1),
-                (new DateTime(2013, 1, 1)).NextValid(inclusive: true, minute: Minute.Every)
+                i,
+                (i - Duration.FromTicks(1)).NextValid(
+                    hour: Hour.Every,
+                    minute: Minute.Every)
+                );
+            Assert.AreEqual(
+                i,
+                i.NextValid(
+                    hour: Hour.Every,
+                    minute: Minute.Every)
+                );
+            Assert.AreEqual(
+                i + Duration.FromMinutes(1),
+                (i + Duration.FromTicks(1)).NextValid(
+                    hour: Hour.Every,
+                    minute: Minute.Every)
                 );
         }
 
         [TestMethod]
-        public void TestNextValidInclusiveHour()
+        public void TestNextValidHour()
         {
-            Assert.AreEqual(
-                new DateTime(2013, 1, 1, 1, 0, 0),
-                (new DateTime(2013, 1, 1)).NextValid(inclusive: false, hour: Hour.Every)
-                );
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
             Assert.AreEqual(
-                new DateTime(2013, 1, 1),
-                (new DateTime(2013, 1, 1)).NextValid(inclusive: true, hour: Hour.Every)
+                i,
+                (i - Duration.FromTicks(1)).NextValid(
+                    hour: Hour.Every)
+                );
+            Assert.AreEqual(
+                i,
+                i.NextValid(
+                    hour: Hour.Every)
+                );
+            Assert.AreEqual(
+                i + Duration.FromHours(1),
+                (i + Duration.FromTicks(1)).NextValid(
+                    hour: Hour.Every)
                 );
         }
 
+        [TestMethod]
+        public void TestNextValidDay()
+        {
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+            Assert.AreEqual(i, (i - Duration.FromTicks(1)).NextValid());
+            Assert.AreEqual(i, i.NextValid());
+            Assert.AreEqual(i + Duration.FromStandardDays(1), (i + Duration.FromTicks(1)).NextValid());
+        }
+
+        [TestMethod]
+        public void TestNextWeek()
+        {
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2014, 8, 11, 0, 0, 0, DateTimeKind.Utc));
+
+            Assert.AreEqual(i, (i - Duration.FromTicks(1)).NextValid(weekDay:WeekDay.Monday));
+            Assert.AreEqual(i, i.NextValid(weekDay: WeekDay.Monday));
+            Assert.AreEqual(i + Duration.FromStandardWeeks(1), (i + Duration.FromTicks(1)).NextValid(weekDay: WeekDay.Monday));
+        }
+
+        [TestMethod]
+        public void TestNextMonth()
+        {
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+            Assert.AreEqual(i, (i - Duration.FromTicks(1)).NextValid(day: Day.First));
+            Assert.AreEqual(i, i.NextValid(day: Day.First));
+            Assert.AreEqual(Instant.FromDateTimeUtc(new DateTime(2013, 2, 1, 0, 0, 0, DateTimeKind.Utc)), (i + Duration.FromTicks(1)).NextValid(day: Day.First));
+        }
+
+
+#if false
+        [TestMethod]
+        public void TestNextValidMinute()
+        {
+            Assert.AreEqual(
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1, 0, 1, 0, DateTimeKind.Utc)),
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)).NextValid(minute: Minute.Every)
+                );
+
+            Assert.AreEqual(
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)),
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)).NextValid(minute: Minute.Every)
+                );
+        }
+
+        [TestMethod]
+        public void TestNextValidHour()
+        {
+            Assert.AreEqual(
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1, 1, 0, 0)),
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)).NextValid(hour: Hour.Every)
+                );
+
+            Assert.AreEqual(
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)),
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)).NextValid(hour: Hour.Every)
+                );
+        }
         [TestMethod]
         public void TestNextValidInclusiveDay()
         {
             Assert.AreEqual(
-                new DateTime(2013, 1, 2),
-                (new DateTime(2013, 1, 1)).NextValid(inclusive: false)
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 2)),
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)).NextValid(inclusive: false)
                 );
 
             Assert.AreEqual(
-                new DateTime(2013, 1, 1),
+                Instant.FromDateTimeUtc(new DateTime(2013, 1, 1)),
                 (new DateTime(2013, 1, 1)).NextValid(inclusive: true)
                 );
         }
@@ -1037,755 +1109,6 @@ namespace WebApplications.Utilities.Scheduling.Test
                 (new DateTime(2020, 6, 1)).NextValid(firstDayOfWeek: DayOfWeek.Wednesday, week: Week.FiftyFirst)
                 );
         }
-
-        [TestMethod]
-        public void TestNextValidFirstWeekDayWednesdayWeek5()
-        {
-            Assert.AreEqual(
-                0,
-                (new DateTime(2023, 1, 1)).WeekNumber(null, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Wednesday));
-
-            Assert.AreEqual(
-                new DateTime(2023, 1, 1),
-                (new DateTime(2020, 6, 1)).NextValid(firstDayOfWeek: DayOfWeek.Wednesday, week: Week.Zeroth)
-                );
-        }
-
-        // GetFirstDayOfWeek
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekMonday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 7),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekMonday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 14),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekMonday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 29),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekTuesday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 1),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekTuesday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 8),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekTuesday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 23),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekWednesday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 2),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekWednesday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 9),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekWednesday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 24),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekThursday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 3),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekThursday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 10),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekThursday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 25),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekFriday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 4),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekFriday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 11),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekFriday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 26),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekSaturday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 5),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekSaturday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 12),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekSaturday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 27),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekSunday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 6),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekSunday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 13),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFullWeekSunday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 28),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstFullWeek,
-                    firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayMonday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 31),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayMonday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 7),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayMonday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 22),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayTuesday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 1),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayTuesday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 8),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayTuesday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 23),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayWednesday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 26),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayWednesday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 2),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayWednesday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 17),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayThursday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 27),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayThursday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 3),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayThursday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 18),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayFriday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 28),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayFriday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 4),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDayFriday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 19),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDaySaturday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 29),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDaySaturday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 5),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDaySaturday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 20),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDaySunday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 30),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    1,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDaySunday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 6),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    2,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFirstDaySunday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 21),
-                Schedule.GetFirstDayOfWeek(
-                    2008,
-                    52,
-                    calendarWeekRule: CalendarWeekRule.FirstDay,
-                    firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayMonday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 31),
-                Schedule.GetFirstDayOfWeek(2008, 1, firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayMonday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 7),
-                Schedule.GetFirstDayOfWeek(2008, 2, firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayMonday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 22),
-                Schedule.GetFirstDayOfWeek(2008, 52, firstDayOfWeek: DayOfWeek.Monday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayTuesday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 1),
-                Schedule.GetFirstDayOfWeek(2008, 1, firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayTuesday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 8),
-                Schedule.GetFirstDayOfWeek(2008, 2, firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayTuesday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 23),
-                Schedule.GetFirstDayOfWeek(2008, 52, firstDayOfWeek: DayOfWeek.Tuesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayWednesday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 2),
-                Schedule.GetFirstDayOfWeek(2008, 1, firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayWednesday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 9),
-                Schedule.GetFirstDayOfWeek(2008, 2, firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayWednesday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 24),
-                Schedule.GetFirstDayOfWeek(2008, 52, firstDayOfWeek: DayOfWeek.Wednesday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayThursday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 3),
-                Schedule.GetFirstDayOfWeek(2008, 1, firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayThursday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 10),
-                Schedule.GetFirstDayOfWeek(2008, 2, firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayThursday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 25),
-                Schedule.GetFirstDayOfWeek(2008, 52, firstDayOfWeek: DayOfWeek.Thursday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayFriday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 4),
-                Schedule.GetFirstDayOfWeek(2008, 1, firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayFriday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 11),
-                Schedule.GetFirstDayOfWeek(2008, 2, firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDayFriday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 26),
-                Schedule.GetFirstDayOfWeek(2008, 52, firstDayOfWeek: DayOfWeek.Friday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDaySaturday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 29),
-                Schedule.GetFirstDayOfWeek(2008, 1, firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDaySaturday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 5),
-                Schedule.GetFirstDayOfWeek(2008, 2, firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDaySaturday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 20),
-                Schedule.GetFirstDayOfWeek(2008, 52, firstDayOfWeek: DayOfWeek.Saturday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDaySunday1()
-        {
-            Assert.AreEqual(
-                new DateTime(2007, 12, 30),
-                Schedule.GetFirstDayOfWeek(2008, 1, firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDaySunday2()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 1, 6),
-                Schedule.GetFirstDayOfWeek(2008, 2, firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
-
-        [TestMethod]
-        public void TestGetFirstDayOfWeekFourDaySunday3()
-        {
-            Assert.AreEqual(
-                new DateTime(2008, 12, 21),
-                Schedule.GetFirstDayOfWeek(2008, 52, firstDayOfWeek: DayOfWeek.Sunday)
-                );
-        }
+#endif
     }
 }

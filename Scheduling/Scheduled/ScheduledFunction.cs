@@ -93,8 +93,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [NotNull]
         private readonly SchedulableDueCancellableFunctionAsync _function;
 
-        private int _maximumDuration;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduledAction" /> class.
         /// </summary>
@@ -102,42 +100,18 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="function">The function.</param>
         /// <param name="schedule">The schedule.</param>
         /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumDuration">The maximum duration.</param>
         internal ScheduledFunction(
             bool isFunction,
             [NotNull] SchedulableDueCancellableFunctionAsync function,
             [NotNull] ISchedule schedule,
             int maximumHistory = -1,
             Duration maximumDuration = default(Duration))
-            : base(schedule, maximumHistory, isFunction ? typeof(T) : null)
+            : base(schedule, maximumHistory, maximumDuration, isFunction ? typeof(T) : null)
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
             _function = function;
-            int md;
-            unchecked
-            {
-                md = (int)(maximumDuration.Ticks / NodaConstants.TicksPerMillisecond);
-            }
-            _maximumDuration = md < 0 ? 0 : md;
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum duration.
-        /// </summary>
-        /// <value>The maximum duration.</value>
-        public Duration MaximumDuration
-        {
-            get { return Duration.FromMilliseconds(_maximumDuration); }
-            set
-            {
-                if (value <= Duration.Zero) value = Scheduler.DefaultMaximumDuration;
-                else if (value > Scheduling.Schedule.OneStandardDay) value = Scheduling.Schedule.OneStandardDay;
-
-                unchecked
-                {
-                    _maximumDuration = (int)(value.Ticks / NodaConstants.TicksPerMillisecond);
-                }
-            }
         }
 
         /// <summary>
@@ -187,7 +161,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         protected override async Task<ScheduledActionResult> DoExecuteAsync(Instant due, CancellationToken cancellationToken)
         {
             // Combine cancellation token with Timeout to ensure no action runs beyond the Scheduler's limit.
-            using (ITokenSource tokenSource = cancellationToken.WithTimeout(_maximumDuration))
+            using (ITokenSource tokenSource = cancellationToken.WithTimeout(MaximumDurationMs))
             {
                 // Quick cancellation check.
                 // ReSharper disable once PossibleNullReferenceException

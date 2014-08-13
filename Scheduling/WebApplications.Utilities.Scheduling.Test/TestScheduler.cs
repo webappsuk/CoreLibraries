@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Scheduling.Test
     [TestClass]
     public class TestScheduler
     {
+#if false
         [TestMethod]
         public void TestSeconds()
         {
@@ -575,6 +576,7 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             schedulerTester.Run();
         }
+#endif
 #endif
     }
 }

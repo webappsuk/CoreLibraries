@@ -92,6 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalendarSystems.cs" />
+    <Compile Include="Configuration\DurationConverter.cs" />
+    <Compile Include="Configuration\DurationValidator.cs" />
+    <Compile Include="Configuration\DurationValidatorAttribute.cs" />
     <Compile Include="Configuration\SchedulerConfiguration.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -105,6 +108,7 @@
     <Compile Include="Scheduler.cs" />
     <Compile Include="Schedules\AggregateSchedule.cs" />
     <Compile Include="Schedules\FunctionalSchedule.cs" />
+    <Compile Include="Schedules\GapSchedule.cs" />
     <Compile Include="Schedules\OneOffSchedule.cs" />
     <Compile Include="Configuration\ScheduleCollection.cs" />
     <Compile Include="Configuration\ScheduleElement.cs" />
@@ -120,6 +124,7 @@
     <Compile Include="Schedules\Second.cs" />
     <Compile Include="Schedules\Week.cs" />
     <Compile Include="Schedules\WeekDay.cs" />
+    <Compile Include="StopwatchClock.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

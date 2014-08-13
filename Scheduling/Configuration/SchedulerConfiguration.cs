@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
@@ -67,7 +68,8 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         ///   Gets the default maximum duration of a scheduled action/function.
         /// </summary>
         [ConfigurationProperty("defaultMaximumDuration", DefaultValue = "00:10:00", IsRequired = false)]
-        [TimeSpanValidator(MinValueString = "00:00:00.01", MaxValueString = "1.00:00:00")] // TODO Duration
+        [TypeConverter(typeof(DurationConverter))]
+        [DurationValidator(MinValueString = "00:00:00.01", MaxValueString = "1.00:00:00")]
         [PublicAPI]
         public Duration DefaultMaximumDuration
         {

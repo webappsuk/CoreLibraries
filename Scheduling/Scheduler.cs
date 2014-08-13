@@ -87,10 +87,12 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable PossibleNullReferenceException
             DefaultMaximumHistory = SchedulerConfiguration.Active.DefautlMaximumHistory;
             DefaultMaximumDuration = SchedulerConfiguration.Active.DefaultMaximumDuration;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _clock = Stopwatch.IsHighResolution ? (IClock)StopwatchClock.Instance : SystemClock.Instance;
             _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
 
             foreach (ScheduleElement scheduleElement in SchedulerConfiguration.Active.Schedules)
-                AddSchedule(scheduleElement.GetSchedule());
+                AddSchedule(scheduleElement.GetInstance<ISchedule>());
 
             Enabled = SchedulerConfiguration.Active.Enabled;
             // ReSharper restore PossibleNullReferenceException
@@ -355,7 +357,7 @@ namespace WebApplications.Utilities.Scheduling
                 false,
                 (d, t) => action(d, t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
                 GetSchedule(scheduleName),
-                maximumHistory, 
+                maximumHistory,
                 maximumDuration);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore PossibleNullReferenceException

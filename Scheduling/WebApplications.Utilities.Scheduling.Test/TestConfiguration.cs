@@ -40,7 +40,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         [TestMethod]
         public void TestMethod1()
         {
-            var schedule = Scheduler.Default.GetSchedule("1");
+            var schedule = Scheduler.GetSchedule("1");
         }
     }
 }

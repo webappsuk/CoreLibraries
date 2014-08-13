@@ -27,6 +27,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NodaTime;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling.Test
@@ -38,33 +39,33 @@ namespace WebApplications.Utilities.Scheduling.Test
     public class TestSingleDateSchedule
     {
         [TestMethod]
-        public void PastDateTime()
+        public void CurrentInstant()
         {
-            OneOffSchedule oneOffSchedule = new OneOffSchedule(new DateTime(2011, 1, 1));
-            Assert.AreEqual(DateTime.MaxValue, oneOffSchedule.Next(DateTime.UtcNow));
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2011, 1, 1));
+            OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
+            Assert.AreEqual(Instant.MaxValue, oneOffSchedule.Next(i));
         }
 
         [TestMethod]
-        public void CurrentDateTime()
+        public void PastInstant()
         {
-            OneOffSchedule oneOffSchedule = new OneOffSchedule(DateTime.UtcNow);
-            Assert.AreEqual(DateTime.MaxValue, oneOffSchedule.Next(DateTime.UtcNow));
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2011, 1, 1));
+            OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
+            Assert.AreEqual(Instant.MaxValue, oneOffSchedule.Next(i + Schedule.OneSecond));
         }
 
         [TestMethod]
-        public void NextSecondDateTime()
+        public void NextSecondInstant()
         {
-            OneOffSchedule oneOffSchedule
-                = new OneOffSchedule(DateTime.UtcNow + (new TimeSpan(0, 0, 1)));
-            Assert.AreEqual(DateTime.UtcNow + (new TimeSpan(0, 0, 1)), oneOffSchedule.Next(DateTime.UtcNow));
+            Instant i = Instant.FromDateTimeUtc(new DateTime(2011, 1, 1));
+            OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
+            Assert.AreEqual(i, oneOffSchedule.Next(i - Schedule.OneSecond));
         }
 
         [TestMethod]
-        public void FutureDateTime()
+        public void Never()
         {
-            OneOffSchedule oneOffSchedule
-                = new OneOffSchedule(DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0)));
-            Assert.AreEqual((DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0))), oneOffSchedule.Next(DateTime.UtcNow));
+            Assert.AreEqual(Instant.MaxValue, Schedule.Never.Next(Scheduler.Clock.Now));
         }
     }
 }

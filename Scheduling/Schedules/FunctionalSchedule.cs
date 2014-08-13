@@ -45,17 +45,31 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         private readonly Func<Instant, Instant> _function;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FunctionalSchedule"/> class.
+        /// Initializes a new instance of the <see cref="FunctionalSchedule" /> class.
         /// </summary>
         /// <param name="function">The function.</param>
         /// <param name="options">The options.</param>
-        /// <param name="name">The name.</param>
-        /// <remarks></remarks>
         [PublicAPI]
         public FunctionalSchedule(
             [NotNull] Func<Instant, Instant> function,
-            ScheduleOptions options = ScheduleOptions.None,
-            [CanBeNull] string name = null)
+            ScheduleOptions options = ScheduleOptions.None)
+        {
+            Contract.Requires(function != null);
+            _function = function;
+            _options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FunctionalSchedule" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="function">The function.</param>
+        /// <param name="options">The options.</param>
+        [PublicAPI]
+        public FunctionalSchedule(
+            [CanBeNull] string name,
+            [NotNull] Func<Instant, Instant> function,
+            ScheduleOptions options = ScheduleOptions.None)
         {
             Contract.Requires(function != null);
             _function = function;

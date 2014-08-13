@@ -33,15 +33,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NodaTime;
 using WebApplications.Utilities.Scheduling.Scheduled;
 
 namespace WebApplications.Utilities.Scheduling.Test
 {
+#if false
     public class SchedulerTester
     {
         [NotNull]
-        private readonly Dictionary<ScheduledFunction<DateTime>, IEnumerable<TimeSpan>> _tests =
-            new Dictionary<ScheduledFunction<DateTime>, IEnumerable<TimeSpan>>();
+        private readonly Dictionary<ScheduledFunction<Instant>, IEnumerable<Duration>> _tests =
+            new Dictionary<ScheduledFunction<Instant>, IEnumerable<Duration>>();
         
         private DateTime _fullStartTime = DateTime.UtcNow;
         private DateTime _startTime = DateTime.UtcNow;
@@ -59,16 +61,16 @@ namespace WebApplications.Utilities.Scheduling.Test
                 Thread.Sleep(10);
         }
 
-        public ScheduledFunction<DateTime> AddTest([NotNull] ISchedule schedule, [NotNull] IEnumerable<TimeSpan> expectedResults, ScheduledFunction<DateTime>.SchedulableDueCancellableFunctionAsync function = null)
+        public ScheduledFunction<Instant> AddTest([NotNull] ISchedule schedule, [NotNull] IEnumerable<Duration> expectedResults, ScheduledFunction<Instant>.SchedulableDueCancellableFunctionAsync function = null)
         {
             Assert.IsNotNull(schedule);
             Assert.IsNotNull(expectedResults);
             return AddTest(Scheduler.Add(function ?? TestFunction, schedule, expectedResults.Count()), expectedResults);
         }
 
-        public ScheduledFunction<DateTime> AddTest(
-            [NotNull] ScheduledFunction<DateTime> scheduledFunction,
-            [NotNull] IEnumerable<TimeSpan> expectedResults)
+        public ScheduledFunction<Instant> AddTest(
+            [NotNull] ScheduledFunction<Instant> scheduledFunction,
+            [NotNull] IEnumerable<Duration> expectedResults)
         {
             _tests.Add(scheduledFunction, expectedResults);
             return scheduledFunction;
@@ -202,7 +204,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         }
 
         [NotNull]
-        public static readonly ScheduledFunction<DateTime>.SchedulableDueCancellableFunctionAsync TestFunction =
+        public static readonly ScheduledFunction<Instant>.SchedulableDueCancellableFunctionAsync TestFunction =
             (d, t) =>
             {
                 Trace.WriteLine(string.Format("Hit Test Function.  Due - {0:ss.fffffff}, Now - {1:ss.fffffff}", d, DateTime.UtcNow));
@@ -219,7 +221,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                     result.Result,
                     result.Due,
                     result.Started,
-                    result.Duration.TotalMilliseconds));
+                    result.Duration.TotalMilliseconds()));
         }
 
         public static void OutputResult(
@@ -238,8 +240,9 @@ namespace WebApplications.Utilities.Scheduling.Test
                     expectedTimeSpan.TotalSeconds,
                     result.Due,
                     result.Started,
-                    result.Duration.TotalMilliseconds,
+                    result.Duration.TotalMilliseconds(),
                     failed ? string.Format("{0}**Failed**", Environment.NewLine) : string.Empty));
         }
     }
+#endif
 }

@@ -94,6 +94,11 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         internal readonly CombGuid ID = CombGuid.NewCombGuid();
 
         /// <summary>
+        /// The maximum duration in milliseconds.
+        /// </summary>
+        protected int MaximumDurationMs;
+
+        /// <summary>
         /// Internal list of results.
         /// </summary>
         [CanBeNull]
@@ -117,10 +122,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// </summary>
         /// <param name="schedule">The schedule.</param>
         /// <param name="maximumHistory">The maximum history.</param>
+        /// <param name="maximumDuration">The maximum duration.</param>
         /// <param name="returnType">Type of the return (if a function).</param>
         protected ScheduledAction(
             [NotNull] ISchedule schedule,
             int maximumHistory,
+            Duration maximumDuration,
             [CanBeNull] Type returnType)
         {
             Contract.Requires(schedule != null);
@@ -130,13 +137,40 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             MaximumHistory = maximumHistory;
             ReturnType = returnType;
             HistoryQueue = MaximumHistory > 0 ? new CyclicConcurrentQueue<ScheduledActionResult>(MaximumHistory) : null;
+            int md;
+            unchecked
+            {
+                md = (int)(maximumDuration.Ticks / NodaConstants.TicksPerMillisecond);
+            }
+            MaximumDurationMs = md < 0 ? 0 : md;
             RecalculateNextDue();
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum duration.
+        /// </summary>
+        /// <value>The maximum duration.</value>
+        [PublicAPI]
+        public Duration MaximumDuration
+        {
+            get { return Duration.FromMilliseconds(MaximumDurationMs); }
+            set
+            {
+                if (value <= Duration.Zero) value = Scheduler.DefaultMaximumDuration;
+                else if (value > Scheduling.Schedule.OneStandardDay) value = Scheduling.Schedule.OneStandardDay;
+
+                unchecked
+                {
+                    MaximumDurationMs = (int)(value.Ticks / NodaConstants.TicksPerMillisecond);
+                }
+            }
         }
 
         /// <summary>
         /// Gets a value indicating whether this instance is a function.
         /// </summary>
         /// <value><see langword="true" /> if this instance is function; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool IsFunction { get { return !ReferenceEquals(ReturnType, null); } }
 
         /// <summary>

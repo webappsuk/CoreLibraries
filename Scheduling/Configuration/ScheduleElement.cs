@@ -27,12 +27,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Scheduling.Schedules;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
@@ -43,15 +45,29 @@ namespace WebApplications.Utilities.Scheduling.Configuration
     /// for easy specification of a schedule.
     /// </summary>
     /// <remarks></remarks>
-    public class ScheduleElement : ConfigurationElement
+    public class ScheduleElement : ConstructorConfigurationElement
     {
+        /// <summary>
+        ///   Gets or sets the type.
+        /// </summary>
+        /// <value>The logger type.</value>
+        [ConfigurationProperty("type")]
+        [TypeConverter(typeof(TypeNameConverter))]
+        [SubclassTypeValidator(typeof(ISchedule))]
+        [PublicAPI]
+        public override Type Type
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return GetProperty<Type>("type"); }
+            set { SetProperty("type", value); }
+        }
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
         /// <remarks></remarks>
-        [ConfigurationProperty("name", IsRequired = true)]
+        [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
         [StringValidator(MinLength = 0)]
         [NotNull]
         [PublicAPI]
@@ -64,189 +80,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
                 Contract.Requires(value != null);
                 SetProperty("name", value);
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the month.
-        /// </summary>
-        /// <value>The month.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("month", DefaultValue = Month.Every, IsRequired = false)]
-        [PublicAPI]
-        public Month Month
-        {
-            get { return GetProperty<Month>("month"); }
-            set { SetProperty("month", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the week.
-        /// </summary>
-        /// <value>The week.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("week", DefaultValue = Week.Every, IsRequired = false)]
-        [PublicAPI]
-        public Week Week
-        {
-            get { return GetProperty<Week>("week"); }
-            set { SetProperty("week", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the day.
-        /// </summary>
-        /// <value>The day.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("day", DefaultValue = Day.Every, IsRequired = false)]
-        [PublicAPI]
-        public Day Day
-        {
-            get { return GetProperty<Day>("day"); }
-            set { SetProperty("day", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the week day.
-        /// </summary>
-        /// <value>The week day.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("weekDay", DefaultValue = WeekDay.Every, IsRequired = false)]
-        [PublicAPI]
-        public WeekDay WeekDay
-        {
-            get { return GetProperty<WeekDay>("weekDay"); }
-            set { SetProperty("weekDay", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the hour.
-        /// </summary>
-        /// <value>The hour.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("hour", DefaultValue = Hour.Every, IsRequired = false)]
-        [PublicAPI]
-        public Hour Hour
-        {
-            get { return GetProperty<Hour>("hour"); }
-            set { SetProperty("hour", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the minute.
-        /// </summary>
-        /// <value>The minute.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("minute", DefaultValue = Minute.Every, IsRequired = false)]
-        [PublicAPI]
-        public Minute Minute
-        {
-            get { return GetProperty<Minute>("minute"); }
-            set { SetProperty("minute", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the second.
-        /// </summary>
-        /// <value>The second.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("second", DefaultValue = Second.Every, IsRequired = false)]
-        [PublicAPI]
-        public Second Second
-        {
-            get { return GetProperty<Second>("second"); }
-            set { SetProperty("second", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the time span for the minimum gap.
-        /// </summary>
-        /// <value>The time span.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("minimumGap", IsRequired = false)]
-        [TimeSpanValidator(MinValueString = "00:00:00")] // TODO Duration validator
-        [PublicAPI]
-        public Duration MinimumGap
-        {
-            get { return GetProperty<Duration>("minimumGap"); }
-            set { SetProperty("minimumGap", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the first day of week.
-        /// </summary>
-        /// <value>The first day of week.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("firstDayOfWeek", DefaultValue = DayOfWeek.Sunday, IsRequired = false)]
-        [PublicAPI]
-        public DayOfWeek FirstDayOfWeek
-        {
-            get { return GetProperty<DayOfWeek>("firstDayOfWeek"); }
-            set { SetProperty("firstDayOfWeek", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the calendar.
-        /// </summary>
-        /// <value>The first day of week.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("calendar", DefaultValue = null, IsRequired = false)]
-        [CanBeNull]
-        [PublicAPI]
-        public string Calendar
-        {
-            get { return GetProperty<string>("calendar"); }
-            set { SetProperty("calendar", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the first day of week.
-        /// </summary>
-        /// <value>The first day of week.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("options", DefaultValue = ScheduleOptions.None, IsRequired = false)]
-        [PublicAPI]
-        public ScheduleOptions Options
-        {
-            get { return GetProperty<ScheduleOptions>("options"); }
-            set { SetProperty("ScheduleOptions", value); }
-        }
-
-        /// <summary>
-        /// Gets or sets a fixed date and time.
-        /// </summary>
-        /// <value>The first day of week.</value>
-        /// <remarks></remarks>
-        [ConfigurationProperty("instant", DefaultValue = "", IsRequired = false)]
-        [PublicAPI]
-        public Instant Instant
-        {
-            get { return GetProperty<Instant>("instant"); }
-            set { SetProperty("instant", value); }
-        }
-
-        /// <summary>
-        /// Gets a <see cref="ISchedule"/> from the element.
-        /// </summary>
-        /// <returns>The result of the conversion.</returns>
-        [NotNull]
-        [PublicAPI]
-        public ISchedule GetSchedule()
-        {
-            // TODO DateTime validation/etc.
-
-            return new PeriodicSchedule(
-                Month,
-                Week,
-                Day,
-                WeekDay,
-                Hour,
-                Minute,
-                Second,
-                MinimumGap,
-                null, // TODO CalendarSystem,
-                null, // TODO TimeZone
-                Options,
-                Name);
         }
     }
 }

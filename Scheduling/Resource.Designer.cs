@@ -70,6 +70,51 @@ namespace WebApplications.Utilities.Scheduling {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified duration &apos;{0}&apos; must be less than &apos;{1}&apos;..
+        /// </summary>
+        internal static string DurationValidator_Validate_ExclusiveMaximum {
+            get {
+                return ResourceManager.GetString("DurationValidator_Validate_ExclusiveMaximum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified duration &apos;{0}&apos; must be greater than &apos;{1}&apos;..
+        /// </summary>
+        internal static string DurationValidator_Validate_ExclusiveMinimum {
+            get {
+                return ResourceManager.GetString("DurationValidator_Validate_ExclusiveMinimum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified duration &apos;{0}&apos; must be less than, or equal to, &apos;{1}&apos;..
+        /// </summary>
+        internal static string DurationValidator_Validate_InclusiveMaximum {
+            get {
+                return ResourceManager.GetString("DurationValidator_Validate_InclusiveMaximum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified duration &apos;{0}&apos; must be greater than, or equal to, &apos;{1}&apos;..
+        /// </summary>
+        internal static string DurationValidator_Validate_InclusiveMinimum {
+            get {
+                return ResourceManager.GetString("DurationValidator_Validate_InclusiveMinimum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified value must be a Duration..
+        /// </summary>
+        internal static string DurationValidator_Validate_NotDuration {
+            get {
+                return ResourceManager.GetString("DurationValidator_Validate_NotDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid task status &apos;{0}&apos; in scheduled action continuation..
         /// </summary>
         internal static string ScheduledAction_ExecuteAsync_Invalid_Task_Status {

@@ -46,25 +46,25 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// How long the execution took.
         /// </summary>
         [PublicAPI]
-        public Duration Duration;
+        public readonly Duration Duration;
 
         /// <summary>
         /// Any exception that was thrown by the function.
         /// </summary>
         [PublicAPI]
-        public Exception Exception;
+        public readonly Exception Exception;
 
         /// <summary>
         /// When the execution actually started.
         /// </summary>
         [PublicAPI]
-        public Instant Started;
+        public readonly Instant Started;
 
         /// <summary>
         /// Whether this action was cancelled.
         /// </summary>
         [PublicAPI]
-        public bool Cancelled;
+        public readonly bool Cancelled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduledActionResult"/> class.

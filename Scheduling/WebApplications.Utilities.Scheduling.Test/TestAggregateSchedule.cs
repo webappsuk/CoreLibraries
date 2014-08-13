@@ -27,135 +27,50 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NodaTime;
+using WebApplications.Testing;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling.Test
 {
     [TestClass]
-    public class TestAggregateSchedule
+    public class TestAggregateSchedule : TestBase
     {
         [TestMethod]
-        public void CreateEmptyAggregateSchedule()
+        public void EmptyAggregateSchedule()
         {
-            List<ISchedule> scheduleCollection = new List<ISchedule>();
-            new AggregateSchedule(scheduleCollection);
+            string name = Tester.RandomGenerator.RandomString();
+            AggregateSchedule aggregateSchedule = new AggregateSchedule(name);
+            Assert.AreEqual(name, aggregateSchedule.Name);
+            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(Scheduler.Clock.Now));
+            Assert.AreEqual(0, aggregateSchedule.Count());
         }
 
         [TestMethod]
-        public void CreateSingleScheduleAggregateSchedule()
+        public void SingleAggregateSchedule()
         {
-            List<ISchedule> scheduleCollection = new List<ISchedule>();
-            ISchedule schedule = new OneOffSchedule(new DateTime(2010, 1, 1));
-            scheduleCollection.Add(schedule);
-            new AggregateSchedule(scheduleCollection);
+            Instant i = new Instant(Tester.RandomGenerator.RandomInt32());
+            OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
+            AggregateSchedule aggregateSchedule = new AggregateSchedule(oneOffSchedule);
+            Assert.AreEqual(1, aggregateSchedule.Count());
+            Assert.AreEqual(i, aggregateSchedule.Next(i - Schedule.OneSecond));
+            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(i));
         }
 
         [TestMethod]
-        public void SingleFutureAggregateSchedule()
+        public void DoubleAggregateSchedule()
         {
-            // Create a single (future) datetime schedule, place it in a list and use that list to construct a aggregate schedule
-            DateTime testDateTime = DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0));
-            OneOffSchedule oneOffScheduleschedule = new OneOffSchedule(testDateTime);
-            IList<ISchedule> scheduleList = new List<ISchedule>();
-            scheduleList.Add(oneOffScheduleschedule);
-            AggregateSchedule aggregateSchedule = new AggregateSchedule(scheduleList);
-
-            // Check aggregate schedule next matches single schedule next and the datetime I would expect
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), oneOffScheduleschedule.Next(DateTime.UtcNow));
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), testDateTime);
-        }
-
-        [TestMethod]
-        public void SinglePastAggregateSchedule()
-        {
-            // Create a single (past) datetime schedule, place it in a list and use that list to construct a aggregate schedule
-            DateTime testDateTime = DateTime.UtcNow - (new TimeSpan(1, 0, 0, 0));
-            OneOffSchedule oneOffScheduleschedule = new OneOffSchedule(testDateTime);
-            IList<ISchedule> scheduleList = new List<ISchedule>();
-            scheduleList.Add(oneOffScheduleschedule);
-            AggregateSchedule aggregateSchedule = new AggregateSchedule(scheduleList);
-
-            // Check aggregate schedule next matches single schedule next and the datetime I would expect
-            // This is because when a schedule is in the past the next method returns DateTime.Max
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), oneOffScheduleschedule.Next(DateTime.UtcNow));
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), DateTime.MaxValue);
-        }
-
-        [TestMethod]
-        public void DoubleFutureAggregateSchedule()
-        {
-            // Create two (future) datetime schedules, place them in a list and use that list to construct a aggregate schedule 
-            DateTime firstTestDateTime = DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0));
-            DateTime secondTestDateTime = firstTestDateTime + (new TimeSpan(1, 0, 0, 0));
-            OneOffSchedule firstOneOffScheduleschedule = new OneOffSchedule(firstTestDateTime);
-            OneOffSchedule secondOneOffScheduleschedule = new OneOffSchedule(secondTestDateTime);
-            IList<ISchedule> scheduleList = new List<ISchedule>();
-            scheduleList.Add(firstOneOffScheduleschedule);
-            scheduleList.Add(secondOneOffScheduleschedule);
-            AggregateSchedule aggregateSchedule = new AggregateSchedule(scheduleList);
-
-            // Check aggregate schedule next matches first single schedule next and the datetime I would expect
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), firstOneOffScheduleschedule.Next(DateTime.UtcNow));
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), firstTestDateTime);
-        }
-
-        [TestMethod]
-        public void DoublePastAggregateSchedule()
-        {
-            // Create two (past) datetime schedules, place them in a list and use that list to construct a aggregate schedule
-            DateTime firstTestDateTime = DateTime.UtcNow - (new TimeSpan(1, 0, 0, 0));
-            DateTime secondTestDateTime = firstTestDateTime - (new TimeSpan(1, 0, 0, 0));
-            OneOffSchedule firstOneOffScheduleschedule = new OneOffSchedule(firstTestDateTime);
-            OneOffSchedule secondOneOffScheduleschedule = new OneOffSchedule(secondTestDateTime);
-            IList<ISchedule> scheduleList = new List<ISchedule>();
-            scheduleList.Add(firstOneOffScheduleschedule);
-            scheduleList.Add(secondOneOffScheduleschedule);
-            AggregateSchedule aggregateSchedule = new AggregateSchedule(scheduleList);
-
-            // Check aggregate schedule next matches both single schedules next and the datetime I would expect
-            // This is because when a schedule is in the past the next method returns DateTime.Max
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), firstOneOffScheduleschedule.Next(DateTime.UtcNow));
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), secondOneOffScheduleschedule.Next(DateTime.UtcNow));
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), DateTime.MaxValue);
-        }
-
-        [TestMethod]
-        public void PastFutureAggregateSchedule()
-        {
-            // Create two datetime schedules (past then future), 
-            // place them in a list and use that list to construct a aggregate schedule
-            DateTime firstTestDateTime = DateTime.UtcNow - (new TimeSpan(1, 0, 0, 0));
-            DateTime secondTestDateTime = DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0));
-            OneOffSchedule firstOneOffScheduleschedule = new OneOffSchedule(firstTestDateTime);
-            OneOffSchedule secondOneOffScheduleschedule = new OneOffSchedule(secondTestDateTime);
-            IList<ISchedule> scheduleList = new List<ISchedule>();
-            scheduleList.Add(firstOneOffScheduleschedule);
-            scheduleList.Add(secondOneOffScheduleschedule);
-            AggregateSchedule aggregateSchedule = new AggregateSchedule(scheduleList);
-
-            // Check aggregate schedule next matches future datetime schedule and the datetime I would expect
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), secondOneOffScheduleschedule.Next(DateTime.UtcNow));
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), secondTestDateTime);
-        }
-
-        [TestMethod]
-        public void FuturePastAggregateSchedule()
-        {
-            // Create two datetime schedules (future then past), 
-            // place them in a list and use that list to construct a aggregate schedule
-            DateTime firstTestDateTime = DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0));
-            DateTime secondTestDateTime = DateTime.UtcNow - (new TimeSpan(1, 0, 0, 0));
-            OneOffSchedule firstOneOffScheduleschedule = new OneOffSchedule(firstTestDateTime);
-            OneOffSchedule secondOneOffScheduleschedule = new OneOffSchedule(secondTestDateTime);
-            IList<ISchedule> scheduleList = new List<ISchedule>();
-            scheduleList.Add(firstOneOffScheduleschedule);
-            scheduleList.Add(secondOneOffScheduleschedule);
-            AggregateSchedule aggregateSchedule = new AggregateSchedule(scheduleList);
-
-            // Check aggregate schedule next matches future datetime schedule and the datetime I would expect
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), firstOneOffScheduleschedule.Next(DateTime.UtcNow));
-            Assert.AreEqual(aggregateSchedule.Next(DateTime.UtcNow), firstTestDateTime);
+            Instant i = new Instant(Tester.RandomGenerator.RandomInt32());
+            Instant j = i + Schedule.OneSecond;
+            OneOffSchedule s1 = new OneOffSchedule(i);
+            OneOffSchedule s2 = new OneOffSchedule(i);
+            AggregateSchedule aggregateSchedule = new AggregateSchedule(s1, s2);
+            Assert.AreEqual(2, aggregateSchedule.Count());
+            Assert.AreEqual(i, aggregateSchedule.Next(i - Schedule.OneSecond));
+            Assert.AreEqual(j, aggregateSchedule.Next(i));
+            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(j));
         }
     }
 }

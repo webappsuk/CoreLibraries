@@ -32,7 +32,7 @@ using NodaTime;
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
-    /// Defines a single datetime schedule
+    /// Defines a schedule that runs at a specific <see cref="Instant"/>.
     /// </summary>
     public class OneOffSchedule : ISchedule
     {
@@ -42,9 +42,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         [PublicAPI]
         public readonly Instant Instant;
 
-        /// <summary>
-        /// The schedules optional name.
-        /// </summary>
         private readonly string _name;
 
         /// <inheritdoc/>
@@ -53,64 +50,121 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             get { return _name; }
         }
 
+        private readonly ScheduleOptions _options;
+
+        /// <inheritdoc/>
+        public ScheduleOptions Options
+        {
+            get { return _options; }
+        }
+
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
         /// </summary>
         /// <param name="instant">The instant.</param>
-        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="options">The options.</param>
         [PublicAPI]
-        public OneOffSchedule(Instant instant, [CanBeNull] string name = null)
+        public OneOffSchedule(Instant instant, ScheduleOptions options = ScheduleOptions.None)
         {
             Instant = instant;
+            _options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="instant">The instant.</param>
+        /// <param name="options">The options.</param>
+        [PublicAPI]
+        public OneOffSchedule([CanBeNull] string name, Instant instant, ScheduleOptions options = ScheduleOptions.None)
+        {
             _name = name;
+            Instant = instant;
+            _options = options;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
         /// </summary>
         /// <param name="dateTime">The date and time.</param>
-        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="options">The options.</param>
         [PublicAPI]
-        public OneOffSchedule(ZonedDateTime dateTime, [CanBeNull] string name = null)
+        public OneOffSchedule(ZonedDateTime dateTime, ScheduleOptions options = ScheduleOptions.None)
         {
             Instant = dateTime.ToInstant();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="dateTime">The date and time.</param>
+        /// <param name="options">The options.</param>
+        [PublicAPI]
+        public OneOffSchedule([CanBeNull] string name, ZonedDateTime dateTime, ScheduleOptions options = ScheduleOptions.None)
+        {
             _name = name;
+            Instant = dateTime.ToInstant();
+            _options = options;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
         /// </summary>
         /// <param name="dateTimeUTC">The date and time (UTC).</param>
-        /// <param name="name">An optional name for the schedule.</param>
         [PublicAPI]
-        public OneOffSchedule(DateTime dateTimeUTC, [CanBeNull] string name = null)
+        public OneOffSchedule(DateTime dateTimeUTC)
         {
             Instant = Instant.FromDateTimeUtc(dateTimeUTC);
-            _name = name;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
         /// </summary>
-        /// <param name="dateTime">The date and time.</param>
         /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="dateTimeUTC">The date and time (UTC).</param>
+        /// <param name="options">The options.</param>
         [PublicAPI]
-        public OneOffSchedule(DateTimeOffset dateTime, [CanBeNull] string name = null)
+        public OneOffSchedule([CanBeNull] string name, DateTime dateTimeUTC, ScheduleOptions options = ScheduleOptions.None)
         {
-            Instant = Instant.FromDateTimeOffset(dateTime);
             _name = name;
+            Instant = Instant.FromDateTimeUtc(dateTimeUTC);
+            _options = options;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="dateTimeOffset">The date and time.</param>
+        /// <param name="options">The options.</param>
+        [PublicAPI]
+        public OneOffSchedule(DateTimeOffset dateTimeOffset, ScheduleOptions options = ScheduleOptions.None)
+        {
+            Instant = Instant.FromDateTimeOffset(dateTimeOffset);
+            _options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="dateTimeOffset">The date and time.</param>
+        /// <param name="options">The options.</param>
+        [PublicAPI]
+        public OneOffSchedule([CanBeNull] string name, DateTimeOffset dateTimeOffset, ScheduleOptions options = ScheduleOptions.None)
+        {
+            _name = name;
+            Instant = Instant.FromDateTimeOffset(dateTimeOffset);
+            _options = options;
+        }
+        #endregion
 
         /// <inheritdoc/>
         public Instant Next(Instant last)
         {
             return Instant > last ? Instant : Instant.MaxValue;
-        }
-
-        /// <inheritdoc/>
-        public ScheduleOptions Options
-        {
-            get { return ScheduleOptions.None; }
         }
 
         /// <inheritdoc/>

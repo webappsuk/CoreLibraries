@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -38,10 +38,10 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// <summary>
     /// Creates a schedule made up of multiple other schedules
     /// </summary>
-    public class AggregateSchedule : ISchedule
+    public class AggregateSchedule : ISchedule, IEnumerable<ISchedule>
     {
         [NotNull]
-        private readonly IEnumerable<ISchedule> _scheduleCollection;
+        private readonly ISchedule[] _schedules;
 
         private readonly string _name;
 
@@ -54,16 +54,51 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateSchedule"/> class.
         /// </summary>
-        /// <param name="scheduleCollection">A collection of schedules.</param>
-        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="schedules">An enumeration of schedules.</param>
         [PublicAPI]
-        public AggregateSchedule([NotNull] IEnumerable<ISchedule> scheduleCollection, [CanBeNull] string name = null)
+        public AggregateSchedule([NotNull] IEnumerable<ISchedule> schedules)
+            : this (null, schedules.ToArray())
         {
-            Contract.Requires(scheduleCollection != null);
+            Contract.Requires(schedules != null);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregateSchedule" /> class.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="schedules">An enumeration of schedules.</param>
+        [PublicAPI]
+        public AggregateSchedule([CanBeNull] string name, [NotNull] IEnumerable<ISchedule> schedules)
+            : this(name, schedules.ToArray())
+        {
+            Contract.Requires(schedules != null);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregateSchedule" /> class.
+        /// </summary>
+        /// <param name="schedules">A collection of schedules.</param>
+        [PublicAPI]
+        public AggregateSchedule([NotNull] params ISchedule[] schedules)
+            : this(null, schedules)
+        {
+            Contract.Requires(schedules != null);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregateSchedule" /> class.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="schedules">A collection of schedules.</param>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        public AggregateSchedule([CanBeNull] string name, [NotNull] params ISchedule[] schedules)
+        {
+            Contract.Requires(schedules != null);
             // Duplicate collection
-            _scheduleCollection = scheduleCollection.ToArray();
+            _schedules = schedules;
             _name = name;
-            if (!_scheduleCollection.Any())
+            if (!_schedules.Any())
             {
                 _options = ScheduleOptions.None;
                 return;
@@ -71,7 +106,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
 
             // Calculate options and ensure all are identical.
             bool first = true;
-            foreach (ISchedule schedule in _scheduleCollection)
+            foreach (ISchedule schedule in _schedules)
             {
                 if (schedule == null)
                     continue;
@@ -93,7 +128,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         public Instant Next(Instant last)
         {
             Instant next = Instant.MaxValue;
-            foreach (ISchedule schedule in _scheduleCollection)
+            foreach (ISchedule schedule in _schedules)
             {
                 Contract.Assert(schedule != null);
                 Instant scheduleNext = schedule.Next(last);
@@ -112,10 +147,31 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             get { return _options; }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        public IEnumerator<ISchedule> GetEnumerator()
+        {
+            return ((IEnumerable<ISchedule>)_schedules).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
-            return "Next Run at " + Next(Scheduler.Clock.Now);
+            return string.Format(
+                "Aggregate Schedule ({0} schedules), next Run at {1}",
+                _schedules.Length,
+                Next(Scheduler.Clock.Now));
         }
     }
 }

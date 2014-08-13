@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly ISchedule Never = new OneOffSchedule(Instant.MaxValue, "Never");
+        public static readonly ISchedule Never = new OneOffSchedule("Never", Instant.MaxValue);
 
         /// <summary>
         /// The one second <see cref="Duration"/>.
@@ -59,6 +59,152 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         [PublicAPI]
         public static readonly Duration OneStandardDay = Duration.FromStandardDays(1);
+        
+        #region Duration
+        /// <summary>
+        /// Gets the value of the <see cref="Duration"/> expressed in whole and fractional milliseconds.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double TotalMilliseconds(this Duration duration)
+        {
+            return (double)duration.Ticks / NodaConstants.TicksPerMillisecond;
+        }
+
+        /// <summary>
+        /// Gets the milliseconds component of the <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Milliseconds(this Duration duration)
+        {
+            return (int)(duration.Ticks / NodaConstants.TicksPerMillisecond) % 1000;
+        }
+
+        /// <summary>
+        /// Gets the value of the <see cref="Duration"/> expressed in whole and fractional seconds.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double TotalSeconds(this Duration duration)
+        {
+            return (double)duration.Ticks / NodaConstants.TicksPerSecond;
+        }
+
+        /// <summary>
+        /// Gets the seconds component of the <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Seconds(this Duration duration)
+        {
+            return (int)(duration.Ticks / NodaConstants.TicksPerSecond) % 60;
+        }
+
+        /// <summary>
+        /// Gets the value of the <see cref="Duration"/> expressed in whole and fractional minutes.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double TotalMinutes(this Duration duration)
+        {
+            return (double)duration.Ticks / NodaConstants.TicksPerMinute;
+        }
+
+        /// <summary>
+        /// Gets the minutes component of the <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Minutes(this Duration duration)
+        {
+            return (int)(duration.Ticks / NodaConstants.TicksPerMinute) % 60;
+        }
+
+        /// <summary>
+        /// Gets the value of the <see cref="Duration"/> expressed in whole and fractional hours.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double TotalHours(this Duration duration)
+        {
+            return (double)duration.Ticks / NodaConstants.TicksPerHour;
+        }
+
+        /// <summary>
+        /// Gets the hours component of the <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Hours(this Duration duration)
+        {
+            return (int)(duration.Ticks / NodaConstants.TicksPerHour) % 24;
+        }
+
+        /// <summary>
+        /// Gets the value of the <see cref="Duration"/> expressed in whole and fractional standard days.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double TotalStandardDays(this Duration duration)
+        {
+            return (double)duration.Ticks / NodaConstants.TicksPerStandardDay;
+        }
+
+        /// <summary>
+        /// Gets the standard days component of the <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int StandardDays(this Duration duration)
+        {
+            return (int)(duration.Ticks / NodaConstants.TicksPerStandardDay);
+        }
+
+        /// <summary>
+        /// Gets the value of the <see cref="Duration"/> expressed in whole and fractional standard days.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double TotalStandardWeeks(this Duration duration)
+        {
+            return (double)duration.Ticks / NodaConstants.TicksPerStandardWeek;
+        }
+
+        /// <summary>
+        /// Gets the standard weeks component of the <see cref="Duration"/>.
+        /// </summary>
+        /// <param name="duration">The duration.</param>
+        /// <returns>System.Double.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int StandardWeeks(this Duration duration)
+        {
+            return (int)(duration.Ticks / NodaConstants.TicksPerStandardWeek);
+        }
+        #endregion
 
         #region Months
         /// <summary>
@@ -464,6 +610,21 @@ namespace WebApplications.Utilities.Scheduling
         }
 
         /// <summary>
+        /// Ceilings the specified instant to the second.
+        /// </summary>
+        /// <param name="instant">The instant.</param>
+        /// <returns>Instant.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static Instant Ceiling(this Instant instant)
+        {
+            return
+                new Instant(
+                    ((instant.Ticks + NodaConstants.TicksPerSecond - 1) / NodaConstants.TicksPerSecond) *
+                    NodaConstants.TicksPerSecond);
+        }
+
+        /// <summary>
         /// Gets the next valid second after the current <paramref name="instant" />.
         /// </summary>
         /// <param name="instant">The date time (fractions of a second are removed).</param>
@@ -489,8 +650,7 @@ namespace WebApplications.Utilities.Scheduling
             Minute minute = Minute.Zeroth,
             Second second = Second.Zeroth,
             [CanBeNull] CalendarSystem calendarSystem = null,
-            [CanBeNull] DateTimeZone timeZone = null,
-            bool inclusive = false)
+            [CanBeNull] DateTimeZone timeZone = null)
         {
             Contract.Ensures(Contract.Result<Instant>() >= instant);
 
@@ -511,11 +671,9 @@ namespace WebApplications.Utilities.Scheduling
             Contract.Assert(calendarSystem != null);
             Contract.Assert(timeZone != null);
 
-            // Remove fractions of a second from instant
-            instant = Floor(instant);
-            if (!inclusive)
-                instant += OneSecond;
-
+            // Move to next second.
+            instant = Ceiling(instant);
+            
             // Every second case.
             if ((month == Month.Every) &&
                 (day == Day.Every) &&
@@ -524,7 +682,7 @@ namespace WebApplications.Utilities.Scheduling
                 (minute == Minute.Every) &&
                 (second == Second.Every) &&
                 (week == Week.Every))
-                return instant + OneSecond;
+                return instant;
 
             // Get days and months.
             int[] days = Days(day).OrderBy(dy => dy).ToArray();
