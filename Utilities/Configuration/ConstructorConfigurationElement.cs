@@ -246,7 +246,7 @@ namespace WebApplications.Utilities.Configuration
                         Resources.ConstructorConfigurationElement_GetConstructor_CannotFindConstructor,
                         Type));
 
-            List<ConstantExpression> arguments = new List<ConstantExpression>();
+            List<Expression> arguments = new List<Expression>();
             foreach (ParameterInfo p in parameterInfos)
             {
                 object value = null;
@@ -265,7 +265,7 @@ namespace WebApplications.Utilities.Configuration
                 if (useDefault)
                     value = p.RawDefaultValueSafe();
 
-                arguments.Add(Expression.Constant(value, p.ParameterType));
+                arguments.Add(Expression.Constant(value).Convert(p.ParameterType));
             }
 
             Expression create = Expression.New(constructor, arguments);

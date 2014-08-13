@@ -257,8 +257,6 @@ namespace WebApplications.Utilities
         public static Task<TResult> Safe<TResult>([NotNull] this Func<Task<TResult>> taskCreator)
         {
             Contract.Requires(taskCreator != null);
-            Contract.Ensures(Contract.Result<Task<TResult>>() != null);
-
             try
             {
                 // ReSharper disable once AssignNullToNotNullAttribute

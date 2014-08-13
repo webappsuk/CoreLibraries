@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -74,11 +75,20 @@ namespace WebApplications.Utilities.Test
 
     public class TestObject
     {
+        public enum TestEnum
+        {
+            One,
+            Two,
+            Three
+        }
         public readonly int AttribParam;
         public readonly int IntValue;
         public readonly string Name;
         public readonly int Optional;
         public readonly TimeSpan TimeSpan;
+        public readonly TestEnum E1;
+        public readonly TestEnum E2;
+        public readonly TestEnum E3;
 
         public TestObject(string name)
         {
@@ -103,6 +113,17 @@ namespace WebApplications.Utilities.Test
             Optional = optional;
             AttribParam = attribParam;
             TimeSpan = timeSpan;
+        }
+
+        public TestObject(TestEnum e1, TestEnum e2 = default(TestEnum), TestEnum e3 = TestEnum.Two)
+        {
+            E1 = e1;
+            E2 = e2;
+            E3 = e3;
+        }
+
+        public TestObject(string name, IEnumerable<TestObject> objects)
+        {
         }
     }
 

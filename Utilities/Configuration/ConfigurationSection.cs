@@ -61,7 +61,7 @@ namespace WebApplications.Utilities.Configuration
         ///   Holds the constructor function.
         /// </summary>
         [NotNull]
-        private static readonly Func<T> _constructor = typeof (T).ConstructorFunc<T>();
+        private static readonly Func<T> _constructor = typeof(T).ConstructorFunc<T>();
 
         /// <summary>
         /// Calculates the section name.
@@ -75,7 +75,7 @@ namespace WebApplications.Utilities.Configuration
                     // Try to find attribute
                     ConfigurationSectionAttribute attribute =
                         (ConfigurationSectionAttribute)
-                            typeof (T).GetCustomAttributes(typeof (ConfigurationSectionAttribute), false).
+                            typeof(T).GetCustomAttributes(typeof(ConfigurationSectionAttribute), false).
                                 FirstOrDefault();
 
                     string sectionName = attribute != null ? attribute.Name : null;
@@ -84,7 +84,7 @@ namespace WebApplications.Utilities.Configuration
                         return sectionName;
 
                     // Get type name (after last '.')
-                    sectionName = typeof (T).Name;
+                    sectionName = typeof(T).Name;
 
                     int len = sectionName.Length;
 
@@ -144,6 +144,7 @@ namespace WebApplications.Utilities.Configuration
         [UsedImplicitly]
         public static string SectionName
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return _sectionName.Value; }
         }
 
@@ -154,29 +155,31 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>Once set as active a configuration is marked as readonly.</para>
         ///   <para>Setting the active configuration to <see langword="null"/> will load the default configuration.</para>
         /// </remarks>
+        [NotNull]
         public static T Active
         {
-            [NotNull]
             get
             {
                 return _active ?? GetConfiguration();
             }
-            [CanBeNull]
             set
             {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                // ReSharper disable once HeuristicUnreachableCode
                 if (value == null)
                     value = GetConfiguration();
 
-                if (_active == value)
+                if (Equals(_active, value))
                     return;
 
                 T oldConfiguration = _active;
                 _active = value;
                 _active.SetReadOnly();
 
+                ConfigurationChangedEventHandler onChanged = Changed;
                 if ((oldConfiguration != null) &&
-                    (Changed != null))
-                    Changed(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
+                    (onChanged != null))
+                    onChanged(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
             }
         }
 
@@ -186,7 +189,7 @@ namespace WebApplications.Utilities.Configuration
         [UsedImplicitly]
         public bool IsActive
         {
-            get { return this == _active; }
+            get { return Equals(this, _active); }
         }
 
         /// <summary>
@@ -202,7 +205,7 @@ namespace WebApplications.Utilities.Configuration
         [UsedImplicitly]
         public string Xmlns
         {
-            get { return (string) base["xmlns"]; }
+            get { return (string)base["xmlns"]; }
             set { base["xmlns"] = value; }
         }
 
@@ -238,6 +241,7 @@ namespace WebApplications.Utilities.Configuration
             if (configuration == null)
             {
                 configuration = _constructor();
+                // ReSharper disable once PossibleNullReferenceException
                 configuration.InitializeDefault();
             }
             return configuration;
@@ -253,7 +257,7 @@ namespace WebApplications.Utilities.Configuration
         [UsedImplicitly]
         protected TProp GetProperty<TProp>(string propertyName)
         {
-            return (TProp) base[propertyName];
+            return (TProp)base[propertyName];
         }
 
         /// <summary>

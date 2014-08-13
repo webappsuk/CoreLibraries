@@ -36,6 +36,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web.UI.WebControls;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Reflect;
 
@@ -789,7 +790,7 @@ namespace WebApplications.Utilities
                 // just specify the default of the type.
                 value = null;
             }
-            return (value == null) && (parameter.ParameterType.IsValueType)
+            return parameter.ParameterType.IsValueType && (value == null)
                 ? Activator.CreateInstance(parameter.ParameterType, true)
                 : value;
         }
@@ -1579,6 +1580,8 @@ namespace WebApplications.Utilities
         /// <param name="baseType">Type of the base.</param> 
         /// <returns></returns> 
         /// <remarks></remarks> 
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
         public static bool DescendsFrom([NotNull] this Type sourceType, [NotNull] Type baseType)
         {
             do

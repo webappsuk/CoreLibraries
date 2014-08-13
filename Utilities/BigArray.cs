@@ -40,6 +40,7 @@ namespace WebApplications.Utilities
     /// <remarks>
     /// Use with caution, this will deliberately eat up a lot of memory.
     /// </remarks>
+    [PublicAPI]
     public class BigArray<T> : ICloneable, IList, IStructuralComparable, IStructuralEquatable
     {
         // These need to be const so that the getter/setter get inlined by the JIT into 
