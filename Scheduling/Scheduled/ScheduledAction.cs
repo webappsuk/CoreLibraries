@@ -143,7 +143,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 md = (int)(maximumDuration.Ticks / NodaConstants.TicksPerMillisecond);
             }
             MaximumDurationMs = md < 0 ? 0 : md;
-            RecalculateNextDue();
+            RecalculateNextDue(Instant.MinValue);
         }
 
         /// <summary>
@@ -205,7 +205,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 if (ReferenceEquals(_schedule, value))
                     return;
                 _schedule = value;
-                RecalculateNextDue();
+                
+                RecalculateNextDue(_lastExecutionFinished);
             }
         }
 
@@ -265,7 +266,14 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         Interlocked.Increment(ref _executionCount);
 
                         // Mark execution finish (and calculate next due).
-                        LastExecutionFinished = Scheduler.Clock.Now;
+                        Instant lef = Scheduler.Clock.Now;
+                        _lastExecutionFinished = lef;
+
+                        // Recalculate when we're next due.
+                        RecalculateNextDue(
+                            Schedule.Options.HasFlag(ScheduleOptions.FromDue)
+                                ? due
+                                : lef);
 
                         // Enqueue history item.
                         if (HistoryQueue != null &&
@@ -327,12 +335,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         public Instant LastExecutionFinished
         {
             get { return _lastExecutionFinished; }
-            private set
-            {
-                if (_lastExecutionFinished >= value) return;
-                _lastExecutionFinished = value;
-                RecalculateNextDue();
-            }
         }
 
         private long _executionCount;
@@ -355,7 +357,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Recalculates the next due date.
         /// </summary>
-        private void RecalculateNextDue()
+        /// <param name="last">The instant the schedule was last due to run, or completed.</param>
+        private void RecalculateNextDue(Instant last)
         {
             // Increment recalculate counter, only let first increment continue.
             if (Interlocked.Increment(ref _calculatorCount) > 1)
@@ -371,7 +374,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
                     // If next due is in future, ask schedule when we're next due.
                     if (ndt > nt)
-                        ndt = Schedule.Next(Scheduler.Clock.Now).Ticks;
+                        ndt = Schedule.Next(last).Ticks;
 
                     // If the next due is in the past, set it to due now.
                     if (ndt < nt) ndt = nt;

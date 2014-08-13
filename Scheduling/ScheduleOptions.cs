@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling
 {
@@ -34,7 +35,7 @@ namespace WebApplications.Utilities.Scheduling
     /// </summary>
     /// <remarks></remarks>
     [Flags]
-    public enum ScheduleOptions
+    public enum ScheduleOptions : byte
     {
         /// <summary>
         /// Default options.
@@ -45,6 +46,15 @@ namespace WebApplications.Utilities.Scheduling
         /// When set allows executions to run concurrently; otherwise executions can only occur one
         /// at a time.
         /// </summary>
-        AllowConcurrent
+        AllowConcurrent = 1 << 0,
+
+        /// <summary>
+        /// The value passed into <see cref="ISchedule.Next"/> is the previous due <see cref="Instant"/>;
+        /// otherwise it is the current <see cref="Instant"/> (i.e. when the last execution was complete).
+        /// </summary>
+        /// <remarks>
+        /// In the event there has been no previous scheduled execution then this will be <see cref="Instant.MinValue"/>.
+        /// </remarks>
+        FromDue = 1 << 1
     }
 }
