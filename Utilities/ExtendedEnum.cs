@@ -608,6 +608,7 @@ namespace WebApplications.Utilities
         ///   <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
         [UsedImplicitly]
+        [Pure]
         public static TEnum Set<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -631,6 +632,7 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be set; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
+        [Pure]
         public static bool TrySet<TEnum>(this TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -659,6 +661,7 @@ namespace WebApplications.Utilities
         ///   <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
         [UsedImplicitly]
+        [Pure]
         public static TEnum Clear<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -682,6 +685,7 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be cleared; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
+        [Pure]
         public static bool TryClear<TEnum>(
             this TEnum value,
             TEnum flags,
@@ -714,6 +718,7 @@ namespace WebApplications.Utilities
         ///   The <paramref name="value"/> type could not be intersected with the <paramref name="flags"/> specified.
         /// </exception>
         [UsedImplicitly]
+        [Pure]
         public static TEnum Intersect<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -735,6 +740,7 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be intersected; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
+        [Pure]
         public static bool TryIntersect<TEnum>(
             this TEnum value,
             TEnum flags,
@@ -781,6 +787,7 @@ namespace WebApplications.Utilities
         /// </code>
         /// </example>
         [UsedImplicitly]
+        [Pure]
         public static TEnum Invert<TEnum>(this TEnum value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -803,6 +810,7 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
+        [Pure]
         public static bool TryInvert<TEnum>(this TEnum value, out TEnum result, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -828,6 +836,7 @@ namespace WebApplications.Utilities
         ///   <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
         [UsedImplicitly]
+        [Pure]
         public static TEnum Combine<TEnum>([NotNull] this IEnumerable<TEnum> flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -851,6 +860,7 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
+        [Pure]
         public static bool TryCombine<TEnum>(
             [NotNull] this IEnumerable<TEnum> flags,
             out TEnum result,

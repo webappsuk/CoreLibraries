@@ -2975,7 +2975,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
-            [NotNull] Func<Expression, Expression> getBody)
+            [NotNull][InstantHandle] Func<Expression, Expression> getBody)
         {
             return ForEach(sourceEnumerable, item => new[] { getBody(item) });
         }
@@ -2991,7 +2991,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
-            [NotNull] Func<Expression, IEnumerable<Expression>> getBody)
+            [NotNull][InstantHandle] Func<Expression, IEnumerable<Expression>> getBody)
         {
             Contract.Requires(sourceEnumerable != null);
 

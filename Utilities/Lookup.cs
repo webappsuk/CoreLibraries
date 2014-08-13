@@ -37,6 +37,7 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The type of the T key.</typeparam>
     /// <typeparam name="TElement">The type of the T element.</typeparam>
+    // TODO IReadOnlyLookup<,> interface that has the TryGet method?
     public class Lookup<TKey, TElement> : ILookup<TKey, TElement>
     {
         /// <summary>
