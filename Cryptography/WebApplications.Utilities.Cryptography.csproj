@@ -126,8 +126,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WebApplications.Utilities">
-      <HintPath>packages\WebApplications.Utilities.5.0.5296.27390\lib\net45\WebApplications.Utilities.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>packages\WebApplications.Utilities.5.0.5338.23918\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
