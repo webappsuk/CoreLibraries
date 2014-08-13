@@ -56,7 +56,8 @@ namespace WebApplications.Utilities.Scheduling.Test
             AggregateSchedule aggregateSchedule = new AggregateSchedule(oneOffSchedule);
             Assert.AreEqual(1, aggregateSchedule.Count());
             Assert.AreEqual(i, aggregateSchedule.Next(i - Schedule.OneSecond));
-            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(i));
+            Assert.AreEqual(i, aggregateSchedule.Next(i));
+            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(i + Duration.FromTicks(1)));
         }
 
         [TestMethod]
@@ -65,12 +66,14 @@ namespace WebApplications.Utilities.Scheduling.Test
             Instant i = new Instant(Tester.RandomGenerator.RandomInt32());
             Instant j = i + Schedule.OneSecond;
             OneOffSchedule s1 = new OneOffSchedule(i);
-            OneOffSchedule s2 = new OneOffSchedule(i);
+            OneOffSchedule s2 = new OneOffSchedule(j);
             AggregateSchedule aggregateSchedule = new AggregateSchedule(s1, s2);
             Assert.AreEqual(2, aggregateSchedule.Count());
             Assert.AreEqual(i, aggregateSchedule.Next(i - Schedule.OneSecond));
-            Assert.AreEqual(j, aggregateSchedule.Next(i));
-            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(j));
+            Assert.AreEqual(i, aggregateSchedule.Next(i));
+            Assert.AreEqual(j, aggregateSchedule.Next(i + Duration.FromTicks(1)));
+            Assert.AreEqual(j, aggregateSchedule.Next(j));
+            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(j + Duration.FromTicks(1)));
         }
     }
 }

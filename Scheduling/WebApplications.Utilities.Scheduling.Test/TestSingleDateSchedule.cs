@@ -41,15 +41,16 @@ namespace WebApplications.Utilities.Scheduling.Test
         [TestMethod]
         public void CurrentInstant()
         {
-            Instant i = Instant.FromDateTimeUtc(new DateTime(2011, 1, 1));
+            Instant i = Instant.FromDateTimeOffset(new DateTimeOffset(2011, 1, 1, 0, 0, 0, TimeSpan.Zero));
             OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
-            Assert.AreEqual(Instant.MaxValue, oneOffSchedule.Next(i));
+            Assert.AreEqual(i, oneOffSchedule.Next(i));
+            Assert.AreEqual(Instant.MaxValue, oneOffSchedule.Next(i + Duration.FromTicks(1)));
         }
 
         [TestMethod]
         public void PastInstant()
         {
-            Instant i = Instant.FromDateTimeUtc(new DateTime(2011, 1, 1));
+            Instant i = Instant.FromDateTimeOffset(new DateTimeOffset(2011, 1, 1, 0, 0, 0, TimeSpan.Zero));
             OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
             Assert.AreEqual(Instant.MaxValue, oneOffSchedule.Next(i + Schedule.OneSecond));
         }
@@ -57,7 +58,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         [TestMethod]
         public void NextSecondInstant()
         {
-            Instant i = Instant.FromDateTimeUtc(new DateTime(2011, 1, 1));
+            Instant i = Instant.FromDateTimeOffset(new DateTimeOffset(2011, 1, 1, 0, 0, 0, TimeSpan.Zero));
             OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
             Assert.AreEqual(i, oneOffSchedule.Next(i - Schedule.OneSecond));
         }

@@ -129,7 +129,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public Instant Next(Instant last)
         {
-            return Instant > last ? Instant : Instant.MaxValue;
+            return Instant >= last ? Instant : Instant.MaxValue;
         }
 
         /// <inheritdoc/>
