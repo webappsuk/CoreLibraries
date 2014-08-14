@@ -12,7 +12,7 @@ your employer in accordance with its contractual and common law rights
 otherwise infringe its copyright or other intellectual property rights in the
 Software.
 
-© Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+© Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 
 *******************************************************************************
 * WARNING: Do not have this file open during regeneration as it can slow down *
@@ -21,7 +21,7 @@ Software.
 
 Schema code file generation
 ============================
-Started			: 12/28/2012 09:11:44
+Started			: 08/14/2014 17:50:10
 Saved helper template files:
     C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric.Generated.txt4
 Saved files:
@@ -58,5 +58,5 @@ Saved files:
     C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric2.Generated.cs
     C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric1.Generated.cs
 
-Finished        : 12/28/2012 09:11:45
-Total Duration  : 737.093 ms
+Finished        : 08/14/2014 17:50:11
+Total Duration  : 613.222 ms

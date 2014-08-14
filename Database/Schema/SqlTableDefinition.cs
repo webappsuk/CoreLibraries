@@ -206,6 +206,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="column">The column to add.</param>
         internal void AddColumn([NotNull] SqlColumn column)
         {
+            Contract.Requires(column != null);
             _columns.Add(column.Name, column);
         }
 

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
 
@@ -48,6 +49,8 @@ namespace WebApplications.Utilities.Database.Exceptions
                 sqlProgram.Name,
                 innerException.Message)
         {
+            Contract.Requires(sqlProgram != null);
+            Contract.Requires(innerException != null);
         }
     }
 }

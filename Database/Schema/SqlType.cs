@@ -206,6 +206,8 @@ namespace WebApplications.Utilities.Database.Schema
             bool isClr)
             : this(baseType, schemaName, name, size, isNullable, isUserDefined, isClr, false)
         {
+            Contract.Requires(!String.IsNullOrWhiteSpace(schemaName));
+            Contract.Requires(!String.IsNullOrWhiteSpace(name));
         }
 
 
@@ -1062,9 +1064,12 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   The created convertor; or <see langword="null"/> if the input type is not assignable to the required input type.
         /// </returns>
-        private static Func<object, TypeConstraintMode, object> CreateConvertor<TClr>([NotNull] Type actualClrType,
-                                                                                      bool supportNullable = true)
+        private static Func<object, TypeConstraintMode, object> CreateConvertor<TClr>(
+            [NotNull] Type actualClrType,
+            bool supportNullable = true)
         {
+            Contract.Requires(!supportNullable || actualClrType != null);
+
             bool isNullable = false;
 
             // Check if we support nullable types and the type is Nullable<>

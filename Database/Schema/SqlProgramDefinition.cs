@@ -183,6 +183,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="parameter">The parameter to add.</param>
         internal void AddParameter([NotNull] SqlProgramParameter parameter)
         {
+            Contract.Requires(parameter != null);
             _parameters.Add(parameter.Name, parameter);
         }
 
@@ -288,15 +289,18 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied <paramref name="names"/> count did not match the <paramref name="types"/> count.
         /// </exception>
         [NotNull]
-        internal static IEnumerable<KeyValuePair<string, Type>> ToKVP([NotNull] IEnumerable<string> names,
+        internal static IEnumerable<KeyValuePair<string, Type>> ToKVP(
+            [NotNull] IEnumerable<string> names,
                                                                       [NotNull] params Type[] types)
         {
+            Contract.Requires(names != null);
+            Contract.Requires(types != null);
             List<Type> t = types.ToList();
             int nCount = names.Count();
             int tCount = t.Count();
             if (nCount != tCount)
                 throw new LoggingException(
-                    LoggingLevel.Critical, 
+                    LoggingLevel.Critical,
                     Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
                     nCount,
                     tCount);
@@ -305,7 +309,6 @@ namespace WebApplications.Utilities.Database.Schema
             List<KeyValuePair<string, Type>> parameters = new List<KeyValuePair<string, Type>>();
             using (IEnumerator<string> ne = names.GetEnumerator())
             using (List<Type>.Enumerator te = t.GetEnumerator())
-            {
                 do
                 {
                     if (!te.MoveNext())
@@ -324,7 +327,6 @@ namespace WebApplications.Utilities.Database.Schema
 
                     parameters.Add(new KeyValuePair<string, Type>(name, type));
                 } while (true);
-            }
             return parameters;
         }
 

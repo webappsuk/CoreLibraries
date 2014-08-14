@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -60,6 +61,8 @@ namespace WebApplications.Utilities.Database.Schema
             bool isClr)
             : base(baseType, schemaName, name, defaultSize, isNullable, isUserDefined, isClr, true)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(schemaName));
+            Contract.Requires(!string.IsNullOrWhiteSpace(name));
         }
 
         /// <summary>
