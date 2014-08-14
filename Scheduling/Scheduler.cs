@@ -25,13 +25,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using NodaTime;
+using NodaTime.TimeZones;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Scheduling.Configuration;
 using WebApplications.Utilities.Scheduling.Scheduled;
@@ -58,7 +61,8 @@ namespace WebApplications.Utilities.Scheduling
         /// The named schedules.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, ISchedule> _schedules = new ConcurrentDictionary<string, ISchedule>();
+        private static readonly ConcurrentDictionary<string, ISchedule> _schedules =
+            new ConcurrentDictionary<string, ISchedule>();
 
         /// <summary>
         /// Holds all scheduled actions.
@@ -76,25 +80,49 @@ namespace WebApplications.Utilities.Scheduling
         private static int _tickState;
 
         [NotNull]
-        private readonly static Timer _ticker;
+        private static readonly Timer _ticker;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler" /> class.
         /// </summary>
         static Scheduler()
         {
-            Contract.Requires(SchedulerConfiguration.Active != null);
-            // ReSharper disable PossibleNullReferenceException
-            DefaultMaximumHistory = SchedulerConfiguration.Active.DefautlMaximumHistory;
-            DefaultMaximumDuration = SchedulerConfiguration.Active.DefaultMaximumDuration;
+            SchedulerConfiguration schedulerConfiguration = SchedulerConfiguration.Active;
+            Contract.Assert(schedulerConfiguration != null);
+
+            DefaultMaximumHistory = schedulerConfiguration.DefautlMaximumHistory;
+            DefaultMaximumDuration = schedulerConfiguration.DefaultMaximumDuration;
             // ReSharper disable once AssignNullToNotNullAttribute
+            // If we have a high resolution stopwatch use that for the clock.
             _clock = Stopwatch.IsHighResolution ? (IClock)StopwatchClock.Instance : SystemClock.Instance;
+
+            // Load the time zone database from a file, if specified.
+            string dbPath = schedulerConfiguration.TimeZoneDB;
+            if (!string.IsNullOrWhiteSpace(dbPath))
+            {
+                if (!File.Exists(dbPath))
+                    throw new LoggingException(()=>Resource.Scheduler_Scheduler_TimeZoneDB_Not_Found, dbPath);
+
+                try
+                {
+                    using (FileStream stream = File.OpenRead(dbPath))
+                        _dateTimeZoneProvider = new DateTimeZoneCache(TzdbDateTimeZoneSource.FromStream(stream));
+                }
+                catch (Exception e)
+                {
+                    throw new LoggingException(() => Resource.Scheduler_Scheduler_TimeZoneDB_Failed, dbPath);
+                }
+            }
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            else _dateTimeZoneProvider = DateTimeZoneProviders.Tzdb;
+
             _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
 
-            foreach (ScheduleElement scheduleElement in SchedulerConfiguration.Active.Schedules)
+            foreach (ScheduleElement scheduleElement in schedulerConfiguration.Schedules)
                 AddSchedule(scheduleElement.GetInstance<ISchedule>());
 
-            Enabled = SchedulerConfiguration.Active.Enabled;
+            Enabled = schedulerConfiguration.Enabled;
             // ReSharper restore PossibleNullReferenceException
         }
 
@@ -141,7 +169,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>The <see cref="ISchedule" /> removed, if any; otherwise <see langword="null" />.</returns>
         [NotNull]
         [PublicAPI]
-        public static ISchedule AddSchedule([NotNull]ISchedule schedule)
+        public static ISchedule AddSchedule([NotNull] ISchedule schedule)
         {
             Contract.Requires(schedule != null);
             Contract.Requires(schedule.Name != null);
@@ -168,6 +196,7 @@ namespace WebApplications.Utilities.Scheduling
         #endregion
 
         #region Add Actions Overloads
+
         #region Add using named schedule
         /// <summary>
         /// Schedules the specified action.
@@ -262,7 +291,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action().ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action()
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 GetSchedule(scheduleName),
                 maximumHistory,
                 maximumDuration);
@@ -293,7 +328,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action(d).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action(d)
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 GetSchedule(scheduleName),
                 maximumHistory,
                 maximumDuration);
@@ -324,7 +365,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action(t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action(t)
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 GetSchedule(scheduleName),
                 maximumHistory,
                 maximumDuration);
@@ -355,7 +402,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action(d, t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action(d, t)
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 GetSchedule(scheduleName),
                 maximumHistory,
                 maximumDuration);
@@ -383,7 +436,12 @@ namespace WebApplications.Utilities.Scheduling
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => Task.FromResult(function()), GetSchedule(scheduleName), maximumHistory, maximumDuration);
+            return Add(
+                true,
+                (d, t) => Task.FromResult(function()),
+                GetSchedule(scheduleName),
+                maximumHistory,
+                maximumDuration);
         }
 
         /// <summary>
@@ -406,7 +464,12 @@ namespace WebApplications.Utilities.Scheduling
             Contract.Requires(function != null);
             Contract.Requires(scheduleName != null);
             Contract.Ensures(Contract.Result<ScheduledAction>() != null);
-            return Add(true, (d, t) => Task.FromResult(function(d)), GetSchedule(scheduleName), maximumHistory, maximumDuration);
+            return Add(
+                true,
+                (d, t) => Task.FromResult(function(d)),
+                GetSchedule(scheduleName),
+                maximumHistory,
+                maximumDuration);
         }
 
         /// <summary>
@@ -596,7 +659,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action().ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action()
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 schedule,
                 maximumHistory,
                 maximumDuration);
@@ -627,7 +696,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action(d).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action(d)
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 schedule,
                 maximumHistory,
                 maximumDuration);
@@ -658,7 +733,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action(t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action(t)
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 schedule,
                 maximumHistory,
                 maximumDuration);
@@ -689,7 +770,13 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable AssignNullToNotNullAttribute
             return Add(
                 false,
-                (d, t) => action(d, t).ContinueWith(_ => true, t, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current),
+                (d, t) =>
+                    action(d, t)
+                    .ContinueWith(
+                        _ => true,
+                        t,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current),
                 schedule,
                 maximumHistory,
                 maximumDuration);
@@ -868,6 +955,7 @@ namespace WebApplications.Utilities.Scheduling
             return sf;
         }
         #endregion
+
         #endregion
 
         #region Remove actions Overloads
@@ -877,7 +965,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="scheduledAction">The scheduled action.</param>
         /// <returns><see langword="true" /> if removed, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        public static bool Remove([NotNull]ScheduledAction scheduledAction)
+        public static bool Remove([NotNull] ScheduledAction scheduledAction)
         {
             Contract.Requires(scheduledAction != null);
             ScheduledAction a;
@@ -892,7 +980,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="scheduledFunction">The scheduled action.</param>
         /// <returns><see langword="true" /> if removed, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        public static bool Remove<T>([NotNull]ScheduledFunction<T> scheduledFunction)
+        public static bool Remove<T>([NotNull] ScheduledFunction<T> scheduledFunction)
         {
             Contract.Requires(scheduledFunction != null);
             ScheduledAction a;
@@ -907,6 +995,7 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <value>The clock.</value>
         [NotNull]
+        [PublicAPI]
         public static IClock Clock
         {
             get
@@ -918,6 +1007,22 @@ namespace WebApplications.Utilities.Scheduling
             {
                 Contract.Requires(value != null);
                 _clock = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the date time zone provider.
+        /// </summary>
+        /// <value>The date time zone provider.</value>
+        [NotNull]
+        [PublicAPI]
+        public static IDateTimeZoneProvider DateTimeZoneProvider
+        {
+            get { return _dateTimeZoneProvider; }
+            set
+            {
+                Contract.Requires(value != null);
+                _dateTimeZoneProvider = value;
             }
         }
 
@@ -954,6 +1059,7 @@ namespace WebApplications.Utilities.Scheduling
         }
 
         private static int _defaultMaximumHistory;
+
         /// <summary>
         /// Gets or sets the default maximum history.
         /// </summary>
@@ -972,13 +1078,17 @@ namespace WebApplications.Utilities.Scheduling
         }
 
         private static ScheduledAction _nextScheduledAction;
+
         /// <summary>
         /// Gets the next scheduled action (if any).
         /// </summary>
         /// <value>The next scheduled action.</value>
         [PublicAPI]
         [CanBeNull]
-        public static ScheduledAction NextScheduledAction { get { return _nextScheduledAction; } }
+        public static ScheduledAction NextScheduledAction
+        {
+            get { return _nextScheduledAction; }
+        }
 
         /// <summary>
         /// The next time the action is due.
@@ -990,6 +1100,9 @@ namespace WebApplications.Utilities.Scheduling
 
         [NotNull]
         private static IClock _clock;
+
+        [NotNull]
+        private static IDateTimeZoneProvider _dateTimeZoneProvider;
 
         /// <summary>
         /// Gets the next due date and time (UTC).

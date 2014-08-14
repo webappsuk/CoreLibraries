@@ -149,5 +149,23 @@ namespace WebApplications.Utilities.Scheduling {
                 return ResourceManager.GetString("Scheduler_GetSchedule_NotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A fatal exception occurred whilst trying to load the TimeZone DB &apos;{0}..
+        /// </summary>
+        internal static string Scheduler_Scheduler_TimeZoneDB_Failed {
+            get {
+                return ResourceManager.GetString("Scheduler_Scheduler_TimeZoneDB_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified path to the time zone database &apos;{0}&apos; does not exist..
+        /// </summary>
+        internal static string Scheduler_Scheduler_TimeZoneDB_Not_Found {
+            get {
+                return ResourceManager.GetString("Scheduler_Scheduler_TimeZoneDB_Not_Found", resourceCulture);
+            }
+        }
     }
 }

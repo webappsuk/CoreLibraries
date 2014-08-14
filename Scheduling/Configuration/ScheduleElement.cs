@@ -48,21 +48,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
     public class ScheduleElement : ConstructorConfigurationElement
     {
         /// <summary>
-        ///   Gets or sets the type.
-        /// </summary>
-        /// <value>The logger type.</value>
-        [ConfigurationProperty("type")]
-        [TypeConverter(typeof(TypeNameConverter))]
-        [SubclassTypeValidator(typeof(ISchedule))]
-        [PublicAPI]
-        public override Type Type
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<Type>("type"); }
-            set { SetProperty("type", value); }
-        }
-
-        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
@@ -80,6 +65,39 @@ namespace WebApplications.Utilities.Scheduling.Configuration
                 Contract.Requires(value != null);
                 SetProperty("name", value);
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        /// <remarks></remarks>
+        [ConfigurationProperty("options", DefaultValue = ScheduleOptions.None, IsRequired = false)]
+        [PublicAPI]
+        public ScheduleOptions Options
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return GetProperty<ScheduleOptions>("options"); }
+            set
+            {
+                Contract.Requires(value != null);
+                SetProperty("options", value);
+            }
+        }
+
+        /// <summary>
+        ///   Gets or sets the type.
+        /// </summary>
+        /// <value>The logger type.</value>
+        [ConfigurationProperty("type")]
+        [TypeConverter(typeof(TypeNameConverter))]
+        [SubclassTypeValidator(typeof(ISchedule))]
+        [PublicAPI]
+        public override Type Type
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return GetProperty<Type>("type"); }
+            set { SetProperty("type", value); }
         }
     }
 }

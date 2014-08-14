@@ -12,4 +12,10 @@
     <description>$description$</description>
     <tags>Utility Utilities Scheduling</tags>
   </metadata>
+  <files>
+    <file src="app.config.transform" target="Content" />
+    <file src="web.config.transform" target="Content" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
+    <file src="bin\Release\TimeZoneData\*.nzd" target="lib\net45\TimeZoneData" />
+  </files>
 </package>

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 using NodaTime;
 
@@ -122,6 +123,23 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         {
             _name = name;
             Instant = Instant.FromDateTimeOffset(dateTime);
+            _options = options;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class, used by configuration system.
+        /// </summary>
+        /// <param name="name">An optional name for the schedule.</param>
+        /// <param name="dateTime">The date and time.</param>
+        /// <param name="timeZone">The time zone.</param>
+        /// <param name="options">The options.</param>
+        [UsedImplicitly]
+        private OneOffSchedule([CanBeNull] string name, DateTime dateTime, [NotNull]string timeZone, ScheduleOptions options = ScheduleOptions.None)
+        {
+            Contract.Requires(timeZone != null);
+            _name = name;
+            DateTimeZone tz = Scheduler.DateTimeZoneProvider[timeZone];
+            Instant = tz.AtLeniently(LocalDateTime.FromDateTime(dateTime)).ToInstant();
             _options = options;
         }
         #endregion

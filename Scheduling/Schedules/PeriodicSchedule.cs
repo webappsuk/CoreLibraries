@@ -146,7 +146,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 // ReSharper disable PossibleNullReferenceException
                 // ReSharper disable AssignNullToNotNullAttribute
                 string.IsNullOrWhiteSpace(calendar) ? CalendarSystem.Iso : CalendarSystem.ForId(calendar),
-                string.IsNullOrWhiteSpace(timeZone) ? DateTimeZone.Utc : DateTimeZoneProviders.Tzdb[timeZone],
+                string.IsNullOrWhiteSpace(timeZone) ? DateTimeZone.Utc : Scheduler.DateTimeZoneProvider[timeZone],
                 // ReSharper restore PossibleNullReferenceException
                 // ReSharper restore AssignNullToNotNullAttribute
                 options,

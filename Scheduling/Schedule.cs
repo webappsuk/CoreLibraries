@@ -637,7 +637,6 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="second">The second.</param>
         /// <param name="calendarSystem">The calendar (defaults to ISO-8601 standard).</param>
         /// <param name="timeZone">The time zone (defaults to UTC).</param>
-        /// <param name="inclusive">if set to <c>true</c> can return the time specified, otherwise, starts at the next second..</param>
         /// <returns>The next valid date (or <see cref="DateTime.MaxValue" /> if none).</returns>
         [PublicAPI]
         public static Instant NextValid(

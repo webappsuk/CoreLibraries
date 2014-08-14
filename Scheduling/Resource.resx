@@ -147,4 +147,10 @@
   <data name="DurationValidator_Validate_InclusiveMaximum" xml:space="preserve">
     <value>The specified duration '{0}' must be less than, or equal to, '{1}'.</value>
   </data>
+  <data name="Scheduler_Scheduler_TimeZoneDB_Not_Found" xml:space="preserve">
+    <value>The specified path to the time zone database '{0}' does not exist.</value>
+  </data>
+  <data name="Scheduler_Scheduler_TimeZoneDB_Failed" xml:space="preserve">
+    <value>A fatal exception occurred whilst trying to load the TimeZone DB '{0}.</value>
+  </data>
 </root>
