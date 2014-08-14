@@ -13,6 +13,7 @@
     <tags>Utility Utilities Module Initializer Build Task</tags>
     <references />
     <dependencies />
+    <developmentDependency>true</developmentDependency>
   </metadata>
   <files>
     <file src="install.ps1" target="tools\install.ps1" />
@@ -20,6 +21,6 @@
     <file src="InjectModuleInitializer.targets" target="tools\InjectModuleInitializer.targets" />
     <file src="*.pp" target="content" />
     <file src="bin\Release\*.dll" target="tools" />
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
+    <file src="bin\Release\CodeContracts\*.*" target="tools\CodeContracts" />
   </files>
 </package>
