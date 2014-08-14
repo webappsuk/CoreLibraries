@@ -39,5 +39,5 @@ using WebApplications.Utilities;
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblyVersion("5.1.*")]
 [assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

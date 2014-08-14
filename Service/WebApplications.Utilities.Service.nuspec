@@ -12,16 +12,16 @@
     <description>$description$</description>
     <tags>Utility Utilities Service</tags>
     <references>
-      <group targetFramework="net45">
+      <group targetFramework="net451">
         <reference file="WebApplications.Utilities.Service.dll" />
       </group>
     </references>
   </metadata>
   <files>
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
-    <file src="ServiceClient\bin\Release\ServiceClient.exe" target="lib\net45\" />
-    <file src="ServiceClient\bin\Release\ServiceClient.exe.config" target="lib\net45\" />
-    <file src="WebApplications.Utilities.Service.Client\bin\Release\WebApplications.Utilities.Service.Client.dll" target="lib\net45\" />
-    <file src="WebApplications.Utilities.Service.Common\bin\Release\WebApplications.Utilities.Service.Common.dll" target="lib\net45\" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
+    <file src="ServiceClient\bin\Release\ServiceClient.exe" target="lib\net451\" />
+    <file src="ServiceClient\bin\Release\ServiceClient.exe.config" target="lib\net451\" />
+    <file src="WebApplications.Utilities.Service.Client\bin\Release\WebApplications.Utilities.Service.Client.dll" target="lib\net451\" />
+    <file src="WebApplications.Utilities.Service.Common\bin\Release\WebApplications.Utilities.Service.Common.dll" target="lib\net451\" />
   </files>
 </package>
