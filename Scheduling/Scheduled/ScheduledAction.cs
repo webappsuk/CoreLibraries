@@ -374,7 +374,22 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
                     // If next due is in future, ask schedule when we're next due.
                     if (ndt > nt)
+                    {
                         ndt = Schedule.Next(last).Ticks;
+                        ScheduleOptions options = Schedule.Options;
+
+                        // If options >= 4 means one of the alignment flags is set.
+                        if ((byte)options >= 4)
+                        {
+                            // Align the ticks as per flags.
+                            if (options.HasFlag(ScheduleOptions.AlignHours))
+                                ndt = ((ndt + NodaConstants.TicksPerHour - 1) / NodaConstants.TicksPerHour) * NodaConstants.TicksPerHour;
+                            else if (options.HasFlag(ScheduleOptions.AlignMinutes))
+                                ndt = ((ndt + NodaConstants.TicksPerMinute - 1) / NodaConstants.TicksPerMinute) * NodaConstants.TicksPerMinute;
+                            else if (options.HasFlag(ScheduleOptions.AlignSeconds))
+                                ndt = ((ndt + NodaConstants.TicksPerSecond - 1) / NodaConstants.TicksPerSecond) * NodaConstants.TicksPerSecond;
+                        }
+                    }
 
                     // If the next due is in the past, set it to due now.
                     if (ndt < nt) ndt = nt;

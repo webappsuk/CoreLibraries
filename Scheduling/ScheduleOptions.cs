@@ -33,7 +33,6 @@ namespace WebApplications.Utilities.Scheduling
     /// <summary>
     /// Schedule options.
     /// </summary>
-    /// <remarks></remarks>
     [Flags]
     public enum ScheduleOptions : byte
     {
@@ -55,6 +54,21 @@ namespace WebApplications.Utilities.Scheduling
         /// <remarks>
         /// In the event there has been no previous scheduled execution then this will be <see cref="Instant.MinValue"/>.
         /// </remarks>
-        FromDue = 1 << 1
+        FromDue = 1 << 1,
+
+        /// <summary>
+        /// Aligns any next due date to the next second.
+        /// </summary>
+        AlignSeconds = 1 << 2,
+
+        /// <summary>
+        /// Aligns any next due date to the next minute.
+        /// </summary>
+        AlignMinutes = 1 << 3,
+
+        /// <summary>
+        /// Aligns any next due date to the next hour.
+        /// </summary>
+        AlignHours = 1 << 4
     }
 }
