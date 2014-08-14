@@ -134,21 +134,21 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing">
-      <HintPath>..\packages\WebApplications.Testing.5.0.5338.23866\lib\net45\WebApplications.Testing.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebApplications.Testing, Version=5.1.5339.27198, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Testing.5.1.5339.27198\lib\net451\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.0.5338.23918\lib\net45\WebApplications.Utilities.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebApplications.Utilities, Version=5.1.5339.27923, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5339.27923\lib\net451\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance">
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.0.5338.24171\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5339.28920, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5339.28920\lib\net451\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Scheduling">
-      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5339.25446\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebApplications.Utilities.Scheduling, Version=5.1.5339.28766, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5339.28766\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -190,8 +190,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.0.5338.24171\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.0.5338.24171\tools\PerfSetup.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5339.25446\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5339.25446\tools\Scheduling.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5339.28920\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5339.28920\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5339.28766\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5339.28766\tools\Scheduling.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
