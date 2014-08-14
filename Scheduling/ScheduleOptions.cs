@@ -45,7 +45,7 @@ namespace WebApplications.Utilities.Scheduling
         /// When set allows executions to run concurrently; otherwise executions can only occur one
         /// at a time.
         /// </summary>
-        AllowConcurrent = 1 << 0,
+        // AllowConcurrent = 1 << 0,
 
         /// <summary>
         /// The value passed into <see cref="ISchedule.Next"/> is the previous due <see cref="Instant"/>;

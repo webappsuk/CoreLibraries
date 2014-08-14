@@ -240,8 +240,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             // Mark this action as executing.
             int executing = Interlocked.Increment(ref _executing);
             // Only execute if we allow concurrency or we're not executing already.
-            if (!schedule.Options.HasFlag(ScheduleOptions.AllowConcurrent) &&
-                (executing > 1))
+            if (executing > 1)
             {
                 Interlocked.Decrement(ref _executing);
                 return TaskResult<ScheduledActionResult>.Default;
