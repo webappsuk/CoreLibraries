@@ -12,12 +12,12 @@
     <description>$description$</description>
     <tags>Utility Utilities Serialization</tags>
     <references>
-      <group targetFramework="net45">
+      <group targetFramework="net451">
         <reference file="WebApplications.Utilities.Serialization.dll" />
       </group>
     </references>
   </metadata>
   <files>
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
   </files>
 </package>
