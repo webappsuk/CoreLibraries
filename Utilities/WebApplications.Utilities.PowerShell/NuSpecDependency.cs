@@ -136,7 +136,7 @@ namespace WebApplications.Utilities.PowerShell
         /// </exception>
         public override string ToString()
         {
-            return String.IsNullOrWhiteSpace(Version) ? Id : String.Format("{0}, {1}", Id, Version);
+            return String.IsNullOrWhiteSpace(Version) ? (Id ?? "Unknown ID") : String.Format("{0}, {1}", Id, Version);
         }
     }
 }

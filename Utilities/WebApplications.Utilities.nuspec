@@ -12,7 +12,7 @@
     <description>$description$</description>
     <tags>Utility Utilities</tags>
     <references>
-      <group targetFramework="net45">
+      <group targetFramework="net451">
         <reference file="WebApplications.Utilities.dll" />
       </group>
     </references>
@@ -21,7 +21,7 @@
     <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
     <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
     <file src="bin\Release\JetBrains.Annotations.dll" target="tools\JetBrains.Annotations.dll" />
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
     <file src="Publish.ps1" target="tools\Publish.ps1" />
     <file src="Commit.ps1" target="tools\Commit.ps1" />
   </files>

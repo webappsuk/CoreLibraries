@@ -1,13 +1,4 @@
-﻿
-
-
-
-
-
-
-
-
- 
+﻿ 
  
 #region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
@@ -43,7 +34,6 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities
 {
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2}"/>.
     /// </summary>
@@ -53,7 +43,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2> : IEnumerable<Tuple<T1, T2>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3}"/>.
@@ -65,7 +54,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3> : IEnumerable<Tuple<T1, T2, T3>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4}"/>.
@@ -79,7 +67,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5}"/>.
     /// </summary>
@@ -92,7 +79,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5> : IEnumerable<Tuple<T1, T2, T3, T4, T5>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>.
@@ -108,7 +94,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>.
     /// </summary>
@@ -123,7 +108,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
@@ -141,7 +125,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
     /// </summary>
@@ -158,7 +141,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
@@ -178,7 +160,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
     /// </summary>
@@ -197,7 +178,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
@@ -219,7 +199,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
     /// </summary>
@@ -240,7 +219,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
@@ -264,7 +242,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
     /// </summary>
@@ -287,7 +264,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
@@ -313,7 +289,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
     /// </summary>
@@ -338,7 +313,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
@@ -366,7 +340,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
     /// </summary>
@@ -393,7 +366,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
@@ -423,7 +395,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
     /// </summary>
@@ -452,7 +423,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
@@ -484,7 +454,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
     /// </summary>
@@ -515,7 +484,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
@@ -549,7 +517,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
     /// </summary>
@@ -582,7 +549,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
@@ -618,7 +584,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
     /// </summary>
@@ -653,7 +618,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
@@ -691,7 +655,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
     /// </summary>
@@ -728,7 +691,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
@@ -768,7 +730,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
     /// </summary>
@@ -807,7 +768,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
@@ -849,7 +809,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
     /// </summary>
@@ -890,7 +849,6 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>>
     {
     }
-
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
@@ -934,7 +892,6 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
     /// </summary>
@@ -977,6 +934,5 @@ namespace WebApplications.Utilities
     public interface IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> : IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>>
     {
     }
-
 }
  

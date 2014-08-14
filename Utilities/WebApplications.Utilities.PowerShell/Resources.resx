@@ -147,4 +147,7 @@
   <data name="Zip_Decompress_FileNotFound" xml:space="preserve">
     <value>Could not find the zip file '{0}'.</value>
   </data>
+  <data name="Zip_Decompress_Directory_Exists" xml:space="preserve">
+    <value>The '{0}' directory already exists, use the force option to overwrite.</value>
+  </data>
 </root>

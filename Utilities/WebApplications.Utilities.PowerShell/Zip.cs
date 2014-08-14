@@ -27,7 +27,7 @@
 
 using System;
 using System.IO;
-using Ionic.Zip;
+using System.IO.Compression;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.PowerShell
@@ -64,11 +64,7 @@ namespace WebApplications.Utilities.PowerShell
                 File.Delete(zipFile);
             }
 
-            using (ZipFile z = new ZipFile(zipFile))
-            {
-                z.AddDirectory(directory);
-                z.Save();
-            }
+            ZipFile.CreateFromDirectory(directory, zipFile);
         }
 
         /// <summary>
@@ -83,13 +79,19 @@ namespace WebApplications.Utilities.PowerShell
             if (!File.Exists(zipFile))
                 throw new FileNotFoundException(string.Format(Resources.Zip_Decompress_FileNotFound, zipFile));
 
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            if (Directory.Exists(directory))
+            {
+                if (!force)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            Resources.Zip_Decompress_Directory_Exists,
+                            directory));
+                Directory.Delete(directory, true);
+            }
 
-            using (ZipFile z = new ZipFile(zipFile))
-                z.ExtractAll(
-                    directory,
-                    force ? ExtractExistingFileAction.OverwriteSilently : ExtractExistingFileAction.Throw);
+            Directory.CreateDirectory(directory);
+
+            ZipFile.ExtractToDirectory(zipFile, directory);
         }
     }
 }
