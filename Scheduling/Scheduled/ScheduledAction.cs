@@ -130,7 +130,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             [CanBeNull] Type returnType)
         {
             Contract.Requires(schedule != null);
-            Enabled = true;
+            _enabled = 1;
             _lastExecutionFinished = Instant.MinValue;
             _schedule = schedule;
             MaximumHistory = maximumHistory;
@@ -216,7 +216,23 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// </summary>
         /// <value><see langword="true" /> if enabled; otherwise, <see langword="false" />.</value>
         [PublicAPI]
-        public bool Enabled;
+        public bool Enabled
+        {
+            get { return _enabled > 0; }
+            set
+            {
+                if (!value)
+                {
+                    Interlocked.CompareExchange(ref _enabled, 0, 1);
+                    return;
+                }
+
+                if (Interlocked.CompareExchange(ref _enabled, 1, 0) > 0) return;
+
+                // We have been enabled, recheck schedule.
+                Scheduler.CheckSchedule();
+            }
+        }
 
 
         /// <summary>
@@ -233,7 +249,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         public Task<ScheduledActionResult> ExecuteAsync(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!Enabled)
+            if (_enabled < 1)
                 return TaskResult<ScheduledActionResult>.Default;
 
             // Grab schedule as the property can be changed.
@@ -350,6 +366,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Lock used in the case optimistic setting fails.
         /// </summary>
         private int _calculatorCount;
+
+        private int _enabled;
 
         /// <summary>
         /// Recalculates the next due date.

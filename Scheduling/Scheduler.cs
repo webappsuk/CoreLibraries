@@ -1067,11 +1067,18 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         public static bool Enabled
         {
-            get { return _enabled; }
+            get { return _enabled > 0; }
             set
             {
-                if (_enabled == value) return;
-                _enabled = value;
+                if (!value)
+                {
+                    Interlocked.CompareExchange(ref _enabled, 0, 1);
+                    return;
+                }
+
+                if (Interlocked.CompareExchange(ref _enabled, 1, 0) > 0) return;
+
+                // We have been enabled, recheck schedule.
                 CheckSchedule();
             }
         }
@@ -1114,7 +1121,7 @@ namespace WebApplications.Utilities.Scheduling
         private static long _nextDueTicks;
 
         private static Duration _defaultMaximumDuration;
-        private static bool _enabled;
+        private static int _enabled;
 
         [NotNull]
         private static IClock _clock;
@@ -1152,7 +1159,7 @@ namespace WebApplications.Utilities.Scheduling
                 do
                 {
                     // Check if we're disabled.
-                    if (!_enabled)
+                    if (_enabled < 1)
                     {
                         Interlocked.Exchange(ref _tickState, 0);
                         return;
