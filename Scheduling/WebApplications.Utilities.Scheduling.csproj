@@ -134,7 +134,6 @@
     <Compile Include="Schedules\Second.cs" />
     <Compile Include="Schedules\Week.cs" />
     <Compile Include="Schedules\WeekDay.cs" />
-    <Compile Include="StopwatchClock.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

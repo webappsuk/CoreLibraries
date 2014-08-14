@@ -94,7 +94,7 @@ namespace WebApplications.Utilities.Scheduling
             DefaultMaximumDuration = schedulerConfiguration.DefaultMaximumDuration;
             // ReSharper disable once AssignNullToNotNullAttribute
             // If we have a high resolution stopwatch use that for the clock.
-            _clock = Stopwatch.IsHighResolution ? (IClock)StopwatchClock.Instance : SystemClock.Instance;
+            _clock = SystemClock.Instance;
 
             // Load the time zone database from a file, if specified.
             string dbPath = schedulerConfiguration.TimeZoneDB;
@@ -967,6 +967,9 @@ namespace WebApplications.Utilities.Scheduling
                 maximumDuration);
             // Update actions dictionary
             _actions.AddOrUpdate(sf.ID, sf, (i, a) => sf);
+
+            // Calculate next due
+            sf.RecalculateNextDue(Instant.MinValue);
             return sf;
         }
         #endregion

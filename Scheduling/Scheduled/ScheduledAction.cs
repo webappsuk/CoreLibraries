@@ -142,7 +142,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 md = (int)(maximumDuration.Ticks / NodaConstants.TicksPerMillisecond);
             }
             MaximumDurationMs = md < 0 ? 0 : md;
-            RecalculateNextDue(Instant.MinValue);
         }
 
         /// <summary>
@@ -356,7 +355,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Recalculates the next due date.
         /// </summary>
         /// <param name="last">The instant the schedule was last due to run, or completed.</param>
-        private void RecalculateNextDue(Instant last)
+        internal void RecalculateNextDue(Instant last)
         {
             // Increment recalculate counter, only let first increment continue.
             if (Interlocked.Increment(ref _calculatorCount) > 1)
