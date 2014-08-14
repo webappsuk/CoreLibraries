@@ -25,13 +25,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 using NodaTime;
-using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -232,7 +232,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                     continue;
                 }
                 if (schedule.Options != _options)
-                    throw new LoggingException(() => Resource.AggregateSchedule_Different_Options);
+                    throw new ArgumentException(Resource.AggregateSchedule_Different_Options, "schedules");
             }
         }
 

@@ -34,7 +34,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using NodaTime;
-using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
@@ -184,20 +183,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     result = await _function(due, tokenSource.Token).WithCancellation(tokenSource.Token);
                     stopwatch.Stop();
                 }
-                catch (LoggingException l)
-                {
-                    stopwatch.Stop();
-
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    return new ScheduledFunctionResult<T>(
-                        due,
-                        started,
-                        Duration.FromTimeSpan(stopwatch.Elapsed),
-                        l,
-                        tokenSource.IsCancellationRequested,
-                        default(T));
-
-                }
                 catch (Exception e)
                 {
                     stopwatch.Stop();
@@ -210,7 +195,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         started,
                         Duration.FromTimeSpan(stopwatch.Elapsed),
                         // Wrap non-logging exceptions, except the cancelled exception.
-                        cancelledException ? e : new LoggingException(e),
+                        e,
                         cancelledException || tokenSource.IsCancellationRequested,
                         default(T));
                 }

@@ -34,9 +34,6 @@ using System.Globalization;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Configuration;
-using WebApplications.Utilities.Logging.Interfaces;
-using WebApplications.Utilities.Scheduling.Schedules;
-using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
 {

@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -35,7 +36,6 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using NodaTime;
 using NodaTime.TimeZones;
-using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Scheduling.Configuration;
 using WebApplications.Utilities.Scheduling.Scheduled;
 
@@ -101,16 +101,22 @@ namespace WebApplications.Utilities.Scheduling
             if (!string.IsNullOrWhiteSpace(dbPath))
             {
                 if (!File.Exists(dbPath))
-                    throw new LoggingException(()=>Resource.Scheduler_Scheduler_TimeZoneDB_Not_Found, dbPath);
+                    throw new ConfigurationErrorsException(
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        string.Format(Resource.Scheduler_Scheduler_TimeZoneDB_Not_Found, dbPath));
 
                 try
                 {
                     using (FileStream stream = File.OpenRead(dbPath))
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         _dateTimeZoneProvider = new DateTimeZoneCache(TzdbDateTimeZoneSource.FromStream(stream));
                 }
                 catch (Exception e)
                 {
-                    throw new LoggingException(() => Resource.Scheduler_Scheduler_TimeZoneDB_Failed, dbPath);
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    throw new ConfigurationErrorsException(
+                        string.Format(Resource.Scheduler_Scheduler_TimeZoneDB_Failed, dbPath),
+                        e);
                 }
             }
 
@@ -120,6 +126,7 @@ namespace WebApplications.Utilities.Scheduling
             _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
 
             foreach (ScheduleElement scheduleElement in schedulerConfiguration.Schedules)
+                // ReSharper disable once PossibleNullReferenceException
                 AddSchedule(scheduleElement.GetInstance<ISchedule>());
 
             Enabled = schedulerConfiguration.Enabled;
@@ -141,7 +148,8 @@ namespace WebApplications.Utilities.Scheduling
             Contract.Ensures(Contract.Result<ISchedule>().Name.Equals(name));
             ISchedule schedule;
             if (!_schedules.TryGetValue(name, out schedule))
-                throw new LoggingException(() => Resource.Scheduler_GetSchedule_NotFound, name);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                throw new ArgumentOutOfRangeException("name", string.Format(Resource.Scheduler_GetSchedule_NotFound, name));
             Contract.Assert(schedule != null);
             return schedule;
         }
@@ -1072,7 +1080,7 @@ namespace WebApplications.Utilities.Scheduling
             set
             {
                 if (value < 0)
-                    throw new LoggingException(() => Resource.Scheduler_DefaultMaximumHistory_Negative);
+                    throw new ArgumentOutOfRangeException("value", Resource.Scheduler_DefaultMaximumHistory_Negative);
                 _defaultMaximumHistory = value;
             }
         }

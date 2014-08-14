@@ -35,7 +35,6 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Caching;
-using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
@@ -398,15 +397,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
                     // Update next due
                     Interlocked.Exchange(ref _nextDueTicks, ndt);
-                }
-                catch (LoggingException)
-                {
-                }
-                catch (Exception e)
-                {
-                    // Create new logging exception
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new LoggingException(e);
                 }
                 finally
                 {
