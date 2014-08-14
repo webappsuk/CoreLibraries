@@ -62,5 +62,5 @@ using WebApplications.Utilities;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblyVersion("5.1.*")]
 [assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]
