@@ -963,8 +963,9 @@ namespace WebApplications.Utilities.Scheduling
                 isFunction,
                 function,
                 schedule,
-                maximumHistory < 0 ? DefaultMaximumHistory : maximumHistory,
-                maximumDuration);
+                maximumHistory < 0 ? _defaultMaximumHistory : maximumHistory,
+                maximumDuration < Duration.Zero ? _defaultMaximumDuration : maximumDuration);
+
             // Update actions dictionary
             _actions.AddOrUpdate(sf.ID, sf, (i, a) => sf);
 
