@@ -22,5 +22,5 @@ $msbuild.Xml.Imports | Where-Object {$_.Project.ToLowerInvariant().EndsWith("sch
 
 # Add import to PostSharp.targets
 $import = $msbuild.Xml.AddImport($relativePath)
-$import.Condition = "`$(DefineConstants.Contains('Scheduling')) AND Exists('$relativePath')"
+$import.Condition = "Exists('$relativePath')"
 [string]::Format("Added import of '{0}'.", $relativePath )
