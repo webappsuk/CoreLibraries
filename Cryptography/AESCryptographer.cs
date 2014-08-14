@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -317,6 +318,7 @@ namespace WebApplications.Utilities.Cryptography
         private string DecryptStringFromBytes([NotNull] byte[] cipherText, [NotNull] byte[] key,
                                               [NotNull] byte[] initializationVector)
         {
+            Contract.Requires(cipherText != null);
             if (key == null || key.Length <= 0)
                 throw new ArgumentNullException("key");
             if (initializationVector == null || initializationVector.Length <= 0)
@@ -374,6 +376,7 @@ namespace WebApplications.Utilities.Cryptography
         private bool TryDecryptStringFromBytes(byte[] cipherText, byte[] key, byte[] initializationVector,
                                                out string decryptedString)
         {
+            Contract.Requires(cipherText != null);
             decryptedString = null;
 
             try

@@ -12,7 +12,7 @@
     <description>$description$</description>
     <tags>Utility Utilities Cryptography Encrypt Decrypt Base32</tags>
     <references>
-      <group targetFramework="net45">
+      <group targetFramework="net451">
         <reference file="WebApplications.Utilities.Cryptography.dll" />
       </group>
     </references>
@@ -21,6 +21,6 @@
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
     <file src="cryptography.config" target="Content" />
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
   </files>
 </package>
