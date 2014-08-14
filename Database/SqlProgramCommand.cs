@@ -128,7 +128,7 @@ namespace WebApplications.Utilities.Database
                 if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.SqlProgramCommand_GetParameter_ProgramDoesNotHaveParameter,
+                        () => Resources.SqlProgramCommand_GetParameter_ProgramDoesNotHaveParameter,
                         _program.Name,
                         parameterName);
 
@@ -175,7 +175,7 @@ namespace WebApplications.Utilities.Database
             if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
                 throw new LoggingException(
                     LoggingLevel.Critical,
-                    Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
+                    () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
                     _program.Name,
                     parameterName);
 

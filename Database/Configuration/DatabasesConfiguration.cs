@@ -194,7 +194,7 @@ namespace WebApplications.Utilities.Database.Configuration
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) || (!db.Enabled))
-                throw new LoggingException(Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                throw new LoggingException(() => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                                            database);
 
             return db.GetSqlProgram(name, parameters, ignoreValidationErrors, checkOrder, defaultCommandTimeout,

@@ -165,7 +165,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
             if (connection == null)
                 throw new LoggingException(
-                    Resources.DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound,
+                    () => Resources.DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound,
                     Id);
 
             // Look for program mapping information
@@ -188,7 +188,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if ((connection == null) ||
                         (!connection.Enabled))
                         throw new LoggingException(
-                            Resources.DatabaseElement_GetSqlProgram_LoadBalanceConnectionNotFound,
+                            () => Resources.DatabaseElement_GetSqlProgram_LoadBalanceConnectionNotFound,
                             prog.Connection, Id, name);
                 }
 
@@ -203,7 +203,7 @@ namespace WebApplications.Utilities.Database.Configuration
                                         if (param == null) return kvp;
                                         if (String.IsNullOrWhiteSpace(param.MapTo))
                                             throw new LoggingException(
-                                                Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
+                                                () => Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
                                                 kvp.Key, prog.Name);
 
                                         return new KeyValuePair<string, Type>(param.MapTo, kvp.Value);

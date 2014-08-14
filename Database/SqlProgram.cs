@@ -54,22 +54,27 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         ///   The name of the stored procedure or function.
         /// </summary>
-        [NotNull] public readonly string Name;
+        [NotNull]
+        public readonly string Name;
 
         /// <summary>
         ///   The parameters required by this <see cref="SqlProgram"/> (if specified).
         /// </summary>
-        [UsedImplicitly] [NotNull] public readonly IEnumerable<KeyValuePair<string, Type>> Parameters;
+        [UsedImplicitly]
+        [NotNull]
+        public readonly IEnumerable<KeyValuePair<string, Type>> Parameters;
 
         /// <summary>
         ///   The <see cref="LoadBalancedConnection">load balanced connection</see>.
         /// </summary>
-        [NotNull] private readonly LoadBalancedConnection _connection;
+        [NotNull]
+        private readonly LoadBalancedConnection _connection;
 
         /// <summary>
         ///  A lock object to prevent multiple validations at the same time.
         /// </summary>
-        [NotNull] private readonly object _validationLock = new object();
+        [NotNull]
+        private readonly object _validationLock = new object();
 
         /// <summary>
         ///   The default command timeout to use.
@@ -220,16 +225,16 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(name != null, Resources.SqlProgram_NameCanNotBeNull);
 
             if (connection == null)
-                throw new LoggingException(LoggingLevel.Critical, Resources.SqlProgram_NoConnectionSpecified);
+                throw new LoggingException(LoggingLevel.Critical, () => Resources.SqlProgram_NoConnectionSpecified);
             if (String.IsNullOrWhiteSpace(name))
-                throw new LoggingException(LoggingLevel.Critical, Resources.SqlProgram_NoProgramNameSpecified);
+                throw new LoggingException(LoggingLevel.Critical, () => Resources.SqlProgram_NoProgramNameSpecified);
 
             Name = name;
             _connection = connection;
 
             DefaultCommandTimeout = (defaultCommandTimeout == null || defaultCommandTimeout < TimeSpan.Zero)
                                         ? TimeSpan.FromSeconds(30)
-                                        : (TimeSpan) defaultCommandTimeout;
+                                        : (TimeSpan)defaultCommandTimeout;
 
             ConstraintMode = constraintMode;
 
@@ -357,7 +362,7 @@ namespace WebApplications.Utilities.Database
             if (defaultCommandTimeout == null)
                 DefaultCommandTimeout = program.DefaultCommandTimeout;
             else
-                DefaultCommandTimeout = (TimeSpan) defaultCommandTimeout;
+                DefaultCommandTimeout = (TimeSpan)defaultCommandTimeout;
             ConstraintMode = constraintMode;
             Parameters = parameters;
             LoggingException error = Validate(checkOrder);
@@ -504,8 +509,8 @@ namespace WebApplications.Utilities.Database
 
                         if (programDefinition == null)
                             throw new LoggingException(
-                                LoggingLevel.Critical, 
-                                Resources.SqlProgram_Validate_DefinitionsNotFound, name);
+                                LoggingLevel.Critical,
+                                () => Resources.SqlProgram_Validate_DefinitionsNotFound, name);
 
                         // If this is the first connection just set the program definition
                         if (first)
@@ -517,7 +522,7 @@ namespace WebApplications.Utilities.Database
                             // If the program definition is different we have a fatal error.
                             throw new LoggingException(
                                 LoggingLevel.Critical,
-                                Resources.SqlProgram_Validate_InconsistentProgramDefinitions,
+                                () => Resources.SqlProgram_Validate_InconsistentProgramDefinitions,
                                 name);
 
                         // If schemas are identical, no need to check anymore
@@ -574,7 +579,7 @@ namespace WebApplications.Utilities.Database
             return new SqlProgramCommand(this, _connection.CreateConnection(),
                                          (timeout == null || timeout < TimeSpan.Zero)
                                              ? DefaultCommandTimeout
-                                             : (TimeSpan) timeout);
+                                             : (TimeSpan)timeout);
         }
 
         /// <summary>
@@ -603,15 +608,15 @@ namespace WebApplications.Utilities.Database
         {
             TimeSpan t = (timeout == null || timeout < TimeSpan.Zero)
                              ? DefaultCommandTimeout
-                             : (TimeSpan) timeout;
+                             : (TimeSpan)timeout;
             return
                 _connection.Select(
                     connectionString =>
-                        {
-                            SqlConnection connection = new SqlConnection(connectionString);
-                            connection.Open();
-                            return new SqlProgramCommand(this, connection, t);
-                        }).ToList
+                    {
+                        SqlConnection connection = new SqlConnection(connectionString);
+                        connection.Open();
+                        return new SqlProgramCommand(this, connection, t);
+                    }).ToList
                     ();
         }
 
@@ -794,46 +799,46 @@ namespace WebApplications.Utilities.Database
             return await Task<IEnumerable<TResult>>.Factory.ContinueWhenAll(
                 _connection.Select(
                     connectionString =>
-                        {
-                            // Create and open a connection
-                            SqlConnection connection = new SqlConnection(connectionString);
-                            connection.Open();
-
-                            SqlProgramCommand command = new SqlProgramCommand(this, connection, DefaultCommandTimeout);
-                            try
-                            {
-                                if (setParameters != null)
-                                    setParameters(command);
-                            }
-                            catch (Exception exception)
-                            {
-                                throw new SqlProgramExecutionException(this, exception);
-                            }
-                            return taskCreator(command)
-                                .ContinueWith(t =>
-                                                  {
-                                                      if (!t.IsCompleted)
-                                                          return default(TResult);
-
-                                                      try
-                                                      {
-                                                          return function(t.Result);
-                                                      }
-                                                      finally
-                                                      {
-                                                          // This will also dispose of the connection
-                                                          command.Dispose();
-                                                      }
-                                                  },
-                                              TaskContinuationOptions.ExecuteSynchronously);
-                        }).ToArray(),
-                tasks =>
                     {
-                        // Propagate all exceptions and mark all faulted tasks as observed.
-                        Task.WaitAll(tasks);
+                        // Create and open a connection
+                        SqlConnection connection = new SqlConnection(connectionString);
+                        connection.Open();
 
-                        return tasks.Select(t => t.Result);
-                    });
+                        SqlProgramCommand command = new SqlProgramCommand(this, connection, DefaultCommandTimeout);
+                        try
+                        {
+                            if (setParameters != null)
+                                setParameters(command);
+                        }
+                        catch (Exception exception)
+                        {
+                            throw new SqlProgramExecutionException(this, exception);
+                        }
+                        return taskCreator(command)
+                            .ContinueWith(t =>
+                                              {
+                                                  if (!t.IsCompleted)
+                                                      return default(TResult);
+
+                                                  try
+                                                  {
+                                                      return function(t.Result);
+                                                  }
+                                                  finally
+                                                  {
+                                                      // This will also dispose of the connection
+                                                      command.Dispose();
+                                                  }
+                                              },
+                                          TaskContinuationOptions.ExecuteSynchronously);
+                    }).ToArray(),
+                tasks =>
+                {
+                    // Propagate all exceptions and mark all faulted tasks as observed.
+                    Task.WaitAll(tasks);
+
+                    return tasks.Select(t => t.Result);
+                });
         }
 
         #region ExecuteScalar and ExecuteScalarAll overloads
@@ -2063,17 +2068,17 @@ namespace WebApplications.Utilities.Database
                                    setParameters,
                                    c => c.ExecuteReaderAsync(behavior, state),
                                    r =>
+                                   {
+                                       try
                                        {
-                                           try
-                                           {
-                                               resultAction(r);
-                                               return true;
-                                           }
-                                           finally
-                                           {
-                                               r.Dispose();
-                                           }
-                                       }, state);
+                                           resultAction(r);
+                                           return true;
+                                       }
+                                       finally
+                                       {
+                                           r.Dispose();
+                                       }
+                                   }, state);
         }
 
         /// <summary>
@@ -2106,17 +2111,17 @@ namespace WebApplications.Utilities.Database
                 await ExecuteAllAsync(setParameters,
                                       c => c.ExecuteReaderAsync(behavior, state),
                                       r =>
+                                      {
+                                          try
                                           {
-                                              try
-                                              {
-                                                  resultAction(r);
-                                                  return true;
-                                              }
-                                              finally
-                                              {
-                                                  r.Dispose();
-                                              }
-                                          }, state);
+                                              resultAction(r);
+                                              return true;
+                                          }
+                                          finally
+                                          {
+                                              r.Dispose();
+                                          }
+                                      }, state);
         }
 
         /// <summary>
@@ -2154,16 +2159,16 @@ namespace WebApplications.Utilities.Database
                                    setParameters,
                                    c => c.ExecuteReaderAsync(behavior, state),
                                    r =>
+                                   {
+                                       try
                                        {
-                                           try
-                                           {
-                                               return resultFunc(r);
-                                           }
-                                           finally
-                                           {
-                                               r.Dispose();
-                                           }
-                                       }, state);
+                                           return resultFunc(r);
+                                       }
+                                       finally
+                                       {
+                                           r.Dispose();
+                                       }
+                                   }, state);
         }
 
         /// <summary>
@@ -2199,16 +2204,16 @@ namespace WebApplications.Utilities.Database
             return await ExecuteAllAsync(setParameters,
                                          c => c.ExecuteReaderAsync(behavior, state),
                                          r =>
+                                         {
+                                             try
                                              {
-                                                 try
-                                                 {
-                                                     return resultFunc(r);
-                                                 }
-                                                 finally
-                                                 {
-                                                     r.Dispose();
-                                                 }
-                                             }, state);
+                                                 return resultFunc(r);
+                                             }
+                                             finally
+                                             {
+                                                 r.Dispose();
+                                             }
+                                         }, state);
         }
         #endregion
 
@@ -2802,17 +2807,17 @@ namespace WebApplications.Utilities.Database
                                    setParameters,
                                    c => c.ExecuteXmlReaderAsync(state),
                                    r =>
+                                   {
+                                       try
                                        {
-                                           try
-                                           {
-                                               resultAction(r);
-                                               return true;
-                                           }
-                                           finally
-                                           {
-                                               r.Close();
-                                           }
-                                       }, state);
+                                           resultAction(r);
+                                           return true;
+                                       }
+                                       finally
+                                       {
+                                           r.Close();
+                                       }
+                                   }, state);
         }
 
         /// <summary>
@@ -2842,17 +2847,17 @@ namespace WebApplications.Utilities.Database
             else
                 await ExecuteAllAsync(setParameters, c => c.ExecuteXmlReaderAsync(state),
                                       r =>
+                                      {
+                                          try
                                           {
-                                              try
-                                              {
-                                                  resultAction(r);
-                                                  return true;
-                                              }
-                                              finally
-                                              {
-                                                  r.Close();
-                                              }
-                                          }, state);
+                                              resultAction(r);
+                                              return true;
+                                          }
+                                          finally
+                                          {
+                                              r.Close();
+                                          }
+                                      }, state);
         }
 
         /// <summary>
@@ -2888,16 +2893,16 @@ namespace WebApplications.Utilities.Database
                                    setParameters,
                                    c => c.ExecuteXmlReaderAsync(state),
                                    r =>
+                                   {
+                                       try
                                        {
-                                           try
-                                           {
-                                               return resultFunc(r);
-                                           }
-                                           finally
-                                           {
-                                               r.Close();
-                                           }
-                                       }, state);
+                                           return resultFunc(r);
+                                       }
+                                       finally
+                                       {
+                                           r.Close();
+                                       }
+                                   }, state);
         }
 
         /// <summary>
@@ -2932,16 +2937,16 @@ namespace WebApplications.Utilities.Database
             return await ExecuteAllAsync(setParameters,
                                          c => c.ExecuteXmlReaderAsync(state),
                                          r =>
+                                         {
+                                             try
                                              {
-                                                 try
-                                                 {
-                                                     return resultFunc(r);
-                                                 }
-                                                 finally
-                                                 {
-                                                     r.Close();
-                                                 }
-                                             }, state);
+                                                 return resultFunc(r);
+                                             }
+                                             finally
+                                             {
+                                                 r.Close();
+                                             }
+                                         }, state);
         }
         #endregion
     }

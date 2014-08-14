@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
 
@@ -37,69 +38,57 @@ namespace WebApplications.Utilities.Database.Exceptions
     public class DatabaseSchemaException : LoggingException
     {
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoggingException"/> class.
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
-        /// <param name="message">The exception message.</param>
-        /// <param name="parameters">
-        ///   The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
-        /// </param>
-        public DatabaseSchemaException([NotNull] string message, [NotNull] params object[] parameters)
-            : base(message, parameters)
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        public DatabaseSchemaException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+            : base(resource, parameters)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoggingException"/> class.
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
         /// <param name="level">The severity of the exception being logged.</param>
-        /// <param name="message">The exception message.</param>
-        /// <param name="parameters">
-        /// The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
-        /// </param>
-        public DatabaseSchemaException(LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
-            : base(level, message, parameters)
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        public DatabaseSchemaException(LoggingLevel level, [CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+            : base(level, resource, parameters)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoggingException"/> class.
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
-        /// <param name="innerException">
-        ///   The exception that occurred during parsing.
-        /// </param>
+        /// <param name="innerException">The exception that occurred during parsing.</param>
         /// <param name="level">The severity of the exception being logged.</param>
-        public DatabaseSchemaException([NotNull] Exception innerException, LoggingLevel level) : base(innerException, level)
+        public DatabaseSchemaException([CanBeNull] Exception innerException, LoggingLevel level)
+            : base(innerException, level)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoggingException"/> class.
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
-        /// <param name="innerException">
-        ///   The exception that occurred during parsing.
-        /// </param>
-        /// <param name="message">The exception message.</param>
-        /// <param name="parameters">
-        ///   The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
-        /// </param>
-        public DatabaseSchemaException([CanBeNull] Exception innerException, [NotNull] string message,
-                                       [NotNull] params object[] parameters) : base(innerException, message, parameters)
+        /// <param name="innerException">The exception that occurred during parsing.</param>
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        public DatabaseSchemaException([CanBeNull] Exception innerException, [CanBeNull] Expression<Func<string>> resource,
+                                       [CanBeNull] params object[] parameters)
+            : base(innerException, resource, parameters)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoggingException"/> class.
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
-        /// <param name="innerException">
-        /// The exception that occurred during parsing.
-        /// </param>
+        /// <param name="innerException">The exception that occurred during parsing.</param>
         /// <param name="level">The severity of the exception being logged.</param>
-        /// <param name="message">The exception message.</param>
-        /// <param name="parameters">
-        /// The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
-        /// </param>
-        public DatabaseSchemaException([CanBeNull] Exception innerException, LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
-            : base(innerException, message, level, parameters)
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        public DatabaseSchemaException([CanBeNull] Exception innerException, LoggingLevel level, [CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+            : base(innerException, resource, level, parameters)
         {
         }
     }

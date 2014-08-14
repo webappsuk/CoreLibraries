@@ -38,16 +38,41 @@ namespace WebApplications.Utilities.Database.Exceptions
     public class SqlProgramExecutionException : LoggingException
     {
         /// <summary>
+        /// The prefix reservation.
+        /// </summary>
+        private static readonly Guid _prefixReservation = System.Guid.NewGuid();
+
+        /// <summary>
+        /// The program name context key
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly string ProgramNameContextKey = LogContext.ReserveKey(
+            "SqlProgram Name",
+            _prefixReservation);
+
+        /// <summary>
+        /// The gateway name of the module.
+        /// </summary>
+        [CanBeNull]
+        [PublicAPI]
+        public string ProgramName
+        {
+            get { return this[ProgramNameContextKey]; }
+        }
+
+        /// <summary>
         ///   Initializes a new instance of the <see cref="SqlProgramExecutionException"/> class.
         /// </summary>
         /// <param name="sqlProgram">The executing SQL program.</param>
         /// <param name="innerException">The inner exception.</param>
         internal SqlProgramExecutionException([NotNull] SqlProgram sqlProgram, [NotNull] Exception innerException)
             : base(
+                new LogContext()
+                    .Set(_prefixReservation, ProgramNameContextKey, sqlProgram.Name),
                 innerException,
-                Resources.SqlProgramExecutionException_ErrorOccurredDuringExecution,
-                sqlProgram.Name,
-                innerException.Message)
+                () => Resources.SqlProgramExecutionException_ErrorOccurredDuringExecution,
+                sqlProgram.Name)
         {
             Contract.Requires(sqlProgram != null);
             Contract.Requires(innerException != null);

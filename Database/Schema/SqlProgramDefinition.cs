@@ -301,7 +301,7 @@ namespace WebApplications.Utilities.Database.Schema
             if (nCount != tCount)
                 throw new LoggingException(
                     LoggingLevel.Critical,
-                    Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
+                    () => Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
                     nCount,
                     tCount);
 
@@ -317,7 +317,7 @@ namespace WebApplications.Utilities.Database.Schema
                         if (ne.MoveNext())
                             throw new LoggingException(
                                 LoggingLevel.Critical,
-                                Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
+                                () => Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
                                 nCount,
                                 tCount);
                         break;
@@ -387,7 +387,7 @@ namespace WebApplications.Utilities.Database.Schema
             if (dCount < sCount)
                 throw new LoggingException(
                     LoggingLevel.Critical,
-                    Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
+                    () => Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
                     FullName,
                     dCount,
                     sCount);
@@ -408,7 +408,7 @@ namespace WebApplications.Utilities.Database.Schema
                             if (p2.MoveNext())
                                 throw new LoggingException(
                                     LoggingLevel.Critical,
-                                    Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
+                                    () => Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
                                     FullName,
                                     dCount,
                                     sCount);
@@ -431,7 +431,7 @@ namespace WebApplications.Utilities.Database.Schema
                         if ((name != null) && (parameter.Name != (name = name.ToLower())))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
-                                Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
+                                () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
                                 name,
                                 FullName);
 
@@ -444,7 +444,7 @@ namespace WebApplications.Utilities.Database.Schema
                         if (!parameter.Type.AcceptsCLRType(type))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
-                                Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
+                                () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
                                 parameter.Name,
                                 FullName,
                                 parameter.Type.FullName,
@@ -460,7 +460,7 @@ namespace WebApplications.Utilities.Database.Schema
                 if (kvp.Key == null)
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName,
+                        () => Resources.SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName,
                         FullName);
 
                 SqlProgramParameter parameter;
@@ -468,7 +468,7 @@ namespace WebApplications.Utilities.Database.Schema
                 if (!_parameters.TryGetValue(name, out parameter))
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
+                        () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
                         name,
                         FullName);
 
@@ -479,7 +479,7 @@ namespace WebApplications.Utilities.Database.Schema
                 if ((type != null) && (!parameter.Type.AcceptsCLRType(type)))
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
+                        () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
                         parameter.Name,
                         FullName,
                         parameter.Type.FullName,
@@ -558,7 +558,7 @@ namespace WebApplications.Utilities.Database.Schema
             if (dCount < sCount)
                 throw new LoggingException(
                     LoggingLevel.Critical,
-                    Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
+                    () => Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
                     FullName,
                     dCount,
                     sCount);
@@ -579,7 +579,7 @@ namespace WebApplications.Utilities.Database.Schema
                             if (p2.MoveNext())
                                 throw new LoggingException(
                                     LoggingLevel.Critical,
-                                    Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
+                                    () => Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
                                     FullName,
                                     dCount,
                                     sCount);
@@ -602,7 +602,7 @@ namespace WebApplications.Utilities.Database.Schema
                         if ((name != null) && (parameter.Name != (name = name.ToLower())))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
-                                Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
+                                () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
                                 name,
                                 FullName);
 
@@ -611,7 +611,7 @@ namespace WebApplications.Utilities.Database.Schema
                         if (parameter.Type.SqlDbType != type)
                             throw new LoggingException(
                                 LoggingLevel.Critical,
-                                Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
+                                () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
                                 parameter.Name,
                                 FullName,
                                 parameter.Type.FullName,
@@ -627,7 +627,7 @@ namespace WebApplications.Utilities.Database.Schema
                 if (kvp.Key == null)
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName,
+                        () => Resources.SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName,
                         FullName);
 
                 SqlProgramParameter parameter;
@@ -635,7 +635,7 @@ namespace WebApplications.Utilities.Database.Schema
                 if (!_parameters.TryGetValue(name, out parameter))
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
+                        () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
                         name,
                         FullName);
 
@@ -647,7 +647,7 @@ namespace WebApplications.Utilities.Database.Schema
                 if (parameter.Type.SqlDbType != type)
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
+                        () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
                         parameter.Name,
                         FullName,
                         parameter.Type.FullName,

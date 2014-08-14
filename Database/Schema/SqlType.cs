@@ -273,7 +273,7 @@ namespace WebApplications.Utilities.Database.Schema
                 else
                 {
                     // Log error and return NVarChar as fall back.
-                    new DatabaseSchemaException(LoggingLevel.Warning, Resources.SqlType_UnknownSqlSystemType, FullName);
+                    new DatabaseSchemaException(LoggingLevel.Warning, () => Resources.SqlType_UnknownSqlSystemType, FullName);
                     SqlDbType = SqlDbType.NVarChar;
                 }
             }
@@ -287,7 +287,7 @@ namespace WebApplications.Utilities.Database.Schema
             else
             {
                 // Log error and return NVarChar as fall back.
-                new DatabaseSchemaException(LoggingLevel.Critical, Resources.SqlType_UnknownSqlSystemType, FullName);
+                new DatabaseSchemaException(LoggingLevel.Critical, () => Resources.SqlType_UnknownSqlSystemType, FullName);
                 SqlDbType = SqlDbType.NVarChar;
             }
         }
@@ -480,7 +480,7 @@ namespace WebApplications.Utilities.Database.Schema
                     {
                         // Log error, but don't throw it.
                         new DatabaseSchemaException(LoggingLevel.Critical,
-                            Resources.SqlType_GetClrToSqlConverter_NoTypeSpecified,
+                            () => Resources.SqlType_GetClrToSqlConverter_NoTypeSpecified,
                             this);
                         return null;
                     }
@@ -510,7 +510,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             {
                                                 if (m == TypeConstraintMode.Error)
                                                     throw new DatabaseSchemaException(LoggingLevel.Error,
-                                                                                      Resources.
+                                                                                      () => Resources.
                                                                                           SqlType_GetClrToSqlConverter_CouldNotConvertBinaryData,
                                                                                       c.Length,
                                                                                       FullName, Size.MaximumLength);
@@ -518,7 +518,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 // Warn - don't need to truncate as that happens under the hood anyway.
                                                 Log.Add(
                                                     LoggingLevel.Warning,
-                                                    Resources.SqlType_GetClrToSqlConverter_BinaryDataTruncated,
+                                                    () => Resources.SqlType_GetClrToSqlConverter_BinaryDataTruncated,
                                                     c.Length,
                                                     FullName,
                                                     Size.MaximumLength);
@@ -545,7 +545,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                     // NOTE We always fail regardless of truncation mode as a partially serialized object is junk.
                                                     if (Size.MaximumLength < serializedObject.Length)
                                                         throw new DatabaseSchemaException(LoggingLevel.Error,
-                                                                                          Resources.
+                                                                                          () => Resources.
                                                                                               SqlType_GetClrToSqlConverter_CouldNotSerializeObject,
                                                                                           t.FullName,
                                                                                           FullName,
@@ -577,7 +577,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 {
                                                     if (m == TypeConstraintMode.Error)
                                                         throw new DatabaseSchemaException(LoggingLevel.Error,
-                                                                                          Resources.
+                                                                                          () => Resources.
                                                                                               SqlType_GetClrToSqlConverter_CouldNotConvertString,
                                                                                           c.Length,
                                                                                           FullName, Size.MaximumLength);
@@ -585,7 +585,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                     // Warn - don't need to truncate as that happens under the hood anyway.
                                                     Log.Add(
                                                         LoggingLevel.Warning,
-                                                        Resources.SqlType_GetClrToSqlConverter_StringTruncated,
+                                                        () => Resources.SqlType_GetClrToSqlConverter_StringTruncated,
                                                         c.Length,
                                                         FullName,
                                                         Size.MaximumLength);
@@ -596,14 +596,14 @@ namespace WebApplications.Utilities.Database.Schema
                                                 {
                                                     if (m == TypeConstraintMode.Error)
                                                         throw new DatabaseSchemaException(LoggingLevel.Error,
-                                                                                          Resources.
+                                                                                          () => Resources.
                                                                                               SqlType_GetClrToSqlConverter_StringContainsUnicodeCharacters,
                                                                                           FullName);
 
                                                     // Warn - don't need to do anything as that happens under the hood anyway.
                                                     Log.Add(
                                                         LoggingLevel.Warning,
-                                                        Resources.SqlType_GetClrToSqlConverter_UnicodeCharactersLost,
+                                                        () => Resources.SqlType_GetClrToSqlConverter_UnicodeCharactersLost,
                                                         FullName);
                                                 }
                                             }
@@ -626,7 +626,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             {
                                                 if (m == TypeConstraintMode.Error)
                                                     throw new DatabaseSchemaException(LoggingLevel.Error,
-                                                                                      Resources
+                                                                                      () => Resources
                                                                                           .SqlType_GetClrToSqlConverter_CouldNotConvertString,
                                                                                       c.Length,
                                                                                       FullName, sqlSize);
@@ -634,7 +634,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 // Warn - don't need to truncate as that happens under the hood anyway.
                                                 Log.Add(
                                                     LoggingLevel.Warning,
-                                                    Resources.SqlType_GetClrToSqlConverter_StringTruncated,
+                                                    () => Resources.SqlType_GetClrToSqlConverter_StringTruncated,
                                                     c.Length,
                                                     FullName,
                                                     sqlSize);
@@ -664,7 +664,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                        {
                                                            if (m == TypeConstraintMode.Error)
                                                                throw new DatabaseSchemaException(LoggingLevel.Error,
-                                                                                                 Resources.
+                                                                                                 () => Resources.
                                                                                                      SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType,
                                                                                                  original,
                                                                                                  FullName, range);
@@ -672,7 +672,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                            // Warn - don't need to truncate as that happens under the hood anyway.
                                                            Log.Add(
                                                                LoggingLevel.Warning,
-                                                               Resources.
+                                                               () => Resources.
                                                                    SqlType_GetClrToSqlConverter_DateTimeTruncated,
                                                                original,
                                                                FullName,
@@ -692,7 +692,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                        {
                                                            if (m == TypeConstraintMode.Error)
                                                                throw new DatabaseSchemaException(LoggingLevel.Error,
-                                                                                                 Resources.
+                                                                                                 () => Resources.
                                                                                                      SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType,
                                                                                                  c,
                                                                                                  FullName, range);
@@ -700,7 +700,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                            // Warn - don't need to truncate as that happens under the hood anyway.
                                                            Log.Add(
                                                                LoggingLevel.Warning,
-                                                               Resources.
+                                                               () => Resources.
                                                                    SqlType_GetClrToSqlConverter_DateTimeTruncated,
                                                                c,
                                                                FullName,
@@ -764,7 +764,7 @@ namespace WebApplications.Utilities.Database.Schema
                                     default:
                                         // Log error, but don't throw it.
                                         new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                    Resources
+                                                                    () => Resources
                                                                         .SqlType_GetClrToSqlConverter_UdtTypeNotSupported,
                                                                     Name);
                                         return null;
@@ -776,7 +776,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 {
                                     // Log error, but don't throw it.
                                     new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                Resources
+                                                                () => Resources
                                                                     .SqlType_GetClrToSqlConverter_NotCreatedAsSqlTableType,
                                                                 this);
                                     return null;
@@ -841,7 +841,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         {
                                             // Log error, but don't throw it.
                                             new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                        Resources.
+                                                                        () => Resources.
                                                                             SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch,
                                                                         this, enumerationType.Name, columns,
                                                                         items);
@@ -853,7 +853,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         {
                                             // Log error, but don't throw it.
                                             new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                        Resources.
+                                                                        () => Resources.
                                                                             SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch,
                                                                         this, enumerationType.Name, columns,
                                                                         items);
@@ -873,7 +873,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             {
                                                 // Log error, but don't throw it.
                                                 new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                            Resources
+                                                                            () => Resources
                                                                                 .SqlType_GetClrToSqlConverter_CanNotCast,
                                                                             this, enumerationType.Name, tupleTypes[i],
                                                                             columnSqlTypes[i], i);
@@ -960,7 +960,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         {
                                             // Log error, but don't throw it.
                                             new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                        Resources
+                                                                        () => Resources
                                                                             .SqlType_GetClrToSqlConverter_CanNotConvertKeyType,
                                                                         this, enumerationType.Name, kvpTypes[0],
                                                                         keyColumnType);
@@ -979,7 +979,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         {
                                             // Log error, but don't throw it.
                                             new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                        Resources
+                                                                        () => Resources
                                                                             .SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType,
                                                                         this, enumerationType.Name);
                                             return null;
@@ -1017,7 +1017,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                     // Unsupported Log error, but don't throw it.
                                     new DatabaseSchemaException(LoggingLevel.Critical,
-                                                                Resources
+                                                                () => Resources
                                                                     .SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType,
                                                                 this, enumerationType);
                                     return null;
@@ -1025,12 +1025,12 @@ namespace WebApplications.Utilities.Database.Schema
 
                                 // Unsupported Log error, but don't throw it.
                                 new DatabaseSchemaException(LoggingLevel.Critical,
-                                                            Resources.SqlType_GetClrToSqlConverter_CannotAcceptType,
+                                                            () => Resources.SqlType_GetClrToSqlConverter_CannotAcceptType,
                                                             this, t);
                                 return null;
                             default:
                                 throw new DatabaseSchemaException(LoggingLevel.Critical,
-                                    Resources.SqlType_GetClrToSqlConverter_UnsupportedSqlDbType, 
+                                    () => Resources.SqlType_GetClrToSqlConverter_UnsupportedSqlDbType, 
                                     SqlDbType);
                         }
                     }
@@ -1039,7 +1039,7 @@ namespace WebApplications.Utilities.Database.Schema
                         new DatabaseSchemaException(
                             e,
                             LoggingLevel.Critical,
-                            Resources.SqlType_GetClrToSqlConverter_FatalErrorOccurred,
+                            () => Resources.SqlType_GetClrToSqlConverter_FatalErrorOccurred,
                             t,
                             this,
                             e.Message
