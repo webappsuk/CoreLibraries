@@ -27,7 +27,6 @@
 
 using System;
 using System.Configuration;
-using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 using NodaTime;
 
@@ -83,9 +82,9 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// </summary>
         /// <param name="type">The object type.</param>
         /// <returns>true if the <paramref name="type" /> parameter value matches the expected type; otherwise, false.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public override bool CanValidate(Type type)
         {
-            Contract.Requires(type != null);
             return (type == typeof(Duration));
         }
 
@@ -104,9 +103,9 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// or
         /// value
         /// </exception>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public override void Validate(object value)
         {
-            Contract.Requires(value != null);
             if (!(value is Duration))
                 throw new ArgumentOutOfRangeException("value", Resource.DurationValidator_Validate_NotDuration);
             Duration d = (Duration)value;

@@ -26,13 +26,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using JetBrains.Annotations;
-using NodaTime;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
@@ -75,11 +72,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<ScheduleOptions>("options"); }
-            set
-            {
-                Contract.Requires(value != null);
-                SetProperty("options", value);
-            }
+            set { SetProperty("options", value); }
         }
 
         /// <summary>

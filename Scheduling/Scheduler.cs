@@ -101,9 +101,11 @@ namespace WebApplications.Utilities.Scheduling
             if (!string.IsNullOrWhiteSpace(dbPath))
             {
                 if (!File.Exists(dbPath))
+                {
                     throw new ConfigurationErrorsException(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         string.Format(Resource.Scheduler_Scheduler_TimeZoneDB_Not_Found, dbPath));
+                }
 
                 try
                 {
@@ -120,7 +122,7 @@ namespace WebApplications.Utilities.Scheduling
                 }
             }
 
-            // ReSharper disable once AssignNullToNotNullAttribute
+                // ReSharper disable once AssignNullToNotNullAttribute
             else _dateTimeZoneProvider = DateTimeZoneProviders.Tzdb;
 
             _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
@@ -148,8 +150,12 @@ namespace WebApplications.Utilities.Scheduling
             Contract.Ensures(Contract.Result<ISchedule>().Name.Equals(name));
             ISchedule schedule;
             if (!_schedules.TryGetValue(name, out schedule))
+            {
                 // ReSharper disable once AssignNullToNotNullAttribute
-                throw new ArgumentOutOfRangeException("name", string.Format(Resource.Scheduler_GetSchedule_NotFound, name));
+                throw new ArgumentOutOfRangeException(
+                    "name",
+                    string.Format(Resource.Scheduler_GetSchedule_NotFound, name));
+            }
             Contract.Assert(schedule != null);
             return schedule;
         }
@@ -166,7 +172,8 @@ namespace WebApplications.Utilities.Scheduling
         {
             Contract.Requires(name != null);
             Contract.Ensures((Contract.ValueAtReturn(out schedule) == null) == !Contract.Result<bool>());
-            Contract.Ensures(!Contract.Result<bool>() || Contract.Result<ISchedule>().Name.Equals(name));
+            Contract.Ensures(
+                !Contract.Result<bool>() || Contract.ValueAtReturn<ISchedule>(out schedule).Name.Equals(name));
             return _schedules.TryGetValue(name, out schedule);
         }
 
@@ -1044,8 +1051,8 @@ namespace WebApplications.Utilities.Scheduling
             get { return _defaultMaximumDuration; }
             set
             {
-                Contract.Requires(value >= Duration.FromMilliseconds(10));
-                Contract.Requires(value <= Duration.FromStandardDays(1));
+                Contract.Requires(value.TotalMilliseconds() >= 10.0);
+                Contract.Requires(value.TotalStandardDays() <= 1.0);
                 _defaultMaximumDuration = value;
             }
         }

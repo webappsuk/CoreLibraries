@@ -104,7 +104,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         [PublicAPI]
         public readonly WeekDay WeekDay;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class, used by configuration system.
         /// </summary>
@@ -152,6 +152,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 options,
                 name)
         {
+            Contract.Requires(CalendarSystem.Iso != null);
+            Contract.Requires(DateTimeZone.Utc != null);
         }
 
         /// <summary>
@@ -379,15 +381,15 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 : (Func<Instant, Instant>)
                     (i =>
                         (i + minimumGap).NextValid(
-                                month,
-                                week,
-                                day,
-                                weekDay,
-                                hour,
-                                minute,
-                                second,
-                                calendarSystem,
-                                timeZone));
+                            month,
+                            week,
+                            day,
+                            weekDay,
+                            hour,
+                            minute,
+                            second,
+                            calendarSystem,
+                            timeZone));
         }
     }
 }

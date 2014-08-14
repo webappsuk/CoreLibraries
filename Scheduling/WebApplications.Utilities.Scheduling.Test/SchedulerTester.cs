@@ -25,17 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NodaTime;
-using WebApplications.Utilities.Scheduling.Scheduled;
-
 namespace WebApplications.Utilities.Scheduling.Test
 {
 #if false

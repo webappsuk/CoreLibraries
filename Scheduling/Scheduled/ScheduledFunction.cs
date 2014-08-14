@@ -38,7 +38,6 @@ using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
-
     /// <summary>
     /// Base class for scheduled functions.
     /// </summary>
@@ -124,7 +123,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             get
             {
                 Contract.Requires(IsFunction);
-                return HistoryQueue != null ? HistoryQueue.Cast<ScheduledFunctionResult<T>>() : Enumerable.Empty<ScheduledFunctionResult<T>>();
+                return HistoryQueue != null
+                    ? HistoryQueue.Cast<ScheduledFunctionResult<T>>()
+                    : Enumerable.Empty<ScheduledFunctionResult<T>>();
             }
         }
 
@@ -136,16 +137,17 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <returns>And awaitable task containing the result, or <see langword="null"/> if the action was not run.</returns>
         [NotNull]
         [PublicAPI]
-        public new Task<ScheduledFunctionResult<T>> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public new Task<ScheduledFunctionResult<T>> ExecuteAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(IsFunction);
             return base.ExecuteAsync(cancellationToken)
                 .ContinueWith(
-                // ReSharper disable once PossibleNullReferenceException
+                    // ReSharper disable once PossibleNullReferenceException
                     t => t.Result as ScheduledFunctionResult<T>,
                     cancellationToken,
                     TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously,
-                // ReSharper disable once AssignNullToNotNullAttribute
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     TaskScheduler.Current);
         }
 
@@ -156,7 +158,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The result.</returns>
         /// <remarks></remarks>
-        protected override async Task<ScheduledActionResult> DoExecuteAsync(Instant due, CancellationToken cancellationToken)
+        protected override async Task<ScheduledActionResult> DoExecuteAsync(
+            Instant due,
+            CancellationToken cancellationToken)
         {
             // Combine cancellation token with Timeout to ensure no action runs beyond the Scheduler's limit.
             using (ITokenSource tokenSource = cancellationToken.WithTimeout(MaximumDurationMs))
@@ -164,8 +168,16 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 // Quick cancellation check.
                 // ReSharper disable once PossibleNullReferenceException
                 if (tokenSource.IsCancellationRequested)
+                {
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    return new ScheduledFunctionResult<T>(due, Scheduler.Clock.Now, Duration.Zero, null, true, default(T));
+                    return new ScheduledFunctionResult<T>(
+                        due,
+                        Scheduler.Clock.Now,
+                        Duration.Zero,
+                        null,
+                        true,
+                        default(T));
+                }
 
 
                 // Always yield before executing the task to ensure that even synchronous tasks are scheduled to run in background.

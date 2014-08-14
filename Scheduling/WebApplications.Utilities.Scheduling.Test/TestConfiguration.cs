@@ -26,13 +26,9 @@
 #endregion
 
 using System;
-using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
-using WebApplications.Utilities.Configuration;
-using WebApplications.Utilities.Scheduling.Configuration;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling.Test
@@ -57,12 +53,11 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.IsInstanceOfType(gap, typeof(GapSchedule));
 
             Duration d = Duration.FromTimeSpan(TimeSpan.Parse("3.12:00:00"));
-            Assert.AreEqual(i+d, gap.Next(i));
+            Assert.AreEqual(i + d, gap.Next(i));
 
             ISchedule etm = Scheduler.GetSchedule("EveryTwoMonths");
             Assert.IsNotNull(etm);
             Assert.IsInstanceOfType(etm, typeof(PeriodicSchedule));
-
 
 
             ISchedule aggregate = Scheduler.GetSchedule("Aggregate");
@@ -77,7 +72,6 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.AreSame(oneOff, array[0]);
             Assert.AreSame(gap, array[1]);
             Assert.AreSame(etm, array[2]);
-
         }
     }
 }

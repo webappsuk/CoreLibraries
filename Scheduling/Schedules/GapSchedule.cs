@@ -75,7 +75,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="name">The name.</param>
         /// <param name="duration">The duration.</param>
         /// <param name="options">The options.</param>
-        public GapSchedule([CanBeNull]string name, Duration duration, ScheduleOptions options = ScheduleOptions.None)
+        public GapSchedule([CanBeNull] string name, Duration duration, ScheduleOptions options = ScheduleOptions.None)
         {
             _name = name;
             Duration = duration < Duration.Zero ? Duration.Zero : duration;
@@ -100,7 +100,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="name">The name.</param>
         /// <param name="timeSpan">The time span.</param>
         /// <param name="options">The options.</param>
-        public GapSchedule([CanBeNull]string name, TimeSpan timeSpan, ScheduleOptions options = ScheduleOptions.None)
+        public GapSchedule([CanBeNull] string name, TimeSpan timeSpan, ScheduleOptions options = ScheduleOptions.None)
         {
             Duration duration = Duration.FromTimeSpan(timeSpan);
             _name = name;

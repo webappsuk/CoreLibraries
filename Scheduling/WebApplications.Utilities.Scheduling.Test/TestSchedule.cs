@@ -125,9 +125,11 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Instant i = Instant.FromDateTimeUtc(new DateTime(2014, 8, 11, 0, 0, 0, DateTimeKind.Utc));
 
-            Assert.AreEqual(i, (i - Duration.FromTicks(1)).NextValid(weekDay:WeekDay.Monday));
+            Assert.AreEqual(i, (i - Duration.FromTicks(1)).NextValid(weekDay: WeekDay.Monday));
             Assert.AreEqual(i, i.NextValid(weekDay: WeekDay.Monday));
-            Assert.AreEqual(i + Duration.FromStandardWeeks(1), (i + Duration.FromTicks(1)).NextValid(weekDay: WeekDay.Monday));
+            Assert.AreEqual(
+                i + Duration.FromStandardWeeks(1),
+                (i + Duration.FromTicks(1)).NextValid(weekDay: WeekDay.Monday));
         }
 
         [TestMethod]
@@ -137,7 +139,9 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             Assert.AreEqual(i, (i - Duration.FromTicks(1)).NextValid(day: Day.First));
             Assert.AreEqual(i, i.NextValid(day: Day.First));
-            Assert.AreEqual(Instant.FromDateTimeUtc(new DateTime(2013, 2, 1, 0, 0, 0, DateTimeKind.Utc)), (i + Duration.FromTicks(1)).NextValid(day: Day.First));
+            Assert.AreEqual(
+                Instant.FromDateTimeUtc(new DateTime(2013, 2, 1, 0, 0, 0, DateTimeKind.Utc)),
+                (i + Duration.FromTicks(1)).NextValid(day: Day.First));
         }
 
 

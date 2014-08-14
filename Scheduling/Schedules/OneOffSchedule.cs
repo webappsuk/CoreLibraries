@@ -105,7 +105,10 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="zonedDateTime">The date and time.</param>
         /// <param name="options">The options.</param>
         [PublicAPI]
-        public OneOffSchedule([CanBeNull] string name, ZonedDateTime zonedDateTime, ScheduleOptions options = ScheduleOptions.None)
+        public OneOffSchedule(
+            [CanBeNull] string name,
+            ZonedDateTime zonedDateTime,
+            ScheduleOptions options = ScheduleOptions.None)
         {
             _name = name;
             Instant = zonedDateTime.ToInstant();
@@ -119,7 +122,10 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="dateTime">The date and time.</param>
         /// <param name="options">The options.</param>
         [UsedImplicitly]
-        private OneOffSchedule([CanBeNull] string name, DateTimeOffset dateTime, ScheduleOptions options = ScheduleOptions.None)
+        private OneOffSchedule(
+            [CanBeNull] string name,
+            DateTimeOffset dateTime,
+            ScheduleOptions options = ScheduleOptions.None)
         {
             _name = name;
             Instant = Instant.FromDateTimeOffset(dateTime);
@@ -134,7 +140,11 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="timeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         [UsedImplicitly]
-        private OneOffSchedule([CanBeNull] string name, DateTime dateTime, [NotNull]string timeZone, ScheduleOptions options = ScheduleOptions.None)
+        private OneOffSchedule(
+            [CanBeNull] string name,
+            DateTime dateTime,
+            [NotNull] string timeZone,
+            ScheduleOptions options = ScheduleOptions.None)
         {
             Contract.Requires(timeZone != null);
             _name = name;

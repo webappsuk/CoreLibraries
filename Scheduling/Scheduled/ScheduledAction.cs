@@ -170,7 +170,10 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// </summary>
         /// <value><see langword="true" /> if this instance is function; otherwise, <see langword="false" />.</value>
         [PublicAPI]
-        public bool IsFunction { get { return !ReferenceEquals(ReturnType, null); } }
+        public bool IsFunction
+        {
+            get { return !ReferenceEquals(ReturnType, null); }
+        }
 
         /// <summary>
         /// Gets the execution history.
@@ -204,7 +207,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 if (ReferenceEquals(_schedule, value))
                     return;
                 _schedule = value;
-                
+
                 RecalculateNextDue(_lastExecutionFinished);
             }
         }
@@ -228,7 +231,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>And awaitable task containing the result, or <see langword="null"/> if the action was not run.</returns>
         [NotNull]
-        public Task<ScheduledActionResult> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ScheduledActionResult> ExecuteAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!Enabled)
                 return TaskResult<ScheduledActionResult>.Default;
@@ -316,10 +320,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [PublicAPI]
         public long NextDueTicks
         {
-            get
-            {
-                return Interlocked.Read(ref _nextDueTicks);
-            }
+            get { return Interlocked.Read(ref _nextDueTicks); }
         }
 
         private Instant _lastExecutionFinished;
@@ -380,17 +381,26 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         {
                             // Align the ticks as per flags.
                             if (options.HasFlag(ScheduleOptions.AlignHours))
-                                ndt = ((ndt + NodaConstants.TicksPerHour - 1) / NodaConstants.TicksPerHour) * NodaConstants.TicksPerHour;
+                            {
+                                ndt = ((ndt + NodaConstants.TicksPerHour - 1) / NodaConstants.TicksPerHour) *
+                                      NodaConstants.TicksPerHour;
+                            }
                             else if (options.HasFlag(ScheduleOptions.AlignMinutes))
-                                ndt = ((ndt + NodaConstants.TicksPerMinute - 1) / NodaConstants.TicksPerMinute) * NodaConstants.TicksPerMinute;
+                            {
+                                ndt = ((ndt + NodaConstants.TicksPerMinute - 1) / NodaConstants.TicksPerMinute) *
+                                      NodaConstants.TicksPerMinute;
+                            }
                             else if (options.HasFlag(ScheduleOptions.AlignSeconds))
-                                ndt = ((ndt + NodaConstants.TicksPerSecond - 1) / NodaConstants.TicksPerSecond) * NodaConstants.TicksPerSecond;
+                            {
+                                ndt = ((ndt + NodaConstants.TicksPerSecond - 1) / NodaConstants.TicksPerSecond) *
+                                      NodaConstants.TicksPerSecond;
+                            }
                         }
                     }
 
                     // If the next due is in the past, set it to due now.
                     if (ndt < nt) ndt = nt;
-                    // If it's more than the max clamp to max.
+                        // If it's more than the max clamp to max.
                     else if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
 
                     // Update next due
@@ -414,7 +424,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
-        public override bool Equals([CanBeNull]object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -427,7 +437,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-        public bool Equals([CanBeNull]ScheduledAction other)
+        public bool Equals([CanBeNull] ScheduledAction other)
         {
             if (ReferenceEquals(null, other)) return false;
             return ReferenceEquals(this, other) || ID.Equals(other.ID);
@@ -462,7 +472,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==([CanBeNull]ScheduledAction left, [CanBeNull] ScheduledAction right)
+        public static bool operator ==([CanBeNull] ScheduledAction left, [CanBeNull] ScheduledAction right)
         {
             return Equals(left, right);
         }

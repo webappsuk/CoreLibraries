@@ -120,7 +120,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
             // ReSharper disable ConstantNullCoalescingCondition
             Schedules = Schedules ?? new ScheduleCollection();
             // ReSharper restore ConstantNullCoalescingCondition
-            
+
             base.InitializeDefault();
         }
     }
