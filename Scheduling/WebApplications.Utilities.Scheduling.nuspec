@@ -15,7 +15,7 @@
   <files>
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
-    <file src="bin\Release\TimeZoneData\*.nzd" target="lib\net45\TimeZoneData" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
+    <file src="bin\Release\TimeZoneData\*.nzd" target="lib\net451\TimeZoneData" />
   </files>
 </package>
