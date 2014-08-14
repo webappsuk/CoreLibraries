@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -49,15 +49,6 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// <value>Returns <see langword="true" /> if the logger supports multiple instances; otherwise returns <see langword="false" />.</value>
         [PublicAPI]
         bool AllowMultiple { get; }
-
-        /// <summary>
-        ///   A <see cref="bool"/> value indicating whether the logger is queryable.
-        /// </summary>
-        /// <value>
-        ///   Returns <see langword="true"/> if this instance can retrieve historic logs; otherwise returns <see langword="false"/>.
-        /// </value>
-        [PublicAPI]
-        bool Queryable { get; }
 
         /// <summary>
         ///   The valid <see cref="LoggingLevels">log levels</see> for this log level.
@@ -84,12 +75,12 @@ namespace WebApplications.Utilities.Logging.Interfaces
         Task Add([NotNull] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>
-        /// Gets the Qbservable allowing asynchronous querying of log data.
+        /// Gets all logs (if available).
         /// </summary>
         /// <value>The query.</value>
-        [NotNull]
+        [CanBeNull]
         [PublicAPI]
-        IQbservable<Log> Qbserve { get; }
+        IQueryable<Log> All { get; }
 
         /// <summary>
         /// Force a flush of this logger.

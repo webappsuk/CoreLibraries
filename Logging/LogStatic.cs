@@ -34,7 +34,6 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
@@ -42,12 +41,17 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using NodaTime;
+using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
+using WebApplications.Utilities.Scheduling;
+using WebApplications.Utilities.Scheduling.Scheduled;
+using WebApplications.Utilities.Scheduling.Schedules;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging
@@ -57,13 +61,6 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     public sealed partial class Log
     {
-        /// <summary>
-        /// The Header/Footer string
-        /// </summary>
-        [NotNull]
-        private const string Header =
-            "====================================================================================================";
-
         /// <summary>
         /// The new log item performance counter.
         /// </summary>
@@ -96,8 +93,9 @@ namespace WebApplications.Utilities.Logging
                     HashSet<HashedByteArray> publicKeys = new HashSet<HashedByteArray>
                     {
                         typeof (int).Assembly.GetName().GetPublicKey(),
-                        typeof (Observable).Assembly.GetName().GetPublicKey(),
-                        typeof (UtilityExtensions).Assembly.GetName().GetPublicKey()
+                        typeof (UtilityExtensions).Assembly.GetName().GetPublicKey(),
+                        typeof (PerformanceCounterExtensions).Assembly.GetName().GetPublicKey(),
+                        typeof (Scheduler).Assembly.GetName().GetPublicKey()
                     };
                     // Get the assembly name from the lowest point on the stack that does not have a
                     // 'known' public key.
@@ -109,7 +107,7 @@ namespace WebApplications.Utilities.Logging
                             .Where(m => m != null)
                             .Select(m => m.DeclaringType)
                             .Where(t => t != null)
-                            .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
+                            .Select(t => new { t.Assembly, Name = t.Assembly.GetName() })
                             // ReSharper disable once AssignNullToNotNullAttribute
                             .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
                             .Select(n => n.Assembly)
@@ -399,14 +397,8 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        internal static readonly Assembly LoggingAssembly = typeof (Log).Assembly;
-
-        /// <summary>
-        /// The global tick, ticks once a second and is used for batching, etc.
-        /// </summary>
-        [NonSerialized]
-        [NotNull]
-        public static readonly IObservable<long> Tick;
+        [PublicAPI]
+        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
 
         /// <summary>
         /// Loggers collection.
@@ -427,7 +419,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NonSerialized]
         [NotNull]
-        private static readonly IDisposable _tickSubscription;
+        private static readonly ScheduledAction _tickAction;
 
         /// <summary>
         /// The queue lock.
@@ -457,23 +449,18 @@ namespace WebApplications.Utilities.Logging
             _perfCounterNewItem =
                 PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
 
-            // Create tick
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Tick = Observable.Timer(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+            // Create tick action
+            _tickAction = Scheduler.Add(DoFlush, Schedule.Never);
 
             // Create loggers and add default memory logger.
             _loggers = new Dictionary<ILogger, LoggerInfo>();
             _defaultMemoryLogger = new MemoryLogger("Default memory logger", TimeSpan.FromMinutes(1));
-            _loggers[_defaultMemoryLogger] = new LoggerInfo(false, typeof (MemoryLogger));
-
-            // Flush on tick. 
-            // ReSharper disable once AssignNullToNotNullAttribute
-            _tickSubscription = Tick.Subscribe(l => Flush());
+            _loggers[_defaultMemoryLogger] = new LoggerInfo(false, typeof(MemoryLogger));
 
             ConfigurationSection<LoggingConfiguration>.Changed += (o, e) => LoadConfiguration();
 
             // Flush logs on domain unload and unhandled exceptions.
-            AppDomain.CurrentDomain.DomainUnload += (s, e) => Cleanup();
+            AppDomain.CurrentDomain.DomainUnload += (s, e) => CleanUp();
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
             Add(LoggingLevel.Notification, () => Resources.Log_PerfCategory_GUID, PerfCategory.InstanceGuid);
@@ -568,16 +555,37 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
+        /// The default tick schedule.
+        /// </summary>
+        [NotNull]
+        private static readonly ISchedule _defaultSchedule = new GapSchedule(
+            Duration.FromTicks(1),
+            ScheduleOptions.AlignSeconds);
+
+        /// <summary>
+        /// Gets the tick schedule.
+        /// </summary>
+        /// <value>The tick schedule.</value>
+        [NotNull]
+        [PublicAPI]
+        public static ISchedule TickSchedule
+        {
+            get { return _tickAction.Schedule; }
+        }
+
+        /// <summary>
         ///   Loads the configuration whenever it is changed.
         /// </summary>
         /// <remarks>
-        ///   As this uses AssemblyInitializeAttribute then this code is called whenever the Assembly
+        ///   As this is called from ModuleInitializer then this code is called whenever the Assembly
         ///   is referenced. In turn this activates the static constructor, which attaches this
         ///   method as the response to configuration changes. However, the initial configuration load does
-        ///   not trigger that event, so it's only hit once on startup and then on every subsequent change.
+        ///   not trigger that event, so it's only hit once on start up and then on every subsequent change.
         /// </remarks>
         internal static void LoadConfiguration()
         {
+            _tickAction.Enabled = false;
+
             // Ensure we only run one load at a time.
             lock (_loggers)
             {
@@ -638,10 +646,21 @@ namespace WebApplications.Utilities.Logging
                     }
 
                     Add(LoggingLevel.Notification, () => Resources.Log_Configured, ApplicationName, ApplicationGuid);
+
+                    // Get the tick schedule, and re-enabled the tick.
+                    ISchedule schedule;
+                    _tickAction.Schedule = (string.IsNullOrWhiteSpace(configuration.Schedule) ||
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                                            !Scheduler.TryGetSchedule(configuration.Schedule, out schedule))
+                        ? _defaultSchedule
+                        : schedule;
+                    _tickAction.Enabled = true;
                 }
                 else
+                {
                     // Disable logging.
                     ValidLevels = LoggingLevels.None;
+                }
             }
         }
 
@@ -730,7 +749,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="limit"><para>The maximum number of logs to copy.</para>
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
-        /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
         [NotNull]
         [PublicAPI]
         public static ILogger AddLogger(
@@ -750,7 +768,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="limit">The limit.</param>
         /// <param name="isFromConfiguration">if set to <see langword="true" /> the logger was added from the configuration.</param>
         /// <returns>ILogger.</returns>
-        /// <exception cref="LoggingException"></exception>
         [NotNull]
         [PublicAPI]
         private static ILogger AddLogger(
@@ -763,12 +780,6 @@ namespace WebApplications.Utilities.Logging
             if (sourceLogger == null)
                 sourceLogger = _defaultMemoryLogger;
 
-            // Check for source logger can retrieve logs
-            if (!sourceLogger.Queryable)
-                throw new LoggingException(
-                    () => Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
-                    sourceLogger.Name);
-
             IDisposable loggerLock = null;
             try
             {
@@ -779,6 +790,7 @@ namespace WebApplications.Utilities.Logging
                     {
                         // Check for existing logger of same type.
                         KeyValuePair<ILogger, LoggerInfo> existing =
+                            // ReSharper disable once PossibleNullReferenceException
                             _loggers.FirstOrDefault(i => loggerType == i.Value.Type);
                         if (existing.Key != null)
                             return existing.Key;
@@ -795,7 +807,9 @@ namespace WebApplications.Utilities.Logging
                 }
 
                 // Add logs, we already have the lock, so we go first.
-                logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable());
+                IQueryable<Log> logs = sourceLogger.All;
+                if (logs != null)
+                    logger.Add(limit < int.MaxValue ? (IEnumerable<Log>) new CyclicConcurrentQueue<Log>(logs, limit) : logs);
             }
             finally
             {
@@ -814,7 +828,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="limit"><para>The maximum number of logs to copy.</para>
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
-        /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
         [NotNull]
         [PublicAPI]
         public static T AddLogger<T>(
@@ -836,7 +849,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="limit"><para>The maximum number of logs to copy.</para>
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
-        /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
         [NotNull]
         [PublicAPI]
         public static T AddLogger<T>(
@@ -858,8 +870,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="limit">The limit.</param>
         /// <param name="isFromConfiguration">if set to <see langword="true" /> [is from configuration].</param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
-        /// <exception cref="LoggingException">
-        /// </exception>
         [NotNull]
         [PublicAPI]
         private static T AddLogger<T>(
@@ -873,12 +883,6 @@ namespace WebApplications.Utilities.Logging
             if (sourceLogger == null)
                 sourceLogger = _defaultMemoryLogger;
 
-            // Check for source logger can retrieve logs
-            if (!sourceLogger.Queryable)
-                throw new LoggingException(
-                    () => Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
-                    sourceLogger.Name);
-
             T logger;
             IDisposable loggerLock = null;
             try
@@ -887,10 +891,11 @@ namespace WebApplications.Utilities.Logging
                 {
                     // Check for existing logger of same type.
                     KeyValuePair<ILogger, LoggerInfo> existing =
-                        _loggers.FirstOrDefault(i => i.Value.Type == typeof (T));
+                        // ReSharper disable once PossibleNullReferenceException
+                        _loggers.FirstOrDefault(i => i.Value.Type == typeof(T));
                     if ((existing.Key != null) &&
                         !existing.Key.AllowMultiple)
-                        return (T) existing.Key;
+                        return (T)existing.Key;
 
                     logger = loggerCreator();
                     if (ReferenceEquals(logger, null))
@@ -898,7 +903,7 @@ namespace WebApplications.Utilities.Logging
                         return default(T);
 
                     // Create the logger info
-                    LoggerInfo info = new LoggerInfo(false, typeof (T));
+                    LoggerInfo info = new LoggerInfo(false, typeof(T));
 
                     // Grab the logger lock, this ensures we get to add log entries first!
                     loggerLock = info.Lock.LockAsync().Result;
@@ -908,7 +913,9 @@ namespace WebApplications.Utilities.Logging
                 }
 
                 // Add logs, we already have the lock, so we go first.
-                logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable());
+                IQueryable<Log> logs = sourceLogger.All;
+                if (logs != null)
+                    logger.Add(limit < int.MaxValue ? (IEnumerable<Log>)new CyclicConcurrentQueue<Log>(logs, limit) : logs);
             }
             finally
             {
@@ -927,7 +934,7 @@ namespace WebApplications.Utilities.Logging
         public static bool RemoveLogger([NotNull] ILogger logger)
         {
             Contract.Requires(logger != null);
-            // Sanity check - should be impossible to get reference to _defaultMemoryLoger anyway.
+            // Sanity check - should be impossible to get reference to _defaultMemoryLogger anyway.
             if (ReferenceEquals(logger, _defaultMemoryLogger))
                 return false;
 
@@ -936,11 +943,12 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the loggers of the <see typeref="T">specified type</see>.
+        /// Gets the loggers of the <typeparamref name="T">specified type</typeparamref>.
         /// </summary>
         /// <typeparam name="T">The logger type</typeparam>
         /// <returns>All loggers matching the type</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<T> GetLoggers<T>()
             where T : ILogger
         {
@@ -956,7 +964,20 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [PublicAPI]
         [NotNull]
-        public static async Task Flush(CancellationToken token = new CancellationToken())
+        public static Task Flush(CancellationToken token = new CancellationToken())
+        {
+            return _tickAction.ExecuteAsync(token);
+        }
+
+        /// <summary>
+        ///   Flushes all outstanding logs asynchronously.
+        /// </summary>
+        /// <remarks>
+        ///   Note: If more logs are added whilst the system is flushing this will continue to block until there are no outstanding logs.
+        /// </remarks>
+        [PublicAPI]
+        [NotNull]
+        private static async Task DoFlush(CancellationToken token = new CancellationToken())
         {
             DateTime requested = DateTime.UtcNow;
 
@@ -1004,7 +1025,8 @@ namespace WebApplications.Utilities.Logging
             List<KeyValuePair<ILogger, LoggerInfo>> loggers;
             lock (_loggers)
                 loggers = _loggers
-                    .Where(kvp => (((byte) kvp.Key.ValidLevels) & ((byte) ValidLevels)) > 0)
+                    // ReSharper disable once PossibleNullReferenceException
+                    .Where(kvp => (((byte)kvp.Key.ValidLevels) & ((byte)ValidLevels)) > 0)
                     .ToList();
 
             // Order the logs
@@ -1023,19 +1045,23 @@ namespace WebApplications.Utilities.Logging
 
             // Create tasks
             // Note we don't use the supplied cancellation token as we always write out logs once they're removed from the buffer.
+            // ReSharper disable once AssignNullToNotNullAttribute
             await Task.WhenAll(
                 loggers.Select(
-                    // ReSharper disable once PossibleNullReferenceException
+                // ReSharper disable once PossibleNullReferenceException
                     kvp => kvp.Value.Lock
                         .LockAsync(CancellationToken.None)
                         .ContinueWith(
                             t =>
                             {
+                                Contract.Assert(t != null);
                                 try
                                 {
                                     Contract.Assert(kvp.Key != null);
                                     kvp.Key.Add(
+                                        // ReSharper disable PossibleNullReferenceException
                                         orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
+                                        // ReSharper restore PossibleNullReferenceException
                                         CancellationToken.None);
                                 }
                                 finally
@@ -1046,8 +1072,9 @@ namespace WebApplications.Utilities.Logging
                             },
                             CancellationToken.None,
                             TaskContinuationOptions.LongRunning,
-                            // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable AssignNullToNotNullAttribute
                             TaskScheduler.Default)))
+                // ReSharper restore AssignNullToNotNullAttribute
                 // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
                 .WithCancellation(token)
                 .ConfigureAwait(false);
@@ -1062,33 +1089,37 @@ namespace WebApplications.Utilities.Logging
         [SecurityCritical]
         private static void OnUnhandledException([CanBeNull] object sender, [CanBeNull] UnhandledExceptionEventArgs e)
         {
-            Exception exception = e.ExceptionObject as Exception;
+            Exception exception = e != null ? e.ExceptionObject as Exception : null;
+            bool isTerminating = e != null && e.IsTerminating;
             Add(
-                new LogContext().Set(_logReservation, IsTerminatingKey, e.IsTerminating),
+                new LogContext().Set(_logReservation, IsTerminatingKey, isTerminating),
                 exception,
-                e.IsTerminating ? LoggingLevel.Critical : LoggingLevel.Error,
+                isTerminating ? LoggingLevel.Critical : LoggingLevel.Error,
                 () => Resources.Log_OnUnhandledException);
 
-            if (e.IsTerminating)
-                Cleanup();
+            if (isTerminating)
+                CleanUp();
             else
-                Flush().Wait();
+                _tickAction.ExecuteAsync().Wait();
         }
 
         /// <summary>
         /// Attempts to clean up the logs on unloading of an app domain.
         /// </summary>
-        private static void Cleanup()
+        private static void CleanUp()
         {
             Thread.BeginCriticalRegion();
-            _tickSubscription.Dispose();
+            _tickAction.Schedule = Schedule.Never;
             Add(LoggingLevel.Notification, () => Resources.Log_Application_Exiting, ApplicationName, ApplicationGuid);
 
-            Flush().Wait();
+            _tickAction.ExecuteAsync().Wait();
+            _tickAction.Enabled = false;
             ILogger[] loggers = _loggers.Keys.ToArray();
             _loggers.Clear();
+            // ReSharper disable once PossibleNullReferenceException
             Parallel.ForEach(loggers, l => l.Dispose());
             Thread.EndCriticalRegion();
+            // ReSharper disable once AssignNullToNotNullAttribute
             TraceTextWriter.Default.WriteLine(Resources.Log_Cleanup_Finished);
         }
 
@@ -2148,7 +2179,7 @@ namespace WebApplications.Utilities.Logging
                         null,
                         null,
                         LoggingLevel.Information,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2179,7 +2210,7 @@ namespace WebApplications.Utilities.Logging
                         context,
                         null,
                         LoggingLevel.Information,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2210,7 +2241,7 @@ namespace WebApplications.Utilities.Logging
                         null,
                         null,
                         level,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2243,7 +2274,7 @@ namespace WebApplications.Utilities.Logging
                         context,
                         null,
                         level,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2277,7 +2308,7 @@ namespace WebApplications.Utilities.Logging
                         null,
                         exception,
                         level,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2313,7 +2344,7 @@ namespace WebApplications.Utilities.Logging
                         context,
                         exception,
                         level,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2344,7 +2375,7 @@ namespace WebApplications.Utilities.Logging
                         null,
                         null,
                         LoggingLevel.Information,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2377,7 +2408,7 @@ namespace WebApplications.Utilities.Logging
                         context,
                         null,
                         LoggingLevel.Information,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2404,7 +2435,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                _buffer.Add(new Log(culture, null, null, level, typeof (TResource), resourceProperty, null, parameters));
+                _buffer.Add(new Log(culture, null, null, level, typeof(TResource), resourceProperty, null, parameters));
         }
 
         /// <summary>
@@ -2431,7 +2462,7 @@ namespace WebApplications.Utilities.Logging
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
                 _buffer.Add(
-                    new Log(culture, context, null, level, typeof (TResource), resourceProperty, null, parameters));
+                    new Log(culture, context, null, level, typeof(TResource), resourceProperty, null, parameters));
         }
 
         /// <summary>
@@ -2459,7 +2490,7 @@ namespace WebApplications.Utilities.Logging
         {
             if (level.IsValid(ValidLevels))
                 _buffer.Add(
-                    new Log(culture, null, exception, level, typeof (TResource), resourceProperty, null, parameters));
+                    new Log(culture, null, exception, level, typeof(TResource), resourceProperty, null, parameters));
         }
 
         /// <summary>
@@ -2489,7 +2520,7 @@ namespace WebApplications.Utilities.Logging
         {
             if (level.IsValid(ValidLevels))
                 _buffer.Add(
-                    new Log(culture, context, exception, level, typeof (TResource), resourceProperty, null, parameters));
+                    new Log(culture, context, exception, level, typeof(TResource), resourceProperty, null, parameters));
         }
 
         /// <summary>
@@ -2865,7 +2896,7 @@ namespace WebApplications.Utilities.Logging
                         null,
                         exception,
                         LoggingLevel.Error,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2898,7 +2929,7 @@ namespace WebApplications.Utilities.Logging
                         context,
                         exception,
                         LoggingLevel.Error,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2931,7 +2962,7 @@ namespace WebApplications.Utilities.Logging
                         null,
                         exception,
                         LoggingLevel.Error,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));
@@ -2966,7 +2997,7 @@ namespace WebApplications.Utilities.Logging
                         context,
                         exception,
                         LoggingLevel.Error,
-                        typeof (TResource),
+                        typeof(TResource),
                         resourceProperty,
                         null,
                         parameters));

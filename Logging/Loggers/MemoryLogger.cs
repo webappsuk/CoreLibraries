@@ -29,10 +29,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using NodaTime;
+using WebApplications.Utilities.Scheduling;
+using WebApplications.Utilities.Scheduling.Scheduled;
+using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -46,7 +49,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         /// The cleaner subscription.
         /// </summary>
-        private IDisposable _cleaner;
+        [NotNull]
+        private readonly ScheduledAction _cleaner;
 
         /// <summary>
         ///   The cache that stores the logs.
@@ -65,38 +69,47 @@ namespace WebApplications.Utilities.Logging.Loggers
         private int _maximumLogEntries;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="MemoryLogger"/> class.
+        /// The default tick schedule.
+        /// </summary>
+        [NotNull]
+        private static readonly ISchedule _defaultSchedule = new GapSchedule(
+            Duration.FromTicks(1),
+            ScheduleOptions.AlignMinutes);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MemoryLogger" /> class.
         /// </summary>
         /// <param name="name">The logger name.</param>
-        /// <param name="cacheExpiry">
-        ///   <para>The length of time that log items are cached for.</para>
-        ///   <para>Use <see cref="TimeSpan.Zero"/> for infinity.</para>
-        ///   <para>By default the expiry will be set to 10 minutes.</para>
-        /// </param>
-        /// <param name="maximumLogEntries">
-        ///   <para>The maximum number of log entries to store.</para>
-        ///   <para>By default this is set to 10,000.</para>
-        /// </param>
-        /// <param name="validLevels">
-        ///   <para>The valid log levels.</para>
-        ///   <para>By default this is set allow all <see cref="LoggingLevels">all log levels</see>.</para>
-        /// </param>
-        /// <exception cref="LoggingException">
-        ///   <para><paramref name="maximumLogEntries"/> was less than 1.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="cacheExpiry"/> cannot be less than 10 seconds.</para>
-        /// </exception>
+        /// <param name="cacheExpiry"><para>The length of time that log items are cached for.</para>
+        /// <para>Use <see cref="TimeSpan.Zero" /> for infinity.</para>
+        /// <para>By default the expiry will be set to 10 minutes.</para></param>
+        /// <param name="maximumLogEntries"><para>The maximum number of log entries to store.</para>
+        /// <para>By default this is set to 10,000.</para></param>
+        /// <param name="schedule">The schedule.</param>
+        /// <param name="validLevels"><para>The valid log levels.</para>
+        /// <para>By default this is set allow all <see cref="LoggingLevels">all log levels</see>.</para></param>
+        /// <exception cref="LoggingException"><para>
+        ///   <paramref name="maximumLogEntries" /> was less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>
+        ///   <paramref name="cacheExpiry" /> cannot be less than 10 seconds.</para></exception>
         internal MemoryLogger(
             [NotNull] string name,
             TimeSpan cacheExpiry = default(TimeSpan),
             int maximumLogEntries = 10000,
+            [CanBeNull] string schedule = null,
             LoggingLevels validLevels = LoggingLevels.All)
-            : base(name, true, false, validLevels)
+            : base(name, false, validLevels)
         {
             Contract.Requires(name != null);
-            MaximumLogEntries = maximumLogEntries;
-            CacheExpiry = cacheExpiry;
-            _cleaner = Log.Tick.Subscribe(t => Clean());
+            _maximumLogEntries = maximumLogEntries;
+            _cacheExpiry = cacheExpiry;
+
+            ISchedule s;
+            if (string.IsNullOrWhiteSpace(schedule) ||
+                !Scheduler.TryGetSchedule(schedule, out s)) s = _defaultSchedule;
+
+            _cleaner = Scheduler.Add((ScheduledAction.SchedulableAction)Clean, s);
         }
 
         /// <summary>
@@ -120,7 +133,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                         value);
 
                 _cacheExpiry = value;
-                Clean();
+                _cleaner.ExecuteAsync();
             }
         }
 
@@ -150,7 +163,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                   () => Resources.MemoryLogger_MaximumLogsLessThanOne,
                         value);
                 _maximumLogEntries = value;
-                Clean();
+                _cleaner.ExecuteAsync();
             }
         }
 
@@ -159,7 +172,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <value>All.</value>
         [NotNull]
-        public IEnumerable<Log> All
+        public override IQueryable<Log> All
         {
             get
             {
@@ -171,22 +184,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                 return snapshot
                     .Skip(snapshot.Length > MaximumLogEntries ? snapshot.Length - MaximumLogEntries : 0)
                     // ReSharper disable once PossibleNullReferenceException
-                    .Where(log => CacheExpiry > (DateTime.UtcNow - log.TimeStamp));
-            }
-        }
-
-        /// <summary>
-        /// Gets the Qbservable allowing asynchronous querying of log data.
-        /// </summary>
-        /// <value>The query.</value>
-        public override IQbservable<Log> Qbserve
-        {
-            get
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return All
-                    .ToObservable()
-                    .AsQbservable();
+                    .Where(log => CacheExpiry > (DateTime.UtcNow - log.TimeStamp))
+                    .AsQueryable();
             }
         }
 
@@ -202,8 +201,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             lock (_lock)
             {
                 foreach (Log log in logs
-                    // ReSharper disable once PossibleNullReferenceException
                     .Where(
+                    // ReSharper disable once PossibleNullReferenceException
                         log => log.Level.IsValid(ValidLevels) &&
                                CacheExpiry > (DateTime.UtcNow - log.TimeStamp)))
                 {
@@ -223,7 +222,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>Task.</returns>
         public override Task Flush(CancellationToken token = default(CancellationToken))
         {
-            Clean();
+            // ReSharper disable once MethodSupportsCancellation
+            _cleaner.ExecuteAsync();
             return base.Flush(token);
         }
 
@@ -232,9 +232,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         public override void Dispose()
         {
-            IDisposable cleaner = Interlocked.Exchange(ref _cleaner, null);
-            if (cleaner == null) return;
-            cleaner.Dispose();
+            _cleaner.Enabled = false;
+            _cleaner.Schedule = Schedule.Never;
             lock (_lock)
                 _queue.Clear();
         }
@@ -249,7 +248,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 while ((_queue.Count > 0) &&
                        ((_queue.Count > MaximumLogEntries) ||
-                        // ReSharper disable once PossibleNullReferenceException
+                    // ReSharper disable once PossibleNullReferenceException
                         (CacheExpiry > (DateTime.UtcNow - _queue.Peek().TimeStamp))))
                     _queue.Dequeue();
             }

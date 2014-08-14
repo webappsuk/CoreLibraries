@@ -34,6 +34,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Loggers;
+using WebApplications.Utilities.Scheduling;
 
 namespace WebApplications.Utilities.Logging.Configuration
 {
@@ -50,20 +51,20 @@ namespace WebApplications.Utilities.Logging.Configuration
             () =>
             {
                 Assembly assembly = Log.EntryAssembly;
-                if (assembly.IsDefined(typeof (AssemblyTitleAttribute), false))
+                if (assembly.IsDefined(typeof(AssemblyTitleAttribute), false))
                 {
                     AssemblyTitleAttribute t =
-                        Attribute.GetCustomAttribute(assembly, typeof (AssemblyTitleAttribute)) as
+                        Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute)) as
                             AssemblyTitleAttribute;
                     if ((t != null) &&
                         !string.IsNullOrWhiteSpace(t.Title))
                         return t.Title;
                 }
 
-                if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
+                if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
                 {
                     AssemblyDescriptionAttribute a =
-                        Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
+                        Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
                             AssemblyDescriptionAttribute;
                     if ((a != null) &&
                         !string.IsNullOrWhiteSpace(a.Description))
@@ -168,10 +169,22 @@ namespace WebApplications.Utilities.Logging.Configuration
         }
 
         /// <summary>
+        ///   Gets or sets the tick <see cref="ISchedule"/> name.
+        /// </summary>
+        [ConfigurationProperty("schedule", DefaultValue = null, IsRequired = false)]
+        [PublicAPI]
+        [CanBeNull]
+        public string Schedule
+        {
+            get { return GetProperty<string>("schedule"); }
+            set { SetProperty("schedule", value); }
+        }
+
+        /// <summary>
         ///   Gets all of the <see cref="LoggersCollection">loggers</see>.
         /// </summary>
         [ConfigurationProperty("loggers", IsRequired = false, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof (LoggersCollection),
+        [ConfigurationCollection(typeof(LoggersCollection),
             AddItemName = "add",
             ClearItemsName = "clear",
             RemoveItemName = "remove")]
@@ -181,7 +194,11 @@ namespace WebApplications.Utilities.Logging.Configuration
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<LoggersCollection>("loggers"); }
-            set { SetProperty("loggers", value); }
+            set
+            {
+                Contract.Requires(value != null);
+                SetProperty("loggers", value);
+            }
         }
 
         /// <summary>
@@ -199,7 +216,7 @@ namespace WebApplications.Utilities.Logging.Configuration
                 new LoggerElement
                 {
                     Name = "Trace Logger",
-                    Type = typeof (TraceLogger),
+                    Type = typeof(TraceLogger),
                     Enabled = true,
                     ValidLevels = LoggingLevels.All
                 });

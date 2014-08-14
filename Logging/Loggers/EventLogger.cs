@@ -69,7 +69,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             [CanBeNull] FormatBuilder format = null,
             [NotNull] string machineName = "."
             )
-            : base(name, false, false, validLevels)
+            : base(name, false, validLevels)
         {
             Contract.Requires(name != null);
             Contract.Requires(eventLog != null);

@@ -47,7 +47,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
-            : base(name, TraceTextWriter.Default, format, false, false, validLevels)
+            : base(name, TraceTextWriter.Default, format, false, validLevels)
         {
             Contract.Requires(name != null);
         }

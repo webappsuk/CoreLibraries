@@ -59,30 +59,30 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] TextWriter writer,
             [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
-            : this(name, writer, format, false, true, validLevels)
+            : this(name, writer, format, true, validLevels)
         {
             Contract.Requires(name != null);
+            Contract.Requires(writer != null);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextWriterLogger"/> class.
+        /// Initializes a new instance of the <see cref="TextWriterLogger" /> class.
         /// </summary>
         /// <param name="name">The logger name.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="queryable">if set to <see langword="true" /> the logger is queryable.</param>
         /// <param name="allowMultiple">if set to <see langword="true" /> the logger supports multiple instances.</param>
         /// <param name="validLevels">The valid log levels.</param>
         protected TextWriterLogger(
             [NotNull] string name,
             [NotNull] TextWriter writer,
             [CanBeNull] FormatBuilder format,
-            bool queryable,
             bool allowMultiple,
             LoggingLevels validLevels)
-            : base(name, queryable, allowMultiple, validLevels)
+            : base(name, allowMultiple, validLevels)
         {
             Contract.Requires(name != null);
+            Contract.Requires(writer != null);
             Format = format;
             _writer = writer;
         }

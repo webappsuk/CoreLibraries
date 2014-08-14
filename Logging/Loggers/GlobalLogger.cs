@@ -29,13 +29,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
+#if false // TODO
     /// <summary>
     /// The <see cref="GlobalLogger"/> gives access to all logs, from all processes, on the current machine.
     /// </summary>
@@ -80,7 +80,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="validLevels">The valid levels.</param>
         public GlobalLogger(LoggingLevels validLevels = LoggingLevels.All)
             :
-                base("Global Logger", true, false, validLevels)
+                base("Global Logger", false, validLevels)
         {
         }
 
@@ -97,4 +97,5 @@ namespace WebApplications.Utilities.Logging.Loggers
             throw new NotImplementedException();
         }
     }
+#endif
 }

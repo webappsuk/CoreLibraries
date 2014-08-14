@@ -133,7 +133,7 @@ namespace WebApplications.Utilities.Logging
         /// Gets the color of a log level.
         /// </summary>
         /// <param name="level">The level.</param>
-        /// <returns>Color.</returns>
+        /// <param name="color">The color.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         public static void SetColor(this LoggingLevel level, Color color)

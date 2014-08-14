@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Reactive.Linq;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -46,24 +46,19 @@ namespace WebApplications.Utilities.Logging.Loggers
         [NotNull]
         private readonly string _name;
 
-        private readonly bool _queryable;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerBase" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="queryable">if set to <see langword="true" /> the logger is queryable.</param>
         /// <param name="allowMultiple">if set to <see langword="true" /> the logger supports multiple instances.</param>
         /// <param name="validLevels">The valid levels.</param>
         protected LoggerBase(
             [NotNull] string name,
-            bool queryable = false,
             bool allowMultiple = true,
             LoggingLevels validLevels = LoggingLevels.All)
         {
             Contract.Requires(name != null);
             _name = name;
-            _queryable = queryable;
             _allowMultiple = allowMultiple;
             ValidLevels = validLevels;
         }
@@ -83,15 +78,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         public bool AllowMultiple
         {
             get { return _allowMultiple; }
-        }
-
-        /// <summary>
-        /// A <see cref="bool" /> value indicating whether the logger is queryable.
-        /// </summary>
-        /// <value>Returns <see langword="true" /> if this instance can retrieve historic logs; otherwise returns <see langword="false" />.</value>
-        public bool Queryable
-        {
-            get { return _queryable; }
         }
 
         /// <summary>
@@ -115,20 +101,15 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public abstract Task Add([NotNull] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
+        public abstract Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>
-        /// Gets the Qbservable allowing asynchronous querying of log data.
+        /// Gets all logs (if available).
         /// </summary>
         /// <value>The query.</value>
-        public virtual IQbservable<Log> Qbserve
+        public virtual IQueryable<Log> All
         {
-            get
-            {
-                if (_queryable)
-                    throw new NotImplementedException("Qbserve has not been implemented by the logger.");
-                throw new NotSupportedException("Qbserve is not supported by the logger.");
-            }
+            get { return null; }
         }
 
         /// <summary>

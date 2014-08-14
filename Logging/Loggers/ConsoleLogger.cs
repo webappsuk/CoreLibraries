@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
-            : base(name, ConsoleTextWriter.Default, format, false, false, validLevels)
+            : base(name, ConsoleTextWriter.Default, format, false, validLevels)
         {
             Contract.Requires(name != null);
             Contract.Requires(ConsoleHelper.IsConsole);

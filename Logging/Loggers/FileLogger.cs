@@ -47,7 +47,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     ///   A logger that implements logging to files.
     /// </summary>
     /// <remarks>
-    ///   TODO It should be possible to turn this into a logger that sets <see cref="ILogger.Queryable"/> to <see langword="true"/>.
+    ///   TODO It should be possible to turn this into a logger that retrieves data.
     ///   That is that supports log retrieval.
     /// </remarks>
     [PublicAPI]
@@ -104,61 +104,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             new FormatBuilder(
                 "{" + Log.FormatTagApplicationName + "}-{" + Log.FormatTagTimeStamp + ":yyMMddHHmmssffff}",
                 true);
-
-        /*
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileLogger" /> class.
-        /// </summary>
-        /// <param name="name">The filename.</param>
-        /// <param name="directory">The directory to log to (default to entry assembly directory).</param>
-        /// <param name="maxLog"><para>The maximum number of log items in a single log file.</para>
-        /// <para>By default this is set to 1,000.</para></param>
-        /// <param name="maxDuration">The maximum time period that a single log file can cover.</param>
-        /// <param name="validLevels"><para>The valid log levels.</para>
-        /// <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para></param>
-        /// <param name="format">The log format (default to "Verbose,Xml").</param>
-        /// <param name="fileNameFormat"><para>The filename format - where {DateTime} is the creation date time.</para>
-        /// <para>By default the format is "{ApplicationName}-{DateTime:yyMMddHHmmssffff}".</para></param>
-        /// <param name="extension"><para>The file extension.</para>
-        /// <para>By default this is set to use "log".</para></param>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="autoFlush">if set to <see langword="true" /> [auto flush].</param>
-        /// <exception cref="LoggingException"><para>
-        ///   <paramref name="maxLog" /> was less than 10, which would result in too many log files to be created.</para>
-        /// <para>-or-</para>
-        /// <para>
-        ///   <paramref name="maxDuration" /> was less than 10 seconds, which would result in too many log files to be created.</para>
-        /// <para>-or-</para>
-        /// <para>
-        ///   <paramref name="directory" /> was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
-        /// <para>-or-</para>
-        /// <para>The <paramref name="fileNameFormat" /> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
-        /// <para>-or-</para>
-        /// <para>An error occurred trying to access the <paramref name="directory" />.</para>
-        /// <para>-or-</para>
-        /// <para>
-        ///   <paramref name="extension" /> was more than 5 characters long.</para>
-        /// <para>-or-</para>
-        /// <para>The <paramref name="fileNameFormat" /> led to an invalid path or created a path that references the wrong <paramref name="directory" />.</para>
-        /// <para>-or-</para>
-        /// <para>File path contained <see cref="Path.GetInvalidPathChars">invalid characters</see>.</para></exception>
-        public FileLogger(
-            [NotNull] string name,
-            [CanBeNull] string directory = null,
-            Int64 maxLog = 1000,
-            TimeSpan maxDuration = default(TimeSpan),
-            LoggingLevels validLevels = LoggingLevels.All,
-            [CanBeNull] string format = null,
-            [CanBeNull] string fileNameFormat = null,
-            [CanBeNull] string extension = null,
-            uint buffer = 65536,
-            bool autoFlush = false)
-            : this(name, directory, maxLog, maxDuration, validLevels, (FormatBuilder)format, (FormatBuilder)fileNameFormat, extension, buffer, autoFlush)
-        {
-            Contract.Requires(name != null);
-        }
-         */
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="FileLogger" /> class.
         /// </summary>
@@ -206,7 +152,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             [CanBeNull] string extension = null,
             uint buffer = 65536,
             bool autoFlush = false)
-            : base(name, false, true, validLevels)
+            : base(name, true, validLevels)
         {
             Contract.Requires(name != null);
             MaxLog = maxLog;
