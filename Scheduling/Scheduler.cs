@@ -1072,7 +1072,7 @@ namespace WebApplications.Utilities.Scheduling
         /// Gets or sets the default maximum history.
         /// </summary>
         /// <value>The default maximum history.</value>
-        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The default maximum history cannot be negative.</exception>
         [PublicAPI]
         public static int DefaultMaximumHistory
         {

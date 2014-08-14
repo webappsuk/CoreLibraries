@@ -87,7 +87,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="schedule30">The schedule30.</param>
         /// <param name="schedule31">The schedule31.</param>
         /// <param name="schedule32">The schedule32.</param>
-        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
         [UsedImplicitly]
         private AggregateSchedule(
             [CanBeNull] string name,
@@ -204,7 +203,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="name">An optional name for the schedule.</param>
         /// <param name="schedules">A collection of schedules.</param>
-        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        /// <exception cref="System.ArgumentException">The specified schedules have differing options.</exception>
         [PublicAPI]
         public AggregateSchedule([CanBeNull] string name, [NotNull] params ISchedule[] schedules)
         {

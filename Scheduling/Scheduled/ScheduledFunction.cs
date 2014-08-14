@@ -130,8 +130,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
 
         /// <summary>
-        /// Executes the function asynchronously, so long as it is enabled and not already running (unless the <see cref="Schedule">schedules</see>
-        /// <see cref="ISchedule.Options"/> is set to <see cref="ScheduleOptions.AllowConcurrent"/>.
+        /// Executes the function asynchronously, so long as it is enabled and not already running.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>And awaitable task containing the result, or <see langword="null"/> if the action was not run.</returns>
