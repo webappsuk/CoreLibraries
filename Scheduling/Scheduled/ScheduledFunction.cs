@@ -198,16 +198,17 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 {
                     stopwatch.Stop();
 
-                    bool cancelledException = e is TaskCanceledException || e is OperationCanceledException;
+                    bool cancelled = tokenSource.IsCancellationRequested ||
+                                     e is TaskCanceledException ||
+                                     e is OperationCanceledException;
 
                     // ReSharper disable once AssignNullToNotNullAttribute
                     return new ScheduledFunctionResult<T>(
                         due,
                         started,
                         Duration.FromTimeSpan(stopwatch.Elapsed),
-                        // Wrap non-logging exceptions, except the cancelled exception.
-                        e,
-                        cancelledException || tokenSource.IsCancellationRequested,
+                        !cancelled ? e : null,
+                        cancelled,
                         default(T));
                 }
 

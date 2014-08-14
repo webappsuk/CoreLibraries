@@ -25,13 +25,111 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NodaTime;
+using WebApplications.Utilities.Scheduling.Scheduled;
+using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling.Test
 {
     [TestClass]
     public class TestScheduler
     {
+        [TestMethod]
+        public void TestAddActionRuns()
+        {
+            bool ran = false;
+            Instant due = Scheduler.Clock.Now + Duration.FromMilliseconds(100);
+            ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
+
+            Assert.IsNotNull(action);
+            Assert.IsTrue(action.Enabled);
+            Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
+            Assert.AreEqual(Scheduler.DefaultMaximumDuration, action.MaximumDuration);
+            Thread.Sleep(1000);
+            Assert.IsTrue(ran);
+            Assert.AreEqual(1, action.History.Count());
+
+            ScheduledActionResult history = action.History.FirstOrDefault();
+            Assert.IsNotNull(history);
+            Assert.IsFalse(history.Cancelled);
+            Assert.IsNull(history.Exception);
+            Assert.AreEqual(due, history.Due);
+            Assert.IsTrue(history.Due <= history.Started);
+        }
+
+        [TestMethod]
+        public void TestAddActionInPastDoesntRun()
+        {
+            bool ran = false;
+            Instant due = Scheduler.Clock.Now - Duration.FromMilliseconds(1);
+            ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
+
+            Assert.IsNotNull(action);
+            Assert.IsTrue(action.Enabled);
+            Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
+            Assert.AreEqual(Scheduler.DefaultMaximumDuration, action.MaximumDuration);
+            Thread.Sleep(1000);
+            Assert.IsFalse(ran);
+            Assert.AreEqual(0, action.History.Count());
+            Assert.AreEqual(Instant.MaxValue, action.NextDue);
+        }
+
+        [TestMethod]
+        public void TestAddActionDisabledDoesntRun()
+        {
+            bool ran = false;
+            Instant due = Scheduler.Clock.Now - Duration.FromMilliseconds(1);
+            ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
+            Assert.IsNotNull(action);
+            
+            action.Enabled = false;
+            Assert.IsFalse(action.Enabled);
+            
+            Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
+            Assert.AreEqual(Scheduler.DefaultMaximumDuration, action.MaximumDuration);
+            Thread.Sleep(1000);
+            Assert.IsFalse(ran);
+            Assert.AreEqual(0, action.History.Count());
+            Assert.AreEqual(Instant.MaxValue, action.NextDue);
+        }
+
+        [TestMethod]
+        public void TestAddActionCancel()
+        {
+            bool ran = false;
+            Instant due = Scheduler.Clock.Now + Duration.FromMilliseconds(100);
+            Duration duration = Duration.FromMilliseconds(1);
+            ScheduledAction action = Scheduler.Add(
+                () =>
+                {
+                    ran = true;
+                    Thread.Sleep(10);
+                },
+                new OneOffSchedule(due),
+                maximumDuration: duration);
+
+            Assert.IsNotNull(action);
+            Assert.IsTrue(action.Enabled);
+            Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
+            Assert.AreEqual(duration, action.MaximumDuration);
+            Thread.Sleep(1000);
+            Assert.IsTrue(ran);
+            Assert.AreEqual(1, action.History.Count());
+
+            ScheduledActionResult history = action.History.FirstOrDefault();
+            Assert.IsNotNull(history);
+            Assert.IsTrue(history.Cancelled);
+            Assert.IsNull(history.Exception);
+            Assert.AreEqual(due, history.Due);
+            Assert.IsTrue(history.Due <= history.Started);
+        }
+
 #if false
         [TestMethod]
         public void TestSeconds()

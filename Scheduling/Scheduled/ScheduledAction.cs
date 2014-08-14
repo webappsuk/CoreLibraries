@@ -207,7 +207,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     return;
                 _schedule = value;
 
-                RecalculateNextDue(_lastExecutionFinished);
+                RecalculateNextDue(Instant.MinValue);
             }
         }
 
@@ -273,7 +273,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 .ContinueWith(
                     t =>
                     {
-                        Debug.Assert(t != null);
+                        Contract.Assert(t != null);
 
                         // Decrement the execution counter.
                         Interlocked.Decrement(ref _executing);
@@ -286,10 +286,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         _lastExecutionFinished = lef;
 
                         // Recalculate when we're next due.
-                        RecalculateNextDue(
-                            Schedule.Options.HasFlag(ScheduleOptions.FromDue)
-                                ? due
-                                : lef);
+                        RecalculateNextDue(due);
 
                         // Enqueue history item.
                         if (HistoryQueue != null &&
@@ -372,8 +369,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Recalculates the next due date.
         /// </summary>
-        /// <param name="last">The instant the schedule was last due to run, or completed.</param>
-        internal void RecalculateNextDue(Instant last)
+        /// <param name="due">The instant the schedule was last due to run, or completed.</param>
+        internal void RecalculateNextDue(Instant due)
         {
             // Increment recalculate counter, only let first increment continue.
             if (Interlocked.Increment(ref _calculatorCount) > 1)
@@ -390,8 +387,21 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     // If next due is in future, ask schedule when we're next due.
                     if (ndt > nt)
                     {
-                        ndt = Schedule.Next(last).Ticks;
                         ScheduleOptions options = Schedule.Options;
+                        Instant last;
+                        if (!options.HasFlag(ScheduleOptions.FromDue))
+                        {
+                            Instant lef = _lastExecutionFinished;
+                            last = lef > Instant.MinValue
+                                ? lef
+                                : Scheduler.Clock.Now;
+                        }
+                        else
+                            last = due > Instant.MinValue
+                                ? due
+                                : Scheduler.Clock.Now;
+
+                        ndt = Schedule.Next(last).Ticks;
 
                         // If options >= 4 means one of the alignment flags is set.
                         if ((byte)options >= 4)
@@ -415,10 +425,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         }
                     }
 
-                    // If the next due is in the past, set it to due now.
-                    if (ndt < nt) ndt = nt;
-                        // If it's more than the max clamp to max.
-                    else if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
+                    // If it's more than the max clamp to max.
+                    if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
 
                     // Update next due
                     Interlocked.Exchange(ref _nextDueTicks, ndt);
