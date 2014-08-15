@@ -118,9 +118,9 @@
       <HintPath>..\packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="WebApplications.Utilities, Version=5.1.5339.27923, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.1.5340.18917, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5339.27923\lib\net451\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5340.18917\lib\net451\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
