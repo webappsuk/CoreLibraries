@@ -124,18 +124,6 @@
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1408.0717\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
@@ -154,9 +142,6 @@
     <Reference Include="WebApplications.Utilities">
       <HintPath>..\packages\WebApplications.Utilities.5.1.5340.18917\lib\net451\WebApplications.Utilities.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="WebApplications.Utilities.Initializer">
-      <HintPath>..\packages\WebApplications.Utilities.Initializer.5.1.5339.28177\lib\net451\WebApplications.Utilities.Initializer.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
       <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5340.19955\lib\net451\WebApplications.Utilities.Logging.dll</HintPath>
