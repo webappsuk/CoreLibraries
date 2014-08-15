@@ -152,20 +152,23 @@
       <HintPath>..\packages\WebApplications.Testing.5.1.5339.27198\lib\net451\WebApplications.Testing.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5339.27923\lib\net451\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5340.18917\lib\net451\WebApplications.Utilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Initializer">
       <HintPath>..\packages\WebApplications.Utilities.Initializer.5.1.5339.28177\lib\net451\WebApplications.Utilities.Initializer.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5339.29165, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5339.29165\lib\net451\WebApplications.Utilities.Logging.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Logging">
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5340.19955\lib\net451\WebApplications.Utilities.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance">
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5339.28920\lib\net451\WebApplications.Utilities.Performance.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5340.19012\lib\net451\WebApplications.Utilities.Performance.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Scheduling">
-      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5339.28766\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5340.19042\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -249,8 +252,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5339.28920\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5339.28920\tools\PerfSetup.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5339.28766\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5339.28766\tools\Scheduling.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5340.19012\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5340.19012\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5340.19042\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5340.19042\tools\Scheduling.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
