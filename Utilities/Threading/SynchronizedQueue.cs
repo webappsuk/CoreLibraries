@@ -87,7 +87,7 @@ namespace WebApplications.Utilities.Threading
         {
             return action == null
                 ? TaskResult.Completed
-                : Task.Factory.StartNew(action, token, TaskCreationOptions.PreferFairness, _pair.ExclusiveScheduler);
+                : Task.Factory.StartNew(action, token, TaskCreationOptions.PreferFairness, _pair.ConcurrentScheduler);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace WebApplications.Utilities.Threading
                     function,
                     token,
                     TaskCreationOptions.PreferFairness,
-                    _pair.ConcurrentScheduler);
+                    _pair.ExclusiveScheduler);
         }
 
         /// <summary>
