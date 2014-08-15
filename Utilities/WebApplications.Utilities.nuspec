@@ -13,7 +13,7 @@
     <tags>Utility Utilities</tags>
     <references>
       <group targetFramework="net451">
-        <reference file="WebApplications.Utilities.dll" />
+        <reference file="$id$.dll" />
       </group>
     </references>
   </metadata>
