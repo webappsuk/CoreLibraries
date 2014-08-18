@@ -144,16 +144,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5340.19955\lib\net451\WebApplications.Utilities.Logging.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5343.22368\lib\net451\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance">
       <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5340.19012\lib\net451\WebApplications.Utilities.Performance.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Scheduling">
-      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5340.19042\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5343.22169\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -238,7 +236,7 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5340.19012\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5340.19012\tools\PerfSetup.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5340.19042\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5340.19042\tools\Scheduling.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5343.22169\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5343.22169\tools\Scheduling.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
