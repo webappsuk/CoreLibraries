@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         ///   Gets the default for the maximum history in a scheduled function/action.
         /// </summary>
         [ConfigurationProperty("defautlMaximumHistory", DefaultValue = 100, IsRequired = false)]
-        [IntegerValidator(MinValue = 0, MaxValue = int.MaxValue)]
+        [IntegerValidator(MinValue = 1, MaxValue = int.MaxValue)]
         [PublicAPI]
         public int DefautlMaximumHistory
         {

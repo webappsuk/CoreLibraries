@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
@@ -59,19 +58,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         public delegate void SchedulableDueAction(Instant due);
 
         /// <summary>
-        /// Delegate describing an asynchronous schedulable action.
-        /// </summary>
-        /// <returns>An awaitable task.</returns>
-        public delegate Task SchedulableActionAsync();
-
-        /// <summary>
-        /// Delegate describing an asynchronous schedulable action which accepts a due date and time.
-        /// </summary>
-        /// <param name="due">The due date and time which indicates when the action was scheduled to run.</param>
-        /// <returns>An awaitable task.</returns>
-        public delegate Task SchedulableDueActionAsync(Instant due);
-
-        /// <summary>
         /// Delegate describing an asynchronous schedulable action which supports cancellation.
         /// </summary>
         /// <param name="token">The cancellation token.</param>
@@ -100,7 +86,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Internal list of results.
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         protected readonly CyclicConcurrentQueue<ScheduledActionResult> HistoryQueue;
 
         /// <summary>
@@ -130,12 +116,13 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             [CanBeNull] Type returnType)
         {
             Contract.Requires(schedule != null);
+            Contract.Requires(maximumHistory > 0);
             _enabled = 1;
-            _lastExecutionFinished = Instant.MinValue;
+            LastExecutionFinished = Instant.MinValue;
             _schedule = schedule;
             MaximumHistory = maximumHistory;
             ReturnType = returnType;
-            HistoryQueue = MaximumHistory > 0 ? new CyclicConcurrentQueue<ScheduledActionResult>(MaximumHistory) : null;
+            HistoryQueue = new CyclicConcurrentQueue<ScheduledActionResult>(MaximumHistory);
             int md;
             unchecked
             {
@@ -182,7 +169,18 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [NotNull]
         public IEnumerable<ScheduledActionResult> History
         {
-            get { return HistoryQueue ?? Enumerable.Empty<ScheduledActionResult>(); }
+            get { return HistoryQueue; }
+        }
+
+        /// <summary>
+        /// Gets the last result (if any).
+        /// </summary>
+        /// <value>The history.</value>
+        [PublicAPI]
+        [CanBeNull]
+        public ScheduledActionResult LastResult
+        {
+            get { return HistoryQueue.LastOrDefault(); }
         }
 
         /// <summary>
@@ -234,82 +232,29 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             }
         }
 
-
         /// <summary>
-        /// Execution counter indicates how many concurrent executions are occurring.
-        /// </summary>
-        private int _executing;
-
-        /// <summary>
-        /// Executes the action asynchronously, so long as it is enabled and not already running.
+        /// Executes the action asynchronously, de-bouncing if necessary.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>And awaitable task containing the result, or <see langword="null"/> if the action was not run.</returns>
+        /// <returns>An awaitable task containing the result.</returns>
         [NotNull]
-        public Task<ScheduledActionResult> ExecuteAsync(
-            CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ScheduledActionResult> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_enabled < 1)
-                return TaskResult<ScheduledActionResult>.Default;
-
-            // Grab schedule as the property can be changed.
-            ISchedule schedule = _schedule;
-
-            // Mark this action as executing.
-            int executing = Interlocked.Increment(ref _executing);
-            // Only execute if we allow concurrency or we're not executing already.
-            if (executing > 1)
-            {
-                Interlocked.Decrement(ref _executing);
-                return TaskResult<ScheduledActionResult>.Default;
-            }
-
-            // Get the due date, and set to not due.
-            long ndt = Interlocked.Exchange(ref _nextDueTicks, Scheduler.MaxTicks);
-            Instant due = new Instant(ndt);
-
-            // Add continuation task to store result on completion.
-            return DoExecuteAsync(due, cancellationToken)
-                .ContinueWith(
-                    t =>
-                    {
-                        Contract.Assert(t != null);
-
-                        // Decrement the execution counter.
-                        Interlocked.Decrement(ref _executing);
-
-                        // Increment the execution count.
-                        Interlocked.Increment(ref _executionCount);
-
-                        // Mark execution finish (and calculate next due).
-                        Instant lef = Scheduler.Clock.Now;
-                        _lastExecutionFinished = lef;
-
-                        // Recalculate when we're next due.
-                        RecalculateNextDue(due);
-
-                        // Enqueue history item.
-                        if (HistoryQueue != null &&
-                            t.IsCompleted)
-                            HistoryQueue.Enqueue(t.Result);
-                        return t.Result;
-                    },
-                    TaskContinuationOptions.ExecuteSynchronously);
+            return DoExecuteAsync(cancellationToken);
         }
 
         /// <summary>
-        /// Performs the asynchronous execution.
+        /// Executes the action asynchronously, de-bouncing if necessary.
         /// </summary>
-        /// <param name="due">The due date and time.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Task&lt;ScheduledActionResult&gt;.</returns>
+        /// <returns>An awaitable task containing the result.</returns>
         [NotNull]
-        protected abstract Task<ScheduledActionResult> DoExecuteAsync(Instant due, CancellationToken cancellationToken);
+        protected abstract Task<ScheduledActionResult> DoExecuteAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// The next time the action is due.
         /// </summary>
-        private long _nextDueTicks = Scheduler.MaxTicks;
+        protected long NextDueTicksInternal = Scheduler.MaxTicks;
 
         /// <summary>
         /// Gets the next due date and time (UTC).
@@ -320,7 +265,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         {
             get
             {
-                long ndt = Interlocked.Read(ref _nextDueTicks);
+                long ndt = Interlocked.Read(ref NextDueTicksInternal);
                 return new Instant(ndt);
             }
         }
@@ -332,22 +277,17 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [PublicAPI]
         public long NextDueTicks
         {
-            get { return Interlocked.Read(ref _nextDueTicks); }
+            get { return Interlocked.Read(ref NextDueTicksInternal); }
         }
-
-        private Instant _lastExecutionFinished;
-
+        
         /// <summary>
         /// Gets the date and time (UTC) that the last execution finished.
         /// </summary>
         /// <value>The last execution finished date and time.</value>
         [PublicAPI]
-        public Instant LastExecutionFinished
-        {
-            get { return _lastExecutionFinished; }
-        }
+        public Instant LastExecutionFinished { get; protected set; }
 
-        private long _executionCount;
+        protected long ExecutionCountInternal;
 
         /// <summary>
         /// Gets the execution count.
@@ -356,7 +296,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [PublicAPI]
         public long ExecutionCount
         {
-            get { return _executionCount; }
+            get { return ExecutionCountInternal; }
         }
 
         /// <summary>
@@ -380,7 +320,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             {
                 try
                 {
-                    long ndt = Interlocked.Read(ref _nextDueTicks);
+                    long ndt = Interlocked.Read(ref NextDueTicksInternal);
                     Instant now = Scheduler.Clock.Now;
                     long nt = now.Ticks;
 
@@ -391,7 +331,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         Instant last;
                         if (!options.HasFlag(ScheduleOptions.FromDue))
                         {
-                            Instant lef = _lastExecutionFinished;
+                            Instant lef = LastExecutionFinished;
                             last = lef > Instant.MinValue
                                 ? lef
                                 : Scheduler.Clock.Now;
@@ -429,7 +369,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     if (ndt > Scheduler.MaxTicks) ndt = Scheduler.MaxTicks;
 
                     // Update next due
-                    Interlocked.Exchange(ref _nextDueTicks, ndt);
+                    Interlocked.Exchange(ref NextDueTicksInternal, ndt);
                 }
                 finally
                 {

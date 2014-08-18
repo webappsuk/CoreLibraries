@@ -133,7 +133,7 @@ namespace WebApplications.Utilities.Scheduling {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default maximum history for a scheduler cannot be negative..
+        ///   Looks up a localized string similar to The default maximum history for a scheduler cannot be less than 1..
         /// </summary>
         internal static string Scheduler_DefaultMaximumHistory_Negative {
             get {

@@ -60,19 +60,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         public delegate T SchedulableDueFunction(Instant due);
 
         /// <summary>
-        /// Delegate describing an asynchronous schedulable function.
-        /// </summary>
-        /// <returns>An awaitable task that contains the result.</returns>
-        public delegate Task<T> SchedulableFunctionAsync();
-
-        /// <summary>
-        /// Delegate describing an asynchronous schedulable function which accepts a due date and time.
-        /// </summary>
-        /// <param name="due">The due date and time which indicates when the action was scheduled to run.</param>
-        /// <returns>An awaitable task that contains the result.</returns>
-        public delegate Task<T> SchedulableDueFunctionAsync(Instant due);
-
-        /// <summary>
         /// Delegate describing an asynchronous schedulable function which supports cancellation.
         /// </summary>
         /// <param name="token">The cancellation token.</param>
@@ -103,12 +90,13 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             bool isFunction,
             [NotNull] SchedulableDueCancellableFunctionAsync function,
             [NotNull] ISchedule schedule,
-            int maximumHistory = -1,
-            Duration maximumDuration = default(Duration))
+            int maximumHistory,
+            Duration maximumDuration)
             : base(schedule, maximumHistory, maximumDuration, isFunction ? typeof(T) : null)
         {
             Contract.Requires(function != null);
             Contract.Requires(schedule != null);
+            Contract.Requires(maximumHistory > 0);
             _function = function;
         }
 
@@ -123,25 +111,39 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             get
             {
                 Contract.Requires(IsFunction);
-                return HistoryQueue != null
-                    ? HistoryQueue.Cast<ScheduledFunctionResult<T>>()
-                    : Enumerable.Empty<ScheduledFunctionResult<T>>();
+                return HistoryQueue.Cast<ScheduledFunctionResult<T>>();
             }
         }
 
+        /// <summary>
+        /// Gets the last result (if any).
+        /// </summary>
+        /// <value>The history.</value>
+        [PublicAPI]
+        [CanBeNull]
+        public new ScheduledFunctionResult<T> LastResult
+        {
+            get { return HistoryQueue.LastOrDefault() as ScheduledFunctionResult<T>; }
+        }
+
+        /// <summary>
+        /// The semaphore controls concurrent access to function execution.
+        /// </summary>
+        [NotNull]
+        private readonly AsyncLock _lock = new AsyncLock();
 
         /// <summary>
         /// Executes the function asynchronously, so long as it is enabled and not already running.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>And awaitable task containing the result, or <see langword="null"/> if the action was not run.</returns>
+        /// <returns>An awaitable task containing the result.</returns>
         [NotNull]
         [PublicAPI]
         public new Task<ScheduledFunctionResult<T>> ExecuteAsync(
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(IsFunction);
-            return base.ExecuteAsync(cancellationToken)
+            return DoExecuteAsync(cancellationToken)
                 .ContinueWith(
                     // ReSharper disable once PossibleNullReferenceException
                     t => t.Result as ScheduledFunctionResult<T>,
@@ -152,16 +154,16 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         }
 
         /// <summary>
-        /// Executes the action/function asynchronously.
+        /// Executes the action asynchronously, de-bouncing if necessary.
         /// </summary>
-        /// <param name="due">The due date and time (UTC).</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The result.</returns>
-        /// <remarks></remarks>
-        protected override async Task<ScheduledActionResult> DoExecuteAsync(
-            Instant due,
-            CancellationToken cancellationToken)
+        /// <returns>An awaitable task containing the result.</returns>
+        protected override async Task<ScheduledActionResult> DoExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            // Start stopwatch, and mark time the request was made.
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            Instant started = Scheduler.Clock.Now;
+
             // Combine cancellation token with Timeout to ensure no action runs beyond the Scheduler's limit.
             using (ITokenSource tokenSource = cancellationToken.WithTimeout(MaximumDurationMs))
             {
@@ -171,7 +173,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 {
                     // ReSharper disable once AssignNullToNotNullAttribute
                     return new ScheduledFunctionResult<T>(
-                        due,
+                        NextDue,
                         Scheduler.Clock.Now,
                         Duration.Zero,
                         null,
@@ -179,46 +181,83 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         default(T));
                 }
 
-
-                // Always yield before executing the task to ensure that even synchronous tasks are scheduled to run in background.
+                // Always yield to ensure tasks run asynchronously.
                 await Task.Yield();
 
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                Instant started = Scheduler.Clock.Now;
-
-                T result;
-                try
+                // Wait until the semaphore says we can go.
+                using (await _lock.LockAsync(tokenSource.Token).ConfigureAwait(false))
                 {
-                    // Execute function (ensuring cancellation).
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    result = await _function(due, tokenSource.Token).WithCancellation(tokenSource.Token);
-                    stopwatch.Stop();
+                    // Quick cancellation check.
+                    // ReSharper disable once PossibleNullReferenceException
+                    if (tokenSource.IsCancellationRequested)
+                    {
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        return new ScheduledFunctionResult<T>(
+                            NextDue,
+                            Scheduler.Clock.Now,
+                            Duration.Zero,
+                            null,
+                            true,
+                            default(T));
+                    }
+                    
+                    ScheduledFunctionResult<T> result;
+                    // De-bounce - we started before the last execution finished, so return last result, so long as it wasn't cancelled.
+                    if (started <= LastExecutionFinished)
+                    {
+                        result = History.LastOrDefault();
+                        if (result != null && !result.Cancelled) return result;
+                    }
+
+                    // Get the due date, and set to not due.
+                    long ndt = Interlocked.Exchange(ref NextDueTicksInternal, Scheduler.MaxTicks);
+                    Instant due = new Instant(ndt);
+
+                    try
+                    {
+                        // Execute function (ensuring cancellation).
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        T r = await _function(due, tokenSource.Token).WithCancellation(tokenSource.Token);
+                        stopwatch.Stop();
+
+                        result = new ScheduledFunctionResult<T>(
+                            due,
+                            started,
+                            Duration.FromTimeSpan(stopwatch.Elapsed),
+                            null,
+                            tokenSource.IsCancellationRequested,
+                            r);
+                    }
+                    catch (Exception e)
+                    {
+                        stopwatch.Stop();
+
+                        bool cancelled = tokenSource.IsCancellationRequested ||
+                                         e is TaskCanceledException ||
+                                         e is OperationCanceledException;
+
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        result = new ScheduledFunctionResult<T>(
+                            due,
+                            started,
+                            Duration.FromTimeSpan(stopwatch.Elapsed),
+                            !cancelled ? e : null,
+                            cancelled,
+                            default(T));
+                    }
+                    // Increment the execution count.
+                    Interlocked.Increment(ref ExecutionCountInternal);
+
+                    // Mark execution finished
+                    LastExecutionFinished = Scheduler.Clock.Now;
+
+                    // Enqueue history item.
+                    HistoryQueue.Enqueue(result);
+
+                    // Recalculate when we're next due.
+                    RecalculateNextDue(due);
+                    return result;
                 }
-                catch (Exception e)
-                {
-                    stopwatch.Stop();
-
-                    bool cancelled = tokenSource.IsCancellationRequested ||
-                                     e is TaskCanceledException ||
-                                     e is OperationCanceledException;
-
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    return new ScheduledFunctionResult<T>(
-                        due,
-                        started,
-                        Duration.FromTimeSpan(stopwatch.Elapsed),
-                        !cancelled ? e : null,
-                        cancelled,
-                        default(T));
-                }
-
-                return new ScheduledFunctionResult<T>(
-                    due,
-                    started,
-                    Duration.FromTimeSpan(stopwatch.Elapsed),
-                    null,
-                    tokenSource.IsCancellationRequested,
-                    result);
             }
         }
     }

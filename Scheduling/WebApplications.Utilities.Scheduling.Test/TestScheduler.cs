@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.IsTrue(action.Enabled);
             Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
             Assert.AreEqual(Scheduler.DefaultMaximumDuration, action.MaximumDuration);
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
             Assert.IsTrue(ran);
             Assert.AreEqual(1, action.History.Count());
 
@@ -74,7 +74,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.IsTrue(action.Enabled);
             Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
             Assert.AreEqual(Scheduler.DefaultMaximumDuration, action.MaximumDuration);
-            Thread.Sleep(1000);
+            Thread.Sleep(100);
             Assert.IsFalse(ran);
             Assert.AreEqual(0, action.History.Count());
             Assert.AreEqual(Instant.MaxValue, action.NextDue);
@@ -87,13 +87,13 @@ namespace WebApplications.Utilities.Scheduling.Test
             Instant due = Scheduler.Clock.Now - Duration.FromMilliseconds(1);
             ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
             Assert.IsNotNull(action);
-            
+
             action.Enabled = false;
             Assert.IsFalse(action.Enabled);
-            
+
             Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
             Assert.AreEqual(Scheduler.DefaultMaximumDuration, action.MaximumDuration);
-            Thread.Sleep(1000);
+            Thread.Sleep(100);
             Assert.IsFalse(ran);
             Assert.AreEqual(0, action.History.Count());
             Assert.AreEqual(Instant.MaxValue, action.NextDue);
@@ -104,7 +104,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             bool ran = false;
             Instant due = Scheduler.Clock.Now + Duration.FromMilliseconds(100);
-            Duration duration = Duration.FromMilliseconds(1);
+            Duration duration = Duration.FromMilliseconds(10);
             ScheduledAction action = Scheduler.Add(
                 () =>
                 {
@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.IsTrue(action.Enabled);
             Assert.AreEqual(Scheduler.DefaultMaximumHistory, action.MaximumHistory);
             Assert.AreEqual(duration, action.MaximumDuration);
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
             Assert.IsTrue(ran);
             Assert.AreEqual(1, action.History.Count());
 
@@ -128,6 +128,49 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.IsNull(history.Exception);
             Assert.AreEqual(due, history.Due);
             Assert.IsTrue(history.Due <= history.Started);
+        }
+
+        [TestMethod]
+        public async Task TestDeBounce()
+        {
+            int runCount = 0;
+            ScheduledAction action = Scheduler.Add(
+                () =>
+                {
+                    Interlocked.Increment(ref runCount);
+                },
+                Schedule.Never,
+                4);
+
+            Assert.IsNotNull(action);
+            Assert.IsTrue(action.Enabled);
+            Assert.AreEqual(4, action.MaximumHistory);
+
+            // Create 3 tasks at the same time.
+            Task<ScheduledActionResult>[] tasks = Enumerable.Range(0, 3).Select(i => action.ExecuteAsync()).ToArray();
+            Assert.AreEqual(3, tasks.Length);
+
+            // ReSharper disable once PossibleNullReferenceException
+            await Task.WhenAll(tasks);
+
+            Assert.AreEqual(1, runCount);
+            Assert.AreEqual(1, action.History.Count());
+            ScheduledActionResult last = action.LastResult;
+            Assert.IsNotNull(last);
+
+            foreach (Task<ScheduledActionResult> task in tasks)
+            {
+                Assert.IsTrue(task.IsCompleted);
+                Assert.AreSame(last, task.Result);
+            }
+
+            // Confirm still runs again
+            ScheduledActionResult result = await action.ExecuteAsync();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, runCount);
+            Assert.AreEqual(2, action.History.Count()); last = action.LastResult;
+            Assert.IsNotNull(last);
+            Assert.AreSame(last, result);
         }
 
 #if false

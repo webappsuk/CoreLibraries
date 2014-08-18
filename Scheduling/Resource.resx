@@ -121,7 +121,7 @@
     <value>Cannot create an aggregate schedule out of schedules which have different options.</value>
   </data>
   <data name="Scheduler_DefaultMaximumHistory_Negative" xml:space="preserve">
-    <value>The default maximum history for a scheduler cannot be negative.</value>
+    <value>The default maximum history for a scheduler cannot be less than 1.</value>
   </data>
   <data name="ScheduledAction_ExecuteAsync_Invalid_Task_Status" xml:space="preserve">
     <value>Invalid task status '{0}' in scheduled action continuation.</value>
