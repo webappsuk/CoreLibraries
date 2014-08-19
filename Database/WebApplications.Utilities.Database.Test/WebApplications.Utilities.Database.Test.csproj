@@ -115,7 +115,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.SqlServer.Types, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
-      <HintPath>..\packages\Microsoft.SqlServer.Types.11.0.2100.60\lib\Net20\Microsoft.SqlServer.Types.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Moq">
@@ -172,6 +171,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="TestSqlProgram\ConstructorTests.cs" />
     <Compile Include="TestSqlProgram\ExecuteNonQueryAndExecuteNonQueryAll.cs" />
     <Compile Include="TestSqlProgram\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
@@ -204,6 +204,23 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\packages\Microsoft.SqlServer.Types.11.0.1\nativeBinaries\x64\msvcr100.dll">
+      <Link>SqlServerTypes\x64\msvcr100.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\packages\Microsoft.SqlServer.Types.11.0.1\nativeBinaries\x64\SqlServerSpatial110.dll">
+      <Link>SqlServerTypes\x64\SqlServerSpatial110.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\packages\Microsoft.SqlServer.Types.11.0.1\nativeBinaries\x86\msvcr100.dll">
+      <Link>SqlServerTypes\x86\msvcr100.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\packages\Microsoft.SqlServer.Types.11.0.1\nativeBinaries\x86\SqlServerSpatial110.dll">
+      <Link>SqlServerTypes\x86\SqlServerSpatial110.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\readme.htm" />
     <None Include="Data\DifferentLocalData.mdf" />
     <Content Include="Data\DifferentLocalData_log.ldf">
       <DependentUpon>DifferentLocalData.mdf</DependentUpon>
