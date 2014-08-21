@@ -2965,33 +2965,49 @@ namespace WebApplications.Utilities
             BindingFlags.Public | BindingFlags.Instance);
 
         /// <summary>
-        /// Takes an input source enumerable expression (must be of type <see cref="IEnumerable{T}" />) and creates a foreach loop,
-        /// where the body is generated using the <see cref="getBody" /> function.
+        /// Takes an input source enumerable expression (must be of type 
+        /// <see cref="IEnumerable{T}" />) and creates a foreach loop,
+        /// where the body is generated using the 
+        /// <see cref="getBody" /> function.
         /// </summary>
         /// <param name="sourceEnumerable">The source enumerable.</param>
         /// <param name="getBody">The get body function, where the input parameter is the current item in the loop.</param>
-        /// <returns>BlockExpression.</returns>
+        /// <param name="break">The break target used by the loop body.</param>
+        /// <param name="continue">The continue target used by the loop body.</param>
+        /// <returns>
+        /// BlockExpression.
+        /// </returns>
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
-            [NotNull][InstantHandle] Func<Expression, Expression> getBody)
+            [NotNull][InstantHandle] Func<Expression, Expression> getBody,
+            [CanBeNull] LabelTarget @break = null,
+            [CanBeNull] LabelTarget @continue = null)
         {
-            return ForEach(sourceEnumerable, item => new[] { getBody(item) });
+            return ForEach(sourceEnumerable, item => new[] { getBody(item) }, @break, @continue);
         }
 
         /// <summary>
-        /// Takes an input source enumerable expression (must be of type <see cref="IEnumerable{T}" />) and creates a foreach loop,
-        /// where the body is generated using the <see cref="getBody" /> function.
+        /// Takes an input source enumerable expression (must be of type 
+        /// <see cref="IEnumerable{T}" />) and creates a foreach loop,
+        /// where the body is generated using the 
+        /// <see cref="getBody" /> function.
         /// </summary>
         /// <param name="sourceEnumerable">The source enumerable.</param>
         /// <param name="getBody">The get body function, where the input parameter is the current item in the loop.</param>
-        /// <returns>BlockExpression.</returns>
+        /// <param name="break">The break target used by the loop body.</param>
+        /// <param name="continue">The continue target used by the loop body.</param>
+        /// <returns>
+        /// BlockExpression.
+        /// </returns>
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
-            [NotNull][InstantHandle] Func<Expression, IEnumerable<Expression>> getBody)
+            [NotNull][InstantHandle] Func<Expression, IEnumerable<Expression>> getBody,
+            [CanBeNull] LabelTarget @break = null,
+            [CanBeNull] LabelTarget @continue = null)
         {
             Contract.Requires(sourceEnumerable != null);
 
@@ -3019,7 +3035,8 @@ namespace WebApplications.Utilities
             PropertyInfo currentProperty = enumeratorType.GetProperty("Current", elementType);
 
             ParameterExpression enumerator = Expression.Variable(enumeratorType, "enumerator");
-            LabelTarget exitLabel = Expression.Label();
+            if (@break == null)
+                @break = Expression.Label();
 
             Expression[] expressions = getBody(Expression.Property(enumerator, currentProperty)).ToArray();
             if (expressions.Length < 1) return Expression.Empty();
@@ -3031,8 +3048,9 @@ namespace WebApplications.Utilities
                     Expression.IfThenElse(
                         Expression.Call(enumerator, _enumeratorMoveNextMethod),
                         expressions.Length > 1 ? Expression.Block(expressions) : expressions.First(),
-                        Expression.Break(exitLabel)),
-                    exitLabel));
+                        Expression.Break(@break)),
+                    @break,
+                    @continue));
         }
 
         /// <summary>
