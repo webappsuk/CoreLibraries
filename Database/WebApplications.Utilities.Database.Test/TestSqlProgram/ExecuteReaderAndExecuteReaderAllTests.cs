@@ -110,14 +110,14 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 new SqlProgram<IEnumerable<int>>(_differentConnectionString, "spTakesIntTable");
 
             IList<int> result = tableTypeTest.ExecuteReader(
-                new[] { 0, 1, 2, 3 },
                 reader =>
                 {
                     List<int> resultSet = new List<int>();
                     while (reader.Read())
                         resultSet.Add(reader.GetValue<int>(0));
                     return resultSet;
-                });
+                },
+                new[] { 0, 1, 2, 3 });
 
             Assert.AreEqual(4, result.Count);
             for (int i = 0; i < result.Count; i++)
@@ -135,19 +135,19 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             string str3 = Random.RandomString(10, false);
 
             IDictionary<int, string> result = tableTypeTest.ExecuteReader(
-                new Dictionary<int, string>
-                    {
-                        {0, str1},
-                        {1, str2},
-                        {2, str3}
-                    },
                 reader =>
                 {
                     IDictionary<int, string> resultSet = new Dictionary<int, string>();
                     while (reader.Read())
                         resultSet.Add(reader.GetValue<int>(0), reader.GetValue<string>(1));
                     return resultSet;
-                });
+                },
+                new Dictionary<int, string>
+                    {
+                        {0, str1},
+                        {1, str2},
+                        {2, str3}
+                    });
 
             Assert.AreEqual(3, result.Count);
             Assert.AreEqual(str1, result[0]);
@@ -166,11 +166,6 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
             IList<dynamic> result =
                 tableTypeTest.ExecuteReader(
-                    new List<Tuple<int, string, bool>>
-                        {
-                            new Tuple<int, string, bool>(1, str1, false),
-                            new Tuple<int, string, bool>(2, str2, true)
-                        },
                     reader =>
                     {
                         IList<dynamic> resultSet = new List<dynamic>();
@@ -186,7 +181,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                         }
 
                         return resultSet;
-                    });
+                    },
+                    new List<Tuple<int, string, bool>>
+                        {
+                            new Tuple<int, string, bool>(1, str1, false),
+                            new Tuple<int, string, bool>(2, str2, true)
+                        });
 
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual(1, result[0].IntColumn);
@@ -207,7 +207,6 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             Random.NextBytes(testParam);
 
             byteArrayTest.ExecuteReader(
-                testParam,
                 reader =>
                     {
                         if (reader.Read())
@@ -216,7 +215,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                                 testParam,
                                 (ICollection) reader.GetValue(0));
                         }
-                    });
+                    },
+                testParam);
         }
 
         [TestMethod]
@@ -233,7 +233,6 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             Random.NextBytes(testParam);
 
             byteArrayTest.ExecuteReader(
-                testParam,
                 reader =>
                 {
                     if (reader.Read())
@@ -242,7 +241,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                             testParam,
                             (ICollection)reader.GetValue(0));
                     }
-                });
+                },
+                testParam);
         }
 
         [TestMethod]
@@ -252,7 +252,6 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
             TestSerializableObject objecToSerialize = new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() };
             serializeObjectTest.ExecuteReader(
-                objecToSerialize,
                 reader =>
                     {
                         Assert.IsTrue(reader.Read());
@@ -267,7 +266,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
                         // Check equality of object instances using equality method.
                         Assert.AreEqual(objecToSerialize, deserializedObject);
-                    });
+                    },
+                objecToSerialize);
         }
 
         [TestMethod]
@@ -316,60 +316,62 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                             >
                     ).GetTupleIndexer();
 
-            tupleTableTypeTest.ExecuteReader(rows,
-                                             reader =>
-                                             {
-                                                 int r = 0;
-                                                 while (reader.Read())
-                                                 {
-                                                     var tuple = rows[r++];
-                                                     for (int c = 0; c < 18; c++)
-                                                     {
-                                                         // Get the tuple value that was passed into the sproc.
-                                                         object cell = indexer(tuple, c);
+            tupleTableTypeTest.ExecuteReader(
+                reader =>
+                {
+                    int r = 0;
+                    while (reader.Read())
+                    {
+                        var tuple = rows[r++];
+                        for (int c = 0; c < 18; c++)
+                        {
+                            // Get the tuple value that was passed into the sproc.
+                            object cell = indexer(tuple, c);
 
-                                                         // Check collections (e.g. byte[])
-                                                         ICollection cellCollection = cell as ICollection;
-                                                         if (cellCollection != null)
-                                                         {
-                                                             ICollection resultCollection =
-                                                                 reader.GetValue(c) as ICollection;
-                                                             Assert.IsNotNull(resultCollection,
-                                                                              "The db did not return a collection");
-                                                             CollectionAssert.AreEqual(cellCollection, resultCollection);
-                                                             continue;
-                                                         }
+                            // Check collections (e.g. byte[])
+                            ICollection cellCollection = cell as ICollection;
+                            if (cellCollection != null)
+                            {
+                                ICollection resultCollection =
+                                    reader.GetValue(c) as ICollection;
+                                Assert.IsNotNull(
+                                    resultCollection,
+                                    "The db did not return a collection");
+                                CollectionAssert.AreEqual(cellCollection, resultCollection);
+                                continue;
+                            }
 
-                                                         // Check serialized object
-                                                         TestSerializableObject serializedObject =
-                                                             cell as TestSerializableObject;
-                                                         if (serializedObject != null)
-                                                         {
-                                                             // Deserialize object
-                                                             TestSerializableObject deserializedObject =
-                                                                 (TestSerializableObject)reader.GetObjectByName(reader.GetName(c));
+                            // Check serialized object
+                            TestSerializableObject serializedObject =
+                                cell as TestSerializableObject;
+                            if (serializedObject != null)
+                            {
+                                // Deserialize object
+                                TestSerializableObject deserializedObject =
+                                    (TestSerializableObject) reader.GetObjectByName(reader.GetName(c));
 
-                                                             // Check we don't have same object instance.
-                                                             Assert.IsFalse(ReferenceEquals(serializedObject, deserializedObject));
+                                // Check we don't have same object instance.
+                                Assert.IsFalse(ReferenceEquals(serializedObject, deserializedObject));
 
-                                                             // Check equality of object instances using equality method.
-                                                             Assert.AreEqual(serializedObject, deserializedObject);
-                                                             continue;
-                                                         }
+                                // Check equality of object instances using equality method.
+                                Assert.AreEqual(serializedObject, deserializedObject);
+                                continue;
+                            }
 
-                                                         // Check XELement
-                                                         XElement xelement = cell as XElement;
-                                                         if (xelement != null)
-                                                         {
-                                                             XElement result = XElement.Parse(reader.GetString(c));
-                                                             Assert.AreEqual(xelement.ToString(), result.ToString());
-                                                             continue;
-                                                         }
+                            // Check XELement
+                            XElement xelement = cell as XElement;
+                            if (xelement != null)
+                            {
+                                XElement result = XElement.Parse(reader.GetString(c));
+                                Assert.AreEqual(xelement.ToString(), result.ToString());
+                                continue;
+                            }
 
-                                                         Assert.AreEqual(cell, reader.GetValue(c));
-                                                     }
-                                                 }
-                                             });
+                            Assert.AreEqual(cell, reader.GetValue(c));
+                        }
+                    }
+                },
+                rows);
         }
 
         /// <summary>

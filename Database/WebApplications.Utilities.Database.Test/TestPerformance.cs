@@ -114,24 +114,25 @@ namespace WebApplications.Utilities.Database.Test
             {
                 tasks[i] = Task.Factory.StartNew(() =>
                 {
-                    getOpModes.ExecuteReader("System",
-                                                                    -1,
-                                                                    -1,
-                                                                    reader =>
-                                                                    {
-                                                                        while (reader.Read())
-                                                                        {
-                                                                            // Operation modes
-                                                                            Interlocked.Increment(ref rowCount);
-                                                                        }
-                                                                        reader.NextResult();
+                    getOpModes.ExecuteReader(
+                        reader =>
+                        {
+                            while (reader.Read())
+                            {
+                                // Operation modes
+                                Interlocked.Increment(ref rowCount);
+                            }
+                            reader.NextResult();
 
-                                                                        while (reader.Read())
-                                                                        {
-                                                                            // Guids
-                                                                            Interlocked.Increment(ref rowCount);
-                                                                        }
-                                                                    });
+                            while (reader.Read())
+                            {
+                                // Guids
+                                Interlocked.Increment(ref rowCount);
+                            }
+                        },
+                        "System",
+                        -1,
+                        -1);
                 });
             }
 
@@ -163,24 +164,25 @@ namespace WebApplications.Utilities.Database.Test
             stopwatch.Start();
             for (int i = 0; i < Loops; i++)
             {
-                tasks[i] = getOpModes.ExecuteReaderAsync("System",
-                                                         -1,
-                                                         -1,
-                                                         reader =>
-                                                             {
-                                                                 while (reader.Read())
-                                                                 {
-                                                                     // Operation modes
-                                                                     Interlocked.Increment(ref rowCount);
-                                                                 }
-                                                                 reader.NextResult();
+                tasks[i] = getOpModes.ExecuteReaderAsync(
+                    async (reader, token) =>
+                    {
+                        while (await reader.ReadAsync(token))
+                        {
+                            // Operation modes
+                            Interlocked.Increment(ref rowCount);
+                        }
+                        reader.NextResult();
 
-                                                                 while (reader.Read())
-                                                                 {
-                                                                     // Guids
-                                                                     Interlocked.Increment(ref rowCount);
-                                                                 }
-                                                             });
+                        while (await reader.ReadAsync(token))
+                        {
+                            // Guids
+                            Interlocked.Increment(ref rowCount);
+                        }
+                    },
+                    "System",
+                    -1,
+                    -1);
             }
 
             Task.WaitAll(tasks);

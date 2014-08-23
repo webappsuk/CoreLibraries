@@ -219,18 +219,18 @@ namespace WebApplications.Utilities.Database.Test
                     "@Brand_Id", "@StartDate", "@FinishDate", "@Durations", "@Units", "@Adults");
 
             p.ExecuteReader(
-                1575,
-                DateTime.Today.AddDays(7),
-                DateTime.Today.AddDays(10),
-                new Int16[] {7},
-                units,
-                2,
                 reader =>
                     {
                         while (reader.Read())
                         {
                         }
-                    });
+                    },
+                1575,
+                DateTime.Today.AddDays(7),
+                DateTime.Today.AddDays(10),
+                new Int16[] {7},
+                units,
+                2);
         }
 
         [TestMethod]
@@ -414,6 +414,19 @@ namespace WebApplications.Utilities.Database.Test
                 byte[] bytes = new byte[10];
                 random.NextBytes(bytes);
                 program.ExecuteReader(
+                    dataReader =>
+                        {
+                            while (dataReader.Read())
+                            {
+                                // Validate return types
+                            }
+                            dataReader.NextResult();
+
+                            while (dataReader.Read())
+                            {
+                                // Validate return types
+                            }
+                        },
                     "Test",
                     random.Next(),
                     bytes,
@@ -468,20 +481,7 @@ namespace WebApplications.Utilities.Database.Test
                             new SqlMetaData("Date", SqlDbType.DateTime),
                             new SqlMetaData("Nights", SqlDbType.SmallInt),
                             new SqlMetaData("Item", SqlDbType.SmallInt),
-                            new SqlMetaData("Price", SqlDbType.Decimal, 9, 2)),
-                    dataReader =>
-                        {
-                            while (dataReader.Read())
-                            {
-                                // Validate return types
-                            }
-                            dataReader.NextResult();
-
-                            while (dataReader.Read())
-                            {
-                                // Validate return types
-                            }
-                        });
+                            new SqlMetaData("Price", SqlDbType.Decimal, 9, 2)));
             }
 
             stopwatch.Stop();
@@ -500,12 +500,15 @@ namespace WebApplications.Utilities.Database.Test
 
             SqlProgram<int, string> prog2 = new SqlProgram<int, string>(p, "@Int", "@Str");
             prog2.ExecuteNonQuery(1, "Hello");
-            prog2.ExecuteReader(1, "Hello", reader =>
-                                                {
-                                                    while (reader.Read())
-                                                    {
-                                                    }
-                                                });
+            prog2.ExecuteReader(
+                reader =>
+                {
+                    while (reader.Read())
+                    {
+                    }
+                },
+                1,
+                "Hello");
         }
 
         /// <summary>
@@ -629,6 +632,19 @@ namespace WebApplications.Utilities.Database.Test
             byte[] bytes = new byte[10];
             random.NextBytes(bytes);
             program.ExecuteReader(
+                dataReader =>
+                    {
+                        while (dataReader.Read())
+                        {
+                            // Validate return types
+                        }
+                        dataReader.NextResult();
+
+                        while (dataReader.Read())
+                        {
+                            // Validate return types
+                        }
+                    },
                 "Test",
                 random.Next(),
                 bytes,
@@ -683,20 +699,7 @@ namespace WebApplications.Utilities.Database.Test
                         new SqlMetaData("Date", SqlDbType.DateTime),
                         new SqlMetaData("Nights", SqlDbType.SmallInt),
                         new SqlMetaData("Item", SqlDbType.SmallInt),
-                        new SqlMetaData("Price", SqlDbType.Decimal, 9, 2)),
-                dataReader =>
-                    {
-                        while (dataReader.Read())
-                        {
-                            // Validate return types
-                        }
-                        dataReader.NextResult();
-
-                        while (dataReader.Read())
-                        {
-                            // Validate return types
-                        }
-                    });
+                        new SqlMetaData("Price", SqlDbType.Decimal, 9, 2)));
         }
 
         /// <summary>

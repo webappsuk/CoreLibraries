@@ -21,7 +21,7 @@ Software.
 
 Schema code file generation
 ============================
-Started			: 08/23/2014 15:06:49
+Started			: 08/23/2014 16:23:59
 Saved helper template files:
     C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric.Generated.txt4
 Saved files:
@@ -58,5 +58,5 @@ Saved files:
     C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric2.Generated.cs
     C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric1.Generated.cs
 
-Finished        : 08/23/2014 15:06:49
-Total Duration  : 508.122 ms
+Finished        : 08/23/2014 16:24:00
+Total Duration  : 488.351 ms
