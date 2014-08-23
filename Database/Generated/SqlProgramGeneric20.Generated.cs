@@ -93,155 +93,139 @@ namespace WebApplications.Utilities.Database
             if (pCount < 20)
                 throw new LoggingException(
                         LoggingLevel.Critical,
-                        "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '20'.",
+                        () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
                         _program.Name,
-                        pCount);
+                        pCount,
+                        20);
 
-            List<SqlParameter> sqlParameters = new List<SqlParameter>(2);
+            List<SqlParameter> sqlParameters = new List<SqlParameter>(20);
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
-        
-            // Find or create SQL Parameter 1.
-            programParameter = parameters[0];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p1Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 2.
-            programParameter = parameters[1];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p2Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 3.
-            programParameter = parameters[2];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p3Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 4.
-            programParameter = parameters[3];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p4Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 5.
-            programParameter = parameters[4];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p5Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 6.
-            programParameter = parameters[5];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p6Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 7.
-            programParameter = parameters[6];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p7Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 8.
-            programParameter = parameters[7];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p8Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 9.
-            programParameter = parameters[8];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p9Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 10.
-            programParameter = parameters[9];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p10Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 11.
-            programParameter = parameters[10];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p11Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 12.
-            programParameter = parameters[11];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p12Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 13.
-            programParameter = parameters[12];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p13Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 14.
-            programParameter = parameters[13];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p14Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 15.
-            programParameter = parameters[14];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p15Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 16.
-            programParameter = parameters[15];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p16Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 17.
-            programParameter = parameters[16];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p17Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 18.
-            programParameter = parameters[17];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p18Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 19.
-            programParameter = parameters[18];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p19Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 20.
-            programParameter = parameters[19];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p20Value, mode);
-            sqlParameters.Add(parameter);
-        
+            lock (_parameters)
+            {
+                // Find or create SQL Parameter 1.
+                programParameter = parameters[0];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p1Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 2.
+                programParameter = parameters[1];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p2Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 3.
+                programParameter = parameters[2];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p3Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 4.
+                programParameter = parameters[3];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p4Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 5.
+                programParameter = parameters[4];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p5Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 6.
+                programParameter = parameters[5];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p6Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 7.
+                programParameter = parameters[6];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p7Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 8.
+                programParameter = parameters[7];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p8Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 9.
+                programParameter = parameters[8];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p9Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 10.
+                programParameter = parameters[9];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p10Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 11.
+                programParameter = parameters[10];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p11Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 12.
+                programParameter = parameters[11];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p12Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 13.
+                programParameter = parameters[12];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p13Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 14.
+                programParameter = parameters[13];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p14Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 15.
+                programParameter = parameters[14];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p15Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 16.
+                programParameter = parameters[15];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p16Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 17.
+                programParameter = parameters[16];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p17Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 18.
+                programParameter = parameters[17];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p18Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 19.
+                programParameter = parameters[18];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p19Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 20.
+                programParameter = parameters[19];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p20Value, mode);
+                sqlParameters.Add(parameter);
+            }
+
             // Return parameters that were set
             return sqlParameters;
         }
@@ -297,9 +281,10 @@ namespace WebApplications.Utilities.Database
             if ((names == null) || (names.Count() != 20))
                 throw new LoggingException(
                         LoggingLevel.Critical,
-                        "Wrong number of parameter names supplied for the '{0}' program, which expected '20' name(s) but was supplied with '{1}.",
+                        () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
                         _program.Name,
-                        names == null ? 0 : names.Count());
+                        20,
+                        parameters == null ? 0 : parameters.Count());
 
             SqlProgramParameter[] parameters = names.Select(
                     n =>
@@ -309,7 +294,7 @@ namespace WebApplications.Utilities.Database
                             if (!_program.Definition.TryGetParameter(n, out parameterDefinition))
                                 throw new LoggingException(
                                         LoggingLevel.Critical,
-                                        "The SQL Program '{0}' does not have a '{1}' parameter.",
+                                        () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
                                         _program.Name,
                                         n);
                             return parameterDefinition;
@@ -319,155 +304,139 @@ namespace WebApplications.Utilities.Database
             if (pCount < 20)
                 throw new LoggingException(
                         LoggingLevel.Critical,
-                        "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '20'.",
+                        () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
                         _program.Name,
-                        pCount);
+                        pCount,
+                        20);
 
             List<SqlParameter> sqlParameters = new List<SqlParameter>(2);
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
-            
-            // Find or create SQL Parameter 1.
-            programParameter = parameters[0];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p1Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 2.
-            programParameter = parameters[1];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p2Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 3.
-            programParameter = parameters[2];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p3Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 4.
-            programParameter = parameters[3];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p4Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 5.
-            programParameter = parameters[4];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p5Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 6.
-            programParameter = parameters[5];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p6Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 7.
-            programParameter = parameters[6];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p7Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 8.
-            programParameter = parameters[7];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p8Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 9.
-            programParameter = parameters[8];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p9Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 10.
-            programParameter = parameters[9];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p10Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 11.
-            programParameter = parameters[10];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p11Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 12.
-            programParameter = parameters[11];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p12Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 13.
-            programParameter = parameters[12];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p13Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 14.
-            programParameter = parameters[13];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p14Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 15.
-            programParameter = parameters[14];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p15Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 16.
-            programParameter = parameters[15];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p16Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 17.
-            programParameter = parameters[16];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p17Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 18.
-            programParameter = parameters[17];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p18Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 19.
-            programParameter = parameters[18];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p19Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 20.
-            programParameter = parameters[19];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p20Value, mode);
-            sqlParameters.Add(parameter);
-        
+            lock (_parameters)
+            {
+                // Find or create SQL Parameter 1.
+                programParameter = parameters[0];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p1Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 2.
+                programParameter = parameters[1];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p2Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 3.
+                programParameter = parameters[2];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p3Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 4.
+                programParameter = parameters[3];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p4Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 5.
+                programParameter = parameters[4];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p5Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 6.
+                programParameter = parameters[5];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p6Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 7.
+                programParameter = parameters[6];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p7Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 8.
+                programParameter = parameters[7];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p8Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 9.
+                programParameter = parameters[8];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p9Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 10.
+                programParameter = parameters[9];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p10Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 11.
+                programParameter = parameters[10];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p11Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 12.
+                programParameter = parameters[11];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p12Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 13.
+                programParameter = parameters[12];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p13Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 14.
+                programParameter = parameters[13];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p14Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 15.
+                programParameter = parameters[14];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p15Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 16.
+                programParameter = parameters[15];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p16Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 17.
+                programParameter = parameters[16];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p17Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 18.
+                programParameter = parameters[17];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p18Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 19.
+                programParameter = parameters[18];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p19Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 20.
+                programParameter = parameters[19];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p20Value, mode);
+                sqlParameters.Add(parameter);
+            }
+
             // Return parameters that were set
             return sqlParameters;
         }
@@ -523,8 +492,9 @@ namespace WebApplications.Utilities.Database
             if ((parameters == null) || (parameters.Count() != 20))
                 throw new LoggingException(
                         LoggingLevel.Critical,
-                        "Wrong number of parameter supplied for the '{0}' program, which expected '20' parameter(s) but was supplied with '{1}.",
+                        () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
                         _program.Name,
+                        20,
                         parameters == null ? 0 : parameters.Count());
 
             SqlProgramParameter[] parametersArray = parameters.ToArray();
@@ -533,155 +503,139 @@ namespace WebApplications.Utilities.Database
             if (pCount < 20)
                 throw new LoggingException(
                         LoggingLevel.Critical,
-                        "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '20'.",
+                        () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
                         _program.Name,
-                        pCount);
+                        pCount,
+                        20);
 
             List<SqlParameter> sqlParameters = new List<SqlParameter>(2);
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
-            
-            // Find or create SQL Parameter 1.
-            programParameter = parametersArray[0];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p1Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 2.
-            programParameter = parametersArray[1];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p2Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 3.
-            programParameter = parametersArray[2];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p3Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 4.
-            programParameter = parametersArray[3];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p4Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 5.
-            programParameter = parametersArray[4];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p5Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 6.
-            programParameter = parametersArray[5];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p6Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 7.
-            programParameter = parametersArray[6];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p7Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 8.
-            programParameter = parametersArray[7];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p8Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 9.
-            programParameter = parametersArray[8];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p9Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 10.
-            programParameter = parametersArray[9];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p10Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 11.
-            programParameter = parametersArray[10];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p11Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 12.
-            programParameter = parametersArray[11];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p12Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 13.
-            programParameter = parametersArray[12];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p13Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 14.
-            programParameter = parametersArray[13];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p14Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 15.
-            programParameter = parametersArray[14];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p15Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 16.
-            programParameter = parametersArray[15];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p16Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 17.
-            programParameter = parametersArray[16];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p17Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 18.
-            programParameter = parametersArray[17];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p18Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 19.
-            programParameter = parametersArray[18];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p19Value, mode);
-            sqlParameters.Add(parameter);
-        
-            // Find or create SQL Parameter 20.
-            programParameter = parametersArray[19];
-            index = _command.Parameters.IndexOf(programParameter.Name);
-            parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
-            parameter.Value = programParameter.CastCLRValue(p20Value, mode);
-            sqlParameters.Add(parameter);
-        
+            lock (_parameters)
+            {
+                // Find or create SQL Parameter 1.
+                programParameter = parametersArray[0];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p1Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 2.
+                programParameter = parametersArray[1];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p2Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 3.
+                programParameter = parametersArray[2];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p3Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 4.
+                programParameter = parametersArray[3];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p4Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 5.
+                programParameter = parametersArray[4];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p5Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 6.
+                programParameter = parametersArray[5];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p6Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 7.
+                programParameter = parametersArray[6];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p7Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 8.
+                programParameter = parametersArray[7];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p8Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 9.
+                programParameter = parametersArray[8];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p9Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 10.
+                programParameter = parametersArray[9];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p10Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 11.
+                programParameter = parametersArray[10];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p11Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 12.
+                programParameter = parametersArray[11];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p12Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 13.
+                programParameter = parametersArray[12];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p13Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 14.
+                programParameter = parametersArray[13];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p14Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 15.
+                programParameter = parametersArray[14];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p15Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 16.
+                programParameter = parametersArray[15];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p16Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 17.
+                programParameter = parametersArray[16];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p17Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 18.
+                programParameter = parametersArray[17];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p18Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 19.
+                programParameter = parametersArray[18];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p19Value, mode);
+                sqlParameters.Add(parameter);
+                // Find or create SQL Parameter 20.
+                programParameter = parametersArray[19];
+                index = _parameters.IndexOf(programParameter.Name);
+                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
+                parameter.Value = programParameter.CastCLRValue(p20Value, mode);
+                sqlParameters.Add(parameter);
+            }
+
             // Return parameters that were set
             return sqlParameters;
         }
@@ -931,13 +885,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The scalar value.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<TOut> ExecuteScalarAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<TOut> ExecuteScalarAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteScalarAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), state);
+            return this.ExecuteScalarAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -998,13 +952,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The scalar value for each connection.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<IEnumerable<TOut>> ExecuteScalarAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<IEnumerable<TOut>> ExecuteScalarAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), state);
+            return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -1063,13 +1017,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Number of rows affected.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<int> ExecuteNonQueryAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<int> ExecuteNonQueryAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteNonQueryAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), state);
+            return this.ExecuteNonQueryAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -1128,13 +1082,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Number of rows affected for each connection.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<IEnumerable<int>> ExecuteNonQueryAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteNonQueryAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), state);
+            return this.ExecuteNonQueryAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -1165,7 +1119,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public void ExecuteReader(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<SqlDataReader> resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
+        public void ExecuteReader(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             this.ExecuteReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
@@ -1196,12 +1150,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultAction">The result function.</param>
         /// <param name="behavior">The behaviour.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task ExecuteReaderAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<SqlDataReader> resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task ExecuteReaderAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, state);
+            return this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1232,7 +1186,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public void ExecuteReaderAll(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<SqlDataReader> resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
+        public void ExecuteReaderAll(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             this.ExecuteReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
@@ -1263,12 +1217,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultAction">The result function.</param>
         /// <param name="behavior">The behaviour.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task ExecuteReaderAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<SqlDataReader> resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task ExecuteReaderAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate resultAction = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, state);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1301,7 +1255,7 @@ namespace WebApplications.Utilities.Database
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public TOut ExecuteReader<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<SqlDataReader, TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
+        public TOut ExecuteReader<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate<TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             return this.ExecuteReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
@@ -1333,13 +1287,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultFunc">The result function.</param>
         /// <param name="behavior">The behaviour.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<TOut> ExecuteReaderAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<SqlDataReader, TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<TOut> ExecuteReaderAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate<TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, state);
+            return this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1372,7 +1326,7 @@ namespace WebApplications.Utilities.Database
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public IEnumerable<TOut> ExecuteReaderAll<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<SqlDataReader, TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
+        public IEnumerable<TOut> ExecuteReaderAll<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate<TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             return this.ExecuteReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
@@ -1404,13 +1358,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultFunc">The result function.</param>
         /// <param name="behavior">The behaviour.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<IEnumerable<TOut>> ExecuteReaderAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<SqlDataReader, TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<IEnumerable<TOut>> ExecuteReaderAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), ResultDelegate<TOut> resultFunc = null, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, state);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1470,12 +1424,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultAction">The result function.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task ExecuteXmlReaderAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<XmlReader> resultAction = null, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task ExecuteXmlReaderAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<XmlReader> resultAction = null, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, state);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -1535,12 +1489,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultAction">The result function.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task ExecuteXmlReaderAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<XmlReader> resultAction = null, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task ExecuteXmlReaderAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Action<XmlReader> resultAction = null, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, state);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -1603,13 +1557,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultFunc">The result function.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<TOut> ExecuteXmlReaderAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<XmlReader, TOut> resultFunc = null, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<TOut> ExecuteXmlReaderAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<XmlReader, TOut> resultFunc = null, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, state);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -1672,13 +1626,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="p20Value">Value of SQL Parameter 20.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configurated default for this program.</param>
         /// <param name="resultFunc">The result function.</param>
-        /// <param name="state">The state.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
-        public async Task<IEnumerable<TOut>> ExecuteXmlReaderAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<XmlReader, TOut> resultFunc = null, TypeConstraintMode? constraintMode = null, object state = null)
+        public Task<IEnumerable<TOut>> ExecuteXmlReaderAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), Func<XmlReader, TOut> resultFunc = null, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, state);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -1835,7 +1789,7 @@ namespace WebApplications.Utilities.Database.Configuration
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) || (!db.Enabled))
-                throw new LoggingException("The database with id '{0}' could not be found in the configuration.", database);
+                throw new LoggingException(() => Resources.DatabasesConfiguration_GetSqlProgram_Unknown_Database, database);
 
             return db.GetSqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(name, p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, p12Name, p13Name, p14Name, p15Name, p16Name, p17Name, p18Name, p19Name, p20Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode);
         }
@@ -1913,8 +1867,7 @@ namespace WebApplications.Utilities.Database.Configuration
             LoadBalancedConnectionElement connection = this.Connections.FirstOrDefault(c => c.Enabled);
 
             if (connection == null)
-                throw new LoggingException(
-                    "Could not find a default load balanced connection for the database with id '{0}'.", this.Id);
+                throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Unknown_Database, this.Id);
             
             // Look for program mapping information
             ProgramElement prog = this.Programs[name];
@@ -1935,8 +1888,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     connection = this.Connections[prog.Connection];
                     if ((connection == null) ||
                         (!connection.Enabled))
-                        throw new LoggingException(
-                            "Could not find a load balanced connection with id '{0}' for the database with id '{1}' for use with the '{2}' SqlProgram.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Unknown_Database_Program,
                             prog.Connection, this.Id, name);
                 }
                 
@@ -1945,8 +1897,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p1Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p1Name, prog.Name);
                 
                     p1Name = param.MapTo;
@@ -1954,8 +1905,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p2Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p2Name, prog.Name);
                 
                     p2Name = param.MapTo;
@@ -1963,8 +1913,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p3Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p3Name, prog.Name);
                 
                     p3Name = param.MapTo;
@@ -1972,8 +1921,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p4Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p4Name, prog.Name);
                 
                     p4Name = param.MapTo;
@@ -1981,8 +1929,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p5Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p5Name, prog.Name);
                 
                     p5Name = param.MapTo;
@@ -1990,8 +1937,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p6Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p6Name, prog.Name);
                 
                     p6Name = param.MapTo;
@@ -1999,8 +1945,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p7Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p7Name, prog.Name);
                 
                     p7Name = param.MapTo;
@@ -2008,8 +1953,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p8Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p8Name, prog.Name);
                 
                     p8Name = param.MapTo;
@@ -2017,8 +1961,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p9Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p9Name, prog.Name);
                 
                     p9Name = param.MapTo;
@@ -2026,8 +1969,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p10Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p10Name, prog.Name);
                 
                     p10Name = param.MapTo;
@@ -2035,8 +1977,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p11Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p11Name, prog.Name);
                 
                     p11Name = param.MapTo;
@@ -2044,8 +1985,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p12Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p12Name, prog.Name);
                 
                     p12Name = param.MapTo;
@@ -2053,8 +1993,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p13Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p13Name, prog.Name);
                 
                     p13Name = param.MapTo;
@@ -2062,8 +2001,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p14Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p14Name, prog.Name);
                 
                     p14Name = param.MapTo;
@@ -2071,8 +2009,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p15Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p15Name, prog.Name);
                 
                     p15Name = param.MapTo;
@@ -2080,8 +2017,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p16Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p16Name, prog.Name);
                 
                     p16Name = param.MapTo;
@@ -2089,8 +2025,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p17Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p17Name, prog.Name);
                 
                     p17Name = param.MapTo;
@@ -2098,8 +2033,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p18Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p18Name, prog.Name);
                 
                     p18Name = param.MapTo;
@@ -2107,8 +2041,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p19Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p19Name, prog.Name);
                 
                     p19Name = param.MapTo;
@@ -2116,14 +2049,13 @@ namespace WebApplications.Utilities.Database.Configuration
                 param = prog.Parameters[p20Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
-                        throw new LoggingException(
-                            "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
+                        throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Invalid_Mapping,
                             p20Name, prog.Name);
                 
                     p20Name = param.MapTo;
                 }
             }
-			
+            
             if (constraintMode == null) constraintMode = TypeConstraintMode.Warn;
 
             return new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(connection, name, p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, p12Name, p13Name, p14Name, p15Name, p16Name, p17Name, p18Name, p19Name, p20Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, (TypeConstraintMode) constraintMode);

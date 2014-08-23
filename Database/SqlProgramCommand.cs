@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,10 +28,12 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
 
@@ -40,33 +42,52 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     ///   A specialised command that allows finer grained control when using <see cref="SqlProgram"/>s.
     /// </summary>
-    public partial class SqlProgramCommand : IDisposable
+    public partial class SqlProgramCommand
     {
-        private readonly SqlCommand _command;
-        private readonly SqlConnection _connection;
-        private readonly SqlProgram _program;
-        private int _disposed;
+        /// <summary>
+        /// Function to create a <see cref="SqlParameterCollection"/>.
+        /// </summary>
+        [NotNull]
+        private static readonly Func<SqlParameterCollection> _createSqlParameterCollection =
+            typeof (SqlParameterCollection).ConstructorFunc<SqlParameterCollection>();
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="SqlProgramCommand"/> class.
+        /// Allows rapid setting of a commands parameters.
+        /// </summary>
+        [NotNull]
+        private static readonly Action<SqlCommand, SqlParameterCollection> _setSqlParameterCollection =
+            typeof (SqlCommand).GetSetter<SqlCommand, SqlParameterCollection>("_parameters");
+
+        [NotNull]
+        private readonly string _connectionString;
+
+        [NotNull]
+        private readonly SqlProgram _program;
+
+        [NotNull]
+        private readonly SqlParameterCollection _parameters;
+
+        private TimeSpan _commandTimeout;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlProgramCommand" /> class.
         /// </summary>
         /// <param name="program">The SQL program.</param>
-        /// <param name="connection">An open connection to the SQL server database.</param>
-        /// <param name="commandTimeout">
-        ///   The time to wait for the program to execute before raising an error.
-        /// </param>
-        internal SqlProgramCommand([NotNull] SqlProgram program, [NotNull] SqlConnection connection,
-                                   TimeSpan commandTimeout)
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="commandTimeout">The time to wait for the program to execute before raising an error.</param>
+        internal SqlProgramCommand(
+            [NotNull] SqlProgram program,
+            [NotNull] string connectionString,
+            TimeSpan commandTimeout)
         {
+            Contract.Requires(program != null);
+            Contract.Requires(connectionString != null);
+            Contract.Requires(commandTimeout >= TimeSpan.Zero);
             _program = program;
-            _connection = connection;
-
-            // Create underlying command
-            _command = new SqlCommand(program.Name, connection)
-                           {
-                               CommandType = CommandType.StoredProcedure,
-                               CommandTimeout = (int) commandTimeout.TotalSeconds
-                           };
+            _connectionString = connectionString;
+            CommandTimeout = commandTimeout;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _parameters = _createSqlParameterCollection();
         }
 
         /// <summary>
@@ -79,114 +100,104 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public TimeSpan CommandTimeout
         {
-            get { return TimeSpan.FromSeconds(_command.CommandTimeout); }
-            set { _command.CommandTimeout = (int) value.TotalSeconds; }
+            get { return _commandTimeout; }
+            set
+            {
+                if (_commandTimeout == value)
+                    return;
+                _commandTimeout = value < TimeSpan.Zero
+                    ? TimeSpan.FromSeconds(30)
+                    : value;
+            }
         }
 
-        #region IDisposable Members
         /// <summary>
-        ///   Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
-        {
-            if (Interlocked.Exchange(ref _disposed, 1) == 1)
-                return;
-
-            if (_command != null)
-                _command.Dispose();
-            if (_connection != null)
-                _connection.Dispose();
-        }
-        #endregion
-
-        /// <summary>
-        ///   Gets the parameter with the specified name and returns it as an <see cref="SqlParameter"/> object.
+        /// Gets the parameter with the specified name and returns it as an <see cref="SqlParameter" /> object.
         /// </summary>
         /// <param name="parameterName">The name of the parameter to retrieve.</param>
-        /// <returns>
-        ///   The <see cref="SqlParameter"/> that corresponds to the <paramref name="parameterName"/> provided.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   Could not find a match with the <paramref name="parameterName"/> specified.
-        /// </exception>
-        /// <exception cref="NullReferenceException">
-        ///   <paramref name="parameterName"/> was <see langword="null"/>.
-        /// </exception>
+        /// <returns>The <see cref="SqlParameter" /> that corresponds to the <paramref name="parameterName" /> provided.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
         [NotNull]
         [UsedImplicitly]
         public SqlParameter GetParameter([NotNull] string parameterName)
         {
-            SqlParameter parameter;
-            parameterName = parameterName.ToLower();
+            Contract.Requires(parameterName != null);
+            Contract.Ensures(Contract.Result<SqlParameter>() != null);
 
-            int index = _command.Parameters.IndexOf(parameterName);
-            if (index < 0)
+            lock (_parameters)
             {
-                // Parameter not added yet
-                SqlProgramParameter parameterDefinition;
-                if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
-                    throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_GetParameter_ProgramDoesNotHaveParameter,
-                        _program.Name,
-                        parameterName);
+                parameterName = parameterName.ToLower();
+
+                int index = _parameters.IndexOf(parameterName);
+                SqlParameter parameter;
+                if (index < 0)
+                {
+                    // Parameter not added yet
+                    SqlProgramParameter parameterDefinition;
+                    if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
+                        throw new LoggingException(
+                            LoggingLevel.Critical,
+                            () => Resources.SqlProgramCommand_GetParameter_ProgramDoesNotHaveParameter,
+                            _program.Name,
+                            parameterName);
+
+                    // Create the parameter and add it to the collection
+                    Contract.Assert(parameterDefinition != null);
+                    parameter = _parameters.Add(parameterDefinition.CreateSqlParameter());
+                }
+                else
+                    // Get the parameter and set it's value.
+                    parameter = _parameters[index];
 
                 // Create the parameter and add it to the collection
-                parameter = _command.Parameters.Add(parameterDefinition.CreateSqlParameter());
+                Contract.Assert(parameter != null);
+                return parameter;
             }
-            else
-            {
-                // Get the parameter and set it's value.
-                parameter = _command.Parameters[index];
-            }
-            return parameter;
         }
 
         /// <summary>
-        ///   Sets the specified parameter with the value provided and returns it as an <see cref="SqlParameter"/> object.
+        /// Sets the specified parameter with the value provided and returns it as an <see cref="SqlParameter" /> object.
         /// </summary>
         /// <typeparam name="T">The type of the value to set.</typeparam>
         /// <param name="parameterName">The name of the parameter to set.</param>
         /// <param name="value">The value to set the parameter to.</param>
-        /// <param name="mode">
-        ///   <para>The constraint mode.</para>
-        ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
-        /// </param>
+        /// <param name="mode"><para>The constraint mode.</para>
+        /// <para>By default this is set to give a warning if truncation/loss of precision occurs.</para></param>
         /// <returns>The SqlParameter with the specified name.</returns>
-        /// <returns>
-        ///   The <see cref="SqlParameter"/> that corresponds to <paramref name="parameterName"/>,
-        ///   set to the <paramref name="value"/> specified.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   Could not find a match with the <paramref name="parameterName"/> specified.
-        /// </exception>
-        /// <exception cref="NullReferenceException">
-        ///   <paramref name="parameterName"/> was <see langword="null"/>.
-        /// </exception>
-        public SqlParameter SetParameter<T>(string parameterName, T value,
-                                            TypeConstraintMode mode = TypeConstraintMode.Warn)
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
+        [NotNull]
+        [PublicAPI]
+        public SqlParameter SetParameter<T>(
+            [NotNull] string parameterName,
+            T value,
+            TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            SqlParameter parameter;
-            parameterName = parameterName.ToLower();
+            Contract.Requires(parameterName != null);
 
-            // Find parameter definition
-            SqlProgramParameter parameterDefinition;
-            if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
-                throw new LoggingException(
-                    LoggingLevel.Critical,
-                    () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
-                    _program.Name,
-                    parameterName);
+            lock (_parameters)
+            {
+                parameterName = parameterName.ToLower();
 
-            // Find or create SQL Parameter.
-            int index = _command.Parameters.IndexOf(parameterName);
-            parameter = index < 0
-                            ? _command.Parameters.Add(parameterDefinition.CreateSqlParameter())
-                            : _command.Parameters[index];
+                // Find parameter definition
+                SqlProgramParameter parameterDefinition;
+                if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
+                        () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
+                        _program.Name,
+                        parameterName);
+                Contract.Assert(parameterDefinition != null);
 
-            parameter.Value = parameterDefinition.CastCLRValue(value, mode);
-            return parameter;
+                // Find or create SQL Parameter.
+                int index = _parameters.IndexOf(parameterName);
+                SqlParameter parameter = index < 0
+                    ? _parameters.Add(parameterDefinition.CreateSqlParameter())
+                    : _parameters[index];
+
+                Contract.Assert(parameter != null);
+                parameter.Value = parameterDefinition.CastCLRValue(value, mode);
+                return parameter;
+            }
         }
 
         /// <summary>
@@ -213,412 +224,540 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         public T ExecuteScalar<T>()
         {
-            return (T) _command.ExecuteScalar();
-        }
-
-        /// <summary>
-        ///   Initiates the execution of the asynchronous operation.
-        /// </summary>
-        /// <param name="callback">
-        ///   The method to call once the operation completes.
-        /// </param>
-        /// <param name="stateObject">
-        ///   A user-defined state object. 
-        ///   Retrieve this object from within the callback procedure using the AsyncState property.
-        /// </param>
-        /// <returns>
-        ///   The <see cref="IAsyncResult"/>, which represents the status of the asynchronous operation.
-        /// </returns>
-        /// <remarks>
-        ///   <see cref="EndExecuteScalar&lt;T&gt;"/> <b>must</b> be called to finish the operation.
-        /// </remarks>
-        /// <exception cref="SqlException">
-        ///   An error occurred whilst executing the command text.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The name/value pair <c>Asynchronous Processing=true</c> was not included within the
-        ///   connection string defining the connection for this <see cref="SqlCommand"/>
-        /// </exception>
-        public IAsyncResult BeginExecuteScalar(AsyncCallback callback = null, object stateObject = null)
-        {
-            return _command.BeginExecuteReader(callback, stateObject,
-                                               CommandBehavior.SingleResult | CommandBehavior.SingleRow);
-        }
-
-        /// <summary>
-        ///   Finishes the execution of the asynchronous operation.
-        /// </summary>
-        /// <typeparam name="T">The type of the value in the first column.</typeparam>
-        /// <param name="asyncResult">
-        ///   The status of the asynchronous operation.
-        /// </param>
-        /// <returns>
-        ///   Returns the value of the first column in the first row.
-        ///   If no records are present then the default value of <typeparamref name="T"/> is returned.
-        /// </returns>
-        /// <remarks>
-        ///   <see cref="BeginExecuteScalar"/> <b>must</b> be called to commence the operation's execution.
-        /// </remarks>
-        /// <exception cref="ArgumentException">
-        ///   <paramref name="asyncResult"/> was <see langword="null"/>.
-        /// </exception>
-        public T EndExecuteScalar<T>([NotNull] IAsyncResult asyncResult)
-        {
-            using (SqlDataReader reader = _command.EndExecuteReader(asyncResult))
+            try
             {
-                if ((reader != null) && (reader.Read()))
-                    return reader.GetValue<T>(0);
-                return default(T);
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        return (T) sqlCommand.ExecuteScalar();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
             }
         }
 
         /// <summary>
-        ///   Creates a <see cref="Task&lt;TResult&gt;">Task&lt;T&gt;</see> that executes an operation asynchronously,
-        ///   returning the first column of the first row in the result set. Any additional columns or rows are ignored.
+        /// Creates a <see cref="Task&lt;TResult&gt;">Task&lt;T&gt;</see> that executes an operation asynchronously,
+        /// returning the first column of the first row in the result set. Any additional columns or rows are ignored.
         /// </summary>
-        /// <typeparam name="T">
-        ///   The type of the value in the result (the value first column of the first row).
-        /// </typeparam>
-        /// <param name="state">
-        ///   A state object containing data to be used by the <see cref="BeginExecuteScalar"/> method.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="Task&lt;TResult&gt;">Task&lt;T&gt;</see> which represents the begin and end methods
-        ///   <see cref="BeginExecuteScalar"/> and <see cref="EndExecuteScalar&lt;T&gt;"/>.
-        /// </returns>
-        /// <exception cref="SqlException">
-        ///   An exception occurred while executing the command against a locked row.
-        ///   This exception is not generated when you are using Microsoft .NET Framework version 1.0.
-        /// </exception>
+        /// <typeparam name="T">The type of the value in the result (the value first column of the first row).</typeparam>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, containing the scalar result.</returns>
         /// <PermissionSet>
-        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/>
-        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/>
-        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        public Task<T> ExecuteScalarAsync<T>(object state = null)
+        public async Task<T> ExecuteScalarAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.Factory.FromAsync<T>(BeginExecuteScalar, EndExecuteScalar<T>, state);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        // ReSharper disable once PossibleNullReferenceException
+                        return (T) await sqlCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
         }
 
         /// <summary>
-        ///   Executes a Transact-SQL statement against the connection and returns the number of rows affected.
+        /// Executes a Transact-SQL statement against the connection and returns the number of rows affected.
         /// </summary>
-        /// <returns>
-        ///   The number of rows affected.
-        /// </returns>
-        /// <exception cref="SqlException">
-        ///   An exception occurred whilst executing the command against a locked row.
-        ///   This exception is not generated when using Microsoft .NET Framework version 1.0.
-        /// </exception>
-        /// <filterpriority>1</filterpriority>
+        /// <returns>The number of rows affected.</returns>
         /// <PermissionSet>
-        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence"/>
-        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [PublicAPI]
         public int ExecuteNonQuery()
         {
-            return _command.ExecuteNonQuery();
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        return sqlCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
         }
 
         /// <summary>
-        ///   Begins to execute the non-query asynchronously, given a callback and state information.
+        /// Creates a <see cref="Task&lt;TResult&gt;">Task&lt;int&gt;</see> that executes an non-query asynchronously,
+        /// and returns the number of rows affected.
         /// </summary>
-        /// <param name="callback">
-        ///   The method to call when the asynchronous operation is complete.
-        /// </param>
-        /// <param name="stateObject">
-        ///   A user-defined state object that is passed to the callback. 
-        ///   Retrieve this object from the callback procedure using the <see cref="IAsyncResult.AsyncState"/> property.
-        /// </param>
-        /// <returns>
-        ///   The <see cref="IAsyncResult"/>, which represents the status of the asynchronous operation.
-        /// </returns>
-        /// <remarks>
-        ///   <see cref="EndExecuteNonQuery"/> <b>must</b> be called to finish the operation.
-        /// </remarks>
-        /// <exception cref="SqlException">
-        ///   An error occurred whilst executing the command text.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The name/value pair <c>Asynchronous Processing=true</c> was not included within the
-        ///   connection string defining the connection for this <see cref="SqlCommand"/>
-        /// </exception>
-        public IAsyncResult BeginExecuteNonQuery(AsyncCallback callback = null, object stateObject = null)
-        {
-            return _command.BeginExecuteNonQuery(callback, stateObject);
-        }
-
-        /// <summary>
-        ///   Ends the execution of the asynchronous non-query.
-        /// </summary>
-        /// <param name="asyncResult">
-        ///   The status of the asynchronous operation.
-        /// </param>
-        /// <returns>
-        ///   The number of rows affected by the query.
-        /// </returns>
-        public object EndExecuteNonQuery([NotNull] IAsyncResult asyncResult)
-        {
-            return _command.EndExecuteNonQuery(asyncResult);
-        }
-
-        /// <summary>
-        ///   Creates a <see cref="Task&lt;TResult&gt;">Task&lt;int&gt;</see> that executes an non-query asynchronously,
-        ///   and returns the number of rows affected.
-        /// </summary>
-        /// <param name="state">
-        ///   A state object containing data to be used by the <see cref="BeginExecuteNonQuery"/> method.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="Task&lt;TResult&gt;">Task&lt;int&gt;</see> which represents the begin and end methods
-        ///   <see cref="BeginExecuteNonQuery"/> and <see cref="EndExecuteNonQuery"/>.
-        /// </returns>
-        /// <exception cref="SqlException">
-        ///   An exception occurred whilst executing the command against a locked row.
-        ///   This exception is not generated when using Microsoft .NET Framework version 1.0.
-        /// </exception>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, containing the number of rows affected.</returns>
         /// <PermissionSet>
-        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence"/>
-        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        public Task<int> ExecuteNonQueryAsync(object state = null)
+        [PublicAPI]
+        public async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.Factory.FromAsync<int>(_command.BeginExecuteNonQuery, _command.EndExecuteNonQuery, state);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        // ReSharper disable once PossibleNullReferenceException
+                        return await sqlCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
         }
 
+        #region ExecuteReader
         /// <summary>
-        ///   Executes the <see cref="SqlCommand.CommandText"/> to the <see cref="SqlCommand.Connection"/>,
-        ///   and builds a <see cref="SqlDataReader"/> using the provided <see cref="CommandBehavior">behavior</see>.
+        /// Executes the <see cref="SqlCommand.CommandText" /> to the <see cref="SqlCommand.Connection" />,
+        /// and builds a <see cref="SqlDataReader" /> using the provided <see cref="CommandBehavior">behavior</see>.
         /// </summary>
-        /// <param name="behavior">
-        ///   <para>Describes the results of the query and its effect on the database.</para>
-        ///   <para>By default this is set to CommandBehavior.Default.</para>
-        /// </param>
-        /// <returns>
-        ///   The built <see cref="SqlDataReader"/> object.
-        /// </returns>
-        /// <filterpriority>1</filterpriority>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
+        /// <para>By default this is set to CommandBehavior.Default.</para></param>
+        /// <returns>The built <see cref="SqlDataReader" /> object.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
         /// <PermissionSet>
-        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/>
-        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/>
-        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        public SqlDataReader ExecuteReader(CommandBehavior behavior = CommandBehavior.Default)
+        [PublicAPI]
+        public void ExecuteReader(
+            [NotNull] ResultDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
-            return _command.ExecuteReader(behavior);
+            Contract.Requires(resultAction != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (SqlDataReader reader = sqlCommand.ExecuteReader(behavior))
+                            resultAction(reader);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
         }
 
         /// <summary>
-        ///   Initiates the execution of the operation asynchronously using the provided
-        ///   <see cref="CommandBehavior">behavior</see>.
+        /// Executes the <see cref="SqlCommand.CommandText" /> to the <see cref="SqlCommand.Connection" />,
+        /// and builds a <see cref="SqlDataReader" /> using the provided <see cref="CommandBehavior">behavior</see>.
         /// </summary>
-        /// <param name="callback">The method to call once the operation is complete.</param>
-        /// <param name="stateObject">
-        ///   A user-defined state object that is passed to the callback. 
-        ///   Retrieve this object from the callback procedure using the <see cref="IAsyncResult.AsyncState"/> property.
-        /// </param>
-        /// <param name="behavior">
-        ///   <para>Describes the results of the query and its effect on the database.</para>
-        ///   <para>By default this is set to CommandBehavior.Default.</para>
-        /// </param>
-        /// <returns>
-        ///   The <see cref="IAsyncResult"/>, which represents the status of the asynchronous operation.
-        /// </returns>
-        /// <remarks>
-        ///   <see cref="EndExecuteReader"/> <b>must</b> be called to finish the execution.
-        /// </remarks>
-        /// <exception cref="SqlException">
-        ///   An error occurred whilst executing the command text.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The name/value pair <c>Asynchronous Processing=true</c> was not included within the
-        ///   connection string defining the connection for this <see cref="SqlCommand"/>
-        /// </exception>
-        public IAsyncResult BeginExecuteReader(AsyncCallback callback = null, object stateObject = null,
-                                               CommandBehavior behavior = CommandBehavior.Default)
-        {
-            return _command.BeginExecuteReader(callback, stateObject, behavior);
-        }
-
-        /// <summary>
-        ///   Finishes the execution of an asynchronous operation.
-        /// </summary>
-        /// <param name="asyncResult">
-        ///   The async result returned from <see cref="BeginExecuteReader"/>.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="SqlDataReader"/> that can be used to retrieve the records.
-        /// </returns>
-        /// <remarks>
-        ///   <see cref="BeginExecuteReader"/> <b>must</b> be called initialise the operation's execution.
-        /// </remarks>
-        /// <exception cref="ArgumentException">
-        ///   <paramref name="asyncResult"/> was <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The name/value pair <c>Asynchronous Processing=true</c> was not included within the
-        ///   connection string defining the connection for this <see cref="SqlCommand"/>
-        /// </exception>
-        public SqlDataReader EndExecuteReader([NotNull] IAsyncResult asyncResult)
-        {
-            return _command.EndExecuteReader(asyncResult);
-        }
-
-        /// <summary>
-        ///   Creates a <see cref="Task&lt;TResult&gt;">Task&lt;SqlDataReader&gt;</see> that executes an operation asynchronously
-        /// </summary>
-        /// <param name="behavior">
-        ///   <para>Describes the results of the query and its effect on the database.</para>
-        ///   <para>By default this is set to CommandBehavior.Default.</para>
-        /// </param>
-        /// <param name="state">
-        ///   A state object containing data to be used by the <see cref="BeginExecuteReader"/> method.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="Task&lt;TResult&gt;">Task&lt;DataReader&gt;</see> which represents the begin and end methods
-        ///   <see cref="BeginExecuteReader"/> and <see cref="EndExecuteReader"/>.
-        /// </returns>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
+        /// <para>By default this is set to CommandBehavior.Default.</para></param>
+        /// <returns>The built <see cref="SqlDataReader" /> object.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
         /// <PermissionSet>
-        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/>
-        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/>
-        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [NotNull]
-        public Task<SqlDataReader> ExecuteReaderAsync(CommandBehavior behavior = CommandBehavior.Default,
-                                                      object state = null)
+        [PublicAPI]
+        public T ExecuteReader<T>(
+            [NotNull] ResultDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
-            return Task.Factory.FromAsync<SqlDataReader>((a, o) => _command.BeginExecuteReader(a, o, behavior),
-                                                         _command.EndExecuteReader, state);
+            Contract.Requires(resultFunc != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (SqlDataReader reader = sqlCommand.ExecuteReader(behavior))
+                            return resultFunc(reader);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
         }
 
         /// <summary>
-        ///   Sends the <see cref="SqlCommand.CommandText"/> to the <see cref="SqlCommand.Connection"/>
-        ///   and builds an <see cref="XmlReader"/> object.
+        /// Creates a <see cref="Task&lt;TResult&gt;">Task&lt;SqlDataReader&gt;</see> that executes an operation asynchronously
         /// </summary>
-        /// <returns>
-        ///   An <see cref="XmlReader"/> object.
-        /// </returns>
-        /// <remarks>
-        ///   The command text should either contain a valid FOR XML clause, return a result of type ntext or nvarchar
-        ///   (containing valid XML) or return the contents of a column defined as the xml data type.
-        /// </remarks>
-        /// <exception cref="SqlException">
-        ///   An exception occurred whilst executing the command against a locked row.
-        ///   This exception is not generated when using Microsoft .NET Framework version 1.0.
-        /// </exception>
-        /// <filterpriority>1</filterpriority>
+        /// <param name="resultAction">The result action.</param>
+        /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
+        /// <para>By default this is set to CommandBehavior.Default.</para></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, containing a <see cref="SqlDataReader" />.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
         /// <PermissionSet>
-        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/>
-        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/>
-        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        /// </PermissionSet>
-        public XmlReader ExecuteXmlReader()
-        {
-            return _command.ExecuteXmlReader();
-        }
-
-        /// <summary>
-        ///   Initiates the execution of operation asynchronously.
-        /// </summary>
-        /// <param name="callback">
-        ///   The method to call once the asynchronous operation completes.
-        /// </param>
-        /// <param name="stateObject">
-        ///   A user-defined state object that is passed to the callback. 
-        ///   Retrieve this object from the callback procedure using the <see cref="IAsyncResult.AsyncState"/> property.
-        /// </param>
-        /// <returns>
-        ///   The <see cref="IAsyncResult"/>, which represents the status of the asynchronous operation.
-        /// </returns>
-        /// <remarks>
-        ///   <see cref="EndExecuteXmlReader"/> <b>must</b> be called to finish the execution.
-        /// </remarks>
-        /// <exception cref="SqlException">
-        ///   An error occurred whilst executing the command text.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The name/value pair <c>Asynchronous Processing=true</c> was not included within the
-        ///   connection string defining the connection for this <see cref="SqlCommand"/>
-        /// </exception>
-        /// <seealso cref="SqlCommand.BeginExecuteXmlReader(AsyncCallback, object)"/>
-        public IAsyncResult BeginExecuteXmlReader(AsyncCallback callback = null, object stateObject = null)
-        {
-            return _command.BeginExecuteXmlReader(callback, stateObject);
-        }
-
-        /// <summary>
-        ///   Finishes the execution of an asynchronous operation, returning the results as XML.
-        /// </summary>
-        /// <param name="asyncResult">
-        ///   The async result, which represents the status of the asynchronous operation.
-        /// </param>
-        /// <returns>
-        ///   An <see cref="XmlReader"/> object that can be used to retrieve the results. 
-        /// </returns>
-        /// <remarks>
-        ///   <see cref="BeginExecuteXmlReader"/> <b>must</b> be called to initialise the execution.
-        /// </remarks>
-        /// <exception cref="ArgumentException">
-        ///   <paramref name="asyncResult"/> is <see langword="null"/>.
-        /// </exception>
-        /// <seealso cref="SqlCommand.EndExecuteXmlReader(IAsyncResult)"/>
-        public XmlReader EndExecuteXmlReader([NotNull] IAsyncResult asyncResult)
-        {
-            return _command.EndExecuteXmlReader(asyncResult);
-        }
-
-        /// <summary>
-        ///   Creates a <see cref="Task&lt;TResult&gt;">Task&lt;XmlReader&gt;</see> that executes an operation asynchronously,
-        /// </summary>
-        /// <param name="state">
-        ///   A state object containing data to be used by the <see cref="BeginExecuteXmlReader"/> method.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="Task&lt;TResult&gt;">Task&lt;XmlReader&gt;</see> which represents the begin and end methods
-        ///   <see cref="BeginExecuteXmlReader"/> and <see cref="EndExecuteXmlReader"/>.
-        /// </returns>
-        /// <exception cref="SqlException">
-        ///   An exception occurred while executing the command against a locked row.
-        ///   This exception is not generated when using Microsoft .NET Framework version 1.0.
-        /// </exception>
-        /// <PermissionSet>
-        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/>
-        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/>
-        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
-        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        public Task<XmlReader> ExecuteXmlReaderAsync(object state = null)
+        [PublicAPI]
+        public async Task ExecuteReaderAsync(
+            [NotNull] ResultDelegateAsync resultAction,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Task.Factory.FromAsync<XmlReader>(_command.BeginExecuteXmlReader, _command.EndExecuteXmlReader, state);
+            Contract.Requires(resultAction != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    // ReSharper disable PossibleNullReferenceException
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (
+                            SqlDataReader reader =
+                                await sqlCommand.ExecuteReaderAsync(behavior, cancellationToken).ConfigureAwait(false))
+                            await resultAction(reader, cancellationToken).ConfigureAwait(false);
+                    }
+                    // ReSharper restore PossibleNullReferenceException
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
         }
+
+        /// <summary>
+        /// Creates a <see cref="Task&lt;TResult&gt;">Task&lt;SqlDataReader&gt;</see> that executes an operation asynchronously
+        /// </summary>
+        /// <typeparam name="T">The return type.</typeparam>
+        /// <param name="resultFunc">The result function.</param>
+        /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
+        /// <para>By default this is set to CommandBehavior.Default.</para></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, containing a <see cref="SqlDataReader" />.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        [PublicAPI]
+        public async Task<T> ExecuteReaderAsync<T>(
+            [NotNull] ResultDelegateAsync<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(resultFunc != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    // ReSharper disable PossibleNullReferenceException
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (
+                            SqlDataReader reader =
+                                await sqlCommand.ExecuteReaderAsync(behavior, cancellationToken).ConfigureAwait(false))
+                            return await resultFunc(reader, cancellationToken).ConfigureAwait(false);
+                    }
+                    // ReSharper restore PossibleNullReferenceException
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
+        }
+        #endregion
+
+        #region ExecuteXmlReader
+        /// <summary>
+        /// Executes the <see cref="SqlCommand.CommandText" /> to the <see cref="SqlCommand.Connection" />,
+        /// and builds a <see cref="XmlReader" /> using the provided <see cref="CommandBehavior">behavior</see>.
+        /// </summary>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <returns>The built <see cref="XmlReader" /> object.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [PublicAPI]
+        public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction)
+        {
+            Contract.Requires(resultAction != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (XmlReader reader = sqlCommand.ExecuteXmlReader())
+                            resultAction(reader);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
+        }
+
+        /// <summary>
+        /// Executes the <see cref="SqlCommand.CommandText" /> to the <see cref="SqlCommand.Connection" />,
+        /// and builds a <see cref="XmlReader" /> using the provided <see cref="CommandBehavior">behavior</see>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <returns>The built <see cref="XmlReader" /> object.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [PublicAPI]
+        public T ExecuteXmlReader<T>([NotNull] XmlResultDelegate<T> resultFunc)
+        {
+            Contract.Requires(resultFunc != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (XmlReader reader = sqlCommand.ExecuteXmlReader())
+                            return resultFunc(reader);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Task&lt;TXmlResult&gt;">Task&lt;XmlReader&gt;</see> that executes an operation asynchronously
+        /// </summary>
+        /// <param name="resultAction">The result action.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, containing a <see cref="XmlReader" />.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        [PublicAPI]
+        public async Task ExecuteXmlReaderAsync(
+            [NotNull] XmlResultDelegateAsync resultAction,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(resultAction != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    // ReSharper disable PossibleNullReferenceException
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (
+                            XmlReader reader =
+                                await sqlCommand.ExecuteXmlReaderAsync(cancellationToken).ConfigureAwait(false))
+                            await resultAction(reader, cancellationToken).ConfigureAwait(false);
+                    }
+                    // ReSharper restore PossibleNullReferenceException
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Task&lt;TXmlResult&gt;">Task&lt;XmlReader&gt;</see> that executes an operation asynchronously
+        /// </summary>
+        /// <typeparam name="T">The return type.</typeparam>
+        /// <param name="resultFunc">The result function.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, containing a <see cref="XmlReader" />.</returns>
+        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        [PublicAPI]
+        public async Task<T> ExecuteXmlReaderAsync<T>(
+            [NotNull] XmlResultDelegateAsync<T> resultFunc,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(resultFunc != null);
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    // ReSharper disable PossibleNullReferenceException
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                    })
+                    {
+                        _setSqlParameterCollection(sqlCommand, _parameters);
+                        using (
+                            XmlReader reader =
+                                await sqlCommand.ExecuteXmlReaderAsync(cancellationToken).ConfigureAwait(false))
+                            return await resultFunc(reader, cancellationToken).ConfigureAwait(false);
+                    }
+                    // ReSharper restore PossibleNullReferenceException
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new SqlProgramExecutionException(_program, exception);
+            }
+        }
+        #endregion
 
         /// <summary>
         ///   Returns a <see cref="string"/> that represents this instance.
@@ -628,7 +767,7 @@ namespace WebApplications.Utilities.Database
         /// </returns>
         public override string ToString()
         {
-            return "SqlProgramCommand";
+            return string.Format("A SqlProgramCommand for the '{0}' SqlProgram", _program.Name);
         }
     }
 }

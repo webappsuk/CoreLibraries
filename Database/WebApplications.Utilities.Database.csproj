@@ -168,6 +168,7 @@
     <Compile Include="Configuration\ParameterElement.cs" />
     <Compile Include="Configuration\ProgramCollection.cs" />
     <Compile Include="Configuration\ProgramElement.cs" />
+    <Compile Include="Connection.cs" />
     <Compile Include="Exceptions\DatabaseSchemaException.cs" />
     <Compile Include="Exceptions\SqlProgramExecutionException.cs" />
     <Compile Include="Extensions.cs" />

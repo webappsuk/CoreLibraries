@@ -41,18 +41,19 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     ///   Allows the specification of a set of connection strings to be selected at random based on a weighting.
     /// </summary>
-    public class LoadBalancedConnection : IEnumerable<string>
+    public class LoadBalancedConnection : IEnumerable<Connection>
     {
         /// <summary>
         ///   The random number generator, used for choosing the connection.
         /// </summary>
-        [NotNull] private static readonly Random _random = new Random();
+        [NotNull]
+        private static readonly Random _random = new Random();
 
         /// <summary>
         ///   Holds <see cref="Connection"/>s and their <see cref="Connection.Weight">weighting</see>.
         /// </summary>
-        [NotNull] private readonly List<Connection> _connections =
-            new List<Connection>();
+        [NotNull]
+        private readonly List<Connection> _connections = new List<Connection>();
 
         /// <summary>
         ///   The total weight of all the <see cref="Connection"/>s.
@@ -65,30 +66,23 @@ namespace WebApplications.Utilities.Database
         private TriState _identicalSchemas = TriState.Unknown;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoadBalancedConnection"/> class.
-        ///   This creates a load balanced connection with only one connection string.
+        /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
+        /// This creates a load balanced connection with only one connection string.
         /// </summary>
-        /// <param name="connectionString">
-        ///   <para>The connection string.</para>
-        ///   <para>This is given a weighting of 1.0.</para>
-        /// </param>
-        /// <param name="ensureSchemasIdentical">
-        ///   <para>If set to <see langword="true"/> then the schemas must be identical.</para>
-        ///   <para>By default this is <see langword="false"/>.</para>
-        /// </param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
-        ///   <paramref name="connectionString"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        /// <exception cref="LoggingException">
-        ///   <paramref name="connectionString"/> is <see langword="null"/>.
-        /// </exception>
-        [UsedImplicitly]
-        public LoadBalancedConnection([NotNull] string connectionString, bool ensureSchemasIdentical = false)
-            : this(new List<KeyValuePair<string, double>> {new KeyValuePair<string, double>(connectionString, 1.0D)},
-                   ensureSchemasIdentical)
+        /// <param name="connectionString"><para>The connection string.</para>
+        /// <para>This is given a weighting of 1.0.</para></param>
+        /// <param name="weight">The weight.</param>
+        /// <param name="ensureSchemasIdentical"><para>If set to <see langword="true" /> then the schemas must be identical.</para>
+        /// <para>By default this is <see langword="false" />.</para></param>
+        /// <exception cref="LoggingException"><paramref name="connectionString" /> is <see langword="null" />.</exception>
+        /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
+        /// <paramref name="connectionString" /> cannot be <see langword="null" />.</remarks>
+        [PublicAPI]
+        public LoadBalancedConnection([NotNull] string connectionString, double weight = 1D, bool ensureSchemasIdentical = false)
+            : this(new[] { new Connection(connectionString, weight) }, ensureSchemasIdentical)
         {
-            Contract.Requires(connectionString != null, Resources.LoadBalancedConnection_ConnectionStringCanNotBeNull);
+            Contract.Requires(connectionString != null);
+            Contract.Requires(weight > 0D);
         }
 
         /// <summary>
@@ -108,11 +102,14 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="connectionStrings"/> was <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public LoadBalancedConnection([NotNull] params string[] connectionStrings)
-            : this(connectionStrings.Select(cs => new KeyValuePair<string, double>(cs, 1.0D)))
+            : this(connectionStrings
+                       .Where(cs => !string.IsNullOrWhiteSpace(cs))
+                // ReSharper disable once AssignNullToNotNullAttribute
+                       .Select(cs => new Connection(cs)))
         {
-            Contract.Requires(connectionStrings != null, Resources.LoadBalancedConnection_ConnectionStringsCanNotBeNull);
+            Contract.Requires(connectionStrings != null);
         }
 
         /// <summary>
@@ -138,12 +135,17 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="connectionStrings"/> was <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
-        public LoadBalancedConnection([NotNull] IEnumerable<string> connectionStrings,
-                                      bool ensureSchemasIdentical = false)
-            : this(connectionStrings.Select(cs => new KeyValuePair<string, double>(cs, 1.0D)))
+        [PublicAPI]
+        public LoadBalancedConnection(
+            [NotNull] IEnumerable<string> connectionStrings,
+            bool ensureSchemasIdentical = false)
+            : this(connectionStrings
+                       .Where(cs => !string.IsNullOrWhiteSpace(cs))
+                // ReSharper disable once AssignNullToNotNullAttribute
+                       .Select(cs => new Connection(cs)),
+                   ensureSchemasIdentical)
         {
-            Contract.Requires(connectionStrings != null, Resources.LoadBalancedConnection_ConnectionStringsCanNotBeNull);
+            Contract.Requires(connectionStrings != null);
         }
 
         /// <summary>
@@ -174,50 +176,73 @@ namespace WebApplications.Utilities.Database
         ///   <para>Connections do not have identical schemas
         ///   and <paramref name="ensureSchemasIdentical"/> is <see langword="true"/>.</para>
         /// </exception>
-        [UsedImplicitly]
-        public LoadBalancedConnection([NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings,
-                                      bool ensureSchemasIdentical = false)
+        [PublicAPI]
+        public LoadBalancedConnection(
+            [NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings,
+            bool ensureSchemasIdentical = false)
+            // ReSharper disable once AssignNullToNotNullAttribute
+            : this(connectionStrings
+                       .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
+                       // ReSharper disable AssignNullToNotNullAttribute
+                       .Select(kvp => new Connection(kvp.Key, kvp.Value)),
+                   // ReSharper restore AssignNullToNotNullAttribute
+                   ensureSchemasIdentical)
         {
-            Contract.Requires(connectionStrings != null, Resources.LoadBalancedConnection_ConnectionStringsCanNotBeNull);
+            Contract.Requires(connectionStrings != null);
+        }
 
-            if ((connectionStrings == null))
-                throw new LoggingException(() => Resources.LoadBalancedConnection_ConnectionStringsNotSet);
+        /// <summary>
+        /// <para>Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
+        /// This is allows a weighting to be set for each connection string.</para>
+        /// <para>The higher the weighting the more likely a connection string will be chosen when
+        /// requesting a new connection.</para>
+        /// <para>The connection can be given a unique id for lookup.</para>
+        /// </summary>
+        /// <param name="connections">The connections.</param>
+        /// <param name="ensureSchemasIdentical"><para>If set to <see langword="true" /> then the schemas must be identical.</para>
+        /// <para>By default this is <see langword="false" />.</para></param>
+        [PublicAPI]
+        public LoadBalancedConnection(
+            [NotNull] IEnumerable<Connection> connections,
+            bool ensureSchemasIdentical = false)
+        {
+            Contract.Requires(connections != null);
+
+            // TODO Remove ensure schemas identical as should be async!
 
             // Combine identical connection strings and their weighting.
-            foreach (KeyValuePair<string, double> kvp in connectionStrings)
+            foreach (Connection connection in connections)
             {
-                Connection connection = new Connection(kvp.Key, kvp.Value);
-
+                if (connection == null) continue;
+                // ReSharper disable once PossibleNullReferenceException
                 Connection existing = _connections.FirstOrDefault(c => c.EquivalentTo(connection));
                 if (existing != null)
-                {
-                    existing.Weight += kvp.Value;
-                }
+                    existing.Weight += connection.Weight;
                 else
-                {
                     _connections.Add(connection);
-                }
-                _totalWeight += kvp.Value;
+                _totalWeight += connection.Weight;
             }
 
             if (!_connections.Any())
-                throw new LoggingException(() => 
-                    Resources.LoadBalancedConnection_NoConnectionStrings);
+                throw new LoggingException(
+                    () =>
+                        Resources.LoadBalancedConnection_NoConnectionStrings);
 
             // Throw an exception if we have any connection strings with a negative weighting.
+            // ReSharper disable once PossibleNullReferenceException
             if (_connections.Any(c => c.Weight < 0))
-                throw new LoggingException(() => 
-                    Resources.LoadBalancedConnection_WeightLessThanZero);
+                throw new LoggingException(
+                    () => Resources.LoadBalancedConnection_WeightLessThanZero);
 
             if (_totalWeight <= 0.0D)
-                throw new LoggingException(() => 
-                    Resources.LoadBalancedConnection_AllStringsZeroWeighted);
+                throw new LoggingException(
+                    () => Resources.LoadBalancedConnection_AllStringsZeroWeighted);
 
-            // Finally validate the schemas are identical if required.
+            // Finally validate the schemas are identical if required. TODO REMOVE!
             if ((ensureSchemasIdentical) &&
                 (!IdenticalSchemas))
-                throw new LoggingException(() => 
-                    Resources.LoadBalancedConnection_SchemasNotIdentical);
+                throw new LoggingException(
+                    () => Resources.LoadBalancedConnection_SchemasNotIdentical);
         }
 
         /// <summary>
@@ -230,31 +255,29 @@ namespace WebApplications.Utilities.Database
         {
             get
             {
-                if (_identicalSchemas ==
-                    TriState.Unknown)
+                // TODO Make Async!!!!
+                if (_identicalSchemas != TriState.Unknown) return (bool)_identicalSchemas;
+
+                lock (_connections)
                 {
-                    lock (_connections)
+                    if (_identicalSchemas != TriState.Unknown) return (bool)_identicalSchemas;
+
+                    DatabaseSchema schema = null;
+                    _identicalSchemas = TriState.Yes;
+                    foreach (Connection connection in _connections)
                     {
-                        if (_identicalSchemas ==
-                            TriState.Unknown)
+                        Contract.Assert(connection != null);
+                        if (schema == null)
+                            schema = DatabaseSchema.GetOrAdd(connection.ConnectionString);
+                        else if (!schema.Equals(DatabaseSchema.GetOrAdd(connection.ConnectionString)))
                         {
-                            DatabaseSchema schema = null;
-                            _identicalSchemas = TriState.Yes;
-                            foreach (string connectionString in this)
-                            {
-                                if (schema == null)
-                                    schema = DatabaseSchema.GetOrAdd(connectionString);
-                                else if (!schema.Equals(DatabaseSchema.GetOrAdd(connectionString)))
-                                {
-                                    _identicalSchemas = TriState.No;
-                                    break;
-                                }
-                            }
+                            _identicalSchemas = TriState.No;
+                            break;
                         }
                     }
                 }
 
-                return (bool) _identicalSchemas;
+                return (bool)_identicalSchemas;
             }
         }
 
@@ -266,9 +289,9 @@ namespace WebApplications.Utilities.Database
         ///   A <see cref = "T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public IEnumerator<string> GetEnumerator()
+        public IEnumerator<Connection> GetEnumerator()
         {
-            return _connections.Select(c => c.ConnectionString).GetEnumerator();
+            return _connections.GetEnumerator();
         }
 
         /// <summary>
@@ -285,39 +308,47 @@ namespace WebApplications.Utilities.Database
         #endregion
 
         /// <summary>
-        ///   Creates a new <see cref="SqlConnection"/> using a random
-        ///   <see cref="Connection.ConnectionString">connection string</see>.
+        /// Gets a new <see cref="SqlConnection" /> using a random
+        /// <see cref="Connection.ConnectionString">connection string</see>.
         /// </summary>
-        /// <param name="open">
-        ///   If set to <see langword="true"/> then opens the connection.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="SqlConnection"/> object.
-        /// </returns>
-        /// <remarks>
-        ///   This should be used in a <c>using</c> statement to ensure it is disposed
-        ///   as a connection is not closed when it goes out of scope.
-        /// </remarks>
-        /// <exception cref="LoggingException">
-        ///   Failed to select a valid connection string from the <see cref="LoadBalancedConnection"/>.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The connection did not specify a source or server.
-        /// </exception>
-        /// <exception cref="SqlException">
-        ///   A connection-level error occurred whilst opening the connection.
-        ///   See <see cref="SqlConnection.Open"/> for more details.
-        /// </exception>
+        /// <returns>A <see cref="SqlConnection" /> object.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        /// <exception cref="LoggingException">Failed to select a valid connection string from the <see cref="LoadBalancedConnection" />.</exception>
+        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
+        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
+        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
+        /// <remarks>This should be used in a <c>using</c> statement to ensure it is disposed
+        /// as a connection is not closed when it goes out of scope.</remarks>
         [NotNull]
-        public SqlConnection CreateConnection(bool open = true)
+        public SqlConnection GetConnection()
+        {
+            // Create connection using a random connection string
+            return new SqlConnection(GetConnectionString());
+        }
+
+        /// <summary>
+        /// Gets a random
+        /// <see cref="Connection.ConnectionString">connection string</see>.
+        /// </summary>
+        /// <returns>A <see cref="SqlConnection" /> object.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        /// <exception cref="LoggingException">Failed to select a valid connection string from the <see cref="LoadBalancedConnection" />.</exception>
+        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
+        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
+        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
+        /// <remarks>This should be used in a <c>using</c> statement to ensure it is disposed
+        /// as a connection is not closed when it goes out of scope.</remarks>
+        [NotNull]
+        public string GetConnectionString()
         {
             // Calculate a random value between 0 and the total weight.
-            double next = _random.NextDouble()*_totalWeight;
+            double next = _random.NextDouble() * _totalWeight;
 
             // Pick a connection string
             string connectionString = null;
             foreach (Connection c in _connections)
             {
+                Contract.Assert(c != null);
                 next -= c.Weight;
                 if (next > 0)
                     continue;
@@ -331,14 +362,7 @@ namespace WebApplications.Utilities.Database
                     () => Resources.LoadBalancedConnection_CreateConnection_NoValidConnectionString);
 
             // Create connection using connection string
-            SqlConnection connection = new SqlConnection(connectionString);
-
-            // Open if open flag is true
-            if (open)
-                connection.Open();
-
-            // Return the connection
-            return connection;
+            return connectionString;
         }
 
         /// <summary>
@@ -359,9 +383,11 @@ namespace WebApplications.Utilities.Database
         public bool ReloadSchemas(bool ensureSchemasIdentical = false)
         {
             bool hasChanges = false;
+            // ReSharper disable once PossibleNullReferenceException
             foreach (string connectionString in _connections.Select(c => c.ConnectionString))
             {
                 bool hc;
+                // ReSharper disable once AssignNullToNotNullAttribute
                 DatabaseSchema.GetOrAdd(connectionString, true, out hc);
                 hasChanges |= hc;
             }
@@ -391,79 +417,8 @@ namespace WebApplications.Utilities.Database
         /// </exception>
         public override string ToString()
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return String.Format(Resources.LoadBalancedConnection_ToString, _connections.Count);
         }
-
-        #region Nested type: Connection
-        /// <summary>
-        ///   Holds information about a connection.
-        /// </summary>
-        private class Connection
-        {
-            /// <summary>
-            ///   The <see cref="SqlConnectionStringBuilder">connection string builder</see>.
-            /// </summary>
-            [NotNull] private readonly SqlConnectionStringBuilder _connectionStringBuilder;
-
-            /// <summary>
-            ///   Initializes a new instance of the <see cref="Connection"/> class.
-            /// </summary>
-            /// <param name="connectionString">The connection string.</param>
-            /// <param name="weight">
-            ///   <para>The weighting of the connection.</para>
-            ///   <para>By default this is set to 1.0.</para>
-            /// </param>
-            public Connection(string connectionString, double weight = 1.0D)
-            {
-                if (String.IsNullOrWhiteSpace(connectionString))
-                    throw new LoggingException(() => Resources.Connection_EmptyConnectionString);
-
-                _connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
-                Weight = weight;
-            }
-
-            /// <summary>
-            ///   Gets the connection <see cref="string"/>.
-            /// </summary>
-            [NotNull]
-            public string ConnectionString
-            {
-                get { return _connectionStringBuilder.ConnectionString; }
-            }
-
-            /// <summary>
-            ///   Gets a <see cref="bool"/> value that indicates whether asynchronous processing is allowed by the connection.
-            /// </summary>
-            /// <value>
-            ///   <see langword="true"/> if asynchronous programming is allowed; otherwise <see langword="false"/>.
-            /// </value>
-            public bool AsynchronousProcessing
-            {
-                get { return _connectionStringBuilder.AsynchronousProcessing; }
-            }
-
-            /// <summary>
-            ///   Gets a <see cref="double"/> indicating the relative weight of the <see cref="Connection"/>.
-            /// </summary>
-            /// <value>
-            ///   <para>The weight of the connection.</para>
-            ///   <para>The default weighting is 1.0.</para>
-            /// </value>
-            public double Weight { get; internal set; }
-
-            /// <summary>
-            ///   Indicates whether the current instance is equal or equi to another <see cref="Connection"/>.
-            /// </summary>
-            /// <param name="other">An object to compare with this object.</param>
-            /// <returns>
-            ///   Returns <see langword="true"/> if the current <see cref="Connection"/> is equal to the
-            ///   <paramref name="other"/> specified; otherwise returns <see langword="false"/>.
-            /// </returns>
-            public bool EquivalentTo(Connection other)
-            {
-                return other != null && (_connectionStringBuilder.EquivalentTo(other._connectionStringBuilder));
-            }
-        }
-        #endregion
     }
 }

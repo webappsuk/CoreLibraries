@@ -61,15 +61,6 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The supplied connection string cannot be empty..
-        /// </summary>
-        internal static string Connection_EmptyConnectionString {
-            get {
-                return ResourceManager.GetString("Connection_EmptyConnectionString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The database with id &apos;{0}&apos; could not be found in the configuration..
         /// </summary>
         internal static string DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound {
@@ -88,6 +79,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Must specify a valid mapping for &apos;{0}&apos; parameter on &apos;{1}&apos; program..
+        /// </summary>
+        internal static string DatabaseElement_GetSqlProgram_Invalid_Mapping {
+            get {
+                return ResourceManager.GetString("DatabaseElement_GetSqlProgram_Invalid_Mapping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a load balanced connection with id &apos;{0}&apos; for the database with id &apos;{1}&apos; for use with the &apos;{2}&apos; SqlProgram..
         /// </summary>
         internal static string DatabaseElement_GetSqlProgram_LoadBalanceConnectionNotFound {
@@ -102,6 +102,24 @@ namespace WebApplications.Utilities.Database {
         internal static string DatabaseElement_GetSqlProgram_MappingNotSpecified {
             get {
                 return ResourceManager.GetString("DatabaseElement_GetSqlProgram_MappingNotSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a default load balanced connection for the database with id &apos;{0}&apos;..
+        /// </summary>
+        internal static string DatabaseElement_GetSqlProgram_Unknown_Database {
+            get {
+                return ResourceManager.GetString("DatabaseElement_GetSqlProgram_Unknown_Database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a load balanced connection with id &apos;{0}&apos; for the database with id &apos;{1}&apos; for use with the &apos;{2}&apos; SqlProgram..
+        /// </summary>
+        internal static string DatabaseElement_GetSqlProgram_Unknown_Database_Program {
+            get {
+                return ResourceManager.GetString("DatabaseElement_GetSqlProgram_Unknown_Database_Program", resourceCulture);
             }
         }
         
@@ -304,38 +322,20 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The database with id &apos;{0}&apos; could not be found in the configuration..
+        /// </summary>
+        internal static string DatabasesConfiguration_GetSqlProgram_Unknown_Database {
+            get {
+                return ResourceManager.GetString("DatabasesConfiguration_GetSqlProgram_Unknown_Database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Must specify at least one connection string, with a weight greater than zero..
         /// </summary>
         internal static string LoadBalancedConnection_AllStringsZeroWeighted {
             get {
                 return ResourceManager.GetString("LoadBalancedConnection_AllStringsZeroWeighted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;connectionString&apos; can not be null.
-        /// </summary>
-        internal static string LoadBalancedConnection_ConnectionStringCanNotBeNull {
-            get {
-                return ResourceManager.GetString("LoadBalancedConnection_ConnectionStringCanNotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;connectionStrings&apos; can not be null.
-        /// </summary>
-        internal static string LoadBalancedConnection_ConnectionStringsCanNotBeNull {
-            get {
-                return ResourceManager.GetString("LoadBalancedConnection_ConnectionStringsCanNotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Must specify a set of connection strings..
-        /// </summary>
-        internal static string LoadBalancedConnection_ConnectionStringsNotSet {
-            get {
-                return ResourceManager.GetString("LoadBalancedConnection_ConnectionStringsNotSet", resourceCulture);
             }
         }
         
@@ -403,51 +403,6 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;connection&apos; can not be null.
-        /// </summary>
-        internal static string SqlProgram_ConnectionCanNotBeNull {
-            get {
-                return ResourceManager.GetString("SqlProgram_ConnectionCanNotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;connectionString&apos; can not be null.
-        /// </summary>
-        internal static string SqlProgram_ConnectionStringCanNotBeNull {
-            get {
-                return ResourceManager.GetString("SqlProgram_ConnectionStringCanNotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;name&apos; can not be null.
-        /// </summary>
-        internal static string SqlProgram_NameCanNotBeNull {
-            get {
-                return ResourceManager.GetString("SqlProgram_NameCanNotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Must specify a connection..
-        /// </summary>
-        internal static string SqlProgram_NoConnectionSpecified {
-            get {
-                return ResourceManager.GetString("SqlProgram_NoConnectionSpecified", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Must specify a program name..
-        /// </summary>
-        internal static string SqlProgram_NoProgramNameSpecified {
-            get {
-                return ResourceManager.GetString("SqlProgram_NoProgramNameSpecified", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The program definitions for &apos;{0}&apos; could not be found..
         /// </summary>
         internal static string SqlProgram_Validate_DefinitionsNotFound {
@@ -480,6 +435,42 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter {
             get {
                 return ResourceManager.GetString("SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Too many parameters supplied for the &apos;{0}&apos; program, which only accepts &apos;{1} parameter(s) but was supplied with &apos;{2}&apos;..
+        /// </summary>
+        internal static string SqlProgramCommand_SetParameters_Too_Many_Parameters {
+            get {
+                return ResourceManager.GetString("SqlProgramCommand_SetParameters_Too_Many_Parameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The SQL Program &apos;{0}&apos; does not have a &apos;{1}&apos; parameter..
+        /// </summary>
+        internal static string SqlProgramCommand_SetParameters_Unknown_Parameter {
+            get {
+                return ResourceManager.GetString("SqlProgramCommand_SetParameters_Unknown_Parameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong number of parameters supplied for the &apos;{0}&apos; program, which expected &apos;{1}&apos; parameter(s) but was supplied with &apos;{2}..
+        /// </summary>
+        internal static string SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters {
+            get {
+                return ResourceManager.GetString("SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A SqlProgramCommand for the &apos;{0}&apos; SqlProgram.
+        /// </summary>
+        internal static string SqlProgramCommand_ToString {
+            get {
+                return ResourceManager.GetString("SqlProgramCommand_ToString", resourceCulture);
             }
         }
         

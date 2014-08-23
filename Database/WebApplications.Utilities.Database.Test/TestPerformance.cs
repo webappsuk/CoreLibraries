@@ -217,6 +217,7 @@ namespace WebApplications.Utilities.Database.Test
                 stopwatch.ElapsedMilliseconds));
         }
 
+#if false
         [TestMethod]
         public void TestAPM()
         {
@@ -276,5 +277,6 @@ namespace WebApplications.Utilities.Database.Test
             Trace.WriteLine("EndAPM Started");
             return ((Task<int>) result).Result;
         }
+#endif
     }
 }

@@ -285,23 +285,11 @@
   <data name="DatabaseElement_GetSqlProgram_MappingNotSpecified" xml:space="preserve">
     <value>Must specify a valid mapping for '{0}' parameter on '{1}' program.</value>
   </data>
-  <data name="Connection_EmptyConnectionString" xml:space="preserve">
-    <value>The supplied connection string cannot be empty.</value>
-  </data>
   <data name="DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound" xml:space="preserve">
     <value>The database with id '{0}' could not be found in the configuration.</value>
   </data>
   <data name="LoadBalancedConnection_AllStringsZeroWeighted" xml:space="preserve">
     <value>Must specify at least one connection string, with a weight greater than zero.</value>
-  </data>
-  <data name="LoadBalancedConnection_ConnectionStringCanNotBeNull" xml:space="preserve">
-    <value>Parameter 'connectionString' can not be null</value>
-  </data>
-  <data name="LoadBalancedConnection_ConnectionStringsCanNotBeNull" xml:space="preserve">
-    <value>Parameter 'connectionStrings' can not be null</value>
-  </data>
-  <data name="LoadBalancedConnection_ConnectionStringsNotSet" xml:space="preserve">
-    <value>Must specify a set of connection strings.</value>
   </data>
   <data name="LoadBalancedConnection_CreateConnection_NoValidConnectionString" xml:space="preserve">
     <value>Failed to select a valid connection string from the load balanced collection.</value>
@@ -324,25 +312,34 @@
   <data name="SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter" xml:space="preserve">
     <value>The SQL Program '{0}' does not have a '{1}' parameter.</value>
   </data>
-  <data name="SqlProgram_ConnectionCanNotBeNull" xml:space="preserve">
-    <value>Parameter 'connection' can not be null</value>
-  </data>
-  <data name="SqlProgram_ConnectionStringCanNotBeNull" xml:space="preserve">
-    <value>Parameter 'connectionString' can not be null</value>
-  </data>
-  <data name="SqlProgram_NameCanNotBeNull" xml:space="preserve">
-    <value>Parameter 'name' can not be null</value>
-  </data>
   <data name="SqlProgram_Validate_DefinitionsNotFound" xml:space="preserve">
     <value>The program definitions for '{0}' could not be found.</value>
   </data>
   <data name="SqlProgram_Validate_InconsistentProgramDefinitions" xml:space="preserve">
     <value>Inconsistent program definitions for '{0}' found in different connections.</value>
   </data>
-  <data name="SqlProgram_NoConnectionSpecified" xml:space="preserve">
-    <value>Must specify a connection.</value>
+  <data name="SqlProgramCommand_ToString" xml:space="preserve">
+    <value>A SqlProgramCommand for the '{0}' SqlProgram</value>
   </data>
-  <data name="SqlProgram_NoProgramNameSpecified" xml:space="preserve">
-    <value>Must specify a program name.</value>
+  <data name="SqlProgramCommand_SetParameters_Too_Many_Parameters" xml:space="preserve">
+    <value>Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '{2}'.</value>
+  </data>
+  <data name="SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters" xml:space="preserve">
+    <value>Wrong number of parameters supplied for the '{0}' program, which expected '{1}' parameter(s) but was supplied with '{2}.</value>
+  </data>
+  <data name="SqlProgramCommand_SetParameters_Unknown_Parameter" xml:space="preserve">
+    <value>The SQL Program '{0}' does not have a '{1}' parameter.</value>
+  </data>
+  <data name="DatabasesConfiguration_GetSqlProgram_Unknown_Database" xml:space="preserve">
+    <value>The database with id '{0}' could not be found in the configuration.</value>
+  </data>
+  <data name="DatabaseElement_GetSqlProgram_Unknown_Database" xml:space="preserve">
+    <value>Could not find a default load balanced connection for the database with id '{0}'.</value>
+  </data>
+  <data name="DatabaseElement_GetSqlProgram_Unknown_Database_Program" xml:space="preserve">
+    <value>Could not find a load balanced connection with id '{0}' for the database with id '{1}' for use with the '{2}' SqlProgram.</value>
+  </data>
+  <data name="DatabaseElement_GetSqlProgram_Invalid_Mapping" xml:space="preserve">
+    <value>Must specify a valid mapping for '{0}' parameter on '{1}' program.</value>
   </data>
 </root>

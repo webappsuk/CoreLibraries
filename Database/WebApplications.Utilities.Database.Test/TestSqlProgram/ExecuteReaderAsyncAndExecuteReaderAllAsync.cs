@@ -33,9 +33,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 new SqlProgram(_differentConnectionStringWithAsync, "spUltimateSproc");
 
             Task<dynamic> result = readerTest.ExecuteReaderAsync(
-                reader =>
+                async (reader, token) =>
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync(token))
                         {
                             return CreateDatabaseResult(reader);
                         }
@@ -65,9 +65,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                         c.SetParameter("@decimalParam", ADecimal);
                         c.SetParameter("@boolParam", ABool);
                     },
-                reader =>
+                async (reader, token) =>
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync(token))
                         {
                             return CreateDatabaseResult(reader);
                         }
@@ -98,9 +98,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                     c.SetParameter("@decimalParam", ADecimal);
                     c.SetParameter("@boolParam", ABool);
                 },
-                reader =>
+                async (reader, token) =>
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync(token))
                     {
                         return CreateDatabaseResult(reader);
                     }

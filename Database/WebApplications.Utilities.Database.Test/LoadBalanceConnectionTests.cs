@@ -22,16 +22,6 @@ namespace WebApplications.Utilities.Database.Test
 
         [TestMethod]
         [ExpectedException(typeof(LoggingException))]
-        public void Constructor_WithNullConnectionString_ThrowsLoggingException()
-        {
-            LoadBalancedConnection loadBalancedConnection =
-                new LoadBalancedConnection(connectionString: null);
-
-            Assert.IsNull(loadBalancedConnection);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
         public void Constructor_WithEmptyString_ThrowsLoggingException()
         {
             LoadBalancedConnection loadBalancedConnection =
@@ -78,16 +68,6 @@ namespace WebApplications.Utilities.Database.Test
 
         [TestMethod]
         [ExpectedException(typeof(LoggingException))]
-        public void Constructor_WithNullConnectionsStringsParameter_ThrowsLoggingException()
-        {
-            LoadBalancedConnection loadBalancedConnection =
-                new LoadBalancedConnection(connectionStrings: (IEnumerable<KeyValuePair<string, double>>)null);
-
-            Assert.IsNull(loadBalancedConnection);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
         public void Constructor_WithNegativeWeighting_ThrowsLoggingException()
         {
             LoadBalancedConnection loadBalancedConnection =
@@ -101,25 +81,21 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        public void CreateConnection_WithNoParameters_ReturnsOpenSqlConnection()
+        public void CreateConnection_WithNoParameters_ReturnsSqlConnection()
         {
             LoadBalancedConnection loadBalancedConnection =
-                new LoadBalancedConnection(connectionString: CreateConnectionString("LocalData", false));
+                new LoadBalancedConnection(CreateConnectionString("LocalData", false));
 
-            SqlConnection connection = loadBalancedConnection.CreateConnection();
-            Assert.IsNotNull(connection);
-            Assert.IsTrue(connection.State == ConnectionState.Open);
-        }
+            using (SqlConnection connection = loadBalancedConnection.GetConnection())
+            {
+                Assert.IsNotNull(connection);
+                Assert.IsFalse(connection.State == ConnectionState.Open);
 
-        [TestMethod]
-        public void CreateConnection_WithOpenParameterFalse_ReturnsClosedSqlConnection()
-        {
-            LoadBalancedConnection loadBalancedConnection =
-                new LoadBalancedConnection(connectionString: CreateConnectionString("LocalData", false));
-
-            SqlConnection connection = loadBalancedConnection.CreateConnection(open: false);
-            Assert.IsNotNull(connection);
-            Assert.IsTrue(connection.State == ConnectionState.Closed);
+                // Check that we are always coerced to being asynchronous
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connection.ConnectionString);
+                Assert.IsNotNull(builder);
+                Assert.IsTrue(builder.AsynchronousProcessing);
+            }
         }
 
         [TestMethod]
