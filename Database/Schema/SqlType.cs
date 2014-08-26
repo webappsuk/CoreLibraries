@@ -163,7 +163,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         [NotNull]
         [UsedImplicitly]
-        public readonly string SchemaName;
+        public readonly SqlSchema SqlSchema;
 
         /// <summary>
         ///   The <see cref="SqlTypeSize">size</see> of the type.
@@ -184,7 +184,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Initializes a new instance of the <see cref="SqlType"/> class.
         /// </summary>
         /// <param name="baseType">The base type.</param>
-        /// <param name="schemaName">The name of the schema the type belongs to.</param>
+        /// <param name="sqlSchema">The name of the schema the type belongs to.</param>
         /// <param name="name">The type name.</param>
         /// <param name="size">The size information.</param>
         /// <param name="isNullable">
@@ -198,15 +198,15 @@ namespace WebApplications.Utilities.Database.Schema
         /// </param>
         internal SqlType(
             [CanBeNull] SqlType baseType,
-            [NotNull] string schemaName,
+            [NotNull] SqlSchema sqlSchema,
             [NotNull] string name,
             SqlTypeSize size,
             bool isNullable,
             bool isUserDefined,
             bool isClr)
-            : this(baseType, schemaName, name, size, isNullable, isUserDefined, isClr, false)
+            : this(baseType, sqlSchema, name, size, isNullable, isUserDefined, isClr, false)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(schemaName));
+            Contract.Requires(sqlSchema != null);
             Contract.Requires(!String.IsNullOrWhiteSpace(name));
         }
 
@@ -215,7 +215,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Initializes a new instance of the <see cref="SqlType"/> class.
         /// </summary>
         /// <param name="baseType">The base type.</param>
-        /// <param name="schemaName">The name of the schema the type belongs to.</param>
+        /// <param name="sqlSchema">The name of the schema the type belongs to.</param>
         /// <param name="name">The type name.</param>
         /// <param name="size">The size information.</param>
         /// <param name="isNullable">
@@ -232,12 +232,12 @@ namespace WebApplications.Utilities.Database.Schema
         /// </param>
         /// <remarks>
         ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contact</see>
-        ///   specifying that <paramref name="name"/> and <paramref name="schemaName"/>
+        ///   specifying that <paramref name="name"/> and <paramref name="sqlSchema"/>
         ///   cannot be <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.
         /// </remarks>
         protected SqlType(
             [CanBeNull] SqlType baseType,
-            [NotNull] string schemaName,
+            [NotNull] SqlSchema sqlSchema,
             [NotNull] string name,
             SqlTypeSize size,
             bool isNullable,
@@ -245,10 +245,10 @@ namespace WebApplications.Utilities.Database.Schema
             bool isClr,
             bool isTable)
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(schemaName));
+            Contract.Requires(sqlSchema != null);
             Contract.Requires(!String.IsNullOrWhiteSpace(name));
             Name = name;
-            SchemaName = schemaName;
+            SqlSchema = sqlSchema;
             IsTable = isTable;
             IsCLR = isClr;
             IsUserDefined = isUserDefined;
@@ -305,7 +305,7 @@ namespace WebApplications.Utilities.Database.Schema
         {
             Contract.Requires(baseType != null);
             Name = baseType.Name;
-            SchemaName = baseType.SchemaName;
+            SqlSchema = baseType.SqlSchema;
             IsTable = baseType.IsTable;
             IsCLR = baseType.IsCLR;
             IsUserDefined = baseType.IsUserDefined;
@@ -324,7 +324,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         public string FullName
         {
-            get { return String.Format("{0}.{1}", SchemaName, Name); }
+            get { return String.Format("{0}.{1}", SqlSchema.Name, Name); }
         }
 
         /// <summary>
@@ -363,7 +363,7 @@ namespace WebApplications.Utilities.Database.Schema
         {
             if (obj._hashCode == null)
             {
-                obj._hashCode = obj.SchemaName.GetHashCode() ^ obj.Name.GetHashCode() ^ obj.Size.GetHashCode() ^
+                obj._hashCode = obj.SqlSchema.GetHashCode() ^ obj.Name.GetHashCode() ^ obj.Size.GetHashCode() ^
                                 obj.IsNullable.GetHashCode() ^ obj.IsUserDefined.GetHashCode() ^ obj.IsCLR.GetHashCode() ^
                                 obj.IsTable.GetHashCode();
             }

@@ -270,6 +270,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Schema\ISchema.cs" />
+    <Compile Include="Schema\SqlSchema.cs" />
     <Compile Include="Schema\TypeConstraintMode.cs" />
     <Compile Include="Schema\SqlMetaType.cs" />
     <Compile Include="Schema\SqlTableType.cs" />
@@ -310,6 +312,9 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <Compile Include="Schema\DatabaseSchema.Schema.cs">
+      <DependentUpon>DatabaseSchema.cs</DependentUpon>
+    </Compile>
     <None Include="web.config.transform" />
     <None Include="Generated\SqlProgramGeneric.Generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

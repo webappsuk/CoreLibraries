@@ -32,77 +32,145 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.ExceptionServices;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using NodaTime;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Scheduling;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database.Schema
 {
     /// <summary>
     ///   Holds information about a database schema
     /// </summary>
-    public class DatabaseSchema : IEqualityComparer<DatabaseSchema>, IEquatable<DatabaseSchema>
+    public partial class DatabaseSchema : ISchema
     {
         /// <summary>
         ///   Holds schemas against connections strings.
         /// </summary>
-        private static readonly ConcurrentDictionary<string, DatabaseSchema> _schemas =
+        [NotNull]
+        private static readonly ConcurrentDictionary<string, DatabaseSchema> _databaseSchemas =
             new ConcurrentDictionary<string, DatabaseSchema>();
 
-        private static int _tempCounter = 1;
+        private class CurrentSchema
+        {
+            [CanBeNull]
+            public readonly Schema Schema;
+
+            public readonly Instant Loaded;
+
+            [CanBeNull]
+            public readonly ExceptionDispatchInfo ExceptionDispatchInfo;
+
+            public CurrentSchema([NotNull] Schema schema)
+            {
+                Contract.Requires(schema != null);
+                Loaded = Scheduler.Clock.Now;
+                Schema = schema;
+            }
+
+            public CurrentSchema([NotNull] ExceptionDispatchInfo exceptionDispatchInfo)
+            {
+                Contract.Requires(exceptionDispatchInfo != null);
+                Loaded = Scheduler.Clock.Now;
+                ExceptionDispatchInfo = exceptionDispatchInfo;
+            }
+        }
 
         /// <summary>
         ///   The connection string which was used to generate schema initially.
         /// </summary>
-        [NotNull] private readonly string _connectionString;
+        [NotNull]
+        [PublicAPI]
+        public readonly string ConnectionString;
 
         /// <summary>
-        ///   A lock object, ensures only one thread loads the schema.
+        /// The loading lock.
         /// </summary>
-        private readonly object _lock = new object();
+        [NotNull]
+        private readonly AsyncLock _lock = new AsyncLock();
 
         /// <summary>
-        ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema.
+        /// The current schema, when it was loaded, and any error.
         /// </summary>
-        private readonly Dictionary<string, SqlProgramDefinition> _programDefinitions =
-            new Dictionary<string, SqlProgramDefinition>();
+        [NotNull]
+        private CurrentSchema _current;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DatabaseSchema" /> class.
+        /// </summary>
+        /// <param name="connectionString">The connection string to the database to load the schema of.</param>
+        private DatabaseSchema([NotNull] string connectionString)
+        {
+            Contract.Requires(connectionString != null);
+            ConnectionString = connectionString;
+        }
+        /// <summary>
+        /// Gets the current complete and immutable schema.
+        /// </summary>
+        /// <value>The current <see cref="Schema"/>.</value>
+        [PublicAPI]
+        [NotNull]
+        public Schema Current
+        {
+            get
+            {
+                CurrentSchema current = _current;
+                if (current.ExceptionDispatchInfo != null)
+                    current.ExceptionDispatchInfo.Throw();
+
+                Contract.Assert(current.Schema != null);
+                return current.Schema;
+            }
+        }
+
+        /// <summary>
+        /// When the <see cref="Current"/> <see cref="Schema" /> was loaded.
+        /// </summary>
+        /// <value>The loaded <see cref="Instant"/>.</value>
+        [PublicAPI]
+        public Instant Loaded
+        {
+            get
+            {
+                CurrentSchema current = _current;
+                if (current.ExceptionDispatchInfo != null)
+                    current.ExceptionDispatchInfo.Throw();
+
+                return current.Loaded;
+            }
+        }
+
+        #region Pass throughs
+        /// <summary>
+        /// Holds all the SQL schemas (<see cref="SqlSchema"/>, using the <see cref="SqlSchema.ID"/> as the key.
+        /// </summary>
+        [PublicAPI]
+        public IReadOnlyDictionary<int, SqlSchema> SchemasByID { get { return Current.SchemasByID; } }
+
+        /// <summary>
+        ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="SqlProgramDefinition.FullName">full
+        ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
+        /// </summary>
+        [PublicAPI]
+        public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName { get { return Current.ProgramDefinitionsByName; } }
 
         /// <summary>
         ///   Holds all the table and view definitions (<see cref="SqlTableDefinition"/>) for the schema.
         /// </summary>
-        private readonly Dictionary<string, SqlTableDefinition> _tables = new Dictionary<string, SqlTableDefinition>();
+        [PublicAPI]
+        public IReadOnlyDictionary<string, SqlTableDefinition> TablesByName { get { return Current.TablesByName; } }
 
         /// <summary>
         ///   Holds all the types for the schema, which are stored with the <see cref="SqlType.FullName">full
-        ///   name</see> as the key and the <see cref="SqlType"/> as the value.
+        ///   name</see> and <see cref="SqlType.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
         /// </summary>
-        private readonly Dictionary<string, SqlType> _types = new Dictionary<string, SqlType>();
-
-        /// <summary>
-        ///   Holds any exceptions that are thrown when loading the schema.
-        /// </summary>
-        private DatabaseSchemaException _error;
-
-        /// <summary>
-        ///   Hash code cache.
-        /// </summary>
-        private int _hashCode;
-
-        /// <summary>
-        ///   A <see cref="bool"/> flag indicating whether the schema has been loaded.
-        /// </summary>
-        private bool _loaded;
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="DatabaseSchema"/> class.
-        /// </summary>
-        /// <param name="connectionString">
-        ///   The connection string to the database to load the schema of.
-        /// </param>
-        private DatabaseSchema([NotNull] string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        [PublicAPI]
+        public IReadOnlyDictionary<string, SqlType> TypesByName { get { return Current.TypesByName; } }
 
         /// <summary>
         ///   Gets the SQL schemas that were loaded from the database.
@@ -110,9 +178,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   An enumerable containing the schema names in ascended order.
         /// </value>
-        [NotNull]
-        [UsedImplicitly]
-        public IEnumerable<string> Schemas { get; private set; }
+        [PublicAPI]
+        public IEnumerable<SqlSchema> Schemas { get { return Current.Schemas; } }
 
         /// <summary>
         ///   Gets the SQL types from the schema.
@@ -120,176 +187,51 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   The <see cref="SqlType">type</see>.
         /// </value>
-        [NotNull]
-        [UsedImplicitly]
-        public IEnumerable<SqlType> Types { get; private set; }
+        [PublicAPI]
+        public IEnumerable<SqlType> Types { get { return Current.Types; } }
 
         /// <summary>
         ///   Gets the program definitions.
         /// </summary>
         /// <value>The program definitions.</value>
-        [NotNull]
-        [UsedImplicitly]
-        public IEnumerable<SqlProgramDefinition> ProgramDefinitions { get; private set; }
+        [PublicAPI]
+        public IEnumerable<SqlProgramDefinition> ProgramDefinitions { get { return Current.ProgramDefinitions; } }
 
         /// <summary>
         ///   Gets the table and view definitions.
         /// </summary>
         /// <value>The table and view definitions.</value>
-        [NotNull]
-        [UsedImplicitly]
-        public IEnumerable<SqlTableDefinition> Tables { get; private set; }
-
-        #region IEqualityComparer<DatabaseSchema> Members
-        /// <summary>
-        ///   Determines whether the specified objects are equal.
-        /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the specified objects are equal; otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <param name="x">The first <see cref="DatabaseSchema"/> to compare.</param>
-        /// <param name="y">The second <see cref="DatabaseSchema"/> to compare.</param>
-        public bool Equals([CanBeNull] DatabaseSchema x, [CanBeNull] DatabaseSchema y)
-        {
-            if (x == null)
-                return y == null;
-            return y != null && x.Equals(y);
-        }
+        [PublicAPI]
+        public IEnumerable<SqlTableDefinition> Tables { get { return Current.Tables; } }
 
         /// <summary>
-        ///   Returns a hash code for the specified object.
+        ///   Unique identity of the schema.
         /// </summary>
-        /// <param name="obj">
-        ///   The <see cref="object"/> for which a hash code is to be returned.
-        /// </param>
-        /// <returns>A hash code for the specified object.</returns>
-        /// <exception cref="ArgumentNullException">
-        ///   The type of <paramref name="obj"/> is a reference type and is <see langword="null"/>.
-        /// </exception>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts">contract</see> specifying
-        ///   <paramref name="obj"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        public int GetHashCode([NotNull] DatabaseSchema obj)
-        {
-            return obj._hashCode;
-        }
-        #endregion
-
-        #region IEquatable<DatabaseSchema> Members
-        /// <summary>
-        ///   Indicates whether the current <see cref="DatabaseSchema"/> is equal to another <see cref="DatabaseSchema"/>.
-        /// </summary>
-        /// <param name="other">A <see cref="DatabaseSchema"/> to compare with this instance.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the current instance is equal to the <paramref name="other"/> provided;
-        ///   otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts">contract</see> specifying
-        ///   <paramref name="other"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        public bool Equals([NotNull] DatabaseSchema other)
-        {
-            return _hashCode == other._hashCode;
-        }
+        [PublicAPI]
+        public Guid Guid { get { return Current.Guid; } }
         #endregion
 
         /// <summary>
-        ///   Gets or adds a schema for the given connection string.
+        /// Gets or adds a schema for the given connection string.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
+        /// <param name="forceReload">If set to <see langword="true"/> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The added/retrieved schema.</returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts">contract</see> specifying
-        ///   <paramref name="connectionString"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        /// <exception cref="DatabaseSchemaException">
-        ///   An error occurred when loading the schema.
-        /// </exception>
+        /// <exception cref="DatabaseSchemaException">An error occurred when loading the schema.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="connectionString"/> is <see langword="null"/>.</exception>
+        /// <remarks>There is a <see cref="System.Diagnostics.Contracts">contract</see> specifying
+        /// <paramref name="connectionString"/> cannot be <see langword="null"/>.</remarks>
         [NotNull]
-        public static DatabaseSchema GetOrAdd([NotNull] string connectionString)
+        public static Task<DatabaseSchema> GetOrAdd([NotNull] string connectionString, bool forceReload = false, CancellationToken cancellationToken = default (CancellationToken))
         {
-            Contract.Requires(connectionString != null, Resources.DatabaseSchema_GetOrAdd_ConnectionStringCanNotBeNull);
-
-            bool hasChanged;
-            return GetOrAdd(connectionString, false, out hasChanged);
-        }
-
-        /// <summary>
-        ///   Gets or adds a schema for the given connection string.
-        /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="forceReload">
-        ///   If set to <see langword="true"/> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.
-        /// </param>
-        /// <param name="hasChanged">
-        ///   <para>Will output <see langword="true"/> if the schema has changed.</para>
-        ///   <para>Can only be <see langword="true"/> if <see paramref="forceReload"/> is also <see langword="true"/>.</para>
-        /// </param>
-        /// <returns>The added/retrieved schema.</returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts">contract</see> specifying
-        ///   <paramref name="connectionString"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        /// <exception cref="DatabaseSchemaException">
-        ///   An error occurred when loading the schema.
-        /// </exception>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="connectionString"/> is <see langword="null"/>.
-        /// </exception>
-        [NotNull]
-        public static DatabaseSchema GetOrAdd([NotNull] string connectionString, bool forceReload, out bool hasChanged)
-        {
-            Contract.Requires(connectionString != null, Resources.DatabaseSchema_GetOrAdd_ConnectionStringCanNotBeNull);
-            DatabaseSchema databaseSchema;
-            if (forceReload)
-            {
-                // If we're doing a reload, load a new connection first
-                databaseSchema = new DatabaseSchema(connectionString);
-
-                // Get the new or duplicate schema
-                DatabaseSchema duplicate = databaseSchema.Load() ?? databaseSchema;
-
-                // And update regardless
-                bool hc = false;
-                _schemas.AddOrUpdate(
-                    connectionString,
-                    cs => duplicate,
-                    (cs, ds) =>
-                        {
-                            // ReSharper disable PossibleNullReferenceException
-                            hc = !ds.Equals(duplicate);
-                            // ReSharper restore PossibleNullReferenceException
-                            return duplicate;
-                        });
-                hasChanged = hc;
-            }
-            else
-            {
-                hasChanged = false;
-                // Load the schema or add a new one
-                databaseSchema = _schemas.GetOrAdd(connectionString, cs => new DatabaseSchema(connectionString));
-
-                // Only load if not already loaded
-                if (!databaseSchema._loaded)
-                {
-                    DatabaseSchema duplicate = databaseSchema.Load();
-
-                    // If we have a duplicate, set our connection string to it.
-                    if (duplicate != null)
-                    {
-                        _schemas.AddOrUpdate(connectionString, cs => duplicate, (cs, ds) => duplicate);
-                        databaseSchema = duplicate;
-                    }
-                }
-            }
-
-            // If there was an error for this connection string, throw it.
-            if (databaseSchema._error != null)
-                throw databaseSchema._error;
-
-            return databaseSchema;
+            Contract.Requires(connectionString != null);
+            // ReSharper disable PossibleNullReferenceException
+            return _databaseSchemas.GetOrAdd(
+                connectionString,
+                cs => new DatabaseSchema(connectionString))
+                .Load(forceReload, cancellationToken);
+            // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
@@ -312,451 +254,396 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>-or-</para>
         ///   <para>Ran out of results whilst retrieving programs/tables/views.</para>
         /// </exception>
-        [CanBeNull]
-        private DatabaseSchema Load()
+        [NotNull]
+        private async Task<DatabaseSchema> Load(bool forceReload, CancellationToken cancellationToken)
         {
-            lock (_lock)
+            Instant requested = Scheduler.Clock.Now;
+            using (await _lock.LockAsync(cancellationToken).ConfigureAwait(false))
             {
-                // Check another thread hasn't loaded us.
-                if (_loaded)
-                    return null;
+                // Check to see if the currently loaded schema is acceptable.
+                CurrentSchema current = _current;
 
-                // Reset the error, we may be trying again.
-                _error = null;
-                _types.Clear();
-                _programDefinitions.Clear();
-                _tables.Clear();
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                if ((current != null) &&
+                    (!forceReload || (_current.Loaded > requested)))
+                {
+                    // Rethrow load errors.
+                    if (current.ExceptionDispatchInfo != null)
+                        current.ExceptionDispatchInfo.Throw();
 
-                // Create ID based dictionaries during load
-                Dictionary<int, string> sqlSchemas = new Dictionary<int, string>();
-                Dictionary<int, SqlType> types = new Dictionary<int, SqlType>();
+                    Contract.Assert(current.Schema != null);
+                    return this;
+                }
+
+                // Create dictionaries
+                Dictionary<int, SqlSchema> sqlSchemas = new Dictionary<int, SqlSchema>();
+                Dictionary<int, SqlType> typesByID = new Dictionary<int, SqlType>();
+                Dictionary<string, SqlType> typesByName =
+                    new Dictionary<string, SqlType>(StringComparer.InvariantCultureIgnoreCase);
+                Dictionary<string, SqlProgramDefinition> programDefinitions =
+                    new Dictionary<string, SqlProgramDefinition>(StringComparer.InvariantCultureIgnoreCase);
+                Dictionary<string, SqlTableDefinition> tables =
+                    new Dictionary<string, SqlTableDefinition>(StringComparer.InvariantCultureIgnoreCase);
 
                 try
                 {
                     // Open a connection
-                    using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
                     {
-                        sqlConnection.Open();
+                        // ReSharper disable once PossibleNullReferenceException
+                        await sqlConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
                         Version version;
                         if (!Version.TryParse(sqlConnection.ServerVersion, out version))
                             throw new DatabaseSchemaException(
                                 () => Resources.DatabaseSchema_Load_CouldNotParseVersionInformation);
+                        Contract.Assert(version != null);
 
                         if (version.Major < 9)
-                            throw new DatabaseSchemaException(() => Resources.DatabaseSchema_Load_VersionNotSupported,
-                                                              version);
+                            throw new DatabaseSchemaException(
+                                () => Resources.DatabaseSchema_Load_VersionNotSupported,
+                                version);
 
                         string sql = version.Major == 9 ? SQLResources.RetrieveSchema9 : SQLResources.RetrieveSchema10;
 
                         // Create the command first, as we will reuse on each connection.
+                        using (SqlCommand command = new SqlCommand(sql, sqlConnection) { CommandType = CommandType.Text })
+                        // Execute command
                         using (
-                            SqlCommand command = new SqlCommand(sql, sqlConnection) {CommandType = CommandType.Text})
+                            SqlDataReader reader =
+                                await
+                                    command.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken)
+                                        .ConfigureAwait(false))
                         {
-                            // Execute command
-                            using (SqlDataReader reader = command.ExecuteReader())
+                            /*
+                             * Load SQL Schemas
+                             */
+                            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                             {
-                                /*
-                                 * Load SQL Schemas
-                                 */
-                                while (reader.Read())
-                                {
-                                    int schemaId = reader.GetInt32(0);
-                                    string name = reader.GetString(1).ToLower();
-                                    sqlSchemas.Add(schemaId, name);
-                                }
+                                SqlSchema sqlSchema = new SqlSchema(reader.GetInt32(0), reader.GetString(1));
+                                sqlSchemas.Add(sqlSchema.ID, sqlSchema);
+                            }
 
-                                if (sqlSchemas.Count < 1)
+                            if (sqlSchemas.Count < 1)
+                                throw new DatabaseSchemaException(
+                                    () => Resources.DatabaseSchema_Load_CouldNotRetrieveSchemas);
+
+                            /*
+                             * Load types
+                             */
+                            if (!(await reader.NextResultAsync(cancellationToken).ConfigureAwait(false)))
+                                throw new DatabaseSchemaException(
+                                    () => Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingTypes);
+
+                            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                            {
+                                int schemaId = reader.GetInt32(0);
+                                SqlSchema sqlSchema;
+                                if (!sqlSchemas.TryGetValue(schemaId, out sqlSchema) ||
+                                    (sqlSchema == null))
                                     throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_CouldNotRetrieveSchemas);
+                                        () => Resources.DatabaseSchema_Load_CouldNotFindSchema,
+                                        schemaId);
+                                int id = reader.GetInt32(1);
+                                string name = reader.GetString(2).ToLower();
+                                SqlType baseType;
+                                if (reader.IsDBNull(3))
+                                    baseType = null;
+                                else
+                                {
+                                    // NB SQL returns types in dependency order
+                                    // i.e. base types are always seen first, so this code is much easier.
+                                    int baseId = reader.GetInt32(3);
+                                    typesByID.TryGetValue(baseId, out baseType);
+                                }
 
-                                // Order schemas
-                                Schemas = sqlSchemas.Values.OrderBy(s => s).ToList();
+                                short maxLength = reader.GetInt16(4);
+                                byte precision = reader.GetByte(5);
+                                byte scale = reader.GetByte(6);
+                                bool isNullable = reader.GetBoolean(7);
+                                bool isUserDefined = reader.GetBoolean(8);
+                                bool isCLR = reader.GetBoolean(9);
+                                bool isTable = reader.GetBoolean(10);
 
-                                /*
-                                 * Load types
-                                 */
-                                if (!reader.NextResult())
+                                // Create type
+                                SqlType type = isTable
+                                    ? new SqlTableType(
+                                        baseType,
+                                        sqlSchema,
+                                        name,
+                                        new SqlTypeSize(maxLength, precision, scale),
+                                        isNullable,
+                                        isUserDefined,
+                                        isCLR)
+                                    : new SqlType(
+                                        baseType,
+                                        sqlSchema,
+                                        name,
+                                        new SqlTypeSize(maxLength, precision, scale),
+                                        isNullable,
+                                        isUserDefined,
+                                        isCLR);
+
+                                // Add to dictionary
+                                typesByName.Add(type.FullName, type);
+                                if (!typesByName.ContainsKey(type.Name))
+                                    typesByName.Add(type.Name, type);
+                                typesByID.Add(id, type);
+                            }
+
+                            if (typesByName.Count < 1)
+                                throw new DatabaseSchemaException(
+                                    () => Resources.DatabaseSchema_Load_CouldNotRetrieveTypes);
+
+                            /*
+                             * Load program definitions
+                             */
+                            if (!(await reader.NextResultAsync(cancellationToken).ConfigureAwait(false)))
+                                throw new DatabaseSchemaException(
+                                    () => Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingPrograms);
+
+                            SqlProgramDefinition lastProgramDefinition = null;
+                            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                            {
+                                SqlObjectType type;
+                                string typeString = reader.GetString(0) ?? string.Empty;
+                                if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
                                     throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingTypes);
+                                        () => Resources.DatabaseSchema_Load_CouldNotFindTypeWhenLoadingPrograms,
+                                        typeString);
 
-                                while (reader.Read())
+                                int schemaId = reader.GetInt32(1);
+                                SqlSchema sqlSchema;
+                                if (!sqlSchemas.TryGetValue(schemaId, out sqlSchema))
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_CouldNotFindSchemaWhenLoadingPrograms,
+                                        schemaId);
+                                string name = reader.GetString(2).ToLower();
+                                string fullName = string.Format("{0}.{1}", sqlSchema.Name, name);
+
+                                // Now create or find program definition
+                                SqlProgramDefinition programDefinition;
+                                if ((lastProgramDefinition != null) &&
+                                    (lastProgramDefinition.FullName == fullName))
+                                    programDefinition = lastProgramDefinition;
+                                else if (!programDefinitions.TryGetValue(fullName, out programDefinition))
                                 {
-                                    int schemaId = reader.GetInt32(0);
-                                    string schema;
-                                    if (!sqlSchemas.TryGetValue(schemaId, out schema) || (schema == null))
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_CouldNotFindSchema,
-                                            schemaId);
-                                    int id = reader.GetInt32(1);
-                                    string name = reader.GetString(2).ToLower();
-                                    SqlType baseType;
-                                    if (reader.IsDBNull(3))
-                                        baseType = null;
-                                    else
-                                    {
-                                        // NB SQL returns types in dependency order
-                                        // i.e. base types are always seen first, so this code is much easier.
-                                        int baseId = reader.GetInt32(3);
-                                        if (!types.TryGetValue(baseId, out baseType))
-                                            baseType = null;
-                                    }
-
-                                    short maxLength = reader.GetInt16(4);
-                                    byte precision = reader.GetByte(5);
-                                    byte scale = reader.GetByte(6);
-                                    bool isNullable = reader.GetBoolean(7);
-                                    bool isUserDefined = reader.GetBoolean(8);
-                                    bool isCLR = reader.GetBoolean(9);
-                                    bool isTable = reader.GetBoolean(10);
-
-                                    // Create type
-                                    SqlType type = isTable
-                                                       ? new SqlTableType(
-                                                             baseType,
-                                                             schema,
-                                                             name,
-                                                             new SqlTypeSize(maxLength, precision, scale),
-                                                             isNullable,
-                                                             isUserDefined,
-                                                             isCLR)
-                                                       : new SqlType(
-                                                             baseType,
-                                                             schema,
-                                                             name,
-                                                             new SqlTypeSize(maxLength, precision, scale),
-                                                             isNullable,
-                                                             isUserDefined,
-                                                             isCLR);
-
-                                    // Add to dictionary
-                                    _types.Add(type.FullName, type);
-                                    types.Add(id, type);
+                                    programDefinition = new SqlProgramDefinition(type, sqlSchema, name);
+                                    programDefinitions.Add(fullName, programDefinition);
+                                    if (!programDefinitions.ContainsKey(programDefinition.Name))
+                                        programDefinitions.Add(programDefinition.Name, programDefinition);
                                 }
+                                else if (programDefinition.Type != type)
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_InconsistentType,
+                                        fullName);
+                                lastProgramDefinition = programDefinition;
 
-                                if (_types.Count < 1)
-                                    throw new DatabaseSchemaException(() => Resources.DatabaseSchema_Load_CouldNotRetrieveTypes);
+                                // If we have a null ordinal, we have no parameters.
+                                if (reader.IsDBNull(3))
+                                    continue;
 
-                                // Order types
-                                // ReSharper disable PossibleNullReferenceException
-                                Types = _types.Values.OrderBy(t => t.FullName).ToList();
-                                // ReSharper restore PossibleNullReferenceException
+                                int ordinal = reader.GetInt32(3);
+                                string parameterName = reader.GetString(4).ToLower();
+                                int typeId = reader.GetInt32(5);
+                                SqlType pType;
+                                if (!typesByID.TryGetValue(typeId, out pType) ||
+                                    (pType == null))
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_ParameterTypeNotFound,
+                                        parameterName,
+                                        typeId,
+                                        fullName);
 
-                                /*
-                                 * Load program definitions
-                                 */
-                                if (!reader.NextResult())
-                                    throw new DatabaseSchemaException(() => Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingPrograms);
+                                short maxLength = reader.GetInt16(6);
+                                byte precision = reader.GetByte(7);
+                                byte scale = reader.GetByte(8);
+                                bool isOutput = reader.GetBoolean(9);
+                                bool isReadOnly = reader.GetBoolean(10);
+                                ParameterDirection direction;
+                                if (!isOutput)
+                                    direction = ParameterDirection.Input;
+                                else if (parameterName == string.Empty)
+                                    direction = ParameterDirection.ReturnValue;
+                                else
+                                    direction = ParameterDirection.InputOutput;
 
-                                SqlProgramDefinition lastProgramDefinition = null;
-                                while (reader.Read())
+                                // Add parameter to program definition
+                                programDefinition.AddParameter(
+                                    new SqlProgramParameter(
+                                        ordinal,
+                                        parameterName,
+                                        pType,
+                                        new SqlTypeSize(maxLength, precision, scale),
+                                        direction,
+                                        isReadOnly));
+                            }
+
+                            /*
+                             * Load tables and views
+                             */
+                            if (!(await reader.NextResultAsync(cancellationToken).ConfigureAwait(false)))
+                                throw new DatabaseSchemaException(
+                                    () => Resources.DatabaseSchema_Load_RanOutOfTablesAndViews);
+
+                            Dictionary<int, SqlTableDefinition> tableTypeTables =
+                                new Dictionary<int, SqlTableDefinition>();
+                            SqlTableDefinition lastTableDefinition = null;
+                            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                            {
+                                SqlObjectType type;
+                                string typeString = reader.GetString(0) ?? string.Empty;
+                                if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_CouldNotFindObjectType,
+                                        typeString);
+
+                                int schemaId = reader.GetInt32(1);
+                                SqlSchema sqlSchema;
+                                if (!sqlSchemas.TryGetValue(schemaId, out sqlSchema))
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
+                                        schemaId);
+                                string name = reader.GetString(2).ToLower();
+                                string fullName = string.Format("{0}.{1}", sqlSchema.Name, name);
+
+                                // Now create or find table/view definition
+                                SqlTableDefinition tableDefinition;
+                                if ((lastTableDefinition != null) &&
+                                    (lastTableDefinition.FullName == fullName))
+                                    tableDefinition = lastTableDefinition;
+                                else if (!tables.TryGetValue(fullName, out tableDefinition))
                                 {
-                                    SqlObjectType type;
-                                    string typeString = reader.GetString(0) ?? string.Empty;
-                                    if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_CouldNotFindTypeWhenLoadingPrograms,
-                                            typeString);
-
-                                    int schemaId = reader.GetInt32(1);
-                                    string schema;
-                                    if (!sqlSchemas.TryGetValue(schemaId, out schema))
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_CouldNotFindSchemaWhenLoadingPrograms,
-                                            schemaId);
-                                    string name = reader.GetString(2).ToLower();
-                                    string fullName = string.Format("{0}.{1}", schema, name);
-
-                                    // Now create or find program definition
-                                    SqlProgramDefinition programDefinition;
-                                    if ((lastProgramDefinition != null) && (lastProgramDefinition.FullName == fullName))
-                                        programDefinition = lastProgramDefinition;
-                                    else if (!_programDefinitions.TryGetValue(fullName, out programDefinition))
-                                    {
-                                        programDefinition = new SqlProgramDefinition(type, schema, name);
-                                        _programDefinitions.Add(fullName, programDefinition);
-                                    }
-                                    else if (programDefinition.Type != type)
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_InconsistentType,
-                                            fullName);
-                                    lastProgramDefinition = programDefinition;
-
-                                    // If we have a null ordinal, we have no parameters.
-                                    if (reader.IsDBNull(3))
-                                        continue;
-
-                                    int ordinal = reader.GetInt32(3);
-                                    string parameterName = reader.GetString(4).ToLower();
-                                    int typeId = reader.GetInt32(5);
-                                    SqlType pType;
-                                    if (!types.TryGetValue(typeId, out pType) || (pType == null))
-                                    {
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_ParameterTypeNotFound,
-                                            parameterName,
-                                            typeId,
-                                            fullName);
-                                    }
-
-                                    short maxLength = reader.GetInt16(6);
-                                    byte precision = reader.GetByte(7);
-                                    byte scale = reader.GetByte(8);
-                                    bool isOutput = reader.GetBoolean(9);
-                                    bool isReadonly = reader.GetBoolean(10);
-                                    ParameterDirection direction;
-                                    if (!isOutput)
-                                        direction = ParameterDirection.Input;
-                                    else if (parameterName == string.Empty)
-                                        direction = ParameterDirection.ReturnValue;
-                                    else
-                                        direction = ParameterDirection.InputOutput;
-
-                                    // Add parameter to program definition
-                                    programDefinition.AddParameter(
-                                        new SqlProgramParameter(
-                                            ordinal,
-                                            parameterName,
-                                            pType,
-                                            new SqlTypeSize(maxLength, precision, scale),
-                                            direction,
-                                            isReadonly));
+                                    tableDefinition = new SqlTableDefinition(type, sqlSchema, name);
+                                    tables.Add(fullName, tableDefinition);
+                                    if (!tables.ContainsKey(tableDefinition.Name))
+                                        tables.Add(tableDefinition.Name, tableDefinition);
                                 }
+                                else if (tableDefinition.Type != type)
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews,
+                                        fullName);
+                                lastTableDefinition = tableDefinition;
 
-                                // Order programs
-                                // ReSharper disable PossibleNullReferenceException
-                                ProgramDefinitions =
-                                    _programDefinitions.Select(kvp => kvp.Value).OrderBy(p => p.FullName).
-                                        ToList();
-                                // ReSharper restore PossibleNullReferenceException
+                                int ordinal = reader.GetInt32(3);
+                                string columnName = reader.GetString(4).ToLower();
+                                int typeId = reader.GetInt32(5);
+                                SqlType cType;
+                                if (!typesByID.TryGetValue(typeId, out cType) ||
+                                    (cType == null))
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_ColumnTypeNotFound,
+                                        columnName,
+                                        typeId,
+                                        fullName);
 
-                                /*
-                                 * Load tables and views
-                                 */
-                                if (!reader.NextResult())
-                                    throw new DatabaseSchemaException(() => Resources.DatabaseSchema_Load_RanOutOfTablesAndViews);
+                                short maxLength = reader.GetInt16(6);
+                                byte precision = reader.GetByte(7);
+                                byte scale = reader.GetByte(8);
+                                bool isNullable = reader.GetBoolean(9);
 
-                                Dictionary<int, SqlTableDefinition> tableTypeTables =
-                                    new Dictionary<int, SqlTableDefinition>();
-                                SqlTableDefinition lastTableDefinition = null;
-                                while (reader.Read())
+                                // Add parameter to program definition
+                                tableDefinition.AddColumn(
+                                    new SqlColumn(
+                                        ordinal - 1,
+                                        columnName,
+                                        cType,
+                                        new SqlTypeSize(maxLength, precision, scale),
+                                        isNullable));
+
+                                if (!reader.IsDBNull(10))
                                 {
-                                    SqlObjectType type;
-                                    string typeString = reader.GetString(0) ?? string.Empty;
-                                    if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_CouldNotFindObjectType,
-                                            typeString);
-
-                                    int schemaId = reader.GetInt32(1);
-                                    string schema;
-                                    if (!sqlSchemas.TryGetValue(schemaId, out schema))
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
-                                            schemaId);
-                                    string name = reader.GetString(2).ToLower();
-                                    string fullName = string.Format("{0}.{1}", schema, name);
-
-                                    // Now create or find table/view definition
-                                    SqlTableDefinition tableDefinition;
-                                    if ((lastTableDefinition != null) && (lastTableDefinition.FullName == fullName))
-                                        tableDefinition = lastTableDefinition;
-                                    else if (!_tables.TryGetValue(fullName, out tableDefinition))
-                                    {
-                                        tableDefinition = new SqlTableDefinition(type, schema, name);
-                                        _tables.Add(fullName, tableDefinition);
-                                    }
-                                    else if (tableDefinition.Type != type)
-                                    {
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews,
-                                            fullName);
-                                    }
-                                    lastTableDefinition = tableDefinition;
-
-                                    int ordinal = reader.GetInt32(3);
-                                    string columnName = reader.GetString(4).ToLower();
-                                    int typeId = reader.GetInt32(5);
-                                    SqlType cType;
-                                    if (!types.TryGetValue(typeId, out cType) || (cType == null))
-                                    {
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_ColumnTypeNotFound,
-                                            columnName,
-                                            typeId,
-                                            fullName);
-                                    }
-
-                                    short maxLength = reader.GetInt16(6);
-                                    byte precision = reader.GetByte(7);
-                                    byte scale = reader.GetByte(8);
-                                    bool isNullable = reader.GetBoolean(9);
-
-                                    // Add parameter to program definition
-                                    tableDefinition.AddColumn(
-                                        new SqlColumn(
-                                            ordinal - 1,
-                                            columnName,
-                                            cType,
-                                            new SqlTypeSize(maxLength, precision, scale),
-                                            isNullable));
-
-                                    if (!reader.IsDBNull(10))
-                                    {
-                                        // This is a table type table
-                                        int tableTypeId = reader.GetInt32(10);
-                                        if (!tableTypeTables.ContainsKey(tableTypeId))
-                                        {
-                                            tableTypeTables.Add(tableTypeId, tableDefinition);
-                                        }
-                                    }
+                                    // This is a table type table
+                                    int tableTypeId = reader.GetInt32(10);
+                                    if (!tableTypeTables.ContainsKey(tableTypeId))
+                                        tableTypeTables.Add(tableTypeId, tableDefinition);
                                 }
+                            }
 
-                                // Order tables
-                                // ReSharper disable PossibleNullReferenceException
-                                Tables = _tables.Select(kvp => kvp.Value).OrderBy(t => t.FullName).ToList();
-                                // ReSharper restore PossibleNullReferenceException
-
-                                foreach (KeyValuePair<int, SqlTableDefinition> kvp in tableTypeTables)
-                                {
-                                    SqlType tType;
-                                    if (!types.TryGetValue(kvp.Key, out tType))
-                                    {
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_TableTypeNotFound,
-                                            kvp.Key,
-                                            kvp.Value.FullName);
-                                    }
-                                    SqlTableType tableType = tType as SqlTableType;
-                                    if (tableType == null)
-                                    {
-                                        throw new DatabaseSchemaException(
-                                            () => Resources.DatabaseSchema_Load_TypeNotTableType,
-                                            kvp.Key,
-                                            kvp.Value.FullName);
-                                    }
-                                    // ReSharper disable AssignNullToNotNullAttribute
-                                    tableType.TableDefinition = kvp.Value;
-                                    // ReSharper restore AssignNullToNotNullAttribute
-                                }
+                            foreach (KeyValuePair<int, SqlTableDefinition> kvp in tableTypeTables)
+                            {
+                                SqlType tType;
+                                if (!typesByID.TryGetValue(kvp.Key, out tType))
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_TableTypeNotFound,
+                                        kvp.Key,
+                                        kvp.Value.FullName);
+                                SqlTableType tableType = tType as SqlTableType;
+                                if (tableType == null)
+                                    throw new DatabaseSchemaException(
+                                        () => Resources.DatabaseSchema_Load_TypeNotTableType,
+                                        kvp.Key,
+                                        kvp.Value.FullName);
+                                // ReSharper disable AssignNullToNotNullAttribute
+                                tableType.TableDefinition = kvp.Value;
+                                // ReSharper restore AssignNullToNotNullAttribute
                             }
                         }
                     }
 
-                    _loaded = true;
+                    // Update the current schema.
+                    _current = new CurrentSchema(Schema.GetOrAdd(sqlSchemas, programDefinitions, tables, typesByName));
+
+                    // Always return this
+                    return this;
                 }
-                    // In the event of an error we don't set the loaded flag - this allows retries.
+                // In the event of an error we don't set the loaded flag - this allows retries.
                 catch (DatabaseSchemaException databaseSchemaException)
                 {
-                    _error = databaseSchemaException;
-                    _loaded = false;
-                    Schemas = Enumerable.Empty<string>();
-                    Types = Enumerable.Empty<SqlType>();
-                    ProgramDefinitions = Enumerable.Empty<SqlProgramDefinition>();
-                    Tables = Enumerable.Empty<SqlTableDefinition>();
+                    // Capture the exception in the current schema.
+                    _current = new CurrentSchema(ExceptionDispatchInfo.Capture(databaseSchemaException));
+                    throw;
                 }
                 catch (Exception exception)
                 {
-                    _error = new DatabaseSchemaException(
+                    // Wrap exception in Database exception.
+                    DatabaseSchemaException databaseSchemaException = new DatabaseSchemaException(
                         exception,
                         LoggingLevel.Critical,
                         () => Resources.DatabaseSchema_Load_ErrorOccurred);
-                    _loaded = false;
-                    Schemas = Enumerable.Empty<string>();
-                    Types = Enumerable.Empty<SqlType>();
-                    ProgramDefinitions = Enumerable.Empty<SqlProgramDefinition>();
-                    Tables = Enumerable.Empty<SqlTableDefinition>();
+                    // Capture the exception in the current schema.
+                    _current = new CurrentSchema(ExceptionDispatchInfo.Capture(databaseSchemaException));
+                    throw databaseSchemaException;
                 }
-
-                // ReSharper disable PossibleNullReferenceException
-                //_hashCode = Schemas.Aggregate(
-                //    _error != null ? _error.GetHashCode() : 0, (h, s) => h ^ s.GetHashCode());
-                //_hashCode = Types.Aggregate(_hashCode, (h, t) => h ^ t.GetHashCode(t));
-                //_hashCode = ProgramDefinitions.Aggregate(_hashCode, (h, p) => h ^ p.GetHashCode(p));
-                //_hashCode = Tables.Aggregate(_hashCode, (h, t) => h ^ t.GetHashCode(t));
-
-                _hashCode = _tempCounter++;
-
-                // Look for duplicate and return if present.
-                return
-                    _schemas.Values.FirstOrDefault(
-                        schema =>
-                        (schema._connectionString != _connectionString) && (Equals(schema)));
-                // ReSharper restore PossibleNullReferenceException
             }
         }
 
         /// <summary>
-        ///   Tries to get the <see cref="SqlType"/> with the type's <see cref="SqlType.FullName">full name</see>.
+        /// Reloads the current schema.
         /// </summary>
-        /// <param name="fullName">
-        ///   The <see cref="SqlType.FullName">full name</see> of the type to retrieve.
-        /// </param>
-        /// <param name="sqlType">The SQL type.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if a corresponding type was found; otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract"/> specifying that
-        ///   <paramref name="fullName"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="fullName"/> was <see langword="null"/>.
-        /// </exception>
-        [UsedImplicitly]
-        public bool TryGetType([NotNull] string fullName, [NotNull] out SqlType sqlType)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task.</returns>
+        [PublicAPI]
+        [NotNull]
+        public Task<DatabaseSchema> ReLoad(CancellationToken cancellationToken)
         {
-            Contract.Requires(fullName != null, Resources.DatabaseSchema_TypeGetType_FullNameCanNotBeNull);
-
-            return _types.TryGetValue(fullName, out sqlType);
+            return Load(true, cancellationToken);
         }
 
         /// <summary>
-        ///   Reloads all the schemas.
+        /// Reloads all the schemas.
         /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if there were any changes detected during re-load;
-        ///   otherwise returns <see langword="false"/>.
-        /// </returns>
-        [UsedImplicitly]
-        public static bool ReloadAll()
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task.</returns>
+        [PublicAPI]
+        [NotNull]
+        public static Task ReloadAll(CancellationToken cancellationToken = default(CancellationToken))
         {
-            IEnumerable<DatabaseSchemaException> errors;
-            return ReloadAll(out errors);
+            // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+            return Task.WhenAll(_databaseSchemas.Values.Select(s => s.Load(true, cancellationToken)));
+            // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
         }
 
+        #region Equalities
         /// <summary>
-        ///   Reloads all the schemas.
+        /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
-        /// <param name="errors">Any errors that occurred during schema loading.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if there were any changes detected during re-load;
-        ///   otherwise returns <see langword="false"/>.
-        /// </returns>
-        [UsedImplicitly]
-        public static bool ReloadAll([CanBeNull] out IEnumerable<DatabaseSchemaException> errors)
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        public bool Equals([CanBeNull] ISchema other)
         {
-            List<DatabaseSchemaException> errorsList = new List<DatabaseSchemaException>();
-            errors = errorsList;
-            bool hasChanges = false;
-            foreach (string schema in _schemas.Keys)
-            {
-                bool hc = false;
-                try
-                {
-                    // ReSharper disable AssignNullToNotNullAttribute
-                    DatabaseSchema s = GetOrAdd(schema, true, out hc);
-                    // ReSharper restore AssignNullToNotNullAttribute
-                    if (s._error != null)
-                        errorsList.Add(s._error);
-                }
-                catch (DatabaseSchemaException error)
-                {
-                    errorsList.Add(error);
-                }
-                hasChanges |= hc;
-            }
-
-            return hasChanges;
+            return Current.Equals(other);
         }
+        #endregion
     }
 }

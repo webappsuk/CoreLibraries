@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Initializes a new instance of the <see cref="SqlTableType"/> class.
         /// </summary>
         /// <param name="baseType">The base type.</param>
-        /// <param name="schemaName">The schema name.</param>
+        /// <param name="sqlSchema">The schema name.</param>
         /// <param name="name">The table name.</param>
         /// <param name="defaultSize">The default size information.</param>
         /// <param name="isNullable">
@@ -53,15 +53,15 @@ namespace WebApplications.Utilities.Database.Schema
         /// </param>
         internal SqlTableType(
             [CanBeNull] SqlType baseType,
-            [NotNull] string schemaName,
+            [NotNull] SqlSchema sqlSchema,
             [NotNull] string name,
             SqlTypeSize defaultSize,
             bool isNullable,
             bool isUserDefined,
             bool isClr)
-            : base(baseType, schemaName, name, defaultSize, isNullable, isUserDefined, isClr, true)
+            : base(baseType, sqlSchema, name, defaultSize, isNullable, isUserDefined, isClr, true)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(schemaName));
+            Contract.Requires(sqlSchema != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
         }
 

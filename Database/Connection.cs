@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Database
         public double Weight { get; internal set; }
 
         /// <summary>
-        /// Indicates whether the current instance is equal or equi to another <see cref="Connection" />.
+        /// Indicates whether the current instance is equal or equivalent to another <see cref="Connection" />.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>Returns <see langword="true" /> if the current <see cref="Connection" /> is equal to the

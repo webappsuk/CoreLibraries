@@ -46,9 +46,9 @@ namespace WebApplications.Utilities.Database.Schema
         public readonly string Name;
 
         /// <summary>
-        ///   The schema name.
+        ///   The schema.
         /// </summary>
-        [UsedImplicitly] public readonly string SchemaName;
+        [UsedImplicitly] public readonly SqlSchema SqlSchema;
 
         /// <summary>
         ///   The <see cref="SqlObjectType"/> of the program.
@@ -69,20 +69,18 @@ namespace WebApplications.Utilities.Database.Schema
         private IEnumerable<SqlProgramParameter> _parametersOrdered;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="SqlProgramDefinition" /> class.
+        /// Initializes a new instance of the <see cref="SqlProgramDefinition" /> class.
         /// </summary>
         /// <param name="type">The type of program.</param>
-        /// <param name="schemaName">The schema name.</param>
-        /// <param name="name">
-        ///   The <see cref="SqlProgramDefinition.Name">program name</see>.
-        /// </param>
-        internal SqlProgramDefinition(SqlObjectType type, string schemaName, string name)
+        /// <param name="sqlSchema">The schema.</param>
+        /// <param name="name">The <see cref="SqlProgramDefinition.Name">program name</see>.</param>
+        internal SqlProgramDefinition(SqlObjectType type, [NotNull] SqlSchema sqlSchema, [NotNull] string name)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(schemaName));
+            Contract.Requires(sqlSchema != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Type = type;
             Name = name;
-            SchemaName = schemaName;
+            SqlSchema = sqlSchema;
         }
 
         /// <summary>
@@ -107,11 +105,11 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Gets the full name.
         /// </summary>
         /// <value>
-        ///   The full name, which has a format of: <see cref="SchemaName"/>.<see cref="Name"/>.
+        ///   The full name, which has a format of: <see cref="SqlSchema"/>.<see cref="Name"/>.
         /// </value>
         public string FullName
         {
-            get { return string.Format("{0}.{1}", SchemaName, Name); }
+            get { return string.Format("{0}.{1}", SqlSchema.Name, Name); }
         }
 
         #region IEqualityComparer<SqlProgramDefinition> Members
@@ -147,7 +145,7 @@ namespace WebApplications.Utilities.Database.Schema
             {
                 obj._hashCode =
                     Parameters.Aggregate(
-                        Type.GetHashCode() ^ Name.GetHashCode() ^ SchemaName.GetHashCode(),
+                        Type.GetHashCode() ^ Name.GetHashCode() ^ SqlSchema.GetHashCode(),
 // ReSharper disable PossibleNullReferenceException
                         (h, p) => h ^ p.GetHashCode());
 // ReSharper restore PossibleNullReferenceException

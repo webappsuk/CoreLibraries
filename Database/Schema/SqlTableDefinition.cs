@@ -42,12 +42,14 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   The name of the table/view.
         /// </summary>
+        [NotNull]
         public readonly string Name;
 
         /// <summary>
-        ///   The schema name.
+        ///   The schema.
         /// </summary>
-        public readonly string SchemaName;
+        [NotNull]
+        public readonly SqlSchema SqlSchema;
 
         /// <summary>
         ///   An enumeration storing the type of object this instance is.
@@ -57,6 +59,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   A dictionary containing all of the columns.
         /// </summary>
+        [NotNull]
         private readonly Dictionary<string, SqlColumn> _columns = new Dictionary<string, SqlColumn>();
 
         /// <summary>
@@ -78,20 +81,20 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Initializes a new instance of the <see cref="SqlTableDefinition" /> class.
         /// </summary>
         /// <param name="type">The object <see cref="Type">type</see>.</param>
-        /// <param name="schemaName">The schema name.</param>
+        /// <param name="sqlSchema">The schema.</param>
         /// <param name="name">The table/view name.</param>
         /// <remarks>
         ///   There is a <see cref="System.Diagnostics.Contracts.Contract"/> specifying
-        ///   that <paramref name="schemaName"/> and <paramref name="name"/> cannot be
+        ///   that <paramref name="sqlSchema"/> and <paramref name="name"/> cannot be
         ///   <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.
         /// </remarks>
-        internal SqlTableDefinition(SqlObjectType type, string schemaName, string name)
+        internal SqlTableDefinition(SqlObjectType type, SqlSchema sqlSchema, string name)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(schemaName));
+            Contract.Requires(sqlSchema != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Type = type;
             Name = name;
-            SchemaName = schemaName;
+            SqlSchema = sqlSchema;
         }
 
         /// <summary>
@@ -131,11 +134,11 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Gets the full name of the table/view.
         /// </summary>
         /// <value>
-        ///   The full name, which is formatted as: <see cref="SchemaName"/>.<see cref="Name"/>
+        ///   The full name, which is formatted as: <see cref="SqlSchema"/>.<see cref="Name"/>
         /// </value>
         public string FullName
         {
-            get { return string.Format("{0}.{1}", SchemaName, Name); }
+            get { return string.Format("{0}.{1}", SqlSchema.Name, Name); }
         }
 
         #region IEqualityComparer<SqlTableDefinition> Members
@@ -171,7 +174,7 @@ namespace WebApplications.Utilities.Database.Schema
                 // ReSharper disable PossibleNullReferenceException
                 obj._hashCode =
                     Columns.Aggregate(
-                        Type.GetHashCode() ^ Name.GetHashCode() ^ SchemaName.GetHashCode(),
+                        Type.GetHashCode() ^ Name.GetHashCode() ^ SqlSchema.GetHashCode(),
                         (h, c) => h ^ c.GetHashCode());
                 // ReSharper restore PossibleNullReferenceException
             }

@@ -31,10 +31,13 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Enumerations;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
@@ -59,6 +62,12 @@ namespace WebApplications.Utilities.Database
         ///   The total weight of all the <see cref="Connection"/>s.
         /// </summary>
         private readonly double _totalWeight;
+
+        /// <summary>
+        /// The lock for checking schemas match.
+        /// </summary>
+        [NotNull]
+        private readonly AsyncLock _lock = new AsyncLock();
 
         /// <summary>
         ///   Whether schemas are identical.
@@ -251,34 +260,31 @@ namespace WebApplications.Utilities.Database
         /// <value>
         ///   <see langword="true"/> if the schemas are identical; otherwise returns <see langword="false"/>.
         /// </value>
-        public bool IdenticalSchemas
+        public Task<bool> CheckIdentical(CancellationToken token = default(CancellationToken))
         {
-            get
+            // TODO Make Async!!!!
+            if (_identicalSchemas != TriState.Unknown) return (bool) _identicalSchemas;
+
+            lock (_connections)
             {
-                // TODO Make Async!!!!
-                if (_identicalSchemas != TriState.Unknown) return (bool)_identicalSchemas;
+                if (_identicalSchemas != TriState.Unknown) return (bool) _identicalSchemas;
 
-                lock (_connections)
+                DatabaseSchema schema = null;
+                _identicalSchemas = TriState.Yes;
+                foreach (Connection connection in _connections)
                 {
-                    if (_identicalSchemas != TriState.Unknown) return (bool)_identicalSchemas;
-
-                    DatabaseSchema schema = null;
-                    _identicalSchemas = TriState.Yes;
-                    foreach (Connection connection in _connections)
+                    Contract.Assert(connection != null);
+                    if (schema == null)
+                        schema = DatabaseSchema.GetOrAdd(connection.ConnectionString);
+                    else if (!schema.Equals(DatabaseSchema.GetOrAdd(connection.ConnectionString)))
                     {
-                        Contract.Assert(connection != null);
-                        if (schema == null)
-                            schema = DatabaseSchema.GetOrAdd(connection.ConnectionString);
-                        else if (!schema.Equals(DatabaseSchema.GetOrAdd(connection.ConnectionString)))
-                        {
-                            _identicalSchemas = TriState.No;
-                            break;
-                        }
+                        _identicalSchemas = TriState.No;
+                        break;
                     }
                 }
-
-                return (bool)_identicalSchemas;
             }
+
+            return (bool) _identicalSchemas;
         }
 
         #region IEnumerable<string> Members

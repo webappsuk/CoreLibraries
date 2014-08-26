@@ -124,24 +124,6 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;obj&apos; can not be null.
-        /// </summary>
-        internal static string DatabaseSchema_GetHashCode_ObjCanNotBeNull {
-            get {
-                return ResourceManager.GetString("DatabaseSchema_GetHashCode_ObjCanNotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;connectionString&apos; can not be null.
-        /// </summary>
-        internal static string DatabaseSchema_GetOrAdd_ConnectionStringCanNotBeNull {
-            get {
-                return ResourceManager.GetString("DatabaseSchema_GetOrAdd_ConnectionStringCanNotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not find column &apos;{0}&apos;s type &apos;{1}&apos; when loading table/view definition for &apos;{2}&apos;..
         /// </summary>
         internal static string DatabaseSchema_Load_ColumnTypeNotFound {

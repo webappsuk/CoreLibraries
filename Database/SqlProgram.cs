@@ -611,17 +611,14 @@ namespace WebApplications.Utilities.Database
                     {
                         Contract.Assert(connection != null);
                         // Grab the schema for the connection string.
-                        bool changed;
-                        DatabaseSchema schema = DatabaseSchema.GetOrAdd(connection.ConnectionString, forceSchemaReload, out changed);
+                        // TODO Make async
+                        DatabaseSchema schema =
+                            DatabaseSchema.GetOrAdd(connection.ConnectionString, forceSchemaReload).Result;
 
                         // Find the program
-                        SqlProgramDefinition programDefinition =
-                            schema.ProgramDefinitions.FirstOrDefault(
-                            // ReSharper disable PossibleNullReferenceException
-                                pd => (includeSqlSchema ? pd.FullName : pd.Name) == name);
-                        // ReSharper restore PossibleNullReferenceException
+                        SqlProgramDefinition programDefinition;
 
-                        if (programDefinition == null)
+                        if (!schema.ProgramDefinitionsByName.TryGetValue(name, out programDefinition))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
                                 () => Resources.SqlProgram_Validate_DefinitionsNotFound, name);
