@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 
@@ -7,13 +8,19 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     ///   Holds information about a connection.
     /// </summary>
-    public class Connection
+    public class Connection : IEquatable<Connection>
     {
         /// <summary>
-        ///   The <see cref="SqlConnectionStringBuilder">connection string builder</see>.
+        /// Initializes a new instance of the <see cref="Connection"/> class.  Used by <see cref="AddWeight"/> to avoid re-evaluating connection string.
         /// </summary>
-        [NotNull]
-        private readonly SqlConnectionStringBuilder _connectionStringBuilder;
+        /// <param name="weight">The weight.</param>
+        /// <param name="connectionString">The connection string.</param>
+        private Connection(double weight, [NotNull] string connectionString)
+        {
+            Contract.Requires(connectionString != null);
+            Weight = weight;
+            ConnectionString = connectionString;
+        }
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="Connection"/> class.
@@ -26,23 +33,48 @@ namespace WebApplications.Utilities.Database
         public Connection([NotNull] string connectionString, double weight = 1.0D)
         {
             Contract.Requires(connectionString != null);
-            // Coerce async
-            _connectionStringBuilder = new SqlConnectionStringBuilder(connectionString)
-            {
-                AsynchronousProcessing = true
-            };
             Weight = weight;
+
+            // Load string into builder and coerce to async
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString)
+            {
+                AsynchronousProcessing = true,
+            };
+
+            // Connection reset is now obsolete.
+            builder.Remove("Connection Reset");
+
+            // Convert case-insensitive properties to lower case.
+            if (builder.ApplicationName != null)
+                builder.ApplicationName = builder.ApplicationName.ToLowerInvariant();
+            if (builder.AttachDBFilename != null)
+                builder.AttachDBFilename = builder.AttachDBFilename.ToLowerInvariant();
+            if (builder.CurrentLanguage != null)
+                builder.CurrentLanguage = builder.CurrentLanguage.ToLowerInvariant();
+            if (builder.DataSource != null)
+                builder.DataSource = builder.DataSource.ToLowerInvariant();
+            if (builder.FailoverPartner != null)
+                builder.FailoverPartner = builder.FailoverPartner.ToLowerInvariant();
+            if (builder.InitialCatalog != null)
+                builder.InitialCatalog = builder.InitialCatalog.ToLowerInvariant();
+            if (builder.TransactionBinding != null)
+                builder.TransactionBinding = builder.TransactionBinding.ToLowerInvariant();
+            if (builder.TypeSystemVersion != null)
+                builder.TypeSystemVersion = builder.TypeSystemVersion.ToLowerInvariant();
+            if (builder.UserID != null)
+                builder.UserID = builder.UserID.ToLowerInvariant();
+            if (builder.WorkstationID != null)
+                builder.WorkstationID = builder.WorkstationID.ToLowerInvariant();
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            ConnectionString = builder.ConnectionString;
         }
 
         /// <summary>
         ///   Gets the connection <see cref="string"/>.
         /// </summary>
         [NotNull]
-        public string ConnectionString
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            get { return _connectionStringBuilder.ConnectionString; }
-        }
+        public readonly string ConnectionString;
 
         /// <summary>
         ///   Gets a <see cref="double"/> indicating the relative weight of the <see cref="Connection"/>.
@@ -51,17 +83,120 @@ namespace WebApplications.Utilities.Database
         ///   <para>The weight of the connection.</para>
         ///   <para>The default weighting is 1.0.</para>
         /// </value>
-        public double Weight { get; internal set; }
+        public readonly double Weight;
 
         /// <summary>
-        /// Indicates whether the current instance is equal or equivalent to another <see cref="Connection" />.
+        /// Returns a new connection with the <see cref="Weight"/> increased by <see cref="weight"/>.
+        /// </summary>
+        /// <param name="weight">The weight.</param>
+        /// <returns>A new connection.</returns>
+        [NotNull]
+        internal Connection AddWeight(double weight)
+        {
+            return weight.Equals(0D) ? this : new Connection(weight + Weight, ConnectionString);
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Connection"/> to <see cref="System.String"/>.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator string([CanBeNull] Connection connection)
+        {
+            return connection != null
+                ? connection.ConnectionString
+                : null;
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="Connection" /> to <see cref="System.String" />.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Connection([CanBeNull] string connectionString)
+        {
+            return connectionString != null
+                ? new Connection(connectionString)
+                : null;
+        }
+        
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return ConnectionString;
+        }
+
+        #region Equalities
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
+        public override bool Equals([CanBeNull] object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            Connection other = obj as Connection;
+            return !ReferenceEquals(other, null) &&
+                   Weight.Equals(other.Weight) &&
+                   string.Equals(ConnectionString, other.ConnectionString, StringComparison.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
-        /// <returns>Returns <see langword="true" /> if the current <see cref="Connection" /> is equal to the
-        /// <paramref name="other" /> specified; otherwise returns <see langword="false" />.</returns>
-        public bool EquivalentTo([CanBeNull]Connection other)
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        public bool Equals([CanBeNull] Connection other)
         {
-            return other != null && (_connectionStringBuilder.EquivalentTo(other._connectionStringBuilder));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Weight.Equals(other.Weight) &&
+                string.Equals(ConnectionString, other.ConnectionString, StringComparison.InvariantCulture);
         }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (ConnectionString.GetHashCode() * 397) ^ Weight.GetHashCode();
+            }
+        }
+
+        /// <summary>
+        /// Implements the ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(Connection left, Connection right)
+        {
+            if (ReferenceEquals(left, null)) return ReferenceEquals(right, null);
+            return !ReferenceEquals(right, null) &&
+                   Equals(left.Weight, right.Weight) &&
+                   string.Equals(left.ConnectionString, right.ConnectionString, StringComparison.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Implements the !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(Connection left, Connection right)
+        {
+            if (ReferenceEquals(left, null)) return !ReferenceEquals(right, null);
+            return ReferenceEquals(right, null) ||
+                   !Equals(left.Weight, right.Weight) ||
+                   !string.Equals(left.ConnectionString, right.ConnectionString, StringComparison.InvariantCulture);
+        }
+        #endregion
     }
 }

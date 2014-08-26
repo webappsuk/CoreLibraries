@@ -38,6 +38,7 @@ using JetBrains.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
@@ -158,7 +159,7 @@ namespace WebApplications.Utilities.Database
         ///  A lock object to prevent multiple validations at the same time.
         /// </summary>
         [NotNull]
-        private readonly object _validationLock = new object();
+        private readonly AsyncLock _validationLock = new AsyncLock();
 
         /// <summary>
         ///   The default command timeout to use.
@@ -221,42 +222,31 @@ namespace WebApplications.Utilities.Database
 
         #region Constructors
         /// <summary>
-        ///   Initializes a new instance of the <see cref="SqlProgram"/> class.
+        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
+        /// <param name="connection">The connection.</param>
         /// <param name="name">The <see cref="Name">name</see> of the program.</param>
         /// <param name="parameters">The program <see cref="ProgramParameters">parameters</see>.</param>
-        /// <param name="ignoreValidationErrors">
-        ///   <para>If set to <see langword="true"/> then don't throw any parameter validation errors.</para>
-        ///   <para>By default this is set to <see langword="false"/>.</para>
-        /// </param>
-        /// <param name="checkOrder">
-        ///   <para>If set to <see langword="true"/> then check the order of the <see paramref="parameters"/>.</para>
-        ///   <para>By default this is set to <see langword="false"/>.</para>
-        /// </param>
-        /// <param name="defaultCommandTimeout">
-        ///   <para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
-        ///   <para>This is the time to wait for the command to execute.</para>
-        ///   <para>If set to <see langword="null"/> then the timeout will be 30 seconds.</para>
-        /// </param>
-        /// <param name="constraintMode">
-        ///   <para>The type constraint mode.</para>
-        ///   <para>By default this is set to log a warning if truncation/loss of precision occurs.</para>
-        /// </param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract"/> which specifies that
-        ///   <paramref name="connectionString"/> and <paramref name="name"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        /// <exception cref="LoggingException">
-        ///   <para><paramref name="connectionString"/> is <see langword="null"/>.</para>
-        ///   <para>-or-</para>
-        ///   <para>No program <paramref name="name"/> specified.</para>
-        ///   <para>-or-</para>
-        ///   <para>Invalid program definition.</para>
-        /// </exception>
+        /// <param name="ignoreValidationErrors"><para>If set to <see langword="true" /> then don't throw any parameter validation errors.</para>
+        /// <para>By default this is set to <see langword="false" />.</para></param>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <see paramref="parameters" />.</para>
+        /// <para>By default this is set to <see langword="false" />.</para></param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <para>This is the time to wait for the command to execute.</para>
+        /// <para>If set to <see langword="null" /> then the timeout will be 30 seconds.</para></param>
+        /// <param name="constraintMode"><para>The type constraint mode.</para>
+        /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
+        /// <exception cref="LoggingException"><para>
+        ///   <paramref name="connectionString" /> is <see langword="null" />.</para>
+        /// <para>-or-</para>
+        /// <para>No program <paramref name="name" /> specified.</para>
+        /// <para>-or-</para>
+        /// <para>Invalid program definition.</para></exception>
+        /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract" /> which specifies that
+        /// <paramref name="connectionString" /> and <paramref name="name" /> cannot be <see langword="null" />.</remarks>
         [PublicAPI]
         public SqlProgram(
-            [NotNull] string connectionString,
+            [NotNull] Connection connection,
             [NotNull] string name,
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             bool ignoreValidationErrors = false,
@@ -264,10 +254,10 @@ namespace WebApplications.Utilities.Database
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
             : this(
-                new LoadBalancedConnection(connectionString), name, parameters, ignoreValidationErrors, checkOrder,
+                new LoadBalancedConnection(connection), name, parameters, ignoreValidationErrors, checkOrder,
                 defaultCommandTimeout, constraintMode)
         {
-            Contract.Requires(connectionString != null);
+            Contract.Requires(connection != null);
             Contract.Requires(name != null);
         }
 
@@ -577,28 +567,26 @@ namespace WebApplications.Utilities.Database
         #endregion
 
         /// <summary>
-        ///   Re-validates the <see cref="SqlProgram">SQL Program</see>.
+        /// Re-validates the <see cref="SqlProgram">SQL Program</see>, throwing any errors.
         /// </summary>
-        /// <param name="checkOrder">
-        ///   <para>If set to <see langword="true"/> then check the order of the parameters.</para>
-        ///   <para>By default this is set to <see langword="false"/>.</para>
-        /// </param>
-        /// <param name="forceSchemaReload">If set to <see langword="true"/> forces a schema reload.</param>
-        /// <returns>
-        ///   Any <see cref="ValidationError">validation errors</see> that occurred (if any).
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>Program definition was not found.</para>
-        ///   <para>-or-</para>
-        ///   <para>Inconsistent program definitions found in different connections from the load balanced connection.</para>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the parameters.</para>
+        /// <para>By default this is set to <see langword="false" />.</para></param>
+        /// <param name="forceSchemaReload">If set to <see langword="true" /> forces a schema reload.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Any <see cref="ValidationError">validation errors</see> that occurred (if any).</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">
         /// </exception>
+        /// <exception cref="LoggingException"><para>Program definition was not found.</para>
+        /// <para>-or-</para>
+        /// <para>Inconsistent program definitions found in different connections from the load balanced connection.</para></exception>
         [CanBeNull]
         [PublicAPI]
-        public LoggingException Validate(bool checkOrder = false, bool forceSchemaReload = false)
+        public async Task Validate(bool checkOrder = false, bool forceSchemaReload = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // TODO Make async!
-            lock (_validationLock)
+            using (await _validationLock.LockAsync(cancellationToken).ConfigureAwait(false))
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 ValidationError = null;
                 string name = Name.ToLower();
 
@@ -609,36 +597,6 @@ namespace WebApplications.Utilities.Database
                 {
                     foreach (Connection connection in _connection)
                     {
-                        Contract.Assert(connection != null);
-                        // Grab the schema for the connection string.
-                        // TODO Make async
-                        DatabaseSchema schema =
-                            DatabaseSchema.GetOrAdd(connection.ConnectionString, forceSchemaReload).Result;
-
-                        // Find the program
-                        SqlProgramDefinition programDefinition;
-
-                        if (!schema.ProgramDefinitionsByName.TryGetValue(name, out programDefinition))
-                            throw new LoggingException(
-                                LoggingLevel.Critical,
-                                () => Resources.SqlProgram_Validate_DefinitionsNotFound, name);
-
-                        // If this is the first connection just set the program definition
-                        if (first)
-                        {
-                            Definition = programDefinition;
-                            first = false;
-                        }
-                        else if (!Definition.Equals(programDefinition))
-                            // If the program definition is different we have a fatal error.
-                            throw new LoggingException(
-                                LoggingLevel.Critical,
-                                () => Resources.SqlProgram_Validate_InconsistentProgramDefinitions,
-                                name);
-
-                        // If schemas are identical, no need to check anymore
-                        if (_connection.IdenticalSchemas)
-                            break;
                     }
 
                     if (ParameterCount > 0)
@@ -659,6 +617,31 @@ namespace WebApplications.Utilities.Database
                 }
                 return ValidationError;
             }
+        }
+
+        private async Task<SqlProgramDefinition> Validate(
+            Connection connection,
+            bool checkOrder,
+            bool forceSchemaReload,
+            CancellationToken cancellationToken)
+        {
+            Contract.Assert(connection != null);
+            // Grab the schema for the connection string.
+            DatabaseSchema schema = await DatabaseSchema.GetOrAdd(connection.ConnectionString, forceSchemaReload, cancellationToken).ConfigureAwait(false);
+
+            cancellationToken.ThrowIfCancellationRequested();
+            Contract.Assert(schema != null);
+
+            // Find the program
+            SqlProgramDefinition programDefinition;
+            if (!schema.ProgramDefinitionsByName.TryGetValue(Name, out programDefinition))
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgram_Validate_DefinitionsNotFound, Name);
+            Contract.Assert(programDefinition != null);
+
+            // Validate parameters
+            IEnumerable<SqlProgramParameter> parameters = programDefinition.ValidateParameters(Parameters, checkOrder);
         }
 
         /// <summary>

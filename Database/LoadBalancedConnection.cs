@@ -35,7 +35,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Database.Schema;
-using WebApplications.Utilities.Enumerations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Threading;
 
@@ -56,23 +55,12 @@ namespace WebApplications.Utilities.Database
         ///   Holds <see cref="Connection"/>s and their <see cref="Connection.Weight">weighting</see>.
         /// </summary>
         [NotNull]
-        private readonly List<Connection> _connections = new List<Connection>();
+        private readonly IEnumerable<Connection> _connections = new List<Connection>();
 
         /// <summary>
         ///   The total weight of all the <see cref="Connection"/>s.
         /// </summary>
         private readonly double _totalWeight;
-
-        /// <summary>
-        /// The lock for checking schemas match.
-        /// </summary>
-        [NotNull]
-        private readonly AsyncLock _lock = new AsyncLock();
-
-        /// <summary>
-        ///   Whether schemas are identical.
-        /// </summary>
-        private TriState _identicalSchemas = TriState.Unknown;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
@@ -81,14 +69,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="connectionString"><para>The connection string.</para>
         /// <para>This is given a weighting of 1.0.</para></param>
         /// <param name="weight">The weight.</param>
-        /// <param name="ensureSchemasIdentical"><para>If set to <see langword="true" /> then the schemas must be identical.</para>
-        /// <para>By default this is <see langword="false" />.</para></param>
         /// <exception cref="LoggingException"><paramref name="connectionString" /> is <see langword="null" />.</exception>
         /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
         /// <paramref name="connectionString" /> cannot be <see langword="null" />.</remarks>
         [PublicAPI]
-        public LoadBalancedConnection([NotNull] string connectionString, double weight = 1D, bool ensureSchemasIdentical = false)
-            : this(new[] { new Connection(connectionString, weight) }, ensureSchemasIdentical)
+        public LoadBalancedConnection([NotNull] string connectionString, double weight = 1D)
+            : this(new[] { new Connection(connectionString, weight) })
         {
             Contract.Requires(connectionString != null);
             Contract.Requires(weight > 0D);
@@ -122,80 +108,36 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoadBalancedConnection"/> class.
-        ///   This creates an evenly balanced set of connections.
+        /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
+        /// This creates an evenly balanced set of connections.
         /// </summary>
-        /// <param name="connectionStrings">The connection strings.</param>
-        /// <param name="ensureSchemasIdentical">
-        ///   <para>If set to <see langword="true"/> then the schemas must be identical.</para>
-        ///   <para>By default this is <see langword="false"/>.</para>
-        /// </param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
-        ///   <paramref name="connectionStrings"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        /// <exception cref="LoggingException">
-        ///   <para>No connection strings specified in <paramref name="connectionStrings"/>
-        ///   or all strings were <see langword="null"/>.</para>
-        ///   <para>-or-</para>
-        ///   <para>Connections do not have identical schemas
-        ///   and <paramref name="ensureSchemasIdentical"/> is <see langword="true"/>.</para>
-        /// </exception>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="connectionStrings"/> was <see langword="null"/>.
-        /// </exception>
         [PublicAPI]
         public LoadBalancedConnection(
-            [NotNull] IEnumerable<string> connectionStrings,
-            bool ensureSchemasIdentical = false)
+            [NotNull] IEnumerable<string> connectionStrings)
             : this(connectionStrings
                        .Where(cs => !string.IsNullOrWhiteSpace(cs))
                 // ReSharper disable once AssignNullToNotNullAttribute
-                       .Select(cs => new Connection(cs)),
-                   ensureSchemasIdentical)
+                       .Select(cs => new Connection(cs)))
         {
             Contract.Requires(connectionStrings != null);
         }
 
         /// <summary>
-        ///   <para>Initializes a new instance of the <see cref="LoadBalancedConnection"/> class.
-        ///   This is allows a weighting to be set for each connection string.</para>
-        ///   <para>The higher the weighting the more likely a connection string will be chosen when
-        ///   requesting a new connection.</para>
-        ///   <para>The connection can be given a unique id for lookup.</para>
+        /// <para>Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
+        /// This is allows a weighting to be set for each connection string.</para>
+        /// <para>The higher the weighting the more likely a connection string will be chosen when
+        /// requesting a new connection.</para>
+        /// <para>The connection can be given a unique id for lookup.</para>
         /// </summary>
-        /// <param name="connectionStrings">The connection strings.</param>
-        /// <param name="ensureSchemasIdentical">
-        ///   <para>If set to <see langword="true"/> then the schemas must be identical.</para>
-        ///   <para>By default this is <see langword="false"/>.</para>
-        /// </param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
-        ///   <paramref name="connectionStrings"/> cannot be <see langword="null"/>.
-        /// </remarks>
-        /// <exception cref="LoggingException">
-        ///   <para><paramref name="connectionStrings"/> is <see langword="null"/>.</para>
-        ///   <para>-or-</para>
-        ///   <para>No connection string specified.</para>
-        ///   <para>-or-</para>
-        ///   <para>The weight of a connection string was less than zero.</para>
-        ///   <para>-or-</para>
-        ///   <para>All the <paramref name="connectionStrings"/> cannot be zero weighted.</para>
-        ///   <para>-or-</para>
-        ///   <para>Connections do not have identical schemas
-        ///   and <paramref name="ensureSchemasIdentical"/> is <see langword="true"/>.</para>
-        /// </exception>
         [PublicAPI]
         public LoadBalancedConnection(
-            [NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings,
-            bool ensureSchemasIdentical = false)
+            [NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings)
             // ReSharper disable once AssignNullToNotNullAttribute
             : this(connectionStrings
                        .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
-                       // ReSharper disable AssignNullToNotNullAttribute
-                       .Select(kvp => new Connection(kvp.Key, kvp.Value)),
-                   // ReSharper restore AssignNullToNotNullAttribute
-                   ensureSchemasIdentical)
+                // ReSharper disable AssignNullToNotNullAttribute
+                       .Select(kvp => new Connection(kvp.Key, kvp.Value)))
+        // ReSharper restore AssignNullToNotNullAttribute
         {
             Contract.Requires(connectionStrings != null);
         }
@@ -208,29 +150,35 @@ namespace WebApplications.Utilities.Database
         /// <para>The connection can be given a unique id for lookup.</para>
         /// </summary>
         /// <param name="connections">The connections.</param>
-        /// <param name="ensureSchemasIdentical"><para>If set to <see langword="true" /> then the schemas must be identical.</para>
-        /// <para>By default this is <see langword="false" />.</para></param>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">
+        /// </exception>
         [PublicAPI]
         public LoadBalancedConnection(
-            [NotNull] IEnumerable<Connection> connections,
-            bool ensureSchemasIdentical = false)
+            [NotNull] IEnumerable<Connection> connections)
         {
             Contract.Requires(connections != null);
 
-            // TODO Remove ensure schemas identical as should be async!
+            Dictionary<string, Connection> dictionary = new Dictionary<string, Connection>();
 
             // Combine identical connection strings and their weighting.
             foreach (Connection connection in connections)
             {
                 if (connection == null) continue;
-                // ReSharper disable once PossibleNullReferenceException
-                Connection existing = _connections.FirstOrDefault(c => c.EquivalentTo(connection));
-                if (existing != null)
-                    existing.Weight += connection.Weight;
+
+                Connection c;
+                if (dictionary.TryGetValue(connection.ConnectionString, out c))
+                {
+                    Contract.Assert(c != null);
+                    c = connection.AddWeight(c.Weight);
+                }
                 else
-                    _connections.Add(connection);
+                    c = connection;
+
+                dictionary[c.ConnectionString] = c;
                 _totalWeight += connection.Weight;
             }
+
+            _connections = dictionary.Values;
 
             if (!_connections.Any())
                 throw new LoggingException(
@@ -247,44 +195,45 @@ namespace WebApplications.Utilities.Database
                 throw new LoggingException(
                     () => Resources.LoadBalancedConnection_AllStringsZeroWeighted);
 
-            // Finally validate the schemas are identical if required. TODO REMOVE!
-            if ((ensureSchemasIdentical) &&
-                (!IdenticalSchemas))
-                throw new LoggingException(
-                    () => Resources.LoadBalancedConnection_SchemasNotIdentical);
+            // Create a de-bounced function to check if schemas are identical.
+            _checkIdenticalFunction = new AsyncDebouncedFunction<bool>(
+                async t =>
+                {
+                    Guid guid = Guid.Empty;
+                    // ReSharper disable PossibleNullReferenceException
+                    foreach (DatabaseSchema schema in await
+                        Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, false, t))))
+                        // ReSharper restore PossibleNullReferenceException
+                    {
+                        Contract.Assert(schema != null);
+                        if (guid.Equals(Guid.Empty)) guid = schema.Guid;
+                        else if (!guid.Equals(schema.Guid)) return false;
+                    }
+                    return true;
+                },
+                TimeSpan.FromMinutes(1),
+                TimeSpan.FromMinutes(1));
+
+            // Create reload schemas de-bounced function.
+            _reloadSchemasAction = new AsyncDebouncedAction(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                t => Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, true, t))));
         }
 
+        [NotNull]
+        private readonly AsyncDebouncedFunction<bool> _checkIdenticalFunction;
+
         /// <summary>
-        ///   Gets a <see cref="bool"/> value indicating whether schemas are identical.
+        ///   Loads all <see cref="DatabaseSchema">schemas</see> and returns a value indicating if they're identical.
         /// </summary>
         /// <value>
         ///   <see langword="true"/> if the schemas are identical; otherwise returns <see langword="false"/>.
         /// </value>
+        [NotNull]
+        [PublicAPI]
         public Task<bool> CheckIdentical(CancellationToken token = default(CancellationToken))
         {
-            // TODO Make Async!!!!
-            if (_identicalSchemas != TriState.Unknown) return (bool) _identicalSchemas;
-
-            lock (_connections)
-            {
-                if (_identicalSchemas != TriState.Unknown) return (bool) _identicalSchemas;
-
-                DatabaseSchema schema = null;
-                _identicalSchemas = TriState.Yes;
-                foreach (Connection connection in _connections)
-                {
-                    Contract.Assert(connection != null);
-                    if (schema == null)
-                        schema = DatabaseSchema.GetOrAdd(connection.ConnectionString);
-                    else if (!schema.Equals(DatabaseSchema.GetOrAdd(connection.ConnectionString)))
-                    {
-                        _identicalSchemas = TriState.No;
-                        break;
-                    }
-                }
-            }
-
-            return (bool) _identicalSchemas;
+            return _checkIdenticalFunction.Run(token);
         }
 
         #region IEnumerable<string> Members
@@ -371,41 +320,19 @@ namespace WebApplications.Utilities.Database
             return connectionString;
         }
 
+        [NotNull]
+        private readonly AsyncDebouncedAction _reloadSchemasAction;
+
         /// <summary>
-        ///   Reloads the schemas and returns a <see cref="bool"/> value indicating whether any schemas have changed.
+        /// Reloads the schemas and returns a <see cref="bool"/> value indicating whether any schemas have changed.
         /// </summary>
-        /// <param name="ensureSchemasIdentical">
-        ///   <para>If set to <see langword="true"/> then the schemas must be identical.</para>
-        ///   <para>By default this is <see langword="false"/>.</para>
-        /// </param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the schemas have changed; otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   Connections strings do not have identical schemas
-        ///   and <paramref name="ensureSchemasIdentical"/> is <see langword="true"/>.
-        /// </exception>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Returns <see langword="true"/> if the schemas have changed; otherwise returns <see langword="false"/>.</returns>
         [UsedImplicitly]
-        public bool ReloadSchemas(bool ensureSchemasIdentical = false)
+        [NotNull]
+        public Task ReloadSchemas(CancellationToken cancellationToken = default(CancellationToken))
         {
-            bool hasChanges = false;
-            // ReSharper disable once PossibleNullReferenceException
-            foreach (string connectionString in _connections.Select(c => c.ConnectionString))
-            {
-                bool hc;
-                // ReSharper disable once AssignNullToNotNullAttribute
-                DatabaseSchema.GetOrAdd(connectionString, true, out hc);
-                hasChanges |= hc;
-            }
-
-            // Finally validate the schemas are identical
-            if ((ensureSchemasIdentical) &&
-                (!IdenticalSchemas))
-            {
-                throw new LoggingException(() => Resources.LoadBalancedConnection_ReloadSchemas_SchemasNotIdentical);
-            }
-
-            return hasChanges;
+            return _reloadSchemasAction.Run(cancellationToken);
         }
 
         /// <summary>
@@ -424,7 +351,7 @@ namespace WebApplications.Utilities.Database
         public override string ToString()
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            return String.Format(Resources.LoadBalancedConnection_ToString, _connections.Count);
+            return String.Format(Resources.LoadBalancedConnection_ToString, _connections.Count());
         }
     }
 }

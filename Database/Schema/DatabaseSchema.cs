@@ -214,22 +214,22 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         /// Gets or adds a schema for the given connection string.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="forceReload">If set to <see langword="true"/> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
+        /// <param name="connection">The connection.</param>
+        /// <param name="forceReload">If set to <see langword="true" /> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The added/retrieved schema.</returns>
         /// <exception cref="DatabaseSchemaException">An error occurred when loading the schema.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="connectionString"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="connectionString" /> is <see langword="null" />.</exception>
         /// <remarks>There is a <see cref="System.Diagnostics.Contracts">contract</see> specifying
-        /// <paramref name="connectionString"/> cannot be <see langword="null"/>.</remarks>
+        /// <paramref name="connectionString" /> cannot be <see langword="null" />.</remarks>
         [NotNull]
-        public static Task<DatabaseSchema> GetOrAdd([NotNull] string connectionString, bool forceReload = false, CancellationToken cancellationToken = default (CancellationToken))
+        public static Task<DatabaseSchema> GetOrAdd([NotNull] Connection connection, bool forceReload = false, CancellationToken cancellationToken = default (CancellationToken))
         {
-            Contract.Requires(connectionString != null);
+            Contract.Requires(connection != null);
             // ReSharper disable PossibleNullReferenceException
             return _databaseSchemas.GetOrAdd(
-                connectionString,
-                cs => new DatabaseSchema(connectionString))
+                connection.ConnectionString,
+                cs => new DatabaseSchema(connection.ConnectionString))
                 .Load(forceReload, cancellationToken);
             // ReSharper restore PossibleNullReferenceException
         }
