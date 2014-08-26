@@ -56,6 +56,9 @@ namespace WebApplications.Utilities.Database.Schema
         private static readonly ConcurrentDictionary<string, DatabaseSchema> _databaseSchemas =
             new ConcurrentDictionary<string, DatabaseSchema>();
 
+        /// <summary>
+        /// Groups last loaded schema with when it was loaded and any errors that occured during loading, this makes it atomic.
+        /// </summary>
         private class CurrentSchema
         {
             [CanBeNull]
@@ -109,6 +112,7 @@ namespace WebApplications.Utilities.Database.Schema
             Contract.Requires(connectionString != null);
             ConnectionString = connectionString;
         }
+
         /// <summary>
         /// Gets the current complete and immutable schema.
         /// </summary>
@@ -218,10 +222,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="forceReload">If set to <see langword="true" /> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The added/retrieved schema.</returns>
-        /// <exception cref="DatabaseSchemaException">An error occurred when loading the schema.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="connectionString" /> is <see langword="null" />.</exception>
-        /// <remarks>There is a <see cref="System.Diagnostics.Contracts">contract</see> specifying
-        /// <paramref name="connectionString" /> cannot be <see langword="null" />.</remarks>
         [NotNull]
         public static Task<DatabaseSchema> GetOrAdd([NotNull] Connection connection, bool forceReload = false, CancellationToken cancellationToken = default (CancellationToken))
         {

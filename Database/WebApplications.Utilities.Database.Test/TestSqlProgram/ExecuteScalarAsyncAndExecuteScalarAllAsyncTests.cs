@@ -13,7 +13,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public void ExecuteScalarAsync_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram scalarTest =
-                new SqlProgram(_differentConnectionStringWithAsync, "spReturnsScalar");
+                Create(_differentConnectionStringWithAsync, "spReturnsScalar");
 
             Task<string> task = scalarTest.ExecuteScalarAsync<string>();
             Assert.IsNotNull(task);
@@ -33,7 +33,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                     };
 
             SqlProgram scalarTest =
-            new SqlProgram(new LoadBalancedConnection(connectionStrings), "spReturnsScalarString");
+            SqlProgram.Create(new LoadBalancedConnection(connectionStrings), "spReturnsScalarString");
 
             Task<IEnumerable<string>> tasks = scalarTest.ExecuteScalarAllAsync<string>();
             Assert.AreEqual(2, tasks.Result.Count());

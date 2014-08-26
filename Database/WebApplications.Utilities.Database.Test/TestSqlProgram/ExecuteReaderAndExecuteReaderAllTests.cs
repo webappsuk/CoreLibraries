@@ -14,8 +14,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_ExecutesSuccessfully()
         {
-            SqlProgram readerTest = new SqlProgram(connectionString: _differentConnectionString,
-                                                   name: "spUltimateSproc");
+            SqlProgram readerTest = Create(connectionString: _differentConnectionString,
+                                           name: "spUltimateSproc");
 
             readerTest.ExecuteReader();
         }
@@ -25,8 +25,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         {
 
             SqlProgram readerTest =
-                new SqlProgram(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
-                               name: "spNonQuery");
+                SqlProgram.Create(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
+                       name: "spNonQuery");
 
             readerTest.ExecuteReader();
 
@@ -36,8 +36,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithReturnResultSet_ExecutesSuccessfully()
         {
-            SqlProgram readerTest = new SqlProgram(connectionString: _differentConnectionString,
-                                                   name: "spUltimateSproc");
+            SqlProgram readerTest = Create(connectionString: _differentConnectionString,
+                                           name: "spUltimateSproc");
 
             dynamic result = readerTest.ExecuteReader<dynamic>(
                 reader =>

@@ -11,7 +11,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public void Constructor_WithDefaults_SetsCommandTimeoutToThirtySeconds()
         {
             string connectionString = CreateConnectionString("LocalData", false);
-            SqlProgram program = new SqlProgram(connectionString: connectionString, name: "MyProgram");
+            SqlProgram program = Create(connectionString: connectionString, name: "MyProgram");
             Assert.IsNotNull(program);
             Assert.AreEqual(TimeSpan.FromSeconds(30), program.DefaultCommandTimeout);
         }
@@ -20,10 +20,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public void Constructor_WithNegativeTimeOutValue_SetsCommandTimeoutToThirtySeconds()
         {
             string connectionString = CreateConnectionString("LocalData", false);
-            SqlProgram program = new SqlProgram(
-                connectionString: connectionString,
-                name: "MyProgram",
-                defaultCommandTimeout: TimeSpan.FromSeconds(-1));
+            SqlProgram program = Create(connectionString: connectionString,
+                                        name: "MyProgram",
+                                        defaultCommandTimeout: TimeSpan.FromSeconds(-1));
 
             Assert.IsNotNull(program);
             Assert.AreEqual(TimeSpan.FromSeconds(30), program.DefaultCommandTimeout);
@@ -34,10 +33,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         {
             const int timeoutSeconds = 40;
             string connectionString = CreateConnectionString("LocalData", false);
-            SqlProgram program = new SqlProgram(
-                connectionString: connectionString,
-                name: "MyProgram",
-                defaultCommandTimeout: TimeSpan.FromSeconds(timeoutSeconds));
+            SqlProgram program = Create(connectionString: connectionString,
+                                        name: "MyProgram",
+                                        defaultCommandTimeout: TimeSpan.FromSeconds(timeoutSeconds));
 
             Assert.IsNotNull(program);
             Assert.AreEqual(TimeSpan.FromSeconds(timeoutSeconds), program.DefaultCommandTimeout);

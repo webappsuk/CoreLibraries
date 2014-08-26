@@ -28,7 +28,10 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
@@ -126,44 +129,40 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
-        ///   Gets the <see cref="WebApplications.Utilities.Database.SqlProgram"/> with the specified name and parameters,
-        ///   respecting configured options.
+        /// Gets the <see cref="WebApplications.Utilities.Database.SqlProgram" /> with the specified name and parameters,
+        /// respecting configured options.
         /// </summary>
         /// <param name="name">The name of the stored procedure or function.</param>
         /// <param name="parameters">The program parameters.</param>
-        /// <param name="ignoreValidationErrors">
-        ///   If set to <see langword="true"/> will ignore validation errors regardless of configuration.
-        /// </param>
-        /// <param name="checkOrder">
-        ///   If set to <see langword="true"/> will check parameter order matches regardless of configuration.
-        /// </param>
-        /// <param name="defaultCommandTimeout">
-        ///   <para>The default command timeout.</para>
-        ///   <para>If set will override the configuration from <see cref="ProgramElement.DefaultCommandTimeout"/>.</para>
-        /// </param>
-        /// <param name="constraintMode">
-        ///   <para>The constraint mode</para>
-        ///   <para>If set will override the configuration from <see cref="ProgramElement.ConstraintMode"/>.</para>
-        /// </param>
-        /// <returns>The retrieved <see cref="WebApplications.Utilities.Database.SqlProgram"/>.</returns>
-        /// <exception cref="LoggingException">
-        ///   <para>Could not find a default load balanced connection for the database with this <see cref="Id"/>.</para>
-        ///   <para>-or-</para>
-        ///   <para>A parameter with no name map was found.</para>
+        /// <param name="ignoreValidationErrors">If set to <see langword="true" /> will ignore validation errors regardless of configuration.</param>
+        /// <param name="checkOrder">If set to <see langword="true" /> will check parameter order matches regardless of configuration.</param>
+        /// <param name="defaultCommandTimeout"><para>The default command timeout.</para>
+        /// <para>If set will override the configuration from <see cref="ProgramElement.DefaultCommandTimeout" />.</para></param>
+        /// <param name="constraintMode"><para>The constraint mode</para>
+        /// <para>If set will override the configuration from <see cref="ProgramElement.ConstraintMode" />.</para></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The retrieved <see cref="WebApplications.Utilities.Database.SqlProgram" />.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">
         /// </exception>
+        /// <exception cref="LoggingException"><para>Could not find a default load balanced connection for the database with this <see cref="Id" />.</para>
+        /// <para>-or-</para>
+        /// <para>A parameter with no name map was found.</para></exception>
         [NotNull]
-        public SqlProgram GetSqlProgram(
+        public async Task<SqlProgram> GetSqlProgram(
             [NotNull] string name,
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode? constraintMode = null)
+            TypeConstraintMode? constraintMode = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(name != null);
+            
             // Grab the default load balanced connection for the database.
-            LoadBalancedConnectionElement connection = Connections.FirstOrDefault(c => c.Enabled);
+            LoadBalancedConnectionElement connectionElement = Connections.FirstOrDefault(c => c.Enabled);
 
-            if (connection == null)
+            if (connectionElement == null)
                 throw new LoggingException(
                     () => Resources.DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound,
                     Id);
@@ -184,37 +183,46 @@ namespace WebApplications.Utilities.Database.Configuration
 
                 if (!String.IsNullOrEmpty(prog.Connection))
                 {
-                    connection = Connections[prog.Connection];
-                    if ((connection == null) ||
-                        (!connection.Enabled))
+                    connectionElement = Connections[prog.Connection];
+                    if ((connectionElement == null) ||
+                        (!connectionElement.Enabled))
                         throw new LoggingException(
                             () => Resources.DatabaseElement_GetSqlProgram_LoadBalanceConnectionNotFound,
-                            prog.Connection, Id, name);
+                            prog.Connection,
+                            Id,
+                            name);
                 }
 
                 // Check for parameter mappings
                 if ((parameters != null) &&
                     prog.Parameters.Any())
-                {
                     parameters = parameters
-                        .Select(kvp =>
-                                    {
-                                        ParameterElement param = prog.Parameters[kvp.Key];
-                                        if (param == null) return kvp;
-                                        if (String.IsNullOrWhiteSpace(param.MapTo))
-                                            throw new LoggingException(
-                                                () => Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
-                                                kvp.Key, prog.Name);
+                        .Select(
+                            kvp =>
+                            {
+                                ParameterElement param = prog.Parameters[kvp.Key];
+                                if (param == null) return kvp;
+                                if (String.IsNullOrWhiteSpace(param.MapTo))
+                                    throw new LoggingException(
+                                        () => Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
+                                        kvp.Key,
+                                        prog.Name);
 
-                                        return new KeyValuePair<string, Type>(param.MapTo, kvp.Value);
-                                    }).ToList();
-                }
+                                return new KeyValuePair<string, Type>(param.MapTo, kvp.Value);
+                            }).ToList();
             }
 
             if (constraintMode == null) constraintMode = TypeConstraintMode.Warn;
 
-            return new SqlProgram(connection, name, parameters, ignoreValidationErrors, checkOrder,
-                                  defaultCommandTimeout, (TypeConstraintMode) constraintMode);
+            LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
+
+            return SqlProgram.Create(connection,
+                          name,
+                          parameters,
+                          ignoreValidationErrors,
+                          checkOrder,
+                          defaultCommandTimeout,
+                          (TypeConstraintMode) constraintMode);
         }
     }
 }

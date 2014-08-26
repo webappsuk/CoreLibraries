@@ -25,10 +25,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Logging;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
 namespace WebApplications.Utilities.Database.Configuration
@@ -93,7 +98,7 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("", IsRequired = true, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof (ConnectionCollection),
+        [ConfigurationCollection(typeof(ConnectionCollection),
             CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
         [NotNull]
         public ConnectionCollection Connections
@@ -118,21 +123,46 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
-        ///   Performs an implicit conversion from a <see cref="ConnectionCollection"/> 
-        ///   to a <see cref="WebApplications.Utilities.Database.LoadBalancedConnection"/>.
+        /// Gets the load balanced connection based on this element; otherwise <see langword="null"/> if disabled..
         /// </summary>
-        /// <param name="collection">The collection element.</param>
-        /// <returns>The result of the conversion.</returns>
-        [CanBeNull]
-        public static implicit operator LoadBalancedConnection([CanBeNull] LoadBalancedConnectionElement collection)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;LoadBalancedConnection&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<LoadBalancedConnection> GetLoadBalancedConnection(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return collection == null || !collection.Enabled
-                       ? null
-                       : new LoadBalancedConnection(
-                             collection.Connections
-                                 .Where(lbc => lbc != null && lbc.Enabled)
-                                 .Select(lbc => new KeyValuePair<string, double>(lbc.ConnectionString, lbc.Weight)),
-                             collection.EnsureSchemasIdentical);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!Enabled) return TaskResult<LoadBalancedConnection>.Default;
+
+            KeyValuePair<string, double>[] connections = Connections
+                .Where(lbc => lbc != null && lbc.Enabled)
+                .Select(
+                    lbc => new KeyValuePair<string, double>(lbc.ConnectionString, lbc.Weight))
+                .ToArray();
+
+            if (connections.Length < 1) return TaskResult<LoadBalancedConnection>.Default;
+
+            LoadBalancedConnection connection = new LoadBalancedConnection(connections);
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (!EnsureSchemasIdentical) return Task.FromResult(connection);
+
+            return connection.CheckIdentical(cancellationToken)
+                .ContinueWith(
+                    t =>
+                    {
+                        Contract.Assert(t != null);
+                        if (!t.Result)
+                            throw new LoggingException(
+                                () =>
+                                    Resources
+                                    .LoadBalancedConnectionElement_GetLoadBalancedConnection_SchemasNotIdentical);
+                        return connection;
+                    },
+                    cancellationToken,
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    TaskScheduler.Current);
         }
     }
 }

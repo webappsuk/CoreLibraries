@@ -291,7 +291,7 @@
   <data name="LoadBalancedConnection_NoConnectionStrings" xml:space="preserve">
     <value>Must specify at least one connection string.</value>
   </data>
-  <data name="LoadBalancedConnection_ReloadSchemas_SchemasNotIdentical" xml:space="preserve">
+  <data name="LoadBalancedConnectionElement_GetLoadBalancedConnection_SchemasNotIdentical" xml:space="preserve">
     <value>Connection strings must point to databases with identical schemas.</value>
   </data>
   <data name="LoadBalancedConnection_SchemasNotIdentical" xml:space="preserve">
@@ -335,5 +335,8 @@
   </data>
   <data name="DatabaseElement_GetSqlProgram_Invalid_Mapping" xml:space="preserve">
     <value>Must specify a valid mapping for '{0}' parameter on '{1}' program.</value>
+  </data>
+  <data name="SqlProgram_Validate_Fatal" xml:space="preserve">
+    <value>Fatal error validating Sql Program '{0}'.</value>
   </data>
 </root>

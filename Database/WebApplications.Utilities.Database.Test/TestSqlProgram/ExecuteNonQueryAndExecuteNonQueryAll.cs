@@ -24,7 +24,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_ExecutesSuccessfully()
         {
-            SqlProgram nonQueryTest = new SqlProgram(connectionString: _localConnectionString, name: "spNonQuery");
+            SqlProgram nonQueryTest = Create(connectionString: _localConnectionString, name: "spNonQuery");
             int nonQueryResult = nonQueryTest.ExecuteNonQuery();
             Assert.AreEqual(-1, nonQueryResult);
         }
@@ -33,8 +33,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public void ExecuteNonQueryAll_ExecutesSuccessfully()
         {
             SqlProgram nonQueryTest =
-                new SqlProgram(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
-                               name: "spNonQuery");
+                SqlProgram.Create(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
+                       name: "spNonQuery");
             List<int> nonQueryResult = nonQueryTest.ExecuteNonQueryAll().ToList();
             Assert.AreEqual(2, nonQueryResult.Count);
 

@@ -286,6 +286,7 @@
     <Compile Include="Generated\SqlProgramGeneric2.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
+    <Compile Include="SqlProgramMapping.cs" />
     <Compile Include="SQLResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

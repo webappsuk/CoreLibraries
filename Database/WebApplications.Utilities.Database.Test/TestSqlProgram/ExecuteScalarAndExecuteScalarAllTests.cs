@@ -11,7 +11,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteScalar_WithNoParameters_ExecuteReturnsExpectedString()
         {
-            SqlProgram program = new SqlProgram(connectionString: _differentConnectionString, name: "spReturnsScalar");
+            SqlProgram program = Create(connectionString: _differentConnectionString, name: "spReturnsScalar");
 
             string scalarResult = program.ExecuteScalar<string>();
             Assert.AreEqual("HelloWorld", scalarResult);
@@ -20,7 +20,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteScalarAll_WithNoParameters_ExecuteReturnsExpectedString()
         {
-            SqlProgram program = new SqlProgram(new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString), "spReturnsScalarString");
+            SqlProgram program = SqlProgram.Create(new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString), "spReturnsScalarString");
             IList<string> scalarResult = program.ExecuteScalarAll<string>().ToList();
             Assert.AreEqual(2, scalarResult.Count);
 
@@ -32,7 +32,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [ExpectedException(typeof(SqlProgramExecutionException))]
         public void ExecuteScalarAll_WithUnknownProgramForConnection_ThrowsSqlProgramExecutionException()
         {
-            SqlProgram program = new SqlProgram(new LoadBalancedConnection(_localConnectionString, _differentConnectionString), "spReturnsScalar");
+            SqlProgram program = SqlProgram.Create(new LoadBalancedConnection(_localConnectionString, _differentConnectionString), "spReturnsScalar");
             program.ExecuteScalarAll<string>();
         }
 

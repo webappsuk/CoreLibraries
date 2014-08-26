@@ -342,15 +342,6 @@ namespace WebApplications.Utilities.Database {
         /// <summary>
         ///   Looks up a localized string similar to Connection strings must point to databases with identical schemas..
         /// </summary>
-        internal static string LoadBalancedConnection_ReloadSchemas_SchemasNotIdentical {
-            get {
-                return ResourceManager.GetString("LoadBalancedConnection_ReloadSchemas_SchemasNotIdentical", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connection strings must point to databases with identical schemas..
-        /// </summary>
         internal static string LoadBalancedConnection_SchemasNotIdentical {
             get {
                 return ResourceManager.GetString("LoadBalancedConnection_SchemasNotIdentical", resourceCulture);
@@ -376,6 +367,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection strings must point to databases with identical schemas..
+        /// </summary>
+        internal static string LoadBalancedConnectionElement_GetLoadBalancedConnection_SchemasNotIdentical {
+            get {
+                return ResourceManager.GetString("LoadBalancedConnectionElement_GetLoadBalancedConnection_SchemasNotIdentical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsupported SqlDbType &apos;{0}&apos;..
         /// </summary>
         internal static string SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType {
@@ -390,6 +390,15 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlProgram_Validate_DefinitionsNotFound {
             get {
                 return ResourceManager.GetString("SqlProgram_Validate_DefinitionsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fatal error validating Sql Program &apos;{0}&apos;..
+        /// </summary>
+        internal static string SqlProgram_Validate_Fatal {
+            get {
+                return ResourceManager.GetString("SqlProgram_Validate_Fatal", resourceCulture);
             }
         }
         

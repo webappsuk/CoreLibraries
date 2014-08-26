@@ -249,6 +249,7 @@ namespace WebApplications.Utilities.Database.Schema
             /// <param name="tablesByName">Name of the tables by.</param>
             /// <param name="typesByName">Name of the types by.</param>
             /// <returns>WebApplications.Utilities.Database.Schema.DatabaseSchema.Schema.</returns>
+            [NotNull]
             protected internal static Schema GetOrAdd(
                 [NotNull] IReadOnlyDictionary<int, SqlSchema> schemasByID,
                 [NotNull] IReadOnlyDictionary<string, SqlProgramDefinition> programDefinitionsByName,

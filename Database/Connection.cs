@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Database.Schema;
 
 namespace WebApplications.Utilities.Database
 {
@@ -101,6 +104,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <returns>The result of the conversion.</returns>
+        [ContractAnnotation("connection:null =>null;connection:notnull =>notnull")]
         public static implicit operator string([CanBeNull] Connection connection)
         {
             return connection != null
@@ -113,11 +117,23 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <returns>The result of the conversion.</returns>
+        [ContractAnnotation("connectionString:null =>null;connectionString:notnull =>notnull")]
         public static explicit operator Connection([CanBeNull] string connectionString)
         {
             return connectionString != null
                 ? new Connection(connectionString)
                 : null;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Connection"/> to <see cref="LoadBalancedConnection"/>.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <returns>The result of the conversion.</returns>
+        [ContractAnnotation("connection:null =>null;connection:notnull =>notnull")]
+        public static implicit operator LoadBalancedConnection([CanBeNull] Connection connection)
+        {
+            return connection == null ? null : new LoadBalancedConnection(connection);
         }
         
         /// <summary>
@@ -127,6 +143,19 @@ namespace WebApplications.Utilities.Database
         public override string ToString()
         {
             return ConnectionString;
+        }
+
+        /// <summary>
+        /// Gets the schema.
+        /// </summary>
+        /// <param name="forceReload">if set to <see langword="true" /> forces the schema to be reloaded.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, containing the <see cref="DatabaseSchema"/> for this <see cref="Connection"/>.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<DatabaseSchema> GetSchema(bool forceReload, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return DatabaseSchema.GetOrAdd(this, false, cancellationToken);
         }
 
         #region Equalities

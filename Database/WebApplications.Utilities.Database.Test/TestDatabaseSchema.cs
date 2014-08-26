@@ -27,10 +27,12 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text;
 using System.Xml;
+using JetBrains.Annotations;
 using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Database.Schema;
+using System.Threading.Tasks;
 
 namespace WebApplications.Utilities.Database.Test
 {
@@ -38,6 +40,7 @@ namespace WebApplications.Utilities.Database.Test
     [Ignore]
     public class TestDatabaseSchema
     {
+        [NotNull]
         public const string ConnectionString =
             @"Data Source=server2008r2test\SQL2008R2;Initial Catalog=THG_Test;Integrated Security=true;";
 
@@ -48,18 +51,21 @@ namespace WebApplications.Utilities.Database.Test
         public int Loops = 10;
         public int Size = 10000;
 
+        public static readonly Connection Connection = new Connection(ConnectionString);
+
         [TestMethod]
-        public void TestSchemaEquality()
+        [NotNull]
+        public async Task TestSchemaEquality()
         {
-            DatabaseSchema databaseSchema = DatabaseSchema.GetOrAdd(ConnectionString);
-            DatabaseSchema databaseSchema2 = DatabaseSchema.GetOrAdd(ConnectionString + " ");
+            DatabaseSchema databaseSchema = await DatabaseSchema.GetOrAdd((Connection)ConnectionString);
+            DatabaseSchema databaseSchema2 = await DatabaseSchema.GetOrAdd((Connection)(ConnectionString + " "));
             Assert.AreEqual(databaseSchema, databaseSchema2);
         }
 
         [TestMethod]
         public void TestNoParams()
         {
-            SqlProgram program = new SqlProgram(ConnectionString, "spThgWebData");
+            SqlProgram program = Create(Connection, "spThgWebData");
             program.ExecuteReader(
                 reader =>
                     {
@@ -73,7 +79,7 @@ namespace WebApplications.Utilities.Database.Test
         public void TestPrograms()
         {
             LoadBalancedConnection connection = new LoadBalancedConnection(ConnectionString, ConnectionString + " ");
-            SqlProgram program = new SqlProgram(connection, SProcName);
+            SqlProgram program = SqlProgram.Create(connection, SProcName);
             /* 
              * Example validation
              * 
@@ -493,7 +499,7 @@ namespace WebApplications.Utilities.Database.Test
                               Loops,
                               stopwatch.ElapsedMilliseconds));
 
-            SqlProgram p = new SqlProgram(ConnectionString, "spTest");
+            SqlProgram p = Create(ConnectionString, "spTest");
 
             DatabaseSchema schema = DatabaseSchema.GetOrAdd(ConnectionString);
 
