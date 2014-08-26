@@ -25,6 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -108,6 +111,38 @@ namespace WebApplications.Utilities
 
             CancelledToken = new CancellationToken(true);
         }
+
+        /// <summary>
+        /// Creates a <see cref="Task"/> from the <paramref name="exception"/>.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static Task FromException([NotNull] Exception exception)
+        {
+            Contract.Requires(exception != null);
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            tcs.SetException(exception);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Task"/> from the <paramref name="exceptions"/>.
+        /// </summary>
+        /// <param name="exceptions">The exceptions.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static Task FromException([NotNull] IEnumerable<Exception> exceptions)
+        {
+            Contract.Requires(exceptions != null);
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            tcs.SetException(exceptions);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return tcs.Task;
+        }
     }
 
     /// <summary>
@@ -142,6 +177,38 @@ namespace WebApplications.Utilities
             Default = Task.FromResult(default(T));
             Cancelled = cancelledSource.Task;
             // ReSharper restore AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Task"/> from the <paramref name="exception"/>.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static Task<T> FromException([NotNull] Exception exception)
+        {
+            Contract.Requires(exception != null);
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+            tcs.SetException(exception);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Task"/> from the <paramref name="exceptions"/>.
+        /// </summary>
+        /// <param name="exceptions">The exceptions.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static Task<T> FromException([NotNull] IEnumerable<Exception> exceptions)
+        {
+            Contract.Requires(exceptions != null);
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+            tcs.SetException(exceptions);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return tcs.Task;
         }
     }
 }
