@@ -86,7 +86,7 @@ namespace WebApplications.Utilities.Database.Test
             LoadBalancedConnection loadBalancedConnection =
                 new LoadBalancedConnection(CreateConnectionString("LocalData", false));
 
-            using (SqlConnection connection = loadBalancedConnection.GetConnection())
+            using (SqlConnection connection = loadBalancedConnection.GetSqlConnection())
             {
                 Assert.IsNotNull(connection);
                 Assert.IsFalse(connection.State == ConnectionState.Open);

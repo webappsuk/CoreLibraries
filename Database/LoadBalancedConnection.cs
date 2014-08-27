@@ -46,21 +46,10 @@ namespace WebApplications.Utilities.Database
     public class LoadBalancedConnection : IEnumerable<Connection>
     {
         /// <summary>
-        ///   The random number generator, used for choosing the connection.
-        /// </summary>
-        [NotNull]
-        private static readonly Random _random = new Random();
-
-        /// <summary>
         ///   Holds <see cref="Connection"/>s and their <see cref="Connection.Weight">weighting</see>.
         /// </summary>
         [NotNull]
         private readonly IEnumerable<Connection> _connections = new List<Connection>();
-
-        /// <summary>
-        ///   The total weight of all the <see cref="Connection"/>s.
-        /// </summary>
-        private readonly double _totalWeight;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
@@ -175,7 +164,6 @@ namespace WebApplications.Utilities.Database
                     c = connection;
 
                 dictionary[c.ConnectionString] = c;
-                _totalWeight += connection.Weight;
             }
 
             _connections = dictionary.Values;
@@ -191,10 +179,6 @@ namespace WebApplications.Utilities.Database
                 throw new LoggingException(
                     () => Resources.LoadBalancedConnection_WeightLessThanZero);
 
-            if (_totalWeight <= 0.0D)
-                throw new LoggingException(
-                    () => Resources.LoadBalancedConnection_AllStringsZeroWeighted);
-
             // Create a de-bounced function to check if schemas are identical.
             _checkIdenticalFunction = new AsyncDebouncedFunction<bool>(
                 async t =>
@@ -203,7 +187,7 @@ namespace WebApplications.Utilities.Database
                     // ReSharper disable PossibleNullReferenceException
                     foreach (DatabaseSchema schema in await
                         Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, false, t))))
-                        // ReSharper restore PossibleNullReferenceException
+                    // ReSharper restore PossibleNullReferenceException
                     {
                         Contract.Assert(schema != null);
                         if (guid.Equals(Guid.Empty)) guid = schema.Guid;
@@ -263,61 +247,28 @@ namespace WebApplications.Utilities.Database
         #endregion
 
         /// <summary>
-        /// Gets a new <see cref="SqlConnection" /> using a random
-        /// <see cref="Connection.ConnectionString">connection string</see>.
+        /// Gets a random  <see cref="Connection.ConnectionString">connection string</see>.
         /// </summary>
-        /// <returns>A <see cref="SqlConnection" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        /// <exception cref="LoggingException">Failed to select a valid connection string from the <see cref="LoadBalancedConnection" />.</exception>
-        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
-        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
-        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
-        /// <remarks>This should be used in a <c>using</c> statement to ensure it is disposed
-        /// as a connection is not closed when it goes out of scope.</remarks>
         [NotNull]
-        public SqlConnection GetConnection()
+        public string ChooseConnectionString()
         {
-            // Create connection using a random connection string
-            return new SqlConnection(GetConnectionString());
+            return ChooseConnection(this).ConnectionString;
         }
 
         /// <summary>
-        /// Gets a random
-        /// <see cref="Connection.ConnectionString">connection string</see>.
+        /// Chooses a random <see cref="Connection"/> from an enumeration of <see cref="Connection">connections</see>.
         /// </summary>
         /// <returns>A <see cref="SqlConnection" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        /// <exception cref="LoggingException">Failed to select a valid connection string from the <see cref="LoadBalancedConnection" />.</exception>
-        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
-        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
-        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
-        /// <remarks>This should be used in a <c>using</c> statement to ensure it is disposed
-        /// as a connection is not closed when it goes out of scope.</remarks>
+        [PublicAPI]
         [NotNull]
-        public string GetConnectionString()
+        public static Connection ChooseConnection([NotNull] IEnumerable<Connection> connections)
         {
-            // Calculate a random value between 0 and the total weight.
-            double next = _random.NextDouble() * _totalWeight;
+            Contract.Requires(connections != null);
+            // Choose a random connection.
 
-            // Pick a connection string
-            string connectionString = null;
-            foreach (Connection c in _connections)
-            {
-                Contract.Assert(c != null);
-                next -= c.Weight;
-                if (next > 0)
-                    continue;
-
-                connectionString = c.ConnectionString;
-                break;
-            }
-
-            if (connectionString == null)
-                throw new LoggingException(LoggingLevel.Critical,
-                    () => Resources.LoadBalancedConnection_CreateConnection_NoValidConnectionString);
-
-            // Create connection using connection string
-            return connectionString;
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return connections.Choose(c => c.Weight);
+            // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
         }
 
         [NotNull]

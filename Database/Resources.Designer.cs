@@ -322,16 +322,7 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to select a valid connection string from the load balanced collection..
-        /// </summary>
-        internal static string LoadBalancedConnection_CreateConnection_NoValidConnectionString {
-            get {
-                return ResourceManager.GetString("LoadBalancedConnection_CreateConnection_NoValidConnectionString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Must specify at least one connection string..
+        ///   Looks up a localized string similar to Must specify at least one connection..
         /// </summary>
         internal static string LoadBalancedConnection_NoConnectionStrings {
             get {
@@ -358,7 +349,7 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The connection string weight must not be less than zero..
+        ///   Looks up a localized string similar to The connection weight must not be less than zero..
         /// </summary>
         internal static string LoadBalancedConnection_WeightLessThanZero {
             get {
@@ -381,6 +372,15 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType {
             get {
                 return ResourceManager.GetString("SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a valid mapping for the &apos;{0}&apos; Sql Program..
+        /// </summary>
+        internal static string SqlProgram_CreateCommand_No_Mapping {
+            get {
+                return ResourceManager.GetString("SqlProgram_CreateCommand_No_Mapping", resourceCulture);
             }
         }
         

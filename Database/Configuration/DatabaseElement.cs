@@ -216,13 +216,17 @@ namespace WebApplications.Utilities.Database.Configuration
 
             LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
 
-            return SqlProgram.Create(connection,
-                          name,
-                          parameters,
-                          ignoreValidationErrors,
-                          checkOrder,
-                          defaultCommandTimeout,
-                          (TypeConstraintMode) constraintMode);
+            Contract.Assert(connection != null);
+            Contract.Assert(name != null);
+            return await SqlProgram.Create(
+                connection,
+                name,
+                parameters,
+                ignoreValidationErrors,
+                checkOrder,
+                defaultCommandTimeout,
+                (TypeConstraintMode) constraintMode,
+                cancellationToken);
         }
     }
 }

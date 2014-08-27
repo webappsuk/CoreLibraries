@@ -340,16 +340,15 @@ namespace WebApplications.Utilities.Database
         public static Task<SqlProgram> Create(
             [NotNull] Connection connection,
             [NotNull] string name,
-            [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
+            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            [CanBeNull] TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(connection != null);
             Contract.Requires(name != null);
-            Contract.Requires(parameters != null);
             return Create(
                 new LoadBalancedConnection(connection),
                 name,
@@ -389,7 +388,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             bool ignoreValidationErrors,
-            TimeSpan? defaultCommandTimeout,
+            [CanBeNull] TimeSpan? defaultCommandTimeout,
             TypeConstraintMode constraintMode,
             [NotNull] params Type[] parameterTypes)
         {
@@ -481,7 +480,7 @@ namespace WebApplications.Utilities.Database
         public static async Task<SqlProgram> Create(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
-            [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
+            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
@@ -490,7 +489,6 @@ namespace WebApplications.Utilities.Database
         {
             Contract.Requires(connection != null);
             Contract.Requires(name != null);
-            Contract.Requires(parameters != null);
             SqlProgram program = new SqlProgram(
                 connection,
                 name,
@@ -684,29 +682,22 @@ namespace WebApplications.Utilities.Database
         ///   <para>If <see langword="null"/> is specified then <see cref="DefaultCommandTimeout"/> is used.</para>
         /// </param>
         /// <returns>A <see cref="SqlProgramCommand"/>.</returns>
-        /// <remarks>
-        ///   As <see cref="SqlProgramCommand"/> implements <see cref="IDisposable"/> it's
-        ///   recommended that you have this in a <c>using</c> statement.
-        /// </remarks>
-        /// <exception cref="LoggingException">
-        ///   Failed to select a valid connection string from the <see cref="LoadBalancedConnection"/>.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        ///   The connection did not specify a source or server.
-        /// </exception>
-        /// <exception cref="SqlException">
-        ///   A connection-level error occurred whilst opening the connection.
-        ///   See <see cref="SqlConnection.Open"/> for more details.
-        /// </exception>
         [NotNull]
         [PublicAPI]
         public SqlProgramCommand CreateCommand(TimeSpan? timeout = null)
         {
-            // TODO This should take a SqlProgramMapping, and we should only pick from valid mappings...
-            return new SqlProgramCommand(this, Connection.GetConnectionString(),
-                                         (timeout == null || timeout < TimeSpan.Zero)
-                                             ? DefaultCommandTimeout
-                                             : (TimeSpan)timeout);
+            // Select a random valid mapping.
+            // ReSharper disable once PossibleNullReferenceException
+            SqlProgramMapping sqlProgramMapping = Mappings.Choose(mapping => mapping.Connection.Weight);
+            if (sqlProgramMapping == null)
+                throw new LoggingException(() => Resources.SqlProgram_CreateCommand_No_Mapping, Name);
+
+            return new SqlProgramCommand(
+                this,
+                sqlProgramMapping,
+                (timeout == null || timeout < TimeSpan.Zero)
+                    ? DefaultCommandTimeout
+                    : (TimeSpan)timeout);
         }
 
         /// <summary>
@@ -717,18 +708,6 @@ namespace WebApplications.Utilities.Database
         ///   <para>If <see langword="null"/> or less than <see cref="TimeSpan.Zero"/> then <see cref="DefaultCommandTimeout"/> is used.</para>
         /// </param>
         /// <returns>An enumeration of <see cref="SqlProgramCommand"/> (one for each connection).</returns>
-        /// <remarks>
-        ///   As <see cref="SqlProgramCommand"/> implements <see cref="IDisposable"/> it is recommended that
-        ///   you use wrap your code in a try...finally and ensure you dispose all returned <see cref="SqlProgramCommand"/>
-        ///   in the event of an error.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">
-        ///   The connection did not specify a source or server.
-        /// </exception>
-        /// <exception cref="SqlException">
-        ///   A connection-level error occurred whilst opening the connection.
-        ///   See <see cref="SqlConnection.Open"/> for more details.
-        /// </exception>
         [PublicAPI]
         [NotNull]
         public IEnumerable<SqlProgramCommand> CreateCommandsForAllConnections(TimeSpan? timeout = null)
@@ -737,8 +716,9 @@ namespace WebApplications.Utilities.Database
                              ? DefaultCommandTimeout
                              : (TimeSpan)timeout;
             // ReSharper disable once PossibleNullReferenceException
-            return Connection
-                .Select(connection => new SqlProgramCommand(this, connection.ConnectionString, t))
+            return Mappings
+                // ReSharper disable once AssignNullToNotNullAttribute
+                .Select(mapping => new SqlProgramCommand(this, mapping, t))
                 .ToArray();
         }
 

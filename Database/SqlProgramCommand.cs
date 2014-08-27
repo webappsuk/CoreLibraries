@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Database
             typeof (SqlCommand).GetSetter<SqlCommand, SqlParameterCollection>("_parameters");
 
         [NotNull]
-        private readonly string _connectionString;
+        private readonly SqlProgramMapping _mapping;
 
         [NotNull]
         private readonly SqlProgram _program;
@@ -73,18 +73,18 @@ namespace WebApplications.Utilities.Database
         /// Initializes a new instance of the <see cref="SqlProgramCommand" /> class.
         /// </summary>
         /// <param name="program">The SQL program.</param>
-        /// <param name="connectionString">The connection string.</param>
+        /// <param name="mapping">The mapping.</param>
         /// <param name="commandTimeout">The time to wait for the program to execute before raising an error.</param>
         internal SqlProgramCommand(
             [NotNull] SqlProgram program,
-            [NotNull] string connectionString,
+            [NotNull] SqlProgramMapping mapping,
             TimeSpan commandTimeout)
         {
             Contract.Requires(program != null);
-            Contract.Requires(connectionString != null);
+            Contract.Requires(mapping != null);
             Contract.Requires(commandTimeout >= TimeSpan.Zero);
             _program = program;
-            _connectionString = connectionString;
+            _mapping = mapping;
             CommandTimeout = commandTimeout;
             // ReSharper disable once AssignNullToNotNullAttribute
             _parameters = _createSqlParameterCollection();
@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Database
                 {
                     // Parameter not added yet
                     SqlProgramParameter parameterDefinition;
-                    if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
+                    if (!_mapping.Definition.TryGetParameter(parameterName, out parameterDefinition))
                         throw new LoggingException(
                             LoggingLevel.Critical,
                             () => Resources.SqlProgramCommand_GetParameter_ProgramDoesNotHaveParameter,
@@ -180,7 +180,7 @@ namespace WebApplications.Utilities.Database
 
                 // Find parameter definition
                 SqlProgramParameter parameterDefinition;
-                if (!_program.Definition.TryGetParameter(parameterName, out parameterDefinition))
+                if (!_mapping.Definition.TryGetParameter(parameterName, out parameterDefinition))
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
@@ -226,7 +226,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
@@ -267,7 +267,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -305,7 +305,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
@@ -344,7 +344,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -393,7 +393,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultAction != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
@@ -440,7 +440,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultFunc != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
@@ -489,7 +489,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultAction != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException
                     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -543,7 +543,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultFunc != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException
                     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -592,7 +592,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultAction != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
@@ -636,7 +636,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultFunc != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
@@ -682,7 +682,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultAction != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException
                     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -733,7 +733,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(resultFunc != null);
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException
                     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);

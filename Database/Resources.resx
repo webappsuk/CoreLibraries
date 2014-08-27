@@ -285,11 +285,8 @@
   <data name="LoadBalancedConnection_AllStringsZeroWeighted" xml:space="preserve">
     <value>Must specify at least one connection string, with a weight greater than zero.</value>
   </data>
-  <data name="LoadBalancedConnection_CreateConnection_NoValidConnectionString" xml:space="preserve">
-    <value>Failed to select a valid connection string from the load balanced collection.</value>
-  </data>
   <data name="LoadBalancedConnection_NoConnectionStrings" xml:space="preserve">
-    <value>Must specify at least one connection string.</value>
+    <value>Must specify at least one connection.</value>
   </data>
   <data name="LoadBalancedConnectionElement_GetLoadBalancedConnection_SchemasNotIdentical" xml:space="preserve">
     <value>Connection strings must point to databases with identical schemas.</value>
@@ -298,7 +295,7 @@
     <value>Connection strings must point to databases with identical schemas.</value>
   </data>
   <data name="LoadBalancedConnection_WeightLessThanZero" xml:space="preserve">
-    <value>The connection string weight must not be less than zero.</value>
+    <value>The connection weight must not be less than zero.</value>
   </data>
   <data name="SqlProgramCommand_GetParameter_ProgramDoesNotHaveParameter" xml:space="preserve">
     <value>The SQL Program '{0}' does not have a '{1}' parameter.</value>
@@ -338,5 +335,8 @@
   </data>
   <data name="SqlProgram_Validate_Fatal" xml:space="preserve">
     <value>Fatal error validating Sql Program '{0}'.</value>
+  </data>
+  <data name="SqlProgram_CreateCommand_No_Mapping" xml:space="preserve">
+    <value>Could not find a valid mapping for the '{0}' Sql Program.</value>
   </data>
 </root>
