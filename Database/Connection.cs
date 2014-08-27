@@ -89,7 +89,7 @@ namespace WebApplications.Utilities.Database
         public readonly double Weight;
 
         /// <summary>
-        /// Returns a new connection with the <see cref="Weight"/> increased by <see cref="weight"/>.
+        /// Returns a new connection with the <see cref="Weight"/> increased by <paramref name="weight"/>.
         /// </summary>
         /// <param name="weight">The weight.</param>
         /// <returns>A new connection.</returns>

@@ -91,7 +91,7 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="constraintMode"><para>The constraint mode</para>
         /// <para>If set will override the configuration from <see cref="ProgramElement.ConstraintMode" />.</para></param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The retrieved <see cref="WebApplications.Utilities.Database.SqlProgram" />.</returns>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
         /// <exception cref="LoggingException">The database corresponding to the ID provided in the <paramref name="database" /> parameter could not be found.</exception>
         [NotNull]
         [PublicAPI]

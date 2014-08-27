@@ -289,7 +289,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         internal static IEnumerable<KeyValuePair<string, Type>> ToKVP(
             [NotNull] IEnumerable<string> names,
-                                                                      [NotNull] params Type[] types)
+            [NotNull] params Type[] types)
         {
             Contract.Requires(names != null);
             Contract.Requires(types != null);

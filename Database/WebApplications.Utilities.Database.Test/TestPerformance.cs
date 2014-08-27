@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Utilities.Database.Schema;
 
 namespace WebApplications.Utilities.Database.Test
 {
@@ -32,59 +34,52 @@ namespace WebApplications.Utilities.Database.Test
         private const int TestLoops = 10;
 
         [TestMethod]
-        public void TestNormal()
+        public async Task TestNormal()
         {
             int rowCount = 0;
 
-            Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
-            Task[] tasks = new Task[Loops];
+            await Task.WhenAll(
+                Enumerable.Range(0, Loops)
+                    .Select(
+                        _ =>
+                        {
+                            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                            {
+                                // Open the connection
+                                sqlConnection.Open();
 
-            stopwatch.Start();
-            for (int i = 0; i < Loops; i++)
-            {
-                tasks[i] = Task.Factory.StartNew(() =>
-                                          {
-                                              using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
-                                              {
-                                                  // Open the connection
-                                                  sqlConnection.Open();
+                                using (SqlCommand sqlCommand = new SqlCommand(ProcedureName, sqlConnection)
+                                {
+                                    CommandType = CommandType.StoredProcedure
+                                })
+                                {
+                                    // To be absolutely fair, this needs improving to accurately set the SqlParameters (not all the sizes are correct)
+                                    sqlCommand.Parameters.AddWithValue("@SystemProvider", "System");
+                                    sqlCommand.Parameters.AddWithValue("@OperationModeVersion", -1);
+                                    sqlCommand.Parameters.AddWithValue("@ConfigurationVersion", -1);
 
-                                                  using (
-                                                      SqlCommand sqlCommand = new SqlCommand(ProcedureName,
-                                                                                             sqlConnection)
-                                                                                  {
-                                                                                      CommandType =
-                                                                                          CommandType.StoredProcedure
-                                                                                  })
-                                                  {
-                                                      // To be absolutely fair, this needs improving to accurately set the SqlParameters (not all the sizes are correct)
-                                                      sqlCommand.Parameters.AddWithValue("@SystemProvider", "System");
-                                                      sqlCommand.Parameters.AddWithValue("@OperationModeVersion", -1);
-                                                      sqlCommand.Parameters.AddWithValue("@ConfigurationVersion", -1);
+                                    // Execute command
+                                    using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
+                                    {
+                                        while (dataReader.Read())
+                                        {
+                                            // Operation modes
+                                            Interlocked.Increment(ref rowCount);
+                                        }
+                                        dataReader.NextResult();
 
-                                                      // Execute command
-                                                      using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
-                                                      {
-                                                          while (dataReader.Read())
-                                                          {
-                                                              // Operation modes
-                                                              Interlocked.Increment(ref rowCount);
-                                                          }
-                                                          dataReader.NextResult();
+                                        while (dataReader.Read())
+                                        {
+                                            // Guids
+                                            Interlocked.Increment(ref rowCount);
+                                        }
+                                    }
+                                }
+                            }
+                        }));
 
-                                                          while (dataReader.Read())
-                                                          {
-                                                              // Guids
-                                                              Interlocked.Increment(ref rowCount);
-                                                          }
-                                                      }
-                                                  }
-                                              }
-                                          });
-            }
-
-            Task.WaitAll(tasks);
             stopwatch.Stop();
 
             Trace.WriteLine(string.Format(
@@ -96,47 +91,103 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        public void TestSqlProgram()
+        public async Task TestNormalAsync()
+        {
+            int rowCount = 0;
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            await Task.WhenAll(
+                Enumerable.Range(0, Loops)
+                    .Select(
+                        async _ =>
+                        {
+                            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                            {
+                                // Open the connection
+                                await sqlConnection.OpenAsync();
+
+                                using (SqlCommand sqlCommand = new SqlCommand(ProcedureName, sqlConnection)
+                                {
+                                    CommandType = CommandType.StoredProcedure
+                                })
+                                {
+                                    // To be absolutely fair, this needs improving to accurately set the SqlParameters (not all the sizes are correct)
+                                    sqlCommand.Parameters.AddWithValue("@SystemProvider", "System");
+                                    sqlCommand.Parameters.AddWithValue("@OperationModeVersion", -1);
+                                    sqlCommand.Parameters.AddWithValue("@ConfigurationVersion", -1);
+
+                                    // Execute command
+                                    using (SqlDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
+                                    {
+                                        while (await dataReader.ReadAsync())
+                                        {
+                                            // Operation modes
+                                            Interlocked.Increment(ref rowCount);
+                                        }
+                                        await dataReader.NextResultAsync();
+
+                                        while (await dataReader.ReadAsync())
+                                        {
+                                            // Guids
+                                            Interlocked.Increment(ref rowCount);
+                                        }
+                                    }
+                                }
+                            }
+                        }));
+
+            stopwatch.Stop();
+
+            Trace.WriteLine(string.Format(
+                "Normal{0}============={0}Loops:{1}{0}Rows:{2}{0}Elapsed milliseconds: {3}{0}",
+                Environment.NewLine,
+                Loops,
+                rowCount,
+                stopwatch.ElapsedMilliseconds));
+        }
+
+        [TestMethod]
+        public async Task TestSqlProgram()
         {
             LoadBalancedConnection connection = new LoadBalancedConnection(ConnectionString);
-            SqlProgram<string, int, int> getOpModes = new SqlProgram<string, int, int>(connection, ProcedureName, 
+
+            SqlProgram<string, int, int> getOpModes = await SqlProgram<string, int, int>.Create(
+                connection,
+                ProcedureName, 
                 "@SystemProvider",
                 "@OperationModeVersion",
                 "@ConfigurationVersion");
             int rowCount = 0;
 
-            Stopwatch stopwatch = new Stopwatch();
-
-            Task[] tasks = new Task[Loops];
-
-            stopwatch.Start();
-            for (int i = 0; i < Loops; i++)
-            {
-                tasks[i] = Task.Factory.StartNew(() =>
-                {
-                    getOpModes.ExecuteReader(
-                        reader =>
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            
+            await Task.WhenAll(
+                Enumerable.Range(0, Loops)
+                    .Select(
+                        async _ =>
                         {
-                            while (reader.Read())
-                            {
-                                // Operation modes
-                                Interlocked.Increment(ref rowCount);
-                            }
-                            reader.NextResult();
+                            getOpModes.ExecuteReader(
+                                dataReader =>
+                                {
+                                    while (dataReader.Read())
+                                    {
+                                        // Operation modes
+                                        Interlocked.Increment(ref rowCount);
+                                    }
+                                    dataReader.NextResult();
 
-                            while (reader.Read())
-                            {
-                                // Guids
-                                Interlocked.Increment(ref rowCount);
-                            }
-                        },
-                        "System",
-                        -1,
-                        -1);
-                });
-            }
+                                    while (dataReader.Read())
+                                    {
+                                        // Guids
+                                        Interlocked.Increment(ref rowCount);
+                                    }
+                                },
+                                "System",
+                                -1,
+                                -1);
+                        }));
 
-            Task.WaitAll(tasks);
             stopwatch.Stop();
 
             Trace.WriteLine(string.Format(
@@ -148,48 +199,50 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        public void TestSqlProgramAsync()
+        public async Task TestSqlProgramAsync()
         {
-            LoadBalancedConnection connection = new LoadBalancedConnection(ConnectionStringAsync);
-            SqlProgram<string, int, int> getOpModes = new SqlProgram<string, int, int>(connection, ProcedureName,
+            LoadBalancedConnection connection = new LoadBalancedConnection(ConnectionString);
+            
+            SqlProgram<string, int, int> getOpModes = await SqlProgram<string, int, int>.Create(
+                connection,
+                ProcedureName,
                 "@SystemProvider",
                 "@OperationModeVersion",
                 "@ConfigurationVersion");
             int rowCount = 0;
 
-            Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
-            Task[] tasks = new Task[Loops];
-
-            stopwatch.Start();
-            for (int i = 0; i < Loops; i++)
-            {
-                tasks[i] = getOpModes.ExecuteReaderAsync(
-                    async (reader, token) =>
-                    {
-                        while (await reader.ReadAsync(token))
+            await Task.WhenAll(
+                Enumerable.Range(0, Loops)
+                    .Select(
+                        async _ =>
                         {
-                            // Operation modes
-                            Interlocked.Increment(ref rowCount);
-                        }
-                        reader.NextResult();
+                            getOpModes.ExecuteReaderAsync(
+                                async (dataReader, token) =>
+                                {
+                                    while (await dataReader.ReadAsync())
+                                    {
+                                        // Operation modes
+                                        Interlocked.Increment(ref rowCount);
+                                    }
+                                    await dataReader.NextResultAsync();
 
-                        while (await reader.ReadAsync(token))
-                        {
-                            // Guids
-                            Interlocked.Increment(ref rowCount);
-                        }
-                    },
-                    "System",
-                    -1,
-                    -1);
-            }
+                                    while (await dataReader.ReadAsync())
+                                    {
+                                        // Guids
+                                        Interlocked.Increment(ref rowCount);
+                                    }
+                                },
+                                "System",
+                                -1,
+                                -1);
+                        }));
 
-            Task.WaitAll(tasks);
             stopwatch.Stop();
 
             Trace.WriteLine(string.Format(
-                "Async{0}============={0}Loops:{1}{0}Rows:{2}{0}Elapsed milliseconds: {3}{0}",
+                "Program{0}============={0}Loops:{1}{0}Rows:{2}{0}Elapsed milliseconds: {3}{0}",
                 Environment.NewLine,
                 Loops,
                 rowCount,

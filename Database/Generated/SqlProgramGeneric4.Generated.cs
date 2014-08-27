@@ -201,9 +201,9 @@ namespace WebApplications.Utilities.Database
         /// Initializes a new instance of the <see cref="SqlProgram" /> class.
         /// </summary>
         /// <param name="connection">The load balanced connection.</param>
-        /// <param name="name">The <see cref="Name">name</see> of the program.</param>
-        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
-        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <param name="name">The <see cref="SqlProgram.Name">name</see> of the program.</param>
+        /// <param name="parameters">The program <see cref="SqlProgram.Parameters">parameters</see>.</param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="SqlProgram.DefaultCommandTimeout">default command timeout</see></para>
         /// <para>This is the time to wait for the command to execute.</para>
         /// <para>If set to <see langword="null" /> then the timeout will be 30 seconds.</para></param>
         /// <param name="constraintMode"><para>The type constraint mode.</para>
@@ -224,8 +224,8 @@ namespace WebApplications.Utilities.Database
         /// Initializes a new instance of the <see cref="SqlProgram" /> class.
         /// </summary>
         /// <param name="program">The base program (stored procedure/function).</param>
-        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
-        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <param name="parameters">The program <see cref="SqlProgram.Parameters">parameters</see>.</param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="SqlProgram.DefaultCommandTimeout">default command timeout</see></para>
         /// <para>This is the time to wait for the command to execute.</para>
         /// <para>If set to <see langword="null" /> then the timeout the default timeout from the base program.</para></param>
         /// <param name="constraintMode">The type constraint mode, this defined the behavior when truncation/loss of precision occurs.</param>
@@ -253,7 +253,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
-        public async Task<SqlProgram<T1, T2, T3, T4>> Create(
+        public static async Task<SqlProgram<T1, T2, T3, T4>> Create(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             bool ignoreValidationErrors = false,
@@ -285,7 +285,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
-        public async Task<SqlProgram<T1, T2, T3, T4>> Create(
+        public static async Task<SqlProgram<T1, T2, T3, T4>> Create(
             [NotNull] SqlProgram sqlProgram,
             bool ignoreValidationErrors = false,
             TimeSpan? defaultCommandTimeout = null,
@@ -321,7 +321,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
-        public async Task<SqlProgram<T1, T2, T3, T4>> Create(
+        public static async Task<SqlProgram<T1, T2, T3, T4>> Create(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             [NotNull] string p1Name, 
@@ -367,7 +367,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
-        public async Task<SqlProgram<T1, T2, T3, T4>> Create(
+        public static async Task<SqlProgram<T1, T2, T3, T4>> Create(
             [NotNull] SqlProgram sqlProgram,
             [NotNull] string p1Name, 
             [NotNull] string p2Name, 
@@ -893,10 +893,10 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="checkOrder">if set to <see langword="true"/> will check parameter order matches regardless of configuration.</param>
         /// <param name="defaultCommandTimeout">The default command timeout, if set will override the configuration.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configuration.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram&lt;T1, T2, T3, T4&gt;"/>.</returns>
         [NotNull]
-        public static SqlProgram<T1, T2, T3, T4> GetConfiguredSqlProgram<T1, T2, T3, T4>(
+        public static Task<SqlProgram<T1, T2, T3, T4>> GetConfiguredSqlProgram<T1, T2, T3, T4>(
             [NotNull] string database,
             [NotNull] string name,
             [NotNull] string p1Name, 
@@ -906,8 +906,8 @@ namespace WebApplications.Utilities.Database.Configuration
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode? constraintMode = null
-            )
+            TypeConstraintMode? constraintMode = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(database != null);
             Contract.Requires(name != null);
@@ -915,8 +915,7 @@ namespace WebApplications.Utilities.Database.Configuration
             Contract.Requires(p2Name != null);
             Contract.Requires(p3Name != null);
             Contract.Requires(p4Name != null);
-            return Active.GetSqlProgram<T1, T2, T3, T4>(database, name, p1Name, p2Name, p3Name, p4Name,
-                ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode);
+            return Active.GetSqlProgram<T1, T2, T3, T4>(database, name, p1Name, p2Name, p3Name, p4Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, cancellationToken);
         }
 
         /// <summary>
@@ -936,10 +935,10 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="checkOrder">if set to <see langword="true"/> will check parameter order matches regardless of configuration.</param>
         /// <param name="defaultCommandTimeout">The default command timeout, if set will override the configuration.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configuration.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram&lt;T1, T2, T3, T4&gt;"/>.</returns>
         [NotNull]
-        public SqlProgram<T1, T2, T3, T4> GetSqlProgram<T1, T2, T3, T4>(
+        public Task<SqlProgram<T1, T2, T3, T4>> GetSqlProgram<T1, T2, T3, T4>(
             [NotNull] string database, 
             [NotNull] string name,
             [NotNull] string p1Name, 
@@ -949,8 +948,8 @@ namespace WebApplications.Utilities.Database.Configuration
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode? constraintMode = null
-            )
+            TypeConstraintMode? constraintMode = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(database != null);
             Contract.Requires(name != null);
@@ -960,10 +959,13 @@ namespace WebApplications.Utilities.Database.Configuration
             Contract.Requires(p4Name != null);
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
-            if ((db == null) || (!db.Enabled))
-                throw new LoggingException(() => Resources.DatabasesConfiguration_GetSqlProgram_Unknown_Database, database);
-
-            return db.GetSqlProgram<T1, T2, T3, T4>(name, p1Name, p2Name, p3Name, p4Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode);
+            if ((db == null) ||
+                (!db.Enabled))
+                // TODO should wrap in task!
+                throw new LoggingException(
+                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                    database);
+            return db.GetSqlProgram<T1, T2, T3, T4>(name, p1Name, p2Name, p3Name, p4Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, cancellationToken);
         }
     }
     #endregion
@@ -991,10 +993,10 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="checkOrder">if set to <see langword="true"/> will check parameter order matches regardless of configuration.</param>
         /// <param name="defaultCommandTimeout">The default command timeout, if set will override the configuration.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configuration.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram&lt;T1, T2, T3, T4&gt;"/>.</returns>
         [NotNull]
-        public SqlProgram<T1, T2, T3, T4> GetSqlProgram<T1, T2, T3, T4>(
+        public async Task<SqlProgram<T1, T2, T3, T4>> GetSqlProgram<T1, T2, T3, T4>(
             [NotNull] string name,
             [NotNull] string p1Name, 
             [NotNull] string p2Name, 
@@ -1003,8 +1005,8 @@ namespace WebApplications.Utilities.Database.Configuration
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode? constraintMode = null
-            )
+            TypeConstraintMode? constraintMode = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(name != null);
             Contract.Requires(p1Name != null);
@@ -1012,9 +1014,9 @@ namespace WebApplications.Utilities.Database.Configuration
             Contract.Requires(p3Name != null);
             Contract.Requires(p4Name != null);
             // Grab the default load balanced connection for the database.
-            LoadBalancedConnectionElement connection = this.Connections.FirstOrDefault(c => c.Enabled);
+            LoadBalancedConnectionElement connectionElement = this.Connections.FirstOrDefault(c => c.Enabled);
 
-            if (connection == null)
+            if (connectionElement == null)
                 throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Unknown_Database, this.Id);
             
             // Look for program mapping information
@@ -1033,9 +1035,9 @@ namespace WebApplications.Utilities.Database.Configuration
 
                 if (!String.IsNullOrEmpty(prog.Connection))
                 {
-                    connection = this.Connections[prog.Connection];
-                    if ((connection == null) ||
-                        (!connection.Enabled))
+                    connectionElement = this.Connections[prog.Connection];
+                    if ((connectionElement == null) ||
+                        (!connectionElement.Enabled))
                         throw new LoggingException(() => Resources.DatabaseElement_GetSqlProgram_Unknown_Database_Program,
                             prog.Connection, this.Id, name);
                 }
@@ -1078,7 +1080,9 @@ namespace WebApplications.Utilities.Database.Configuration
             
             if (constraintMode == null) constraintMode = TypeConstraintMode.Warn;
 
-            return new SqlProgram<T1, T2, T3, T4>(connection, name, p1Name, p2Name, p3Name, p4Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, (TypeConstraintMode) constraintMode);
+            LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
+
+            return await SqlProgram<T1, T2, T3, T4>.Create(connection, name, p1Name, p2Name, p3Name, p4Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, (TypeConstraintMode) constraintMode, cancellationToken);
         }
     }
     #endregion

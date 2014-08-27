@@ -11,7 +11,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteScalar_WithNoParameters_ExecuteReturnsExpectedString()
         {
-            SqlProgram program = Create(connectionString: _differentConnectionString, name: "spReturnsScalar");
+            SqlProgram program = SqlProgram.Create(connectionString: _differentConnectionString, name: "spReturnsScalar");
 
             string scalarResult = program.ExecuteScalar<string>();
             Assert.AreEqual("HelloWorld", scalarResult);
