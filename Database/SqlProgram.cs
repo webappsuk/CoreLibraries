@@ -248,7 +248,7 @@ namespace WebApplications.Utilities.Database
         /// <para>If set to <see langword="null" /> then the timeout will be 30 seconds.</para></param>
         /// <param name="constraintMode"><para>The type constraint mode.</para>
         /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
-        private SqlProgram(
+        protected SqlProgram(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
@@ -291,7 +291,7 @@ namespace WebApplications.Utilities.Database
         /// <para>This is the time to wait for the command to execute.</para>
         /// <para>If set to <see langword="null" /> then the timeout the default timeout from the base program.</para></param>
         /// <param name="constraintMode">The type constraint mode, this defined the behavior when truncation/loss of precision occurs.</param>
-        private SqlProgram(
+        protected SqlProgram(
             [NotNull] SqlProgram program,
             [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters,
             TimeSpan? defaultCommandTimeout,
@@ -359,6 +359,51 @@ namespace WebApplications.Utilities.Database
                 constraintMode,
                 cancellationToken);
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
+        /// </summary>
+        /// <param name="connection">The load balanced connection.</param>
+        /// <param name="name">The <see cref="Name">name</see> of the program.</param>
+        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
+        /// <param name="ignoreValidationErrors"><para>If set to <see langword="true" /> then don't throw any parameter validation errors.</para>
+        /// <para>By default this is set to <see langword="false" />.</para></param>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <see paramref="parameters" />.</para>
+        /// <para>By default this is set to <see langword="false" />.</para></param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <para>This is the time to wait for the command to execute.</para>
+        /// <para>If set to <see langword="null" /> then the timeout will be 30 seconds.</para></param>
+        /// <param name="constraintMode"><para>The type constraint mode.</para>
+        /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task resulting in the <see cref="SqlProgram" />.</returns>
+        [PublicAPI]
+        [NotNull]
+        public static async Task<SqlProgram> Create(
+            [NotNull] LoadBalancedConnection connection,
+            [NotNull] string name,
+            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
+            bool ignoreValidationErrors = false,
+            bool checkOrder = false,
+            TimeSpan? defaultCommandTimeout = null,
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(connection != null);
+            Contract.Requires(name != null);
+            SqlProgram program = new SqlProgram(
+                connection,
+                name,
+                parameters,
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await program.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return program;
+        }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlProgram" /> class.
@@ -461,50 +506,6 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlProgram" /> class.
         /// </summary>
-        /// <param name="connection">The load balanced connection.</param>
-        /// <param name="name">The <see cref="Name">name</see> of the program.</param>
-        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
-        /// <param name="ignoreValidationErrors"><para>If set to <see langword="true" /> then don't throw any parameter validation errors.</para>
-        /// <para>By default this is set to <see langword="false" />.</para></param>
-        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <see paramref="parameters" />.</para>
-        /// <para>By default this is set to <see langword="false" />.</para></param>
-        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
-        /// <para>This is the time to wait for the command to execute.</para>
-        /// <para>If set to <see langword="null" /> then the timeout will be 30 seconds.</para></param>
-        /// <param name="constraintMode"><para>The type constraint mode.</para>
-        /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>An awaitable task resulting in the <see cref="SqlProgram" />.</returns>
-        [PublicAPI]
-        [NotNull]
-        public static async Task<SqlProgram> Create(
-            [NotNull] LoadBalancedConnection connection,
-            [NotNull] string name,
-            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
-            bool ignoreValidationErrors = false,
-            bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Contract.Requires(connection != null);
-            Contract.Requires(name != null);
-            SqlProgram program = new SqlProgram(
-                connection,
-                name,
-                parameters,
-                defaultCommandTimeout,
-                constraintMode);
-
-            // Validate
-            await program.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
-
-            return program;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
-        /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="program">The base program (stored procedure/function).</param>
         /// <param name="ignoreValidationErrors">If set to <see langword="true" /> then don't throw any parameter validation errors.</param>
@@ -536,6 +537,50 @@ namespace WebApplications.Utilities.Database
 
             // Validate
             await newProgram.Validate(true, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="program">The base program (stored procedure/function).</param>
+        /// <param name="ignoreValidationErrors">If set to <see langword="true" /> then don't throw any parameter validation errors.</param>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <see paramref="parameters" />.</para>
+        /// <para>By default this is set to <see langword="false" />.</para></param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <para>This is the time to wait for the command to execute.</para>
+        /// <para>If set to <see langword="null" /> then the timeout the default timeout from the base program.</para></param>
+        /// <param name="constraintMode">The type constraint mode, this defined the behavior when truncation/loss of precision occurs.</param>
+        /// <param name="parameterNames">The parameter names.</param>
+        /// <param name="parameterTypes">The parameter types.</param>
+        /// <returns>SqlProgram.</returns>
+        /// <exception cref="LoggingException">Invalid parameters</exception>
+        [PublicAPI]
+        [NotNull]
+        protected internal static async Task<SqlProgram> Create(
+            CancellationToken cancellationToken,
+            [NotNull] SqlProgram program,
+            bool ignoreValidationErrors,
+            bool checkOrder,
+            TimeSpan? defaultCommandTimeout,
+            TypeConstraintMode constraintMode,
+            [NotNull] IEnumerable<string> parameterNames,
+            [NotNull] params Type[] parameterTypes)
+        {
+            Contract.Requires(program != null);
+            Contract.Requires(parameterNames != null);
+            Contract.Requires(parameterTypes != null);
+            SqlProgram newProgram = new SqlProgram(
+                program,
+                SqlProgramDefinition.ToKVP(parameterNames, parameterTypes),
+                defaultCommandTimeout,
+                constraintMode
+                );
+
+            // Validate
+            await newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
 
             return newProgram;
         }

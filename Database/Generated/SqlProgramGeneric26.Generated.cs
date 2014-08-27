@@ -102,7 +102,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<SqlParameter> SetParameters<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(T1 p1Value, T2 p2Value, T3 p3Value, T4 p4Value, T5 p5Value, T6 p6Value, T7 p7Value, T8 p8Value, T9 p9Value, T10 p10Value, T11 p11Value, T12 p12Value, T13 p13Value, T14 p14Value, T15 p15Value, T16 p16Value, T17 p17Value, T18 p18Value, T19 p19Value, T20 p20Value, T21 p21Value, T22 p22Value, T23 p23Value, T24 p24Value, T25 p25Value, T26 p26Value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            SqlProgramParameter[] parameters = _program.Definition.Parameters.ToArray();
+            SqlProgramParameter[] parameters = _mapping.Definition.Parameters.ToArray();
             int pCount = parameters.GetLength(0);
             if (pCount < 26)
                 throw new LoggingException(
@@ -354,7 +354,7 @@ namespace WebApplications.Utilities.Database
                         {
                             n = n.ToLower(); // Find parameter definition
                             SqlProgramParameter parameterDefinition;
-                            if (!_program.Definition.TryGetParameter(n, out parameterDefinition))
+                            if (!_mapping.Definition.TryGetParameter(n, out parameterDefinition))
                                 throw new LoggingException(
                                         LoggingLevel.Critical,
                                         () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
@@ -539,254 +539,6 @@ namespace WebApplications.Utilities.Database
             // Return parameters that were set
             return sqlParameters;
         }
-
-        /// <summary>
-        /// Sets the parameters in ordinal order.
-        /// </summary>
-        /// <typeparam name="T1">The type of parameter 1.</typeparam>
-        /// <typeparam name="T2">The type of parameter 2.</typeparam>
-        /// <typeparam name="T3">The type of parameter 3.</typeparam>
-        /// <typeparam name="T4">The type of parameter 4.</typeparam>
-        /// <typeparam name="T5">The type of parameter 5.</typeparam>
-        /// <typeparam name="T6">The type of parameter 6.</typeparam>
-        /// <typeparam name="T7">The type of parameter 7.</typeparam>
-        /// <typeparam name="T8">The type of parameter 8.</typeparam>
-        /// <typeparam name="T9">The type of parameter 9.</typeparam>
-        /// <typeparam name="T10">The type of parameter 10.</typeparam>
-        /// <typeparam name="T11">The type of parameter 11.</typeparam>
-        /// <typeparam name="T12">The type of parameter 12.</typeparam>
-        /// <typeparam name="T13">The type of parameter 13.</typeparam>
-        /// <typeparam name="T14">The type of parameter 14.</typeparam>
-        /// <typeparam name="T15">The type of parameter 15.</typeparam>
-        /// <typeparam name="T16">The type of parameter 16.</typeparam>
-        /// <typeparam name="T17">The type of parameter 17.</typeparam>
-        /// <typeparam name="T18">The type of parameter 18.</typeparam>
-        /// <typeparam name="T19">The type of parameter 19.</typeparam>
-        /// <typeparam name="T20">The type of parameter 20.</typeparam>
-        /// <typeparam name="T21">The type of parameter 21.</typeparam>
-        /// <typeparam name="T22">The type of parameter 22.</typeparam>
-        /// <typeparam name="T23">The type of parameter 23.</typeparam>
-        /// <typeparam name="T24">The type of parameter 24.</typeparam>
-        /// <typeparam name="T25">The type of parameter 25.</typeparam>
-        /// <typeparam name="T26">The type of parameter 26.</typeparam>
-        /// <param name="parameters">The enumeration of parameters to set.</param>
-        /// <param name="p1Value">Value of SQL Parameter 1.</param>
-        /// <param name="p2Value">Value of SQL Parameter 2.</param>
-        /// <param name="p3Value">Value of SQL Parameter 3.</param>
-        /// <param name="p4Value">Value of SQL Parameter 4.</param>
-        /// <param name="p5Value">Value of SQL Parameter 5.</param>
-        /// <param name="p6Value">Value of SQL Parameter 6.</param>
-        /// <param name="p7Value">Value of SQL Parameter 7.</param>
-        /// <param name="p8Value">Value of SQL Parameter 8.</param>
-        /// <param name="p9Value">Value of SQL Parameter 9.</param>
-        /// <param name="p10Value">Value of SQL Parameter 10.</param>
-        /// <param name="p11Value">Value of SQL Parameter 11.</param>
-        /// <param name="p12Value">Value of SQL Parameter 12.</param>
-        /// <param name="p13Value">Value of SQL Parameter 13.</param>
-        /// <param name="p14Value">Value of SQL Parameter 14.</param>
-        /// <param name="p15Value">Value of SQL Parameter 15.</param>
-        /// <param name="p16Value">Value of SQL Parameter 16.</param>
-        /// <param name="p17Value">Value of SQL Parameter 17.</param>
-        /// <param name="p18Value">Value of SQL Parameter 18.</param>
-        /// <param name="p19Value">Value of SQL Parameter 19.</param>
-        /// <param name="p20Value">Value of SQL Parameter 20.</param>
-        /// <param name="p21Value">Value of SQL Parameter 21.</param>
-        /// <param name="p22Value">Value of SQL Parameter 22.</param>
-        /// <param name="p23Value">Value of SQL Parameter 23.</param>
-        /// <param name="p24Value">Value of SQL Parameter 24.</param>
-        /// <param name="p25Value">Value of SQL Parameter 25.</param>
-        /// <param name="p26Value">Value of SQL Parameter 26.</param>
-        /// <param name="mode">The constraint mode.</param>
-        /// <returns>The parameters that were set</returns>
-        [NotNull]
-        public IEnumerable<SqlParameter> SetParameters<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(IEnumerable<SqlProgramParameter> parameters, T1 p1Value, T2 p2Value, T3 p3Value, T4 p4Value, T5 p5Value, T6 p6Value, T7 p7Value, T8 p8Value, T9 p9Value, T10 p10Value, T11 p11Value, T12 p12Value, T13 p13Value, T14 p14Value, T15 p15Value, T16 p16Value, T17 p17Value, T18 p18Value, T19 p19Value, T20 p20Value, T21 p21Value, T22 p22Value, T23 p23Value, T24 p24Value, T25 p25Value, T26 p26Value, TypeConstraintMode mode = TypeConstraintMode.Warn)
-        {
-            if ((parameters == null) || (parameters.Count() != 26))
-                throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
-                        _program.Name,
-                        26,
-                        parameters == null ? 0 : parameters.Count());
-
-            SqlProgramParameter[] parametersArray = parameters.ToArray();
-
-            int pCount = parametersArray.GetLength(0);
-            if (pCount < 26)
-                throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
-                        _program.Name,
-                        pCount,
-                        26);
-
-            List<SqlParameter> sqlParameters = new List<SqlParameter>(2);
-            SqlParameter parameter;
-            SqlProgramParameter programParameter;
-            int index;
-            lock (_parameters)
-            {
-                // Find or create SQL Parameter 1.
-                programParameter = parametersArray[0];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p1Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 2.
-                programParameter = parametersArray[1];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p2Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 3.
-                programParameter = parametersArray[2];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p3Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 4.
-                programParameter = parametersArray[3];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p4Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 5.
-                programParameter = parametersArray[4];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p5Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 6.
-                programParameter = parametersArray[5];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p6Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 7.
-                programParameter = parametersArray[6];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p7Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 8.
-                programParameter = parametersArray[7];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p8Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 9.
-                programParameter = parametersArray[8];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p9Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 10.
-                programParameter = parametersArray[9];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p10Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 11.
-                programParameter = parametersArray[10];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p11Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 12.
-                programParameter = parametersArray[11];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p12Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 13.
-                programParameter = parametersArray[12];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p13Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 14.
-                programParameter = parametersArray[13];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p14Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 15.
-                programParameter = parametersArray[14];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p15Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 16.
-                programParameter = parametersArray[15];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p16Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 17.
-                programParameter = parametersArray[16];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p17Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 18.
-                programParameter = parametersArray[17];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p18Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 19.
-                programParameter = parametersArray[18];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p19Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 20.
-                programParameter = parametersArray[19];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p20Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 21.
-                programParameter = parametersArray[20];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p21Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 22.
-                programParameter = parametersArray[21];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p22Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 23.
-                programParameter = parametersArray[22];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p23Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 24.
-                programParameter = parametersArray[23];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p24Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 25.
-                programParameter = parametersArray[24];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p25Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 26.
-                programParameter = parametersArray[25];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p26Value, mode);
-                sqlParameters.Add(parameter);
-            }
-
-            // Return parameters that were set
-            return sqlParameters;
-        }
     }
     #endregion
 
@@ -796,27 +548,54 @@ namespace WebApplications.Utilities.Database
     /// </summary>
     public class SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> : SqlProgram
     {
+        #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
+        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="name">The name of the stored procedure or function.</param>
-        /// <param name="ignoreValidationErrors">if set to <see langword="true"/> does not throw validation errors (records them instead).</param>
-        /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
-        /// Defaults to 30s.</param>
-        /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
-            [NotNull] string connectionString, 
+        /// <param name="connection">The load balanced connection.</param>
+        /// <param name="name">The <see cref="Name">name</see> of the program.</param>
+        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <para>This is the time to wait for the command to execute.</para>
+        /// <para>If set to <see langword="null" /> then the timeout will be 30 seconds.</para></param>
+        /// <param name="constraintMode"><para>The type constraint mode.</para>
+        /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
+        protected SqlProgram(
+            [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
-            bool ignoreValidationErrors = false,
+            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(new LoadBalancedConnection(connectionString), name, ignoreValidationErrors, defaultCommandTimeout, constraintMode, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26))
+            : base(connection, name, parameters, defaultCommandTimeout, constraintMode)
         {
+            Contract.Requires(connection != null);
+            Contract.Requires(name != null);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
+        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
+        /// </summary>
+        /// <param name="program">The base program (stored procedure/function).</param>
+        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <para>This is the time to wait for the command to execute.</para>
+        /// <para>If set to <see langword="null" /> then the timeout the default timeout from the base program.</para></param>
+        /// <param name="constraintMode">The type constraint mode, this defined the behavior when truncation/loss of precision occurs.</param>
+        protected SqlProgram(
+            [NotNull] SqlProgram program,
+            [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters,
+            TimeSpan? defaultCommandTimeout,
+            TypeConstraintMode constraintMode)
+            : base(program, parameters, defaultCommandTimeout, constraintMode)
+        {
+            Contract.Requires(program != null);
+            Contract.Requires(parameters != null);
+        }
+        #endregion
+        
+        #region Create overloads
+        /// <summary>
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="name">The name.</param>
@@ -824,83 +603,62 @@ namespace WebApplications.Utilities.Database
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to 30s.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> Create(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             bool ignoreValidationErrors = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(connection, name, ignoreValidationErrors, defaultCommandTimeout, constraintMode, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(connection != null);
+            SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
+                connection,
+                name,
+                new[] { new KeyValuePair<string, Type>(null, typeof(T1)), new KeyValuePair<string, Type>(null, typeof(T2)), new KeyValuePair<string, Type>(null, typeof(T3)), new KeyValuePair<string, Type>(null, typeof(T4)), new KeyValuePair<string, Type>(null, typeof(T5)), new KeyValuePair<string, Type>(null, typeof(T6)), new KeyValuePair<string, Type>(null, typeof(T7)), new KeyValuePair<string, Type>(null, typeof(T8)), new KeyValuePair<string, Type>(null, typeof(T9)), new KeyValuePair<string, Type>(null, typeof(T10)), new KeyValuePair<string, Type>(null, typeof(T11)), new KeyValuePair<string, Type>(null, typeof(T12)), new KeyValuePair<string, Type>(null, typeof(T13)), new KeyValuePair<string, Type>(null, typeof(T14)), new KeyValuePair<string, Type>(null, typeof(T15)), new KeyValuePair<string, Type>(null, typeof(T16)), new KeyValuePair<string, Type>(null, typeof(T17)), new KeyValuePair<string, Type>(null, typeof(T18)), new KeyValuePair<string, Type>(null, typeof(T19)), new KeyValuePair<string, Type>(null, typeof(T20)), new KeyValuePair<string, Type>(null, typeof(T21)), new KeyValuePair<string, Type>(null, typeof(T22)), new KeyValuePair<string, Type>(null, typeof(T23)), new KeyValuePair<string, Type>(null, typeof(T24)), new KeyValuePair<string, Type>(null, typeof(T25)), new KeyValuePair<string, Type>(null, typeof(T26)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(true, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
         /// </summary>
         /// <param name="sqlProgram">The SQL program.</param>
         /// <param name="ignoreValidationErrors">if set to <see langword="true"/> does not throw validation errors (records them instead).</param>
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to existing programs default.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> Create(
             [NotNull] SqlProgram sqlProgram,
             bool ignoreValidationErrors = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(sqlProgram, ignoreValidationErrors, defaultCommandTimeout, constraintMode, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(sqlProgram != null);
+            SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
+                sqlProgram,
+                new[] { new KeyValuePair<string, Type>(null, typeof(T1)), new KeyValuePair<string, Type>(null, typeof(T2)), new KeyValuePair<string, Type>(null, typeof(T3)), new KeyValuePair<string, Type>(null, typeof(T4)), new KeyValuePair<string, Type>(null, typeof(T5)), new KeyValuePair<string, Type>(null, typeof(T6)), new KeyValuePair<string, Type>(null, typeof(T7)), new KeyValuePair<string, Type>(null, typeof(T8)), new KeyValuePair<string, Type>(null, typeof(T9)), new KeyValuePair<string, Type>(null, typeof(T10)), new KeyValuePair<string, Type>(null, typeof(T11)), new KeyValuePair<string, Type>(null, typeof(T12)), new KeyValuePair<string, Type>(null, typeof(T13)), new KeyValuePair<string, Type>(null, typeof(T14)), new KeyValuePair<string, Type>(null, typeof(T15)), new KeyValuePair<string, Type>(null, typeof(T16)), new KeyValuePair<string, Type>(null, typeof(T17)), new KeyValuePair<string, Type>(null, typeof(T18)), new KeyValuePair<string, Type>(null, typeof(T19)), new KeyValuePair<string, Type>(null, typeof(T20)), new KeyValuePair<string, Type>(null, typeof(T21)), new KeyValuePair<string, Type>(null, typeof(T22)), new KeyValuePair<string, Type>(null, typeof(T23)), new KeyValuePair<string, Type>(null, typeof(T24)), new KeyValuePair<string, Type>(null, typeof(T25)), new KeyValuePair<string, Type>(null, typeof(T26)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(true, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
-        /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="name">The name of the stored procedure or function.</param>
-        /// <param name="p1Name">Name of parameter 1.</param>
-        /// <param name="p2Name">Name of parameter 2.</param>
-        /// <param name="p3Name">Name of parameter 3.</param>
-        /// <param name="p4Name">Name of parameter 4.</param>
-        /// <param name="p5Name">Name of parameter 5.</param>
-        /// <param name="p6Name">Name of parameter 6.</param>
-        /// <param name="p7Name">Name of parameter 7.</param>
-        /// <param name="p8Name">Name of parameter 8.</param>
-        /// <param name="p9Name">Name of parameter 9.</param>
-        /// <param name="p10Name">Name of parameter 10.</param>
-        /// <param name="p11Name">Name of parameter 11.</param>
-        /// <param name="p12Name">Name of parameter 12.</param>
-        /// <param name="p13Name">Name of parameter 13.</param>
-        /// <param name="p14Name">Name of parameter 14.</param>
-        /// <param name="p15Name">Name of parameter 15.</param>
-        /// <param name="p16Name">Name of parameter 16.</param>
-        /// <param name="p17Name">Name of parameter 17.</param>
-        /// <param name="p18Name">Name of parameter 18.</param>
-        /// <param name="p19Name">Name of parameter 19.</param>
-        /// <param name="p20Name">Name of parameter 20.</param>
-        /// <param name="p21Name">Name of parameter 21.</param>
-        /// <param name="p22Name">Name of parameter 22.</param>
-        /// <param name="p23Name">Name of parameter 23.</param>
-        /// <param name="p24Name">Name of parameter 24.</param>
-        /// <param name="p25Name">Name of parameter 25.</param>
-        /// <param name="p26Name">Name of parameter 26.</param>
-        /// <param name="ignoreValidationErrors">if set to <see langword="true"/> does not throw validation errors (records them instead).</param>
-        /// <param name="checkOrder">if set to <c>true</c> checks the parameter order matches.</param>
-        /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
-        /// Defaults to 30s.</param>
-        /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
-            [NotNull] string connectionString,
-            [NotNull] string name,
-            string p1Name, string p2Name, string p3Name, string p4Name, string p5Name, string p6Name, string p7Name, string p8Name, string p9Name, string p10Name, string p11Name, string p12Name, string p13Name, string p14Name, string p15Name, string p16Name, string p17Name, string p18Name, string p19Name, string p20Name, string p21Name, string p22Name, string p23Name, string p24Name, string p25Name, string p26Name,
-            bool ignoreValidationErrors = false,
-            bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(new LoadBalancedConnection(connectionString), name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, new List<string>{ p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, p12Name, p13Name, p14Name, p15Name, p16Name, p17Name, p18Name, p19Name, p20Name, p21Name, p22Name, p23Name, p24Name, p25Name, p26Name }, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="name">The name.</param>
@@ -935,20 +693,85 @@ namespace WebApplications.Utilities.Database
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to 30s.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> Create(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
-            string p1Name, string p2Name, string p3Name, string p4Name, string p5Name, string p6Name, string p7Name, string p8Name, string p9Name, string p10Name, string p11Name, string p12Name, string p13Name, string p14Name, string p15Name, string p16Name, string p17Name, string p18Name, string p19Name, string p20Name, string p21Name, string p22Name, string p23Name, string p24Name, string p25Name, string p26Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name, 
+            [NotNull] string p3Name, 
+            [NotNull] string p4Name, 
+            [NotNull] string p5Name, 
+            [NotNull] string p6Name, 
+            [NotNull] string p7Name, 
+            [NotNull] string p8Name, 
+            [NotNull] string p9Name, 
+            [NotNull] string p10Name, 
+            [NotNull] string p11Name, 
+            [NotNull] string p12Name, 
+            [NotNull] string p13Name, 
+            [NotNull] string p14Name, 
+            [NotNull] string p15Name, 
+            [NotNull] string p16Name, 
+            [NotNull] string p17Name, 
+            [NotNull] string p18Name, 
+            [NotNull] string p19Name, 
+            [NotNull] string p20Name, 
+            [NotNull] string p21Name, 
+            [NotNull] string p22Name, 
+            [NotNull] string p23Name, 
+            [NotNull] string p24Name, 
+            [NotNull] string p25Name, 
+            [NotNull] string p26Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(connection, name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, new List<string>{ p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, p12Name, p13Name, p14Name, p15Name, p16Name, p17Name, p18Name, p19Name, p20Name, p21Name, p22Name, p23Name, p24Name, p25Name, p26Name }, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(connection != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
+            Contract.Requires(p3Name != null);
+            Contract.Requires(p4Name != null);
+            Contract.Requires(p5Name != null);
+            Contract.Requires(p6Name != null);
+            Contract.Requires(p7Name != null);
+            Contract.Requires(p8Name != null);
+            Contract.Requires(p9Name != null);
+            Contract.Requires(p10Name != null);
+            Contract.Requires(p11Name != null);
+            Contract.Requires(p12Name != null);
+            Contract.Requires(p13Name != null);
+            Contract.Requires(p14Name != null);
+            Contract.Requires(p15Name != null);
+            Contract.Requires(p16Name != null);
+            Contract.Requires(p17Name != null);
+            Contract.Requires(p18Name != null);
+            Contract.Requires(p19Name != null);
+            Contract.Requires(p20Name != null);
+            Contract.Requires(p21Name != null);
+            Contract.Requires(p22Name != null);
+            Contract.Requires(p23Name != null);
+            Contract.Requires(p24Name != null);
+            Contract.Requires(p25Name != null);
+            Contract.Requires(p26Name != null);
+            SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
+                connection,
+                name,
+                new[] { new KeyValuePair<string, Type>(p1Name, typeof(T1)), new KeyValuePair<string, Type>(p2Name, typeof(T2)), new KeyValuePair<string, Type>(p3Name, typeof(T3)), new KeyValuePair<string, Type>(p4Name, typeof(T4)), new KeyValuePair<string, Type>(p5Name, typeof(T5)), new KeyValuePair<string, Type>(p6Name, typeof(T6)), new KeyValuePair<string, Type>(p7Name, typeof(T7)), new KeyValuePair<string, Type>(p8Name, typeof(T8)), new KeyValuePair<string, Type>(p9Name, typeof(T9)), new KeyValuePair<string, Type>(p10Name, typeof(T10)), new KeyValuePair<string, Type>(p11Name, typeof(T11)), new KeyValuePair<string, Type>(p12Name, typeof(T12)), new KeyValuePair<string, Type>(p13Name, typeof(T13)), new KeyValuePair<string, Type>(p14Name, typeof(T14)), new KeyValuePair<string, Type>(p15Name, typeof(T15)), new KeyValuePair<string, Type>(p16Name, typeof(T16)), new KeyValuePair<string, Type>(p17Name, typeof(T17)), new KeyValuePair<string, Type>(p18Name, typeof(T18)), new KeyValuePair<string, Type>(p19Name, typeof(T19)), new KeyValuePair<string, Type>(p20Name, typeof(T20)), new KeyValuePair<string, Type>(p21Name, typeof(T21)), new KeyValuePair<string, Type>(p22Name, typeof(T22)), new KeyValuePair<string, Type>(p23Name, typeof(T23)), new KeyValuePair<string, Type>(p24Name, typeof(T24)), new KeyValuePair<string, Type>(p25Name, typeof(T25)), new KeyValuePair<string, Type>(p26Name, typeof(T26)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26&gt;"/> class.
         /// </summary>
         /// <param name="sqlProgram">The SQL program.</param>
         /// <param name="p1Name">Name of parameter 1.</param>
@@ -982,16 +805,81 @@ namespace WebApplications.Utilities.Database
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to existing programs default.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> Create(
             [NotNull] SqlProgram sqlProgram,
-            string p1Name, string p2Name, string p3Name, string p4Name, string p5Name, string p6Name, string p7Name, string p8Name, string p9Name, string p10Name, string p11Name, string p12Name, string p13Name, string p14Name, string p15Name, string p16Name, string p17Name, string p18Name, string p19Name, string p20Name, string p21Name, string p22Name, string p23Name, string p24Name, string p25Name, string p26Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name, 
+            [NotNull] string p3Name, 
+            [NotNull] string p4Name, 
+            [NotNull] string p5Name, 
+            [NotNull] string p6Name, 
+            [NotNull] string p7Name, 
+            [NotNull] string p8Name, 
+            [NotNull] string p9Name, 
+            [NotNull] string p10Name, 
+            [NotNull] string p11Name, 
+            [NotNull] string p12Name, 
+            [NotNull] string p13Name, 
+            [NotNull] string p14Name, 
+            [NotNull] string p15Name, 
+            [NotNull] string p16Name, 
+            [NotNull] string p17Name, 
+            [NotNull] string p18Name, 
+            [NotNull] string p19Name, 
+            [NotNull] string p20Name, 
+            [NotNull] string p21Name, 
+            [NotNull] string p22Name, 
+            [NotNull] string p23Name, 
+            [NotNull] string p24Name, 
+            [NotNull] string p25Name, 
+            [NotNull] string p26Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(sqlProgram, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, new List<string>{ p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, p12Name, p13Name, p14Name, p15Name, p16Name, p17Name, p18Name, p19Name, p20Name, p21Name, p22Name, p23Name, p24Name, p25Name, p26Name }, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(sqlProgram != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
+            Contract.Requires(p3Name != null);
+            Contract.Requires(p4Name != null);
+            Contract.Requires(p5Name != null);
+            Contract.Requires(p6Name != null);
+            Contract.Requires(p7Name != null);
+            Contract.Requires(p8Name != null);
+            Contract.Requires(p9Name != null);
+            Contract.Requires(p10Name != null);
+            Contract.Requires(p11Name != null);
+            Contract.Requires(p12Name != null);
+            Contract.Requires(p13Name != null);
+            Contract.Requires(p14Name != null);
+            Contract.Requires(p15Name != null);
+            Contract.Requires(p16Name != null);
+            Contract.Requires(p17Name != null);
+            Contract.Requires(p18Name != null);
+            Contract.Requires(p19Name != null);
+            Contract.Requires(p20Name != null);
+            Contract.Requires(p21Name != null);
+            Contract.Requires(p22Name != null);
+            Contract.Requires(p23Name != null);
+            Contract.Requires(p24Name != null);
+            Contract.Requires(p25Name != null);
+            Contract.Requires(p26Name != null);
+            SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
+                sqlProgram,
+                new[] { new KeyValuePair<string, Type>(p1Name, typeof(T1)), new KeyValuePair<string, Type>(p2Name, typeof(T2)), new KeyValuePair<string, Type>(p3Name, typeof(T3)), new KeyValuePair<string, Type>(p4Name, typeof(T4)), new KeyValuePair<string, Type>(p5Name, typeof(T5)), new KeyValuePair<string, Type>(p6Name, typeof(T6)), new KeyValuePair<string, Type>(p7Name, typeof(T7)), new KeyValuePair<string, Type>(p8Name, typeof(T8)), new KeyValuePair<string, Type>(p9Name, typeof(T9)), new KeyValuePair<string, Type>(p10Name, typeof(T10)), new KeyValuePair<string, Type>(p11Name, typeof(T11)), new KeyValuePair<string, Type>(p12Name, typeof(T12)), new KeyValuePair<string, Type>(p13Name, typeof(T13)), new KeyValuePair<string, Type>(p14Name, typeof(T14)), new KeyValuePair<string, Type>(p15Name, typeof(T15)), new KeyValuePair<string, Type>(p16Name, typeof(T16)), new KeyValuePair<string, Type>(p17Name, typeof(T17)), new KeyValuePair<string, Type>(p18Name, typeof(T18)), new KeyValuePair<string, Type>(p19Name, typeof(T19)), new KeyValuePair<string, Type>(p20Name, typeof(T20)), new KeyValuePair<string, Type>(p21Name, typeof(T21)), new KeyValuePair<string, Type>(p22Name, typeof(T22)), new KeyValuePair<string, Type>(p23Name, typeof(T23)), new KeyValuePair<string, Type>(p24Name, typeof(T24)), new KeyValuePair<string, Type>(p25Name, typeof(T25)), new KeyValuePair<string, Type>(p26Name, typeof(T26)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
+        #endregion
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
@@ -1029,7 +917,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public TOut ExecuteScalar<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteScalar<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteScalar<TOut>(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -1070,7 +958,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<TOut> ExecuteScalarAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteScalarAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteScalarAsync<TOut>(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -1110,7 +998,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<TOut> ExecuteScalarAll<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteScalarAll<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteScalarAll<TOut>(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -1151,7 +1039,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteScalarAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -1189,7 +1077,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public int ExecuteNonQuery(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteNonQuery(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteNonQuery(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -1229,7 +1117,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<int> ExecuteNonQueryAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteNonQueryAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteNonQueryAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -1268,7 +1156,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<int> ExecuteNonQueryAll(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteNonQueryAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteNonQueryAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -1308,7 +1196,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteNonQueryAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteNonQueryAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -1348,7 +1236,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteReader([NotNull] ResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            ExecuteReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            ExecuteReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
         /// <summary>
@@ -1390,7 +1278,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteReaderAsync([NotNull] ResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1430,7 +1318,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteReaderAll([NotNull] ResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            this.ExecuteReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
         /// <summary>
@@ -1472,7 +1360,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteReaderAllAsync([NotNull] ResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1514,7 +1402,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteReader<TOut>([NotNull] ResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
         /// <summary>
@@ -1558,7 +1446,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteReaderAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1601,7 +1489,7 @@ namespace WebApplications.Utilities.Database
         public IEnumerable<TOut> ExecuteReaderAll<TOut>([NotNull] ResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
         /// <summary>
@@ -1645,7 +1533,7 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<TOut>> ExecuteReaderAllAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -1684,7 +1572,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            this.ExecuteXmlReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
         /// <summary>
@@ -1725,7 +1613,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteXmlReaderAsync([NotNull] XmlResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -1764,7 +1652,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            this.ExecuteXmlReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
         /// <summary>
@@ -1805,7 +1693,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteXmlReaderAllAsync([NotNull] XmlResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -1846,7 +1734,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteXmlReader<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
         /// <summary>
@@ -1889,7 +1777,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteXmlReaderAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -1931,7 +1819,7 @@ namespace WebApplications.Utilities.Database
         public IEnumerable<TOut> ExecuteXmlReaderAll<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
         /// <summary>
@@ -1974,7 +1862,7 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<TOut>> ExecuteXmlReaderAllAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), T16 p16Value = default(T16), T17 p17Value = default(T17), T18 p18Value = default(T18), T19 p19Value = default(T19), T20 p20Value = default(T20), T21 p21Value = default(T21), T22 p22Value = default(T22), T23 p23Value = default(T23), T24 p24Value = default(T24), T25 p25Value = default(T25), T26 p26Value = default(T26), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, p20Value, p21Value, p22Value, p23Value, p24Value, p25Value, p26Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -2067,13 +1955,66 @@ namespace WebApplications.Utilities.Database.Configuration
         public static SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> GetConfiguredSqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
             [NotNull] string database,
             [NotNull] string name,
-            string p1Name, string p2Name, string p3Name, string p4Name, string p5Name, string p6Name, string p7Name, string p8Name, string p9Name, string p10Name, string p11Name, string p12Name, string p13Name, string p14Name, string p15Name, string p16Name, string p17Name, string p18Name, string p19Name, string p20Name, string p21Name, string p22Name, string p23Name, string p24Name, string p25Name, string p26Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name, 
+            [NotNull] string p3Name, 
+            [NotNull] string p4Name, 
+            [NotNull] string p5Name, 
+            [NotNull] string p6Name, 
+            [NotNull] string p7Name, 
+            [NotNull] string p8Name, 
+            [NotNull] string p9Name, 
+            [NotNull] string p10Name, 
+            [NotNull] string p11Name, 
+            [NotNull] string p12Name, 
+            [NotNull] string p13Name, 
+            [NotNull] string p14Name, 
+            [NotNull] string p15Name, 
+            [NotNull] string p16Name, 
+            [NotNull] string p17Name, 
+            [NotNull] string p18Name, 
+            [NotNull] string p19Name, 
+            [NotNull] string p20Name, 
+            [NotNull] string p21Name, 
+            [NotNull] string p22Name, 
+            [NotNull] string p23Name, 
+            [NotNull] string p24Name, 
+            [NotNull] string p25Name, 
+            [NotNull] string p26Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null
             )
         {
+            Contract.Requires(database != null);
+            Contract.Requires(name != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
+            Contract.Requires(p3Name != null);
+            Contract.Requires(p4Name != null);
+            Contract.Requires(p5Name != null);
+            Contract.Requires(p6Name != null);
+            Contract.Requires(p7Name != null);
+            Contract.Requires(p8Name != null);
+            Contract.Requires(p9Name != null);
+            Contract.Requires(p10Name != null);
+            Contract.Requires(p11Name != null);
+            Contract.Requires(p12Name != null);
+            Contract.Requires(p13Name != null);
+            Contract.Requires(p14Name != null);
+            Contract.Requires(p15Name != null);
+            Contract.Requires(p16Name != null);
+            Contract.Requires(p17Name != null);
+            Contract.Requires(p18Name != null);
+            Contract.Requires(p19Name != null);
+            Contract.Requires(p20Name != null);
+            Contract.Requires(p21Name != null);
+            Contract.Requires(p22Name != null);
+            Contract.Requires(p23Name != null);
+            Contract.Requires(p24Name != null);
+            Contract.Requires(p25Name != null);
+            Contract.Requires(p26Name != null);
             return Active.GetSqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(database, name, p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, p12Name, p13Name, p14Name, p15Name, p16Name, p17Name, p18Name, p19Name, p20Name, p21Name, p22Name, p23Name, p24Name, p25Name, p26Name,
                 ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode);
         }
@@ -2145,13 +2086,66 @@ namespace WebApplications.Utilities.Database.Configuration
         public SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> GetSqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
             [NotNull] string database, 
             [NotNull] string name,
-            string p1Name, string p2Name, string p3Name, string p4Name, string p5Name, string p6Name, string p7Name, string p8Name, string p9Name, string p10Name, string p11Name, string p12Name, string p13Name, string p14Name, string p15Name, string p16Name, string p17Name, string p18Name, string p19Name, string p20Name, string p21Name, string p22Name, string p23Name, string p24Name, string p25Name, string p26Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name, 
+            [NotNull] string p3Name, 
+            [NotNull] string p4Name, 
+            [NotNull] string p5Name, 
+            [NotNull] string p6Name, 
+            [NotNull] string p7Name, 
+            [NotNull] string p8Name, 
+            [NotNull] string p9Name, 
+            [NotNull] string p10Name, 
+            [NotNull] string p11Name, 
+            [NotNull] string p12Name, 
+            [NotNull] string p13Name, 
+            [NotNull] string p14Name, 
+            [NotNull] string p15Name, 
+            [NotNull] string p16Name, 
+            [NotNull] string p17Name, 
+            [NotNull] string p18Name, 
+            [NotNull] string p19Name, 
+            [NotNull] string p20Name, 
+            [NotNull] string p21Name, 
+            [NotNull] string p22Name, 
+            [NotNull] string p23Name, 
+            [NotNull] string p24Name, 
+            [NotNull] string p25Name, 
+            [NotNull] string p26Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null
             )
         {
+            Contract.Requires(database != null);
+            Contract.Requires(name != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
+            Contract.Requires(p3Name != null);
+            Contract.Requires(p4Name != null);
+            Contract.Requires(p5Name != null);
+            Contract.Requires(p6Name != null);
+            Contract.Requires(p7Name != null);
+            Contract.Requires(p8Name != null);
+            Contract.Requires(p9Name != null);
+            Contract.Requires(p10Name != null);
+            Contract.Requires(p11Name != null);
+            Contract.Requires(p12Name != null);
+            Contract.Requires(p13Name != null);
+            Contract.Requires(p14Name != null);
+            Contract.Requires(p15Name != null);
+            Contract.Requires(p16Name != null);
+            Contract.Requires(p17Name != null);
+            Contract.Requires(p18Name != null);
+            Contract.Requires(p19Name != null);
+            Contract.Requires(p20Name != null);
+            Contract.Requires(p21Name != null);
+            Contract.Requires(p22Name != null);
+            Contract.Requires(p23Name != null);
+            Contract.Requires(p24Name != null);
+            Contract.Requires(p25Name != null);
+            Contract.Requires(p26Name != null);
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) || (!db.Enabled))
@@ -2234,13 +2228,65 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> GetSqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
             [NotNull] string name,
-            string p1Name, string p2Name, string p3Name, string p4Name, string p5Name, string p6Name, string p7Name, string p8Name, string p9Name, string p10Name, string p11Name, string p12Name, string p13Name, string p14Name, string p15Name, string p16Name, string p17Name, string p18Name, string p19Name, string p20Name, string p21Name, string p22Name, string p23Name, string p24Name, string p25Name, string p26Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name, 
+            [NotNull] string p3Name, 
+            [NotNull] string p4Name, 
+            [NotNull] string p5Name, 
+            [NotNull] string p6Name, 
+            [NotNull] string p7Name, 
+            [NotNull] string p8Name, 
+            [NotNull] string p9Name, 
+            [NotNull] string p10Name, 
+            [NotNull] string p11Name, 
+            [NotNull] string p12Name, 
+            [NotNull] string p13Name, 
+            [NotNull] string p14Name, 
+            [NotNull] string p15Name, 
+            [NotNull] string p16Name, 
+            [NotNull] string p17Name, 
+            [NotNull] string p18Name, 
+            [NotNull] string p19Name, 
+            [NotNull] string p20Name, 
+            [NotNull] string p21Name, 
+            [NotNull] string p22Name, 
+            [NotNull] string p23Name, 
+            [NotNull] string p24Name, 
+            [NotNull] string p25Name, 
+            [NotNull] string p26Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null
             )
         {
+            Contract.Requires(name != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
+            Contract.Requires(p3Name != null);
+            Contract.Requires(p4Name != null);
+            Contract.Requires(p5Name != null);
+            Contract.Requires(p6Name != null);
+            Contract.Requires(p7Name != null);
+            Contract.Requires(p8Name != null);
+            Contract.Requires(p9Name != null);
+            Contract.Requires(p10Name != null);
+            Contract.Requires(p11Name != null);
+            Contract.Requires(p12Name != null);
+            Contract.Requires(p13Name != null);
+            Contract.Requires(p14Name != null);
+            Contract.Requires(p15Name != null);
+            Contract.Requires(p16Name != null);
+            Contract.Requires(p17Name != null);
+            Contract.Requires(p18Name != null);
+            Contract.Requires(p19Name != null);
+            Contract.Requires(p20Name != null);
+            Contract.Requires(p21Name != null);
+            Contract.Requires(p22Name != null);
+            Contract.Requires(p23Name != null);
+            Contract.Requires(p24Name != null);
+            Contract.Requires(p25Name != null);
+            Contract.Requires(p26Name != null);
             // Grab the default load balanced connection for the database.
             LoadBalancedConnectionElement connection = this.Connections.FirstOrDefault(c => c.Enabled);
 

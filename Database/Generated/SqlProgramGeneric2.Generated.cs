@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<SqlParameter> SetParameters<T1, T2>(T1 p1Value, T2 p2Value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            SqlProgramParameter[] parameters = _program.Definition.Parameters.ToArray();
+            SqlProgramParameter[] parameters = _mapping.Definition.Parameters.ToArray();
             int pCount = parameters.GetLength(0);
             if (pCount < 2)
                 throw new LoggingException(
@@ -114,7 +114,7 @@ namespace WebApplications.Utilities.Database
                         {
                             n = n.ToLower(); // Find parameter definition
                             SqlProgramParameter parameterDefinition;
-                            if (!_program.Definition.TryGetParameter(n, out parameterDefinition))
+                            if (!_mapping.Definition.TryGetParameter(n, out parameterDefinition))
                                 throw new LoggingException(
                                         LoggingLevel.Critical,
                                         () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
@@ -155,62 +155,6 @@ namespace WebApplications.Utilities.Database
             // Return parameters that were set
             return sqlParameters;
         }
-
-        /// <summary>
-        /// Sets the parameters in ordinal order.
-        /// </summary>
-        /// <typeparam name="T1">The type of parameter 1.</typeparam>
-        /// <typeparam name="T2">The type of parameter 2.</typeparam>
-        /// <param name="parameters">The enumeration of parameters to set.</param>
-        /// <param name="p1Value">Value of SQL Parameter 1.</param>
-        /// <param name="p2Value">Value of SQL Parameter 2.</param>
-        /// <param name="mode">The constraint mode.</param>
-        /// <returns>The parameters that were set</returns>
-        [NotNull]
-        public IEnumerable<SqlParameter> SetParameters<T1, T2>(IEnumerable<SqlProgramParameter> parameters, T1 p1Value, T2 p2Value, TypeConstraintMode mode = TypeConstraintMode.Warn)
-        {
-            if ((parameters == null) || (parameters.Count() != 2))
-                throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
-                        _program.Name,
-                        2,
-                        parameters == null ? 0 : parameters.Count());
-
-            SqlProgramParameter[] parametersArray = parameters.ToArray();
-
-            int pCount = parametersArray.GetLength(0);
-            if (pCount < 2)
-                throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
-                        _program.Name,
-                        pCount,
-                        2);
-
-            List<SqlParameter> sqlParameters = new List<SqlParameter>(2);
-            SqlParameter parameter;
-            SqlProgramParameter programParameter;
-            int index;
-            lock (_parameters)
-            {
-                // Find or create SQL Parameter 1.
-                programParameter = parametersArray[0];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p1Value, mode);
-                sqlParameters.Add(parameter);
-                // Find or create SQL Parameter 2.
-                programParameter = parametersArray[1];
-                index = _parameters.IndexOf(programParameter.Name);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p2Value, mode);
-                sqlParameters.Add(parameter);
-            }
-
-            // Return parameters that were set
-            return sqlParameters;
-        }
     }
     #endregion
 
@@ -220,27 +164,54 @@ namespace WebApplications.Utilities.Database
     /// </summary>
     public class SqlProgram<T1, T2> : SqlProgram
     {
+        #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
+        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="name">The name of the stored procedure or function.</param>
-        /// <param name="ignoreValidationErrors">if set to <see langword="true"/> does not throw validation errors (records them instead).</param>
-        /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
-        /// Defaults to 30s.</param>
-        /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
-            [NotNull] string connectionString, 
+        /// <param name="connection">The load balanced connection.</param>
+        /// <param name="name">The <see cref="Name">name</see> of the program.</param>
+        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <para>This is the time to wait for the command to execute.</para>
+        /// <para>If set to <see langword="null" /> then the timeout will be 30 seconds.</para></param>
+        /// <param name="constraintMode"><para>The type constraint mode.</para>
+        /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
+        protected SqlProgram(
+            [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
-            bool ignoreValidationErrors = false,
+            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(new LoadBalancedConnection(connectionString), name, ignoreValidationErrors, defaultCommandTimeout, constraintMode, typeof(T1), typeof(T2))
+            : base(connection, name, parameters, defaultCommandTimeout, constraintMode)
         {
+            Contract.Requires(connection != null);
+            Contract.Requires(name != null);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
+        /// Initializes a new instance of the <see cref="SqlProgram" /> class.
+        /// </summary>
+        /// <param name="program">The base program (stored procedure/function).</param>
+        /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
+        /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
+        /// <para>This is the time to wait for the command to execute.</para>
+        /// <para>If set to <see langword="null" /> then the timeout the default timeout from the base program.</para></param>
+        /// <param name="constraintMode">The type constraint mode, this defined the behavior when truncation/loss of precision occurs.</param>
+        protected SqlProgram(
+            [NotNull] SqlProgram program,
+            [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters,
+            TimeSpan? defaultCommandTimeout,
+            TypeConstraintMode constraintMode)
+            : base(program, parameters, defaultCommandTimeout, constraintMode)
+        {
+            Contract.Requires(program != null);
+            Contract.Requires(parameters != null);
+        }
+        #endregion
+        
+        #region Create overloads
+        /// <summary>
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="name">The name.</param>
@@ -248,59 +219,62 @@ namespace WebApplications.Utilities.Database
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to 30s.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2>> Create(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             bool ignoreValidationErrors = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(connection, name, ignoreValidationErrors, defaultCommandTimeout, constraintMode, typeof(T1), typeof(T2))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(connection != null);
+            SqlProgram<T1, T2> newProgram = new SqlProgram<T1, T2>(
+                connection,
+                name,
+                new[] { new KeyValuePair<string, Type>(null, typeof(T1)), new KeyValuePair<string, Type>(null, typeof(T2)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(true, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
         /// </summary>
         /// <param name="sqlProgram">The SQL program.</param>
         /// <param name="ignoreValidationErrors">if set to <see langword="true"/> does not throw validation errors (records them instead).</param>
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to existing programs default.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2>> Create(
             [NotNull] SqlProgram sqlProgram,
             bool ignoreValidationErrors = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(sqlProgram, ignoreValidationErrors, defaultCommandTimeout, constraintMode, typeof(T1), typeof(T2))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(sqlProgram != null);
+            SqlProgram<T1, T2> newProgram = new SqlProgram<T1, T2>(
+                sqlProgram,
+                new[] { new KeyValuePair<string, Type>(null, typeof(T1)), new KeyValuePair<string, Type>(null, typeof(T2)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(true, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
-        /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="name">The name of the stored procedure or function.</param>
-        /// <param name="p1Name">Name of parameter 1.</param>
-        /// <param name="p2Name">Name of parameter 2.</param>
-        /// <param name="ignoreValidationErrors">if set to <see langword="true"/> does not throw validation errors (records them instead).</param>
-        /// <param name="checkOrder">if set to <c>true</c> checks the parameter order matches.</param>
-        /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
-        /// Defaults to 30s.</param>
-        /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
-            [NotNull] string connectionString,
-            [NotNull] string name,
-            string p1Name, string p2Name,
-            bool ignoreValidationErrors = false,
-            bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(new LoadBalancedConnection(connectionString), name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, new List<string>{ p1Name, p2Name }, typeof(T1), typeof(T2))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="name">The name.</param>
@@ -311,20 +285,37 @@ namespace WebApplications.Utilities.Database
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to 30s.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2>> Create(
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
-            string p1Name, string p2Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(connection, name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, new List<string>{ p1Name, p2Name }, typeof(T1), typeof(T2))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(connection != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
+            SqlProgram<T1, T2> newProgram = new SqlProgram<T1, T2>(
+                connection,
+                name,
+                new[] { new KeyValuePair<string, Type>(p1Name, typeof(T1)), new KeyValuePair<string, Type>(p2Name, typeof(T2)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
+        /// Creates a new instance of the <see cref="SqlProgram&lt;T1, T2&gt;"/> class.
         /// </summary>
         /// <param name="sqlProgram">The SQL program.</param>
         /// <param name="p1Name">Name of parameter 1.</param>
@@ -334,16 +325,33 @@ namespace WebApplications.Utilities.Database
         /// <param name="defaultCommandTimeout">The optional default command timeout, which will be used whenever this command is executed synchronously.
         /// Defaults to existing programs default.</param>
         /// <param name="constraintMode">The constraint mode.</param>
-        public SqlProgram(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
+        public async Task<SqlProgram<T1, T2>> Create(
             [NotNull] SqlProgram sqlProgram,
-            string p1Name, string p2Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
-            TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : base(sqlProgram, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, new List<string>{ p1Name, p2Name }, typeof(T1), typeof(T2))
+            TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(sqlProgram != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
+            SqlProgram<T1, T2> newProgram = new SqlProgram<T1, T2>(
+                sqlProgram,
+                new[] { new KeyValuePair<string, Type>(p1Name, typeof(T1)), new KeyValuePair<string, Type>(p2Name, typeof(T2)) },
+                defaultCommandTimeout,
+                constraintMode);
+
+            // Validate
+            await newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+
+            return newProgram;
         }
+        #endregion
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
@@ -357,7 +365,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public TOut ExecuteScalar<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteScalar<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteScalar<TOut>(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -374,7 +382,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<TOut> ExecuteScalarAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteScalarAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteScalarAsync<TOut>(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -390,7 +398,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<TOut> ExecuteScalarAll<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteScalarAll<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteScalarAll<TOut>(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -407,7 +415,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteScalarAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -421,7 +429,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public int ExecuteNonQuery(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteNonQuery(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteNonQuery(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -437,7 +445,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<int> ExecuteNonQueryAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteNonQueryAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteNonQueryAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -452,7 +460,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<int> ExecuteNonQueryAll(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteNonQueryAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteNonQueryAll(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
         /// <summary>
@@ -468,7 +476,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteNonQueryAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteNonQueryAllAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
         /// <summary>
@@ -484,7 +492,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteReader([NotNull] ResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            ExecuteReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            ExecuteReader(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
         /// <summary>
@@ -502,7 +510,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteReaderAsync([NotNull] ResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -518,7 +526,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteReaderAll([NotNull] ResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            this.ExecuteReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
         /// <summary>
@@ -536,7 +544,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteReaderAllAsync([NotNull] ResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -554,7 +562,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteReader<TOut>([NotNull] ResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReader(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
         /// <summary>
@@ -574,7 +582,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteReaderAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -593,7 +601,7 @@ namespace WebApplications.Utilities.Database
         public IEnumerable<TOut> ExecuteReaderAll<TOut>([NotNull] ResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
         /// <summary>
@@ -613,7 +621,7 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<TOut>> ExecuteReaderAllAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -628,7 +636,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            this.ExecuteXmlReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReader(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
         /// <summary>
@@ -645,7 +653,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteXmlReaderAsync([NotNull] XmlResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -660,7 +668,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultAction != null);
-            this.ExecuteXmlReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
         /// <summary>
@@ -677,7 +685,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteXmlReaderAllAsync([NotNull] XmlResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultAction != null);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -694,7 +702,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteXmlReader<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReader(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReader(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
         /// <summary>
@@ -713,7 +721,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteXmlReaderAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -731,7 +739,7 @@ namespace WebApplications.Utilities.Database
         public IEnumerable<TOut> ExecuteXmlReaderAll<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null)
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReaderAll(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
         /// <summary>
@@ -750,7 +758,7 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<TOut>> ExecuteXmlReaderAllAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(resultFunc != null);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(ProgramParameters, p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -795,13 +803,18 @@ namespace WebApplications.Utilities.Database.Configuration
         public static SqlProgram<T1, T2> GetConfiguredSqlProgram<T1, T2>(
             [NotNull] string database,
             [NotNull] string name,
-            string p1Name, string p2Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null
             )
         {
+            Contract.Requires(database != null);
+            Contract.Requires(name != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
             return Active.GetSqlProgram<T1, T2>(database, name, p1Name, p2Name,
                 ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode);
         }
@@ -825,13 +838,18 @@ namespace WebApplications.Utilities.Database.Configuration
         public SqlProgram<T1, T2> GetSqlProgram<T1, T2>(
             [NotNull] string database, 
             [NotNull] string name,
-            string p1Name, string p2Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null
             )
         {
+            Contract.Requires(database != null);
+            Contract.Requires(name != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) || (!db.Enabled))
@@ -866,13 +884,17 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public SqlProgram<T1, T2> GetSqlProgram<T1, T2>(
             [NotNull] string name,
-            string p1Name, string p2Name,
+            [NotNull] string p1Name, 
+            [NotNull] string p2Name,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null
             )
         {
+            Contract.Requires(name != null);
+            Contract.Requires(p1Name != null);
+            Contract.Requires(p2Name != null);
             // Grab the default load balanced connection for the database.
             LoadBalancedConnectionElement connection = this.Connections.FirstOrDefault(c => c.Enabled);
 

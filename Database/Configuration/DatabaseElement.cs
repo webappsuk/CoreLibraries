@@ -85,7 +85,7 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("connections", IsRequired = true, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof (LoadBalancedConnectionCollection))]
+        [ConfigurationCollection(typeof(LoadBalancedConnectionCollection))]
         [NotNull]
         public LoadBalancedConnectionCollection Connections
         {
@@ -103,7 +103,7 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("programs", IsRequired = false, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof (ProgramCollection),
+        [ConfigurationCollection(typeof(ProgramCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
         [NotNull]
         public ProgramCollection Programs
@@ -158,8 +158,9 @@ namespace WebApplications.Utilities.Database.Configuration
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(name != null);
-            
+
             // Grab the default load balanced connection for the database.
+            // ReSharper disable once PossibleNullReferenceException
             LoadBalancedConnectionElement connectionElement = Connections.FirstOrDefault(c => c.Enabled);
 
             if (connectionElement == null)
@@ -173,6 +174,7 @@ namespace WebApplications.Utilities.Database.Configuration
             {
                 // Check for name mapping
                 if (!String.IsNullOrWhiteSpace(prog.MapTo))
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     name = prog.MapTo;
 
                 // Set options if not already set.
@@ -183,6 +185,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
                 if (!String.IsNullOrEmpty(prog.Connection))
                 {
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     connectionElement = Connections[prog.Connection];
                     if ((connectionElement == null) ||
                         (!connectionElement.Enabled))
@@ -200,6 +203,7 @@ namespace WebApplications.Utilities.Database.Configuration
                         .Select(
                             kvp =>
                             {
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 ParameterElement param = prog.Parameters[kvp.Key];
                                 if (param == null) return kvp;
                                 if (String.IsNullOrWhiteSpace(param.MapTo))
@@ -225,7 +229,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 ignoreValidationErrors,
                 checkOrder,
                 defaultCommandTimeout,
-                (TypeConstraintMode) constraintMode,
+                (TypeConstraintMode)constraintMode,
                 cancellationToken);
         }
     }
