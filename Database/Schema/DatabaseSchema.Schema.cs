@@ -268,17 +268,17 @@ namespace WebApplications.Utilities.Database.Schema
                 SqlType[] types = typesByName.Values.Distinct().OrderBy(t => t.FullName).ToArray();
                 // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
 
-                // TODO This has been broken at some point! Calculate unique guid!
-                // ReSharper disable PossibleNullReferenceException
-                //_hashCode = Schemas.Aggregate(
-                //    _error != null ? _error.GetHashCode() : 0, (h, s) => h ^ s.GetHashCode());
-                //_hashCode = Types.Aggregate(_hashCode, (h, t) => h ^ t.GetHashCode(t));
-                //_hashCode = ProgramDefinitions.Aggregate(_hashCode, (h, p) => h ^ p.GetHashCode(p));
-                //_hashCode = Tables.Aggregate(_hashCode, (h, t) => h ^ t.GetHashCode(t));
-                Guid guid = Guid.NewGuid();
+                List<byte> guidBytes = new List<byte>(16);
+                unchecked
+                {
+                    guidBytes.AddRange(BitConverter.GetBytes(schemas.Aggregate(0, (hash, schema) => (397 * hash) ^ schema.GetHashCode())));
+                    guidBytes.AddRange(BitConverter.GetBytes(types.Aggregate(0, (hash, type) => (397 * hash) ^ type.GetHashCode())));
+                    guidBytes.AddRange(BitConverter.GetBytes(programDefinitions.Aggregate(0, (hash, programDefinition) => (397 * hash) ^ programDefinition.GetHashCode())));
+                    guidBytes.AddRange(BitConverter.GetBytes(tables.Aggregate(0, (hash, tableDefinition) => (397 * hash) ^ tableDefinition.GetHashCode())));
+                }
 
                 return _schemasByGuid.GetOrAdd(
-                    guid,
+                    new Guid(guidBytes.ToArray()),
                     g =>
                         new Schema(
                         g,

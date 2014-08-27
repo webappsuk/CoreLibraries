@@ -24,10 +24,13 @@ using System;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database.Test
 {
+    [DeploymentItem("Data", "Data")]
     public abstract class DatabaseTestBase : TestBase
     {
         protected static readonly Random Random = new Random();
@@ -92,13 +95,16 @@ namespace WebApplications.Utilities.Database.Test
         /// <param name="isAsync">if set to <see langword="true"/> allows asynchronous processing.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        protected static string CreateConnectionString(string databaseName, bool isAsync = false)
+        protected static string CreateConnectionString(string databaseName)
         {
             return
-                String.Format(
-                    @"Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\{0}.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True;{1}",
-                    databaseName,
-                    isAsync ? "Asynchronous Processing=true" : String.Empty);
+                String.Format(@"Data Source=(localdb)\v11.0;AttachDbFilename=|DataDirectory|\{0}.mdf;Integrated Security=True;Connect Timeout=30;", databaseName);
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            Log.Flush().Wait();
         }
     }
 }

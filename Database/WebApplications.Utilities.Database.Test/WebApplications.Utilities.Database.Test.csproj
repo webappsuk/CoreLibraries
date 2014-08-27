@@ -164,7 +164,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LoadBalanceConnectionTests.cs" />
+    <None Include="LoadBalanceConnectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -172,17 +172,17 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SqlServerTypes\Loader.cs" />
-    <Compile Include="TestSqlProgram\ConstructorTests.cs" />
-    <Compile Include="TestSqlProgram\ExecuteNonQueryAndExecuteNonQueryAll.cs" />
-    <Compile Include="TestSqlProgram\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
-    <Compile Include="TestSqlProgram\ExecuteReaderAndExecuteReaderAllTests.cs" />
-    <Compile Include="TestSqlProgram\ExecuteScalarAsyncAndExecuteScalarAllAsyncTests.cs" />
-    <Compile Include="TestSqlProgram\SqlProgramTestBase.cs" />
-    <Compile Include="TestSqlProgram\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />
-    <Compile Include="TestSqlProgram\ExecuteScalarAndExecuteScalarAllTests.cs" />
+    <None Include="TestSqlProgram\ConstructorTests.cs" />
+    <None Include="TestSqlProgram\ExecuteNonQueryAndExecuteNonQueryAll.cs" />
+    <None Include="TestSqlProgram\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
+    <None Include="TestSqlProgram\ExecuteReaderAndExecuteReaderAllTests.cs" />
+    <None Include="TestSqlProgram\ExecuteScalarAsyncAndExecuteScalarAllAsyncTests.cs" />
+    <None Include="TestSqlProgram\SqlProgramTestBase.cs" />
+    <None Include="TestSqlProgram\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />
+    <None Include="TestSqlProgram\ExecuteScalarAndExecuteScalarAllTests.cs" />
     <Compile Include="DatabaseTestBase.cs" />
-    <Compile Include="TestConfiguration.cs" />
-    <Compile Include="TestDatabaseSchema.cs" />
+    <None Include="TestConfiguration.cs" />
+    <None Include="TestDatabaseSchema.cs" />
     <Compile Include="TestPerformance.cs" />
     <Compile Include="TestTypeConvertor.cs" />
   </ItemGroup>
@@ -221,17 +221,26 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="SqlServerTypes\readme.htm" />
-    <None Include="Data\DifferentLocalData.mdf" />
+    <Content Include="Data\DifferentLocalData.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\DifferentLocalData_log.ldf">
       <DependentUpon>DifferentLocalData.mdf</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Data\LocalData.mdf" />
-    <None Include="Data\LocalDataCopy.mdf" />
+    <Content Include="Data\LocalData.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\LocalDataCopy.mdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\LocalDataCopy_log.ldf">
       <DependentUpon>LocalDataCopy.mdf</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\LocalData_log.ldf">
       <DependentUpon>LocalData.mdf</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
