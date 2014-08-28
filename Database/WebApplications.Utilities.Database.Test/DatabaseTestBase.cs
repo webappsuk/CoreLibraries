@@ -30,7 +30,8 @@ using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database.Test
 {
-    [DeploymentItem("Data")]
+    [DeploymentItem("Data", "Data")]
+    [DeploymentItem("TimeZoneData", "TimeZoneData")]
     public abstract class DatabaseTestBase : TestBase
     {
         protected static readonly Random Random = new Random();
