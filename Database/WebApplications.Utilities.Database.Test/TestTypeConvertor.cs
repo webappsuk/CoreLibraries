@@ -13,7 +13,7 @@ namespace WebApplications.Utilities.Database.Test
 {
     [TestClass]
     [Ignore]
-    public class TestTypeConvertor
+    public class TestTypeConverter
     {
         [TestMethod]
         public void LoadTypes()

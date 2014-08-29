@@ -150,9 +150,6 @@
   <data name="DatabaseSchema_Load_InconsistentType" xml:space="preserve">
     <value>Inconsistent object type when loading '{0}' program definition.</value>
   </data>
-  <data name="DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews" xml:space="preserve">
-    <value>Inconsistent object type when loading '{0}' table/view definition.</value>
-  </data>
   <data name="DatabaseSchema_Load_ParameterTypeNotFound" xml:space="preserve">
     <value>Could not find parameter '{0}'s type '{1}' when loading program definition for '{2}'.</value>
   </data>
@@ -244,7 +241,7 @@
     <value>Truncating DateTime '{0}' when converting to SQL type '{1}' which only accepts DateTimes in the '{2}' range.</value>
   </data>
   <data name="SqlType_GetClrToSqlConverter_FatalErrorOccurred" xml:space="preserve">
-    <value>Fatal error whilst trying to create type convertor for '{0}' type on SQL Type '{1}'. {2}</value>
+    <value>Fatal error whilst trying to create type converter for '{0}' type on SQL Type '{1}'. {2}</value>
   </data>
   <data name="SqlType_GetClrToSqlConverter_NotCreatedAsSqlTableType" xml:space="preserve">
     <value>Structured type '{0}' was not created as a SqlTableType.</value>

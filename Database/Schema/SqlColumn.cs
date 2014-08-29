@@ -25,8 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
@@ -38,37 +36,36 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   Holds information about a column.
     /// </summary>
-    public class SqlColumn : IEquatable<SqlColumn>, IEqualityComparer<SqlColumn>
+    public class SqlColumn : DatabaseEntity<SqlColumn>
     {
-        /// <summary>
-        ///   Whether this column is nullable.
-        /// </summary>
-        public readonly bool IsNullable;
-
-        /// <summary>
-        ///   The column's name.
-        /// </summary>
-        [NotNull] public readonly string Name;
-
         /// <summary>
         ///   The column's zero-indexed ordinal.
         /// </summary>
+        [PublicAPI]
         public readonly int Ordinal;
 
         /// <summary>
         ///   The column's type information.
         /// </summary>
-        [NotNull] public readonly SqlType Type;
+        [PublicAPI]
+        [NotNull]
+        public readonly SqlType Type;
 
         /// <summary>
-        ///   The hash code.
+        ///   Gets the <see cref="Microsoft.SqlServer.Server.SqlMetaData"/>.
         /// </summary>
-        private int? _hashCode;
+        /// <value>
+        ///   The <see cref="Microsoft.SqlServer.Server.SqlMetaData"/> of the column.
+        /// </value>
+        [PublicAPI]
+        [NotNull]
+        public readonly SqlMetaData SqlMetaData;
 
         /// <summary>
-        ///   The column's meta data.
+        ///   Whether this column is nullable.
         /// </summary>
-        private SqlMetaData _sqlMetaData;
+        [PublicAPI]
+        public readonly bool IsNullable;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlColumn"/> class.
@@ -86,127 +83,77 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
         ///   <paramref name="type"/> cannot be <see cref="string.IsNullOrWhiteSpace"/>.</para>
         /// </remarks>
-        internal SqlColumn(int ordinal, [NotNull] string name, [NotNull] SqlType type, SqlTypeSize size, bool isNullable)
+        internal SqlColumn(
+            int ordinal,
+            [NotNull] string name,
+            [NotNull] SqlType type,
+            SqlTypeSize size,
+            bool isNullable)
+            : base(
+                name,
+                c => c.Type,
+                c => c.Ordinal,
+                c => c.IsNullable)
+            // ReSharper restore PossibleNullReferenceException
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            Contract.Requires(name != null);
             Contract.Requires(type != null);
+            Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Ordinal = ordinal;
             IsNullable = isNullable;
             Type = type.Size.Equals(size) ? type : new SqlType(type, size);
-            Name = name;
-        }
 
-        /// <summary>
-        ///   Gets the <see cref="SqlMetaData"/>.
-        /// </summary>
-        /// <value>
-        ///   The <see cref="SqlMetaData"/> of the column.
-        /// </value>
-        [NotNull]
-        public SqlMetaData SqlMetaData
-        {
-            get
+            switch (Type.SqlDbType)
             {
-                if (_sqlMetaData == null)
-                {
-                    switch (Type.SqlDbType)
+                case SqlDbType.Binary:
+                case SqlDbType.Char:
+                case SqlDbType.Image:
+                case SqlDbType.NChar:
+                case SqlDbType.NText:
+                case SqlDbType.NVarChar:
+                case SqlDbType.Text:
+                case SqlDbType.VarBinary:
+                case SqlDbType.VarChar:
+                    SqlMetaData = new SqlMetaData(name, Type.SqlDbType, Type.Size.MaximumLength);
+                    break;
+                case SqlDbType.Decimal:
+                    SqlMetaData = new SqlMetaData(
+                        name,
+                        Type.SqlDbType,
+                        Type.Size.Precision,
+                        Type.Size.Scale);
+                    break;
+                case SqlDbType.Udt:
+                    switch (Type.Name)
                     {
-                        case SqlDbType.Binary:
-                        case SqlDbType.Char:
-                        case SqlDbType.Image:
-                        case SqlDbType.NChar:
-                        case SqlDbType.NText:
-                        case SqlDbType.NVarChar:
-                        case SqlDbType.Text:
-                        case SqlDbType.VarBinary:
-                        case SqlDbType.VarChar:
-                            _sqlMetaData = new SqlMetaData(Name, Type.SqlDbType, Type.Size.MaximumLength);
+                        case "geography":
+                            SqlMetaData = new SqlMetaData(
+                                name,
+                                Type.SqlDbType,
+                                typeof (SqlGeography));
                             break;
-                        case SqlDbType.Decimal:
-                            _sqlMetaData = new SqlMetaData(
-                                Name, Type.SqlDbType, Type.Size.Precision, Type.Size.Scale);
+                        case "geometry":
+                            SqlMetaData = new SqlMetaData(
+                                name,
+                                Type.SqlDbType,
+                                typeof (SqlGeometry));
                             break;
-                        case SqlDbType.Udt:
-                            switch (Type.Name)
-                            {
-                                case "geography":
-                                    _sqlMetaData = new SqlMetaData(
-                                        Name, Type.SqlDbType, typeof (SqlGeography));
-                                    break;
-                                case "geometry":
-                                    _sqlMetaData = new SqlMetaData(
-                                        Name, Type.SqlDbType, typeof (SqlGeometry));
-                                    break;
-                                case "hierarchyid":
-                                    _sqlMetaData = new SqlMetaData(
-                                        Name, Type.SqlDbType, typeof (SqlHierarchyId));
-                                    break;
-                                default:
-                                    _sqlMetaData = new SqlMetaData(Name, Type.SqlDbType);
-                                    break;
-                            }
+                        case "hierarchyid":
+                            SqlMetaData = new SqlMetaData(
+                                name,
+                                Type.SqlDbType,
+                                typeof (SqlHierarchyId));
                             break;
                         default:
-                            _sqlMetaData = new SqlMetaData(Name, Type.SqlDbType);
+                            SqlMetaData = new SqlMetaData(name, Type.SqlDbType);
                             break;
                     }
-                }
-                return _sqlMetaData;
+                    break;
+                default:
+                    SqlMetaData = new SqlMetaData(name, Type.SqlDbType);
+                    break;
             }
         }
-
-        #region IEqualityComparer<SqlColumn> Members
-        /// <summary>
-        ///   Determines whether the specified objects are equal.
-        /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the specified objects are equal; otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <param name="x">The first <see cref="SqlColumn"/> to compare.</param>
-        /// <param name="y">The second <see cref="SqlColumn"/> to compare.</param>
-        public bool Equals(SqlColumn x, SqlColumn y)
-        {
-            return x == null
-                       ? y == null
-                       : y != null && x.Equals(y);
-        }
-
-        /// <summary>
-        ///   Returns a hash code for the specified column.
-        /// </summary>
-        /// <returns>
-        ///   A hash code for the specified column.
-        /// </returns>
-        /// <param name="obj">The <see cref="object"/> for which a hash code is to be returned.</param>
-        /// <exception cref="ArgumentNullException">
-        ///   The type of <paramref name="obj"/> is a reference type and <paramref name="obj" /> is <see langword="null"/>.
-        /// </exception>
-        public int GetHashCode([NotNull] SqlColumn obj)
-        {
-            if (obj._hashCode == null)
-            {
-                obj._hashCode = Ordinal.GetHashCode() ^ Name.GetHashCode() ^ Type.GetHashCode() ^
-                                Type.Size.GetHashCode() ^ IsNullable.GetHashCode();
-            }
-            return (int) obj._hashCode;
-        }
-        #endregion
-
-        #region IEquatable<SqlColumn> Members
-        /// <summary>
-        ///   Indicates whether the current column is equal to another column specified.
-        /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the current column is equal to the <paramref name="other" />; otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <param name="other">A <see cref="SqlColumn"/> to compare with this instance.</param>
-        public bool Equals(SqlColumn other)
-        {
-            return (other != null) &&
-                   (Ordinal == other.Ordinal) && (Name == other.Name) && (Type.Equals(other.Type)) &&
-                   (IsNullable == other.IsNullable) && (Type.Size.Equals(other.Type.Size));
-        }
-        #endregion
 
         /// <summary>
         ///   Casts the CLR value to the correct SQL type.
@@ -217,22 +164,12 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
         /// </param>
         /// <returns>The result of the conversion.</returns>
+        [PublicAPI]
         [CanBeNull]
         public object CastCLRValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
+            // TODO What about SqlMetaData.Adjust()?
             return Type.CastCLRValue(value, mode);
-        }
-
-        /// <summary>
-        ///   Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        ///   <para>A <see cref="string"/> representation of this instance.</para>
-        ///   <para><b>Format:</b> <see cref="SqlColumn.Name"/> + "Column".</para>
-        /// </returns>
-        public override string ToString()
-        {
-            return Name + " Column";
         }
     }
 }

@@ -25,8 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
@@ -37,37 +35,32 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   A class for holding information about a program parameter.
     /// </summary>
-    public class SqlProgramParameter : IEquatable<SqlProgramParameter>, IEqualityComparer<SqlProgramParameter>
+    public class SqlProgramParameter : DatabaseEntity<SqlProgramParameter>
     {
         /// <summary>
         ///   The <see cref="ParameterDirection"/>.
         /// </summary>
-        [UsedImplicitly] public readonly ParameterDirection Direction;
+        [PublicAPI]
+        public readonly ParameterDirection Direction;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the parameter is read only.
         /// </summary>
-        [UsedImplicitly] public readonly bool IsReadonly;
-
-        /// <summary>
-        ///   The parameter name (including the obligatory '@').
-        /// </summary>
-        [NotNull] public readonly string Name;
+        [PublicAPI]
+        public readonly bool IsReadOnly;
 
         /// <summary>
         ///   The zero-based index that is the parameter's position.
         /// </summary>
+        [PublicAPI]
         public readonly int Ordinal;
 
         /// <summary>
         ///   The parameter type information.
         /// </summary>
-        [NotNull] public readonly SqlType Type;
-
-        /// <summary>
-        ///   Hash code cache.
-        /// </summary>
-        private int? _hashCode;
+        [PublicAPI]
+        [NotNull] 
+        public readonly SqlType Type;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlProgramParameter"/> class.
@@ -82,78 +75,34 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="type">The type information.</param>
         /// <param name="size">The size information.</param>
         /// <param name="direction">The parameter direction.</param>
-        /// <param name="isReadonly">
-        ///   If set to <see langword="true"/> the parameter is <see cref="SqlProgramParameter.IsReadonly">read-only.</see>
+        /// <param name="isReadOnly">
+        ///   If set to <see langword="true"/> the parameter is <see cref="IsReadOnly">read-only.</see>
         /// </param>
         /// <remarks>
         ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contact</see> specifying that
         ///   <paramref name="name"/> and <paramref name="type"/> cannot be <see langword="null"/>.
         /// </remarks>
-        internal SqlProgramParameter(int ordinal, [NotNull] string name, [NotNull] SqlType type, SqlTypeSize size,
-                                     ParameterDirection direction, bool isReadonly)
+        internal SqlProgramParameter(
+            int ordinal,
+            [NotNull] string name,
+            [NotNull] SqlType type,
+            SqlTypeSize size,
+            ParameterDirection direction,
+            bool isReadOnly)
+            : base(
+                name,
+                p => p.Ordinal,
+                p => p.Type,
+                p => p.Direction,
+                p => p.IsReadOnly)
         {
             Contract.Requires(name != null);
             Contract.Requires(type != null);
             Ordinal = ordinal;
-            Name = name;
-            IsReadonly = isReadonly;
+            IsReadOnly = isReadOnly;
             Direction = direction;
             Type = type.Size.Equals(size) ? type : new SqlType(type, size);
         }
-
-        #region IEqualityComparer<SqlProgramParameter> Members
-        /// <summary>
-        ///   Determines whether the specified objects are equal.
-        /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the specified <see cref="SqlProgramParameter"/>s are equal;
-        ///   otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <param name = "x">The first <see cref="SqlProgramParameter"/> to compare.</param>
-        /// <param name = "y">The second <see cref="SqlProgramParameter"/> to compare.</param>
-        public bool Equals([CanBeNull] SqlProgramParameter x, [CanBeNull] SqlProgramParameter y)
-        {
-            return x == null
-                       ? y == null
-                       : y != null && x.Equals(y);
-        }
-
-        /// <summary>
-        ///   Returns a hash code for the specified object.
-        /// </summary>
-        /// <returns>
-        ///   A hash code for the specified object.
-        /// </returns>
-        /// <param name="obj">The <see cref="object" /> for which a hash code is to be returned.</param>
-        /// <exception cref="ArgumentNullException">
-        ///   The type of <paramref name = "obj" /> is a reference type and is <see langword="null"/>.
-        /// </exception>
-        public int GetHashCode([NotNull] SqlProgramParameter obj)
-        {
-            if (obj._hashCode == null)
-            {
-                obj._hashCode = obj.Name.GetHashCode() ^ obj.IsReadonly.GetHashCode() ^ obj.Direction.GetHashCode() ^
-                                obj.Type.Size.GetHashCode() ^ obj.Type.GetHashCode();
-            }
-            return (int) obj._hashCode;
-        }
-        #endregion
-
-        #region IEquatable<SqlProgramParameter> Members
-        /// <summary>
-        ///   Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        ///   true if the current object is equal to the <paramref name = "other" /> parameter; otherwise, false.
-        /// </returns>
-        /// <param name = "other">An object to compare with this object.</param>
-        public bool Equals([CanBeNull] SqlProgramParameter other)
-        {
-            return (other != null) &&
-                   (Name == other.Name) && (Type.Equals(other.Type)) && (Type.Size.Equals(other.Type.Size)) &&
-                   (Direction == other.Direction) && (IsReadonly == other.IsReadonly);
-        }
-        #endregion
 
         /// <summary>
         ///   Creates a <see cref="SqlParameter"/> using the current <see cref="SqlProgramParameter"/> instance.
@@ -164,7 +113,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         public SqlParameter CreateSqlParameter()
         {
-            SqlParameter parameter = new SqlParameter(Name, Type.SqlDbType, Type.Size.MaximumLength)
+            SqlParameter parameter = new SqlParameter(FullName, Type.SqlDbType, Type.Size.MaximumLength)
                                          {Size = Type.Size.MaximumLength};
             if (Type.Size.Precision != 0)
                 parameter.Precision = Type.Size.Precision;
@@ -191,18 +140,6 @@ namespace WebApplications.Utilities.Database.Schema
         public object CastCLRValue<T>([CanBeNull] T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
             return Type.CastCLRValue(value, mode);
-        }
-
-        /// <summary>
-        ///   Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        ///   <para>A <see cref="string"/> representation of this instance.</para>
-        ///   <para><b>Format:</b> <see cref="SqlProgramParameter.Name"/> + "Program Parameter".</para>
-        /// </returns>
-        public override string ToString()
-        {
-            return Name + " Program Parameter";
         }
     }
 }

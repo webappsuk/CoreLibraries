@@ -270,6 +270,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Schema\DatabaseEntity.cs" />
+    <Compile Include="Schema\DatabaseSchemaEntity.cs" />
+    <Compile Include="Schema\Delta.cs" />
+    <Compile Include="Schema\Difference.cs" />
     <Compile Include="Schema\ISchema.cs" />
     <Compile Include="Schema\SqlSchema.cs" />
     <Compile Include="Schema\TypeConstraintMode.cs" />

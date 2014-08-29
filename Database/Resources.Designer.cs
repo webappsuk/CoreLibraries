@@ -223,15 +223,6 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Inconsistent object type when loading &apos;{0}&apos; table/view definition..
-        /// </summary>
-        internal static string DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews {
-            get {
-                return ResourceManager.GetString("DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not find parameter &apos;{0}&apos;s type &apos;{1}&apos; when loading program definition for &apos;{2}&apos;..
         /// </summary>
         internal static string DatabaseSchema_Load_ParameterTypeNotFound {
@@ -637,7 +628,7 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fatal error whilst trying to create type convertor for &apos;{0}&apos; type on SQL Type &apos;{1}&apos;. {2}.
+        ///   Looks up a localized string similar to Fatal error whilst trying to create type converter for &apos;{0}&apos; type on SQL Type &apos;{1}&apos;. {2}.
         /// </summary>
         internal static string SqlType_GetClrToSqlConverter_FatalErrorOccurred {
             get {

@@ -262,7 +262,7 @@ namespace WebApplications.Utilities.Database.Schema
                 Contract.Requires(typesByName != null);
 
                 // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-                SqlSchema[] schemas = schemasByID.Values.OrderBy(s => s.Name).ToArray();
+                SqlSchema[] schemas = schemasByID.Values.OrderBy(s => s.FullName).ToArray();
                 SqlProgramDefinition[] programDefinitions = programDefinitionsByName.Values.Distinct().OrderBy(p => p.FullName).ToArray();
                 SqlTableDefinition[] tables = tablesByName.Values.Distinct().OrderBy(t => t.FullName).ToArray();
                 SqlType[] types = typesByName.Values.Distinct().OrderBy(t => t.FullName).ToArray();

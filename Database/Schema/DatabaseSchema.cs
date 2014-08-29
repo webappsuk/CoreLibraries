@@ -55,6 +55,133 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         private static readonly ConcurrentDictionary<string, DatabaseSchema> _databaseSchemas =
             new ConcurrentDictionary<string, DatabaseSchema>();
+        
+        /// <summary>
+        ///  Holds data for a program definition as it's read.
+        /// </summary>
+        private class ProgramDefinitionData
+        {
+            public readonly SqlObjectType Type;
+            public readonly int SchemaID;
+            [NotNull]
+            public readonly string Name;
+            [CanBeNull]
+            public readonly SqlProgramParameter Parameter;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ProgramDefinitionData" /> class.
+            /// </summary>
+            /// <param name="type">The type.</param>
+            /// <param name="schemaID">The schema identifier.</param>
+            /// <param name="name">The name.</param>
+            public ProgramDefinitionData(
+                SqlObjectType type,
+                int schemaID, [NotNull] string name)
+            {
+                Contract.Requires(name != null);
+                Type = type;
+                SchemaID = schemaID;
+                Name = name;
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ProgramDefinitionData" /> class.
+            /// </summary>
+            /// <param name="type">The type.</param>
+            /// <param name="schemaID">The schema identifier.</param>
+            /// <param name="name">The name.</param>
+            /// <param name="ordinal">The ordinal.</param>
+            /// <param name="parameterName">Name of the parameter.</param>
+            /// <param name="parameterType">Type of the parameter.</param>
+            /// <param name="parameterSize">Size of the parameter.</param>
+            /// <param name="parameterDirection">The parameter direction.</param>
+            /// <param name="isReadonly">if set to <see langword="true" /> [is readonly].</param>
+            public ProgramDefinitionData(
+                SqlObjectType type,
+                int schemaID, [NotNull] string name,
+                int ordinal,
+                [NotNull] string parameterName,
+                [NotNull] SqlType parameterType,
+                SqlTypeSize parameterSize,
+                ParameterDirection parameterDirection,
+                bool isReadonly)
+            {
+                Contract.Requires(name != null);
+                Contract.Requires(parameterName != null);
+                Contract.Requires(parameterType != null);
+                Type = type;
+                SchemaID = schemaID;
+                Name = name;
+                Parameter = new SqlProgramParameter(ordinal, parameterName, parameterType, parameterSize, parameterDirection, isReadonly);
+            }
+
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+            public override string ToString()
+            {
+                return string.Format("{0}.{1}", Name, SchemaID);
+            }
+        }
+
+        /// <summary>
+        ///  Holds data for a table definition as it's read.
+        /// </summary>
+        private class TableDefinitionData
+        {
+            public readonly SqlObjectType Type;
+            public readonly int SchemaID;
+            [NotNull]
+            public readonly string Name;
+            [NotNull]
+            public readonly SqlColumn Column;
+            [CanBeNull]
+            public readonly int? TableTypeID;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TableDefinitionData" /> class.
+            /// </summary>
+            /// <param name="type">The type.</param>
+            /// <param name="schemaID">The schema identifier.</param>
+            /// <param name="name">The name.</param>
+            /// <param name="ordinal">The ordinal.</param>
+            /// <param name="columnName">Name of the column.</param>
+            /// <param name="columnType">Type of the column.</param>
+            /// <param name="columnSize">Size of the column.</param>
+            /// <param name="isNullable">if set to <see langword="true" /> [is nullable].</param>
+            /// <param name="tableTypeID">The ID of the associated <see cref="SqlType"/> if this table defines a <see cref="SqlType"/>.</param>
+            public TableDefinitionData(
+                SqlObjectType type,
+                int schemaID,
+                [NotNull] string name,
+                int ordinal,
+                [NotNull] string columnName,
+                [NotNull] SqlType columnType,
+                SqlTypeSize columnSize,
+                bool isNullable,
+                int? tableTypeID)
+            {
+                Contract.Requires(name != null);
+                Contract.Requires(columnName != null);
+                Contract.Requires(columnType != null);
+
+                Type = type;
+                SchemaID = schemaID;
+                Name = name;
+                Column = new SqlColumn(ordinal, columnName, columnType, columnSize, isNullable);
+                TableTypeID = tableTypeID;
+            }
+
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+            public override string ToString()
+            {
+                return string.Format("{0}.{1}", Name, SchemaID);
+            }
+        }
 
         /// <summary>
         /// Groups last loaded schema with when it was loaded and any errors that occured during loading, this makes it atomic.
@@ -402,7 +529,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 throw new DatabaseSchemaException(
                                     () => Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingPrograms);
 
-                            SqlProgramDefinition lastProgramDefinition = null;
+                            List<ProgramDefinitionData> programDefinitionData = new List<ProgramDefinitionData>();
                             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                             {
                                 SqlObjectType type;
@@ -419,64 +546,92 @@ namespace WebApplications.Utilities.Database.Schema
                                         () => Resources.DatabaseSchema_Load_CouldNotFindSchemaWhenLoadingPrograms,
                                         schemaId);
                                 string name = reader.GetString(2).ToLower();
-                                string fullName = string.Format("{0}.{1}", sqlSchema.Name, name);
-
-                                // Now create or find program definition
-                                SqlProgramDefinition programDefinition;
-                                if ((lastProgramDefinition != null) &&
-                                    (lastProgramDefinition.FullName == fullName))
-                                    programDefinition = lastProgramDefinition;
-                                else if (!programDefinitions.TryGetValue(fullName, out programDefinition))
-                                {
-                                    programDefinition = new SqlProgramDefinition(type, sqlSchema, name);
-                                    programDefinitions.Add(fullName, programDefinition);
-                                    if (!programDefinitions.ContainsKey(programDefinition.Name))
-                                        programDefinitions.Add(programDefinition.Name, programDefinition);
-                                }
-                                else if (programDefinition.Type != type)
-                                    throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_InconsistentType,
-                                        fullName);
-                                lastProgramDefinition = programDefinition;
-
+                                
                                 // If we have a null ordinal, we have no parameters.
                                 if (reader.IsDBNull(3))
+                                {
+                                    programDefinitionData.Add(new ProgramDefinitionData(type, schemaId, name));
                                     continue;
+                                }
 
                                 int ordinal = reader.GetInt32(3);
                                 string parameterName = reader.GetString(4).ToLower();
                                 int typeId = reader.GetInt32(5);
-                                SqlType pType;
-                                if (!typesByID.TryGetValue(typeId, out pType) ||
-                                    (pType == null))
+                                SqlType parameterType;
+                                if (!typesByID.TryGetValue(typeId, out parameterType) ||
+                                    (parameterType == null))
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_ParameterTypeNotFound,
                                         parameterName,
                                         typeId,
-                                        fullName);
+                                        name);
 
                                 short maxLength = reader.GetInt16(6);
                                 byte precision = reader.GetByte(7);
                                 byte scale = reader.GetByte(8);
-                                bool isOutput = reader.GetBoolean(9);
-                                bool isReadOnly = reader.GetBoolean(10);
-                                ParameterDirection direction;
-                                if (!isOutput)
-                                    direction = ParameterDirection.Input;
-                                else if (parameterName == string.Empty)
-                                    direction = ParameterDirection.ReturnValue;
-                                else
-                                    direction = ParameterDirection.InputOutput;
+                                SqlTypeSize parameterSize = new SqlTypeSize(maxLength, precision, scale);
 
-                                // Add parameter to program definition
-                                programDefinition.AddParameter(
-                                    new SqlProgramParameter(
+                                bool isOutput = reader.GetBoolean(9);
+                                ParameterDirection parameterDirection;
+                                if (!isOutput)
+                                    parameterDirection = ParameterDirection.Input;
+                                else if (parameterName == string.Empty)
+                                    parameterDirection = ParameterDirection.ReturnValue;
+                                else
+                                    parameterDirection = ParameterDirection.InputOutput;
+
+                                bool parameterIsReadOnly = reader.GetBoolean(10);
+                                programDefinitionData.Add(
+                                    new ProgramDefinitionData(
+                                        type,
+                                        schemaId,
+                                        name,
                                         ordinal,
                                         parameterName,
-                                        pType,
-                                        new SqlTypeSize(maxLength, precision, scale),
-                                        direction,
-                                        isReadOnly));
+                                        parameterType,
+                                        parameterSize,
+                                        parameterDirection,
+                                        parameterIsReadOnly));
+                            }
+
+                            // Create unique program definitions.
+                            foreach (SqlProgramDefinition program in programDefinitionData
+                                .GroupBy(d => d.ToString())
+                                .Select(
+                                    g =>
+                                    {
+                                        // Get columns ordered by ordinal.
+                                        SqlProgramParameter[] parameters = g
+                                            .Select(d => d.Parameter)
+                                            .Where(p => p != null)
+                                            .OrderBy(p => p.Ordinal)
+                                            .ToArray();
+
+                                        ProgramDefinitionData first = g.First();
+                                        Contract.Assert(first != null);
+                                        Contract.Assert(first.Name != null);
+
+                                        SqlSchema sqlSchema;
+                                        if (!sqlSchemas.TryGetValue(first.SchemaID, out sqlSchema))
+                                            throw new DatabaseSchemaException(
+                                                () =>
+                                                    Resources
+                                                    .DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
+                                                first.SchemaID);
+                                        Contract.Assert(sqlSchema != null);
+
+                                        return new SqlProgramDefinition(
+                                            first.Type,
+                                            sqlSchema,
+                                            first.Name,
+                                            parameters);
+                                    }))
+                            {
+                                Contract.Assert(program != null);
+                                programDefinitions[program.FullName] = program;
+
+                                if (!programDefinitions.ContainsKey(program.Name))
+                                    programDefinitions.Add(program.Name, program);
                             }
 
                             /*
@@ -486,9 +641,8 @@ namespace WebApplications.Utilities.Database.Schema
                                 throw new DatabaseSchemaException(
                                     () => Resources.DatabaseSchema_Load_RanOutOfTablesAndViews);
 
-                            Dictionary<int, SqlTableDefinition> tableTypeTables =
-                                new Dictionary<int, SqlTableDefinition>();
-                            SqlTableDefinition lastTableDefinition = null;
+                            // Read raw data in.
+                            List<TableDefinitionData> tableDefinitionData = new List<TableDefinitionData>();
                             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                             {
                                 SqlObjectType type;
@@ -497,86 +651,99 @@ namespace WebApplications.Utilities.Database.Schema
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_CouldNotFindObjectType,
                                         typeString);
-
                                 int schemaId = reader.GetInt32(1);
-                                SqlSchema sqlSchema;
-                                if (!sqlSchemas.TryGetValue(schemaId, out sqlSchema))
-                                    throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
-                                        schemaId);
                                 string name = reader.GetString(2).ToLower();
-                                string fullName = string.Format("{0}.{1}", sqlSchema.Name, name);
-
-                                // Now create or find table/view definition
-                                SqlTableDefinition tableDefinition;
-                                if ((lastTableDefinition != null) &&
-                                    (lastTableDefinition.FullName == fullName))
-                                    tableDefinition = lastTableDefinition;
-                                else if (!tables.TryGetValue(fullName, out tableDefinition))
-                                {
-                                    tableDefinition = new SqlTableDefinition(type, sqlSchema, name);
-                                    tables.Add(fullName, tableDefinition);
-                                    if (!tables.ContainsKey(tableDefinition.Name))
-                                        tables.Add(tableDefinition.Name, tableDefinition);
-                                }
-                                else if (tableDefinition.Type != type)
-                                    throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews,
-                                        fullName);
-                                lastTableDefinition = tableDefinition;
-
                                 int ordinal = reader.GetInt32(3);
                                 string columnName = reader.GetString(4).ToLower();
                                 int typeId = reader.GetInt32(5);
-                                SqlType cType;
-                                if (!typesByID.TryGetValue(typeId, out cType) ||
-                                    (cType == null))
+                                SqlType sqlType;
+                                if (!typesByID.TryGetValue(typeId, out sqlType) ||
+                                    (sqlType == null))
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_ColumnTypeNotFound,
                                         columnName,
                                         typeId,
-                                        fullName);
+                                        name);
 
                                 short maxLength = reader.GetInt16(6);
                                 byte precision = reader.GetByte(7);
                                 byte scale = reader.GetByte(8);
+                                SqlTypeSize sqlTypeSize = new SqlTypeSize(maxLength, precision, scale);
+
                                 bool isNullable = reader.GetBoolean(9);
 
-                                // Add parameter to program definition
-                                tableDefinition.AddColumn(
-                                    new SqlColumn(
-                                        ordinal - 1,
-                                        columnName,
-                                        cType,
-                                        new SqlTypeSize(maxLength, precision, scale),
-                                        isNullable));
+                                int? tableType = reader.IsDBNull(10) ? null : (int?)reader.GetInt32(10);
 
-                                if (!reader.IsDBNull(10))
-                                {
-                                    // This is a table type table
-                                    int tableTypeId = reader.GetInt32(10);
-                                    if (!tableTypeTables.ContainsKey(tableTypeId))
-                                        tableTypeTables.Add(tableTypeId, tableDefinition);
-                                }
+                                tableDefinitionData.Add(
+                                    new TableDefinitionData(
+                                        type,
+                                        schemaId,
+                                        name,
+                                        ordinal,
+                                        columnName,
+                                        sqlType,
+                                        sqlTypeSize,
+                                        isNullable,
+                                        tableType));
                             }
 
-                            foreach (KeyValuePair<int, SqlTableDefinition> kvp in tableTypeTables)
+                            // Create unique table definitions.
+                            foreach (SqlTableDefinition table in  tableDefinitionData
+                                .GroupBy(d => d.ToString())
+                                .Select(
+                                    g =>
+                                    {
+                                        // Get columns ordered by ordinal.
+                                        SqlColumn[] columns = g
+                                            .Select(d => d.Column)
+                                            .OrderBy(c => c.Ordinal)
+                                            .ToArray();
+                                        Contract.Assert(columns.Length > 0);
+
+                                        TableDefinitionData first = g.First();
+                                        Contract.Assert(first != null);
+                                        Contract.Assert(first.Name != null);
+
+                                        SqlSchema sqlSchema;
+                                        if (!sqlSchemas.TryGetValue(first.SchemaID, out sqlSchema))
+                                            throw new DatabaseSchemaException(
+                                                () =>
+                                                    Resources
+                                                    .DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
+                                                first.SchemaID);
+                                        Contract.Assert(sqlSchema != null);
+
+                                        SqlTableType tableType;
+                                        if (first.TableTypeID != null)
+                                        {
+                                            SqlType tType;
+                                            if (!typesByID.TryGetValue(first.TableTypeID.Value, out tType))
+                                                throw new DatabaseSchemaException(
+                                                    () => Resources.DatabaseSchema_Load_TableTypeNotFound,
+                                                    first.TableTypeID.Value,
+                                                    first.Name);
+                                            tableType = tType as SqlTableType;
+                                            if (tableType == null)
+                                                throw new DatabaseSchemaException(
+                                                    () => Resources.DatabaseSchema_Load_TypeNotTableType,
+                                                    first.TableTypeID.Value,
+                                                    first.Name);
+                                        }
+                                        else tableType = null;
+
+                                        return new SqlTableDefinition(
+                                            first.Type,
+                                            sqlSchema,
+                                            first.Name,
+                                            columns,
+                                            tableType);
+                                    }))
                             {
-                                SqlType tType;
-                                if (!typesByID.TryGetValue(kvp.Key, out tType))
-                                    throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_TableTypeNotFound,
-                                        kvp.Key,
-                                        kvp.Value.FullName);
-                                SqlTableType tableType = tType as SqlTableType;
-                                if (tableType == null)
-                                    throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_TypeNotTableType,
-                                        kvp.Key,
-                                        kvp.Value.FullName);
-                                // ReSharper disable AssignNullToNotNullAttribute
-                                tableType.TableDefinition = kvp.Value;
-                                // ReSharper restore AssignNullToNotNullAttribute
+                                Contract.Assert(table != null);
+                                tables[table.FullName] = table;
+
+                                if (!tables.ContainsKey(table.Name))
+                                    tables.Add(table.Name, table);
                             }
                         }
                     }

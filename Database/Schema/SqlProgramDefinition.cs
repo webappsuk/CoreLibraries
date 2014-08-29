@@ -38,35 +38,26 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   Holds a definition for SQL stored procedure or function.
     /// </summary>
-    public class SqlProgramDefinition : IEqualityComparer<SqlProgramDefinition>, IEquatable<SqlProgramDefinition>
+    public sealed class SqlProgramDefinition : DatabaseSchemaEntity<SqlProgramDefinition>
     {
         /// <summary>
         ///   The program name.
         /// </summary>
+        [PublicAPI]
+        [NotNull]
         public readonly string Name;
-
-        /// <summary>
-        ///   The schema.
-        /// </summary>
-        [UsedImplicitly] public readonly SqlSchema SqlSchema;
 
         /// <summary>
         ///   The <see cref="SqlObjectType"/> of the program.
         /// </summary>
+        [PublicAPI]
         public readonly SqlObjectType Type;
 
         /// <summary>
         ///   The program parameters, indexed by the parameter name.
         /// </summary>
-        private readonly Dictionary<string, SqlProgramParameter> _parameters =
-            new Dictionary<string, SqlProgramParameter>();
-
-        /// <summary>
-        ///   Hash code cache.
-        /// </summary>
-        private int? _hashCode;
-
-        private IEnumerable<SqlProgramParameter> _parametersOrdered;
+        [NotNull]
+        private readonly IReadOnlyDictionary<string, SqlProgramParameter> _parametersByName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlProgramDefinition" /> class.
@@ -74,13 +65,27 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="type">The type of program.</param>
         /// <param name="sqlSchema">The schema.</param>
         /// <param name="name">The <see cref="SqlProgramDefinition.Name">program name</see>.</param>
-        internal SqlProgramDefinition(SqlObjectType type, [NotNull] SqlSchema sqlSchema, [NotNull] string name)
+        /// <param name="parameters">The parameters.</param>
+        internal SqlProgramDefinition(
+            SqlObjectType type,
+            [NotNull] SqlSchema sqlSchema,
+            [NotNull] string name,
+            [NotNull] params SqlProgramParameter[] parameters)
+            : base(
+            sqlSchema,
+            name,
+            p => p.Type,
+            p => p.Parameters)
         {
             Contract.Requires(sqlSchema != null);
+            Contract.Requires(name != null);
+            Contract.Requires(parameters != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Type = type;
             Name = name;
-            SqlSchema = sqlSchema;
+            Parameters = parameters;
+            // ReSharper disable once PossibleNullReferenceException
+            _parametersByName = parameters.ToDictionary(p => p.FullName, StringComparer.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -89,100 +94,24 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   The parameters in ordinal order.
         /// </value>
+        [PublicAPI]
         [NotNull]
-        public IEnumerable<SqlProgramParameter> Parameters
-        {
-            get
-            {
-                return _parametersOrdered ??
-// ReSharper disable PossibleNullReferenceException
-                       (_parametersOrdered = _parameters.Values.OrderBy(p => p.Ordinal).ToList());
-// ReSharper restore PossibleNullReferenceException
-            }
-        }
+        public readonly IEnumerable<SqlProgramParameter> Parameters;
 
         /// <summary>
-        ///   Gets the full name.
+        /// Gets the parameter with the specified <paramref name="parameterName">name</paramref>.
         /// </summary>
-        /// <value>
-        ///   The full name, which has a format of: <see cref="SqlSchema"/>.<see cref="Name"/>.
-        /// </value>
-        public string FullName
+        /// <param name="parameterName">Name of the parameter.</param>
+        /// <returns>The <see cref="SqlProgramParameter"/> if found; otherwise <see langword="null"/>.</returns>
+        [PublicAPI]
+        [CanBeNull]
+        public SqlProgramParameter GetParameter([NotNull] string parameterName)
         {
-            get { return string.Format("{0}.{1}", SqlSchema.Name, Name); }
-        }
-
-        #region IEqualityComparer<SqlProgramDefinition> Members
-        /// <summary>
-        ///   Determines whether the specified <see cref="SqlProgramDefinition"/> objects are equal.
-        /// </summary>
-        /// <param name="x">The first <see cref="SqlProgramDefinition"/> to compare.</param>
-        /// <param name="y">The second <see cref="SqlProgramDefinition"/> to compare.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the specified <see cref="SqlProgramDefinition"/>s are equal;
-        ///   otherwise returns <see langword="false"/>.
-        /// </returns>
-        public bool Equals(SqlProgramDefinition x, SqlProgramDefinition y)
-        {
-            if (x == null)
-                return y == null;
-            return x.Equals(y);
-        }
-
-        /// <summary>
-        ///   Returns a hash code for the specified object.
-        /// </summary>
-        /// <returns>
-        ///   A hash code for the specified object.
-        /// </returns>
-        /// <param name="obj">The <see cref="object"/> for which a hash code is to be returned.</param>
-        /// <exception cref="ArgumentNullException">
-        ///   The type of <paramref name="obj"/> is a reference type and is <see langword="null"/>.
-        /// </exception>
-        public int GetHashCode([NotNull] SqlProgramDefinition obj)
-        {
-            if (obj._hashCode == null)
-            {
-                obj._hashCode =
-                    Parameters.Aggregate(
-                        Type.GetHashCode() ^ Name.GetHashCode() ^ SqlSchema.GetHashCode(),
-// ReSharper disable PossibleNullReferenceException
-                        (h, p) => h ^ p.GetHashCode());
-// ReSharper restore PossibleNullReferenceException
-            }
-            return (int) obj._hashCode;
-        }
-        #endregion
-
-        #region IEquatable<SqlProgramDefinition> Members
-        /// <summary>
-        ///   Indicates whether the current <see cref="SqlProgramDefinition"/> is another instance.
-        /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the current <see cref="SqlProgramDefinition"/> is equal to the
-        ///   <paramref name="other"/> <see cref="SqlProgramDefinition"/>; otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="other"/> is <see langword="null"/>.
-        /// </exception>
-        public bool Equals(SqlProgramDefinition other)
-        {
-            if (other == null)
-                return false;
-            return (Type == other.Type) && (FullName == other.FullName) &&
-                   (Parameters.SequenceEqual(other.Parameters));
-        }
-        #endregion
-
-        /// <summary>
-        ///   Adds the parameter specified to the parameters collection.
-        /// </summary>
-        /// <param name="parameter">The parameter to add.</param>
-        internal void AddParameter([NotNull] SqlProgramParameter parameter)
-        {
-            Contract.Requires(parameter != null);
-            _parameters.Add(parameter.Name, parameter);
+            Contract.Requires(parameterName != null);
+            SqlProgramParameter parameter;
+            return _parametersByName.TryGetValue(parameterName, out parameter)
+                ? parameter
+                : null;
         }
 
         /// <summary>
@@ -194,12 +123,12 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Returns <see langword="true"/> if a parameter with the specified <paramref name="parameterName"/> was found;
         ///   otherwise returns <see langword="false"/>.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="parameterName"/> is <see langword="null"/>
-        /// </exception>
+        [PublicAPI]
+        [ContractAnnotation("=>true, parameter:notnull;=>false, parameter:null")]
         public bool TryGetParameter([NotNull] string parameterName, out SqlProgramParameter parameter)
         {
-            return _parameters.TryGetValue(parameterName.ToLower(), out parameter);
+            Contract.Requires(parameterName != null);
+            return _parametersByName.TryGetValue(parameterName, out parameter);
         }
 
         /// <summary>
@@ -216,9 +145,11 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(bool validateOrder,
-                                                                   [NotNull] params string[] parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            bool validateOrder,
+            [NotNull] params string[] parameters)
         {
+            Contract.Requires(parameters != null);
             return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
         }
 
@@ -236,8 +167,9 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<string> parameters,
-                                                                   bool validateOrder = false)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            [NotNull] IEnumerable<string> parameters,
+            bool validateOrder = false)
         {
             return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
         }
@@ -255,7 +187,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] params Type[] parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            [NotNull] params Type[] parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
         }
@@ -273,7 +206,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<Type> parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            [NotNull] IEnumerable<Type> parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
         }
@@ -287,7 +221,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied <paramref name="names"/> count did not match the <paramref name="types"/> count.
         /// </exception>
         [NotNull]
-        internal static IEnumerable<KeyValuePair<string, Type>> ToKVP(
+        internal static IEnumerable<KeyValuePair<string, Type>> ToKvp(
             [NotNull] IEnumerable<string> names,
             [NotNull] params Type[] types)
         {
@@ -339,11 +273,12 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<string> names,
-                                                                   [NotNull] params Type[] types)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            [NotNull] IEnumerable<string> names,
+            [NotNull] params Type[] types)
         {
             // Validate the parameters
-            return ValidateParameters(ToKVP(names, types));
+            return ValidateParameters(ToKvp(names, types));
         }
 
         /// <summary>
@@ -377,7 +312,8 @@ namespace WebApplications.Utilities.Database.Schema
             int sCount;
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            if ((parameters == null) || ((sCount = parameters.Count()) < 1))
+            if ((parameters == null) ||
+                ((sCount = parameters.Count()) < 1))
                 return Enumerable.Empty<SqlProgramParameter>();
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
@@ -426,7 +362,8 @@ namespace WebApplications.Utilities.Database.Schema
 
                         string name = p2.Current.Key;
                         // Only check name if not null.
-                        if ((name != null) && (parameter.Name != (name = name.ToLower())))
+                        if ((name != null) &&
+                            (parameter.FullName != (name = name.ToLower())))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
                                 () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
@@ -443,7 +380,7 @@ namespace WebApplications.Utilities.Database.Schema
                             throw new LoggingException(
                                 LoggingLevel.Critical,
                                 () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
-                                parameter.Name,
+                                parameter.FullName,
                                 FullName,
                                 parameter.Type.FullName,
                                 type);
@@ -463,7 +400,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                 SqlProgramParameter parameter;
                 string name = kvp.Key.ToLower();
-                if (!_parameters.TryGetValue(name, out parameter))
+                if (!_parametersByName.TryGetValue(name, out parameter))
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
@@ -474,11 +411,12 @@ namespace WebApplications.Utilities.Database.Schema
                 sqlParameters.Add(parameter);
 
                 Type type = kvp.Value;
-                if ((type != null) && (!parameter.Type.AcceptsCLRType(type)))
+                if ((type != null) &&
+                    (!parameter.Type.AcceptsCLRType(type)))
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
-                        parameter.Name,
+                        parameter.FullName,
                         FullName,
                         parameter.Type.FullName,
                         type);
@@ -497,7 +435,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// </returns>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] params SqlDbType[] parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            [NotNull] params SqlDbType[] parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, SqlDbType>(null, t)), true);
         }
@@ -511,7 +450,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>The parameters that were validated (in the order specified).</returns>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<SqlDbType> parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            [NotNull] IEnumerable<SqlDbType> parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, SqlDbType>(null, t)), true);
         }
@@ -548,7 +488,8 @@ namespace WebApplications.Utilities.Database.Schema
             int sCount;
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            if ((parameters == null) || ((sCount = parameters.Count()) < 1))
+            if ((parameters == null) ||
+                ((sCount = parameters.Count()) < 1))
                 return Enumerable.Empty<SqlProgramParameter>();
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
@@ -597,7 +538,8 @@ namespace WebApplications.Utilities.Database.Schema
 
                         string name = p2.Current.Key;
                         // Only check name if not null.
-                        if ((name != null) && (parameter.Name != (name = name.ToLower())))
+                        if ((name != null) &&
+                            (parameter.FullName != (name = name.ToLower())))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
                                 () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
@@ -610,7 +552,7 @@ namespace WebApplications.Utilities.Database.Schema
                             throw new LoggingException(
                                 LoggingLevel.Critical,
                                 () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
-                                parameter.Name,
+                                parameter.FullName,
                                 FullName,
                                 parameter.Type.FullName,
                                 type);
@@ -630,7 +572,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                 SqlProgramParameter parameter;
                 string name = kvp.Key.ToLower();
-                if (!_parameters.TryGetValue(name, out parameter))
+                if (!_parametersByName.TryGetValue(name, out parameter))
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
@@ -646,30 +588,12 @@ namespace WebApplications.Utilities.Database.Schema
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
-                        parameter.Name,
+                        parameter.FullName,
                         FullName,
                         parameter.Type.FullName,
                         type);
             }
             return sqlParameters;
-        }
-
-        /// <summary>
-        ///   Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        ///   A <see cref="string"/> representation of this instance. The format string can be changed in the 
-        ///   Resources.resx resource file at the key 'SqlProgramDefinitionToString'.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">
-        ///   The format string was a <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="System.FormatException">
-        ///   An index from the format string is either less than zero or greater than or equal to the number of arguments.
-        /// </exception>
-        public override string ToString()
-        {
-            return String.Format(Resources.SqlProgramDefinition_ToString, FullName);
         }
     }
 }

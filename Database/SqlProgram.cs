@@ -495,7 +495,7 @@ namespace WebApplications.Utilities.Database
             return Create(
                 connection,
                 name,
-                SqlProgramDefinition.ToKVP(parameterNames, parameterTypes),
+                SqlProgramDefinition.ToKvp(parameterNames, parameterTypes),
                 ignoreValidationErrors,
                 checkOrder,
                 defaultCommandTimeout,
@@ -574,7 +574,7 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(parameterTypes != null);
             SqlProgram newProgram = new SqlProgram(
                 program,
-                SqlProgramDefinition.ToKVP(parameterNames, parameterTypes),
+                SqlProgramDefinition.ToKvp(parameterNames, parameterTypes),
                 defaultCommandTimeout,
                 constraintMode
                 );

@@ -33,7 +33,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   Extends SqlType to store column information for table types.
     /// </summary>
-    public class SqlTableType : SqlType
+    public sealed class SqlTableType : SqlType
     {
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlTableType"/> class.
@@ -59,9 +59,18 @@ namespace WebApplications.Utilities.Database.Schema
             bool isNullable,
             bool isUserDefined,
             bool isClr)
-            : base(baseType, sqlSchema, name, defaultSize, isNullable, isUserDefined, isClr, true)
+            : base(
+                baseType,
+                sqlSchema,
+                name,
+                defaultSize,
+                isNullable,
+                isUserDefined,
+                isClr,
+                true)
         {
             Contract.Requires(sqlSchema != null);
+            Contract.Requires(name != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
         }
 
@@ -71,17 +80,5 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>The definition for the table.</value>
         [NotNull]
         public SqlTableDefinition TableDefinition { get; internal set; }
-
-        /// <summary>
-        ///   Returns a <see cref="string"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        ///   <para>A <see cref="string"/> representation of this instance.</para>
-        ///   <para><b>Format:</b> <see cref="SqlType.FullName"/> + "Table Type".</para>
-        /// </returns>
-        public override string ToString()
-        {
-            return FullName + " Table Type";
-        }
     }
 }

@@ -27,30 +27,37 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
 {
     /// <summary>
     ///   A structure that holds size information for a <see cref="SqlType"/>
     /// </summary>
-    public struct SqlTypeSize : IEquatable<SqlTypeSize>, IEqualityComparer<SqlTypeSize>
+    [StructLayout(LayoutKind.Explicit)]
+    public struct SqlTypeSize : IEquatable<SqlTypeSize>
     {
         /// <summary>
         ///   The maximum length.
         /// </summary>
+        [FieldOffset(0)]
         public readonly short MaximumLength;
 
         /// <summary>
         ///   The precision.
         /// </summary>
+        [FieldOffset(2)]
         public readonly byte Precision;
 
         /// <summary>
         ///   The scale.
         /// </summary>
+        [FieldOffset(3)]
         public readonly byte Scale;
 
-        private int? _hashCode;
+        [FieldOffset(0)]
+        private readonly int _hashCode;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlTypeSize" /> struct.
@@ -61,59 +68,65 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The number of digits to the right of the decimal point in a number.
         /// </param>
         public SqlTypeSize(short maximumLength, byte precision, byte scale)
-            : this()
         {
+            _hashCode = 0;
             MaximumLength = maximumLength;
             Scale = scale;
             Precision = precision;
         }
 
-        #region IEqualityComparer<SqlTypeSize> Members
         /// <summary>
-        ///   Checks if two <see cref="SqlTypeSize">sizes</see> are equal.
+        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
         /// </summary>
-        /// <param name="x">The first <see cref="SqlTypeSize"/> to compare.</param>
-        /// <param name="y">The second <see cref="SqlTypeSize"/> to compare.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the two <see cref="SqlTypeSize"/>s are equal; otherwise returns <see langword="false"/>.
-        /// </returns>
-        public bool Equals(SqlTypeSize x, SqlTypeSize y)
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
+        public override bool Equals([CanBeNull]object obj)
         {
-            return x.Equals(y);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is SqlTypeSize &&
+                   _hashCode == ((SqlTypeSize)obj)._hashCode;
         }
 
         /// <summary>
-        ///   Returns a hash code for the specified object.
+        /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
-        /// <returns>
-        ///   A hash code for the specified object.
-        /// </returns>
-        /// <param name="obj">The <see cref="object"/> for which a hash code is to be returned.</param>
-        /// <exception cref="ArgumentNullException">
-        ///   The type of <paramref name="obj"/> is a reference type and is <see langword="null"/>.
-        /// </exception>
-        public int GetHashCode(SqlTypeSize obj)
-        {
-            if (obj._hashCode == null)
-                obj._hashCode = obj.MaximumLength.GetHashCode() ^ obj.Precision.GetHashCode() ^ obj.Scale.GetHashCode();
-            return (int) obj._hashCode;
-        }
-        #endregion
-
-        #region IEquatable<SqlTypeSize> Members
-        /// <summary>
-        ///   Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the current object is equal to the <paramref name="other"/>; otherwise returns <see langword="false"/>.
-        /// </returns>
-        /// <param name="other">An <see cref="SqlTypeSize"/> to compare with this object.</param>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
         public bool Equals(SqlTypeSize other)
         {
-            return (other.MaximumLength == MaximumLength) && (other.Precision == Precision) &&
-                   (other.Scale == Scale);
+            return _hashCode == other._hashCode;
         }
-        #endregion
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            return _hashCode;
+        }
+
+        /// <summary>
+        /// Implements the ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(SqlTypeSize left, SqlTypeSize right)
+        {
+            return left._hashCode.Equals(right._hashCode);
+        }
+
+        /// <summary>
+        /// Implements the !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(SqlTypeSize left, SqlTypeSize right)
+        {
+            return !left._hashCode.Equals(right._hashCode);
+        }
 
         /// <summary>
         ///   Returns a <see cref="string"/> that represents this instance.
@@ -130,6 +143,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         public override string ToString()
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return string.Format(Resources.SqlTypeSize_ToString, MaximumLength, Precision, Scale);
         }
     }
