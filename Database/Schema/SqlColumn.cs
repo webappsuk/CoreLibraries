@@ -25,8 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Data;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
@@ -38,6 +40,19 @@ namespace WebApplications.Utilities.Database.Schema
     /// </summary>
     public class SqlColumn : DatabaseEntity<SqlColumn>
     {
+        /// <summary>
+        /// The properties used for calculating differences.
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        private static readonly Expression<Func<SqlColumn, object>>[] _properties =
+            new Expression<Func<SqlColumn, object>>[]
+            {
+                c => c.Type,
+                c => c.Ordinal,
+                c => c.IsNullable
+            };
+
         /// <summary>
         ///   The column's zero-indexed ordinal.
         /// </summary>
@@ -89,11 +104,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] SqlType type,
             SqlTypeSize size,
             bool isNullable)
-            : base(
-                name,
-                c => c.Type,
-                c => c.Ordinal,
-                c => c.IsNullable)
+            : base(name)
             // ReSharper restore PossibleNullReferenceException
         {
             Contract.Requires(name != null);

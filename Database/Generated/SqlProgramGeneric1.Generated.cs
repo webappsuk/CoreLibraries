@@ -70,7 +70,7 @@ namespace WebApplications.Utilities.Database
             {
                 // Find or create SQL Parameter 1.
                 programParameter = parameters[0];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p1Value, mode);
                 sqlParameters.Add(parameter);
@@ -130,7 +130,7 @@ namespace WebApplications.Utilities.Database
             {
                 // Find or create SQL Parameter 1.
                 programParameter = parameters[0];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p1Value, mode);
                 sqlParameters.Add(parameter);

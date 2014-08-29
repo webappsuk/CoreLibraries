@@ -110,127 +110,127 @@ namespace WebApplications.Utilities.Database
             {
                 // Find or create SQL Parameter 1.
                 programParameter = parameters[0];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p1Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p2Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p3Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p4Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 5.
                 programParameter = parameters[4];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p5Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 6.
                 programParameter = parameters[5];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p6Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 7.
                 programParameter = parameters[6];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p7Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 8.
                 programParameter = parameters[7];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p8Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 9.
                 programParameter = parameters[8];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p9Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 10.
                 programParameter = parameters[9];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p10Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 11.
                 programParameter = parameters[10];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p11Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 12.
                 programParameter = parameters[11];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p12Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 13.
                 programParameter = parameters[12];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p13Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 14.
                 programParameter = parameters[13];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p14Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 15.
                 programParameter = parameters[14];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p15Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 16.
                 programParameter = parameters[15];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p16Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 17.
                 programParameter = parameters[16];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p17Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 18.
                 programParameter = parameters[17];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p18Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 19.
                 programParameter = parameters[18];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p19Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 20.
                 programParameter = parameters[19];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p20Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 21.
                 programParameter = parameters[20];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p21Value, mode);
                 sqlParameters.Add(parameter);
@@ -330,127 +330,127 @@ namespace WebApplications.Utilities.Database
             {
                 // Find or create SQL Parameter 1.
                 programParameter = parameters[0];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p1Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p2Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p3Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p4Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 5.
                 programParameter = parameters[4];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p5Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 6.
                 programParameter = parameters[5];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p6Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 7.
                 programParameter = parameters[6];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p7Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 8.
                 programParameter = parameters[7];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p8Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 9.
                 programParameter = parameters[8];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p9Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 10.
                 programParameter = parameters[9];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p10Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 11.
                 programParameter = parameters[10];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p11Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 12.
                 programParameter = parameters[11];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p12Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 13.
                 programParameter = parameters[12];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p13Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 14.
                 programParameter = parameters[13];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p14Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 15.
                 programParameter = parameters[14];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p15Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 16.
                 programParameter = parameters[15];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p16Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 17.
                 programParameter = parameters[16];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p17Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 18.
                 programParameter = parameters[17];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p18Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 19.
                 programParameter = parameters[18];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p19Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 20.
                 programParameter = parameters[19];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p20Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 21.
                 programParameter = parameters[20];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p21Value, mode);
                 sqlParameters.Add(parameter);

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
 
@@ -40,6 +41,18 @@ namespace WebApplications.Utilities.Database.Schema
     /// </summary>
     public sealed class SqlProgramDefinition : DatabaseSchemaEntity<SqlProgramDefinition>
     {
+        /// <summary>
+        /// The properties used for calculating differences.
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        private static readonly Expression<Func<SqlProgramDefinition, object>>[] _properties =
+            new Expression<Func<SqlProgramDefinition, object>>[]
+            {
+                p => p.Type,
+                p => p.Parameters
+            };
+
         /// <summary>
         ///   The program name.
         /// </summary>
@@ -71,11 +84,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] SqlSchema sqlSchema,
             [NotNull] string name,
             [NotNull] params SqlProgramParameter[] parameters)
-            : base(
-            sqlSchema,
-            name,
-            p => p.Type,
-            p => p.Parameters)
+            : base(sqlSchema, name)
         {
             Contract.Requires(sqlSchema != null);
             Contract.Requires(name != null);

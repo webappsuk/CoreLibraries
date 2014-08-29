@@ -52,6 +52,22 @@ namespace WebApplications.Utilities.Database.Schema
     public class SqlType : DatabaseSchemaEntity<SqlType>
     {
         /// <summary>
+        /// The properties used for calculating differences.
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        private static readonly Expression<Func<SqlType, object>>[] _properties =
+            new Expression<Func<SqlType, object>>[]
+            {
+                t => t.IsCLR,
+                t => t.IsNullable,
+                t => t.IsUserDefined,
+                t => t.IsTable,
+                t => t.Size,
+                t => t.BaseType
+            };
+
+        /// <summary>
         ///   Valid date ranges for date types.
         /// </summary>
         [NotNull]
@@ -230,15 +246,7 @@ namespace WebApplications.Utilities.Database.Schema
             bool isUserDefined,
             bool isClr,
             bool isTable)
-            : base(
-                sqlSchema,
-                name,
-                t => t.IsCLR,
-                t => t.IsNullable,
-                t => t.IsUserDefined,
-                t => t.IsTable,
-                t => t.Size,
-                t => t.BaseType)
+            : base(sqlSchema, name)
         {
             Contract.Requires(sqlSchema != null);
             Contract.Requires(name != null);
@@ -297,15 +305,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   that <paramref name="baseType"/> cannot be <see langword="null"/>.
         /// </remarks>
         internal SqlType([NotNull] SqlType baseType, SqlTypeSize size)
-            : base(
-                baseType.SqlSchema,
-                baseType.Name,
-                t => t.IsCLR,
-                t => t.IsNullable,
-                t => t.IsUserDefined,
-                t => t.IsTable,
-                t => t.Size,
-                t => t.BaseType)
+            : base(baseType.SqlSchema, baseType.Name)
         {
             Contract.Requires(baseType != null);
             Name = baseType.Name;

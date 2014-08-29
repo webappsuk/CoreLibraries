@@ -126,7 +126,7 @@ namespace WebApplications.Utilities.Database
 <# for (int i = 0; i < Strings.GenericCount; i++) { #>
                 // Find or create SQL Parameter <#= i+1 #>.
                 programParameter = parameters[<#= i #>];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p<#= i+1 #>Value, mode);
                 sqlParameters.Add(parameter);
@@ -188,7 +188,7 @@ namespace WebApplications.Utilities.Database
 <# for (int i = 0; i < Strings.GenericCount; i++) { #>
                 // Find or create SQL Parameter <#= i+1 #>.
                 programParameter = parameters[<#= i #>];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p<#= i+1 #>Value, mode);
                 sqlParameters.Add(parameter);

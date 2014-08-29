@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -10,6 +11,17 @@ namespace WebApplications.Utilities.Database.Schema
     /// </summary>
     public class SqlSchema : DatabaseEntity<SqlSchema>
     {
+        /// <summary>
+        /// The properties used for calculating differences.
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        private static readonly Expression<Func<SqlSchema, object>>[] _properties =
+            new Expression<Func<SqlSchema, object>>[]
+            {
+                s => s.ID
+            };
+
         /// <summary>
         /// The identifier.
         /// </summary>
@@ -23,7 +35,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="fullName">The name.</param>
         // ReSharper disable once CodeAnnotationAnalyzer
         internal SqlSchema(int id, [NotNull]string fullName)
-            : base(fullName, s => s.ID)
+            : base(fullName)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(fullName));
             ID = id;

@@ -25,9 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -37,6 +39,20 @@ namespace WebApplications.Utilities.Database.Schema
     /// </summary>
     public class SqlProgramParameter : DatabaseEntity<SqlProgramParameter>
     {
+        /// <summary>
+        /// The properties used for calculating differences.
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        private static readonly Expression<Func<SqlProgramParameter, object>>[] _properties =
+            new Expression<Func<SqlProgramParameter, object>>[]
+            {
+                p => p.Ordinal,
+                p => p.Type,
+                p => p.Direction,
+                p => p.IsReadOnly
+            };
+
         /// <summary>
         ///   The <see cref="ParameterDirection"/>.
         /// </summary>
@@ -89,12 +105,7 @@ namespace WebApplications.Utilities.Database.Schema
             SqlTypeSize size,
             ParameterDirection direction,
             bool isReadOnly)
-            : base(
-                name,
-                p => p.Ordinal,
-                p => p.Type,
-                p => p.Direction,
-                p => p.IsReadOnly)
+            : base(name)
         {
             Contract.Requires(name != null);
             Contract.Requires(type != null);

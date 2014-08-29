@@ -51,16 +51,11 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <param name="sqlSchema">The schema.</param>
         /// <param name="name">The name.</param>
-        /// <param name="propertyExpressions">The property expressions.</param>
-        protected DatabaseSchemaEntity(
-            [NotNull] SqlSchema sqlSchema,
-            [NotNull] string name,
-            [NotNull] params Expression<Func<T, object>>[] propertyExpressions)
-            : base(string.Format("{0}.{1}", sqlSchema.FullName, name), propertyExpressions)
+        protected DatabaseSchemaEntity([NotNull] SqlSchema sqlSchema, [NotNull] string name)
+            : base(string.Format("{0}.{1}", sqlSchema.FullName, name))
         {
             Contract.Requires(sqlSchema != null);
             Contract.Requires(name != null);
-            Contract.Requires(propertyExpressions != null);
             SqlSchema = sqlSchema;
         }
     }

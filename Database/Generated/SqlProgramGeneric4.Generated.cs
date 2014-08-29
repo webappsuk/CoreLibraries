@@ -76,25 +76,25 @@ namespace WebApplications.Utilities.Database
             {
                 // Find or create SQL Parameter 1.
                 programParameter = parameters[0];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p1Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p2Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p3Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p4Value, mode);
                 sqlParameters.Add(parameter);
@@ -160,25 +160,25 @@ namespace WebApplications.Utilities.Database
             {
                 // Find or create SQL Parameter 1.
                 programParameter = parameters[0];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p1Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p2Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p3Value, mode);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
-                index = _parameters.IndexOf(programParameter.Name);
+                index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 parameter.Value = programParameter.CastCLRValue(p4Value, mode);
                 sqlParameters.Add(parameter);

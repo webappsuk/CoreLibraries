@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Microsoft.SqlServer.Server;
 
@@ -38,6 +39,19 @@ namespace WebApplications.Utilities.Database.Schema
     /// </summary>
     public sealed class SqlTableDefinition : DatabaseSchemaEntity<SqlTableDefinition>
     {
+        /// <summary>
+        /// The properties used for calculating differences.
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        private static readonly Expression<Func<SqlTableDefinition, object>>[] _properties =
+            new Expression<Func<SqlTableDefinition, object>>[]
+            {
+                t => t.TableType,
+                t => t.Type,
+                t => t.Columns
+            };
+
         /// <summary>
         ///   The name of the table/view.
         /// </summary>
@@ -105,12 +119,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] string name,
             [NotNull] SqlColumn[] columns,
             [CanBeNull] SqlTableType tableType)
-            : base(
-                sqlSchema,
-                name,
-                t => t.TableType,
-                t => t.Type,
-                t => t.Columns)
+            : base(sqlSchema, name)
             // ReSharper restore PossibleNullReferenceException
         {
             Contract.Requires(sqlSchema != null);
