@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -76,6 +77,34 @@ namespace WebApplications.Utilities.Database.Configuration
             Databases = Databases ?? new DatabaseCollection();
             // ReSharper restore ConstantNullCoalescingCondition
             base.InitializeDefault();
+        }
+
+        /// <summary>
+        /// Gets the schema from the configuration with the specified database name; and ensures all connections on the schema are identical.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public Task<DatabaseSchema> GetSchema(
+            [NotNull] string database,
+            string connectionName = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(database != null);
+            DatabaseElement db = Databases[database];
+            if ((db == null) ||
+                (!db.Enabled))
+                // ReSharper disable once AssignNullToNotNullAttribute
+                // TODO should wrap in task!
+                throw new LoggingException(
+                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                    database);
+
+            return db.GetSchema(connectionName, cancellationToken);
         }
 
         /// <summary>

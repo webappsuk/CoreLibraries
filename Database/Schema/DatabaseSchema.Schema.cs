@@ -30,11 +30,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using JetBrains.Annotations;
-using NodaTime;
-using WebApplications.Utilities.Database.Exceptions;
-using WebApplications.Utilities.Scheduling;
 
 namespace WebApplications.Utilities.Database.Schema
 {
@@ -53,8 +49,9 @@ namespace WebApplications.Utilities.Database.Schema
             /// The schemas by unique identifier.
             /// </summary>
             [NotNull]
-            private static readonly ConcurrentDictionary<Guid, Schema> _schemasByGuid = new ConcurrentDictionary<Guid, Schema>();
-                
+            private static readonly ConcurrentDictionary<Guid, Schema> _schemasByGuid =
+                new ConcurrentDictionary<Guid, Schema>();
+
             [NotNull]
             private readonly IReadOnlyDictionary<int, SqlSchema> _schemasByID;
 
@@ -64,10 +61,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IReadOnlyDictionary<int, SqlSchema> SchemasByID
             {
-                get
-                {
-                    return _schemasByID;
-                }
+                get { return _schemasByID; }
             }
 
             [NotNull]
@@ -79,10 +73,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName
             {
-                get
-                {
-                    return _programDefinitionsByName;
-                }
+                get { return _programDefinitionsByName; }
             }
 
             [NotNull]
@@ -94,10 +85,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IReadOnlyDictionary<string, SqlTableDefinition> TablesByName
             {
-                get
-                {
-                    return _tablesByName;
-                }
+                get { return _tablesByName; }
             }
 
             [NotNull]
@@ -110,10 +98,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IReadOnlyDictionary<string, SqlType> TypesByName
             {
-                get
-                {
-                    return _typesByName;
-                }
+                get { return _typesByName; }
             }
 
             [NotNull]
@@ -128,10 +113,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IEnumerable<SqlSchema> Schemas
             {
-                get
-                {
-                    return _schemas;
-                }
+                get { return _schemas; }
             }
 
             [NotNull]
@@ -146,10 +128,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IEnumerable<SqlType> Types
             {
-                get
-                {
-                    return _types;
-                }
+                get { return _types; }
             }
 
             [NotNull]
@@ -162,10 +141,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IEnumerable<SqlProgramDefinition> ProgramDefinitions
             {
-                get
-                {
-                    return _programDefinitions;
-                }
+                get { return _programDefinitions; }
             }
 
             [NotNull]
@@ -178,10 +154,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public IEnumerable<SqlTableDefinition> Tables
             {
-                get
-                {
-                    return _tables;
-                }
+                get { return _tables; }
             }
 
             private readonly Guid _guid;
@@ -192,10 +165,7 @@ namespace WebApplications.Utilities.Database.Schema
             [PublicAPI]
             public Guid Guid
             {
-                get
-                {
-                    return _guid;
-                }
+                get { return _guid; }
             }
 
             /// <summary>
@@ -230,7 +200,7 @@ namespace WebApplications.Utilities.Database.Schema
                 Contract.Requires(tables != null);
                 Contract.Requires(types != null);
 
-                _guid = Guid;
+                _guid = guid;
                 _schemasByID = schemasByID;
                 _programDefinitionsByName = programDefinitionsByName;
                 _tablesByName = tablesByName;
@@ -263,7 +233,8 @@ namespace WebApplications.Utilities.Database.Schema
 
                 // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
                 SqlSchema[] schemas = schemasByID.Values.OrderBy(s => s.FullName).ToArray();
-                SqlProgramDefinition[] programDefinitions = programDefinitionsByName.Values.Distinct().OrderBy(p => p.FullName).ToArray();
+                SqlProgramDefinition[] programDefinitions =
+                    programDefinitionsByName.Values.Distinct().OrderBy(p => p.FullName).ToArray();
                 SqlTableDefinition[] tables = tablesByName.Values.Distinct().OrderBy(t => t.FullName).ToArray();
                 SqlType[] types = typesByName.Values.Distinct().OrderBy(t => t.FullName).ToArray();
                 // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
@@ -271,10 +242,19 @@ namespace WebApplications.Utilities.Database.Schema
                 List<byte> guidBytes = new List<byte>(16);
                 unchecked
                 {
-                    guidBytes.AddRange(BitConverter.GetBytes(schemas.Aggregate(0, (hash, schema) => (397 * hash) ^ schema.GetHashCode())));
-                    guidBytes.AddRange(BitConverter.GetBytes(types.Aggregate(0, (hash, type) => (397 * hash) ^ type.GetHashCode())));
-                    guidBytes.AddRange(BitConverter.GetBytes(programDefinitions.Aggregate(0, (hash, programDefinition) => (397 * hash) ^ programDefinition.GetHashCode())));
-                    guidBytes.AddRange(BitConverter.GetBytes(tables.Aggregate(0, (hash, tableDefinition) => (397 * hash) ^ tableDefinition.GetHashCode())));
+                    guidBytes.AddRange(
+                        BitConverter.GetBytes(
+                            schemas.Aggregate(0, (hash, schema) => (397 * hash) ^ schema.GetHashCode())));
+                    guidBytes.AddRange(
+                        BitConverter.GetBytes(types.Aggregate(0, (hash, type) => (397 * hash) ^ type.GetHashCode())));
+                    guidBytes.AddRange(
+                        BitConverter.GetBytes(
+                            programDefinitions.Aggregate(
+                                0,
+                                (hash, programDefinition) => (397 * hash) ^ programDefinition.GetHashCode())));
+                    guidBytes.AddRange(
+                        BitConverter.GetBytes(
+                            tables.Aggregate(0, (hash, tableDefinition) => (397 * hash) ^ tableDefinition.GetHashCode())));
                 }
 
                 return _schemasByGuid.GetOrAdd(

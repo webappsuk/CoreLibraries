@@ -249,6 +249,7 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Gets a random  <see cref="Connection.ConnectionString">connection string</see>.
         /// </summary>
+        [PublicAPI]
         [NotNull]
         public string ChooseConnectionString()
         {

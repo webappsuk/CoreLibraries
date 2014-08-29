@@ -38,39 +38,9 @@ namespace WebApplications.Utilities.Database.Test
         [TestMethod]
         public async Task TestDatabasesFromConfigAreLoaded()
         {
-            
-            DatabaseCollection databaseCollection = DatabasesConfiguration.Active.Databases;
-            Assert.AreEqual(2, databaseCollection.Count());
-
-
-
-            foreach (DatabaseElement database in databaseCollection)
-            {
-                foreach (LoadBalancedConnectionElement connectionCollection in database.Connections)
-                {
-                    IEnumerable<Connection> connections = connectionCollection.Connections.Select(c=> new Connection(c.ConnectionString, c.Weight));
-
-                    IEnumerable<DatabaseSchema> schema = await Task.WhenAll(connections.Select(c => DatabaseSchema.GetOrAdd(c)));
-
-                    Guid schemaGuid = Guid.Empty;
-
-                    foreach (DatabaseSchema dbSchema in schema)
-                    {
-                        Assert.IsNotNull(dbSchema);
-                        if (schemaGuid.Equals(Guid.Empty)) schemaGuid = dbSchema.Guid;
-                        else
-                        {
-                            Assert.IsFalse(schemaGuid.Equals(dbSchema.Guid), "Shouldn't have identical schema here");
-                        }
-
-                    }
-                }
-            }
-
-
-            //LoadBalancedConnection loadBalancedConnection = new LoadBalancedConnection("");
-
-            // SqlProgram program = await SqlProgram.Create(loadBalancedConnection, "ProgramName");
+            var schema = await DatabasesConfiguration.Active.GetSchema("test");
+            Assert.IsNotNull(schema);
+            Trace.WriteLine(string.Format("{0}: {1}", schema.Guid, schema.ConnectionString));
         }
 
         [TestMethod]

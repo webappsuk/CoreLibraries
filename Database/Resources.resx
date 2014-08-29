@@ -336,4 +336,7 @@
   <data name="SqlProgram_CreateCommand_No_Mapping" xml:space="preserve">
     <value>Could not find a valid mapping for the '{0}' Sql Program.</value>
   </data>
+  <data name="DatabaseElement_GetSchemas_No_Connection" xml:space="preserve">
+    <value>No valid connection found on the '{0}' database</value>
+  </data>
 </root>

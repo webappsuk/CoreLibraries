@@ -218,7 +218,12 @@ namespace WebApplications.Utilities.Database.Configuration
 
             if (constraintMode == null) constraintMode = TypeConstraintMode.Warn;
 
-            LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
+
+            if (connectionElement == null)
+                throw new LoggingException(
+                    () => Resources.DatabaseElement_GetSchemas_No_Connection, Id);
+
+            LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken: cancellationToken).ConfigureAwait(false);
 
             Contract.Assert(connection != null);
             Contract.Assert(name != null);
@@ -231,6 +236,32 @@ namespace WebApplications.Utilities.Database.Configuration
                 defaultCommandTimeout,
                 (TypeConstraintMode)constraintMode,
                 cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the schema for the named database (and ensures all conncetions have identical schemas).
+        /// </summary>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;IEnumerable&lt;DatabaseSchema&gt;&gt;.</returns>
+        [PublicAPI]
+        [NotNull]
+        public async Task<DatabaseSchema> GetSchema(
+            string connectionName = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            LoadBalancedConnectionElement connectionElement;
+
+            connectionElement = string.IsNullOrWhiteSpace(connectionName) ? Connections.FirstOrDefault(c => c.Enabled) : Connections[connectionName];
+
+            if (connectionElement == null)
+                throw new LoggingException(
+                    () => Resources.DatabaseElement_GetSchemas_No_Connection, Id);
+
+            LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(true, cancellationToken).ConfigureAwait(false);
+            Contract.Assert(connection != null);
+
+            return await DatabaseSchema.GetOrAdd(connection.First(), false, cancellationToken);
         }
     }
 }

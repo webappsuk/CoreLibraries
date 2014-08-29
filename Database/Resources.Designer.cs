@@ -70,6 +70,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No valid connection found on the &apos;{0}&apos; database.
+        /// </summary>
+        internal static string DatabaseElement_GetSchemas_No_Connection {
+            get {
+                return ResourceManager.GetString("DatabaseElement_GetSchemas_No_Connection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a default load balanced connection for the database with id &apos;{0}&apos;..
         /// </summary>
         internal static string DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound {

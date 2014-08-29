@@ -123,13 +123,27 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
-        /// Gets the load balanced connection based on this element; otherwise <see langword="null"/> if disabled..
+        /// Gets the load balanced connection based on this element; otherwise <see langword="null" /> if disabled..
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;LoadBalancedConnection&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<LoadBalancedConnection> GetLoadBalancedConnection(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<LoadBalancedConnection> GetLoadBalancedConnection(
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return GetLoadBalancedConnection(null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the load balanced connection based on this element; otherwise <see langword="null" /> if disabled..
+        /// </summary>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;LoadBalancedConnection&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<LoadBalancedConnection> GetLoadBalancedConnection(bool? ensureIdentical = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (!Enabled) return TaskResult<LoadBalancedConnection>.Default;
@@ -145,7 +159,8 @@ namespace WebApplications.Utilities.Database.Configuration
             LoadBalancedConnection connection = new LoadBalancedConnection(connections);
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            if (!EnsureSchemasIdentical) return Task.FromResult(connection);
+            if (ensureIdentical == false ||
+                (!ensureIdentical.HasValue && !EnsureSchemasIdentical)) return Task.FromResult(connection);
 
             return connection.CheckIdentical(cancellationToken)
                 .ContinueWith(
