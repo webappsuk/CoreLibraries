@@ -12,7 +12,7 @@ using WebApplications.Utilities.Database.Schema;
 namespace WebApplications.Utilities.Database.Test
 {
     [TestClass]
-    [Ignore]
+    //[Ignore]
     public class TestTypeConverter
     {
         [TestMethod]

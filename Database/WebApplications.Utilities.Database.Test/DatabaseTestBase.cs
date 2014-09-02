@@ -21,6 +21,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
@@ -39,6 +40,8 @@ namespace WebApplications.Utilities.Database.Test
         protected readonly string LocalDatabaseConnectionString = CreateConnectionString("LocalData");
         protected readonly string LocalDatabaseCopyConnectionString = CreateConnectionString("LocalDataCopy");
         protected readonly string DifferentLocalDatabaseConnectionString = CreateConnectionString("DifferentLocalData");
+
+        private double _testStartTicks, _testEndTicks;
 
         /// <summary>
         /// Lazy loader for database connection
@@ -96,15 +99,30 @@ namespace WebApplications.Utilities.Database.Test
         /// <param name="isAsync">if set to <see langword="true"/> allows asynchronous processing.</param>
         /// <returns></returns>
         /// <remarks></remarks>
+        [NotNull]
         protected static string CreateConnectionString(string databaseName)
         {
             return
                 String.Format(@"Data Source=(localdb)\v11.0;AttachDbFilename=|DataDirectory|\{0}.mdf;Integrated Security=True;Connect Timeout=30;", databaseName);
         }
 
+        public TestContext TestContext { get; set; }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Trace.WriteLine(String.Format("Begin test: {0}", TestContext.TestName));
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            _testStartTicks = Stopwatch.GetTimestamp();
+        }
+
         [TestCleanup]
         public void TestCleanup()
         {
+            _testEndTicks = Stopwatch.GetTimestamp();
+            Trace.WriteLine(String.Format("Ending test: {0}, time taken {1}ms", TestContext.TestName,
+                (_testEndTicks - _testStartTicks) / TimeSpan.TicksPerMillisecond));
             Log.Flush().Wait();
         }
     }

@@ -12,19 +12,26 @@ namespace WebApplications.Utilities.Database.Test
     public class TestConfiguration : DatabaseTestBase
     {
         [TestMethod]
-        public async Task TestLbc()
+        public void Test_ActiveConfiguration_IsNotNull()
         {
             DatabasesConfiguration configuration = DatabasesConfiguration.Active;
             Assert.IsNotNull(configuration);
+        }
 
-            // Get a program that is not mapped by the configuration
+        [TestMethod]
+        public async Task Test_UnmappedProgram_RunsAndReturnsExpectedResult()
+        {
+            DatabasesConfiguration configuration = DatabasesConfiguration.Active;
             SqlProgram unmappedProgram = await configuration.GetSqlProgram("test2", "spReturnsScalar");
 
-            // Check name was not mapped
             Assert.AreEqual("spReturnsScalar", unmappedProgram.Name);
+            Assert.AreEqual("HelloWorld", await unmappedProgram.ExecuteScalarAsync<string>());
+        }
 
-            // Check the sproc runs
-            Assert.AreEqual("HelloWorld", unmappedProgram.ExecuteScalar<string>());
+        [TestMethod]
+        public async Task Test_UnmappedProgramOnDifferentConnection_RunsAndReturnsExpectedResult()
+        {
+            DatabasesConfiguration configuration = DatabasesConfiguration.Active;
 
             // Get a program which does not use the default lbc.
             SqlProgram diffConnection = await configuration.GetSqlProgram("test", "spReturnsScalarString");
@@ -33,8 +40,13 @@ namespace WebApplications.Utilities.Database.Test
             Assert.AreEqual("spReturnsScalarString", diffConnection.Name);
 
             // Check the sproc runs
-            Assert.AreEqual("HelloWorld", diffConnection.ExecuteScalar<string>());
+            Assert.AreEqual("HelloWorld", await diffConnection.ExecuteScalarAsync<string>());
+        }
 
+        [TestMethod]
+        public async Task Test_CheckMappedProgramReturnsExpectedResult()
+        {
+            DatabasesConfiguration configuration = DatabasesConfiguration.Active;
 
             // Get a program that is mapped by the configuration
             SqlProgram<string> mappedProgram = await configuration.GetSqlProgram<string>("test2", "TestProgram", "@P1");
