@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -339,10 +339,8 @@ namespace WebApplications.Utilities.Database.Schema
             List<SqlProgramParameter> sqlParameters = new List<SqlProgramParameter>(sCount);
 
             if (validateOrder)
-            {
                 using (IEnumerator<SqlProgramParameter> p1 = Parameters.GetEnumerator())
                 using (IEnumerator<KeyValuePair<string, Type>> p2 = parameters.GetEnumerator())
-                {
                     do
                     {
                         if (!p1.MoveNext())
@@ -394,8 +392,6 @@ namespace WebApplications.Utilities.Database.Schema
                                 parameter.Type.FullName,
                                 type);
                     } while (true);
-                }
-            }
 
             // We are not validating order
             foreach (KeyValuePair<string, Type> kvp in parameters)
@@ -515,10 +511,8 @@ namespace WebApplications.Utilities.Database.Schema
             List<SqlProgramParameter> sqlParameters = new List<SqlProgramParameter>(sCount);
 
             if (validateOrder)
-            {
                 using (IEnumerator<SqlProgramParameter> p1 = Parameters.GetEnumerator())
                 using (IEnumerator<KeyValuePair<string, SqlDbType>> p2 = parameters.GetEnumerator())
-                {
                     do
                     {
                         if (!p1.MoveNext())
@@ -566,8 +560,6 @@ namespace WebApplications.Utilities.Database.Schema
                                 parameter.Type.FullName,
                                 type);
                     } while (true);
-                }
-            }
 
             // We are not validating order
             foreach (KeyValuePair<string, SqlDbType> kvp in parameters)

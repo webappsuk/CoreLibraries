@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         private static readonly ConcurrentDictionary<string, DatabaseSchema> _databaseSchemas =
             new ConcurrentDictionary<string, DatabaseSchema>();
-        
+
         /// <summary>
         ///  Holds data for a program definition as it's read.
         /// </summary>
@@ -63,8 +63,10 @@ namespace WebApplications.Utilities.Database.Schema
         {
             public readonly SqlObjectType Type;
             public readonly int SchemaID;
+
             [NotNull]
             public readonly string Name;
+
             [CanBeNull]
             public readonly SqlProgramParameter Parameter;
 
@@ -76,7 +78,8 @@ namespace WebApplications.Utilities.Database.Schema
             /// <param name="name">The name.</param>
             public ProgramDefinitionData(
                 SqlObjectType type,
-                int schemaID, [NotNull] string name)
+                int schemaID,
+                [NotNull] string name)
             {
                 Contract.Requires(name != null);
                 Type = type;
@@ -98,7 +101,8 @@ namespace WebApplications.Utilities.Database.Schema
             /// <param name="isReadonly">if set to <see langword="true" /> [is readonly].</param>
             public ProgramDefinitionData(
                 SqlObjectType type,
-                int schemaID, [NotNull] string name,
+                int schemaID,
+                [NotNull] string name,
                 int ordinal,
                 [NotNull] string parameterName,
                 [NotNull] SqlType parameterType,
@@ -112,7 +116,13 @@ namespace WebApplications.Utilities.Database.Schema
                 Type = type;
                 SchemaID = schemaID;
                 Name = name;
-                Parameter = new SqlProgramParameter(ordinal, parameterName, parameterType, parameterSize, parameterDirection, isReadonly);
+                Parameter = new SqlProgramParameter(
+                    ordinal,
+                    parameterName,
+                    parameterType,
+                    parameterSize,
+                    parameterDirection,
+                    isReadonly);
             }
 
             /// <summary>
@@ -132,10 +142,13 @@ namespace WebApplications.Utilities.Database.Schema
         {
             public readonly SqlObjectType Type;
             public readonly int SchemaID;
+
             [NotNull]
             public readonly string Name;
+
             [NotNull]
             public readonly SqlColumn Column;
+
             [CanBeNull]
             public readonly int? TableTypeID;
 
@@ -281,27 +294,39 @@ namespace WebApplications.Utilities.Database.Schema
         /// Holds all the SQL schemas (<see cref="SqlSchema"/>, using the <see cref="SqlSchema.ID"/> as the key.
         /// </summary>
         [PublicAPI]
-        public IReadOnlyDictionary<int, SqlSchema> SchemasByID { get { return Current.SchemasByID; } }
+        public IReadOnlyDictionary<int, SqlSchema> SchemasByID
+        {
+            get { return Current.SchemasByID; }
+        }
 
         /// <summary>
         ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="SqlProgramDefinition.FullName">full
         ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
         /// </summary>
         [PublicAPI]
-        public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName { get { return Current.ProgramDefinitionsByName; } }
+        public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName
+        {
+            get { return Current.ProgramDefinitionsByName; }
+        }
 
         /// <summary>
         ///   Holds all the table and view definitions (<see cref="SqlTableDefinition"/>) for the schema.
         /// </summary>
         [PublicAPI]
-        public IReadOnlyDictionary<string, SqlTableDefinition> TablesByName { get { return Current.TablesByName; } }
+        public IReadOnlyDictionary<string, SqlTableDefinition> TablesByName
+        {
+            get { return Current.TablesByName; }
+        }
 
         /// <summary>
         ///   Holds all the types for the schema, which are stored with the <see cref="SqlType.FullName">full
         ///   name</see> and <see cref="SqlType.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
         /// </summary>
         [PublicAPI]
-        public IReadOnlyDictionary<string, SqlType> TypesByName { get { return Current.TypesByName; } }
+        public IReadOnlyDictionary<string, SqlType> TypesByName
+        {
+            get { return Current.TypesByName; }
+        }
 
         /// <summary>
         ///   Gets the SQL schemas that were loaded from the database.
@@ -310,7 +335,10 @@ namespace WebApplications.Utilities.Database.Schema
         ///   An enumerable containing the schema names in ascended order.
         /// </value>
         [PublicAPI]
-        public IEnumerable<SqlSchema> Schemas { get { return Current.Schemas; } }
+        public IEnumerable<SqlSchema> Schemas
+        {
+            get { return Current.Schemas; }
+        }
 
         /// <summary>
         ///   Gets the SQL types from the schema.
@@ -319,27 +347,39 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The <see cref="SqlType">type</see>.
         /// </value>
         [PublicAPI]
-        public IEnumerable<SqlType> Types { get { return Current.Types; } }
+        public IEnumerable<SqlType> Types
+        {
+            get { return Current.Types; }
+        }
 
         /// <summary>
         ///   Gets the program definitions.
         /// </summary>
         /// <value>The program definitions.</value>
         [PublicAPI]
-        public IEnumerable<SqlProgramDefinition> ProgramDefinitions { get { return Current.ProgramDefinitions; } }
+        public IEnumerable<SqlProgramDefinition> ProgramDefinitions
+        {
+            get { return Current.ProgramDefinitions; }
+        }
 
         /// <summary>
         ///   Gets the table and view definitions.
         /// </summary>
         /// <value>The table and view definitions.</value>
         [PublicAPI]
-        public IEnumerable<SqlTableDefinition> Tables { get { return Current.Tables; } }
+        public IEnumerable<SqlTableDefinition> Tables
+        {
+            get { return Current.Tables; }
+        }
 
         /// <summary>
         ///   Unique identity of the schema.
         /// </summary>
         [PublicAPI]
-        public Guid Guid { get { return Current.Guid; } }
+        public Guid Guid
+        {
+            get { return Current.Guid; }
+        }
         #endregion
 
         /// <summary>
@@ -350,7 +390,10 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The added/retrieved schema.</returns>
         [NotNull]
-        public static Task<DatabaseSchema> GetOrAdd([NotNull] Connection connection, bool forceReload = false, CancellationToken cancellationToken = default (CancellationToken))
+        public static Task<DatabaseSchema> GetOrAdd(
+            [NotNull] Connection connection,
+            bool forceReload = false,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             Contract.Requires(connection != null);
             // ReSharper disable PossibleNullReferenceException
@@ -434,8 +477,8 @@ namespace WebApplications.Utilities.Database.Schema
                         string sql = version.Major == 9 ? SQLResources.RetrieveSchema9 : SQLResources.RetrieveSchema10;
 
                         // Create the command first, as we will reuse on each connection.
-                        using (SqlCommand command = new SqlCommand(sql, sqlConnection) { CommandType = CommandType.Text })
-                        // Execute command
+                        using (SqlCommand command = new SqlCommand(sql, sqlConnection) {CommandType = CommandType.Text})
+                            // Execute command
                         using (
                             SqlDataReader reader =
                                 await
@@ -546,7 +589,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         () => Resources.DatabaseSchema_Load_CouldNotFindSchemaWhenLoadingPrograms,
                                         schemaId);
                                 string name = reader.GetString(2).ToLower();
-                                
+
                                 // If we have a null ordinal, we have no parameters.
                                 if (reader.IsDBNull(3))
                                 {
@@ -672,7 +715,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                 bool isNullable = reader.GetBoolean(9);
 
-                                int? tableType = reader.IsDBNull(10) ? null : (int?)reader.GetInt32(10);
+                                int? tableType = reader.IsDBNull(10) ? null : (int?) reader.GetInt32(10);
 
                                 tableDefinitionData.Add(
                                     new TableDefinitionData(
@@ -754,7 +797,7 @@ namespace WebApplications.Utilities.Database.Schema
                     // Always return this
                     return this;
                 }
-                // In the event of an error we don't set the loaded flag - this allows retries.
+                    // In the event of an error we don't set the loaded flag - this allows retries.
                 catch (DatabaseSchemaException databaseSchemaException)
                 {
                     // Capture the exception in the current schema.

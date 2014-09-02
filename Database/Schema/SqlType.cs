@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -74,25 +74,25 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         public static readonly Dictionary<SqlDbType, DateTimeRange> DateTypeSizes =
             new Dictionary<SqlDbType, DateTimeRange>
+            {
+                {SqlDbType.Date, new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31))},
                 {
-                    {SqlDbType.Date, new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31))},
-                    {
-                        SqlDbType.DateTime,
-                        new DateTimeRange(new DateTime(1753, 1, 1), new DateTime(9999, 12, 31, 23, 59, 59, 997))
-                    },
-                    {
-                        SqlDbType.SmallDateTime,
-                        new DateTimeRange(new DateTime(1900, 1, 1), new DateTime(2079, 6, 6, 23, 59, 59))
-                    },
-                    {
-                        SqlDbType.DateTime2,
-                        new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31, 23, 59, 59, 999))
-                    },
-                    {
-                        SqlDbType.DateTimeOffset,
-                        new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31, 23, 59, 59))
-                    }
-                };
+                    SqlDbType.DateTime,
+                    new DateTimeRange(new DateTime(1753, 1, 1), new DateTime(9999, 12, 31, 23, 59, 59, 997))
+                },
+                {
+                    SqlDbType.SmallDateTime,
+                    new DateTimeRange(new DateTime(1900, 1, 1), new DateTime(2079, 6, 6, 23, 59, 59))
+                },
+                {
+                    SqlDbType.DateTime2,
+                    new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31, 23, 59, 59, 999))
+                },
+                {
+                    SqlDbType.DateTimeOffset,
+                    new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31, 23, 59, 59))
+                }
+            };
 
         /// <summary>
         ///   Holds the SQL data type to <see cref="SqlDbType"/> mapping.
@@ -100,42 +100,42 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         private static readonly Dictionary<string, SqlDbType> _systemTypes =
             new Dictionary<string, SqlDbType>
-                {
-                    {"bigint", SqlDbType.BigInt},
-                    {"binary", SqlDbType.Binary},
-                    {"bit", SqlDbType.Bit},
-                    {"char", SqlDbType.Char},
-                    {"date", SqlDbType.Date},
-                    {"datetime", SqlDbType.DateTime},
-                    {"datetime2", SqlDbType.DateTime2},
-                    {"datetimeoffset", SqlDbType.DateTimeOffset},
-                    {"decimal", SqlDbType.Decimal},
-                    {"float", SqlDbType.Float},
-                    {"geography", SqlDbType.Udt},
-                    {"geometry", SqlDbType.Udt},
-                    {"hierarchyid", SqlDbType.Udt},
-                    {"image", SqlDbType.Image},
-                    {"int", SqlDbType.Int},
-                    {"money", SqlDbType.Money},
-                    {"nchar", SqlDbType.NChar},
-                    {"ntext", SqlDbType.NText},
-                    {"numeric", SqlDbType.Decimal},
-                    {"nvarchar", SqlDbType.NVarChar},
-                    {"real", SqlDbType.Real},
-                    {"smalldatetime", SqlDbType.SmallDateTime},
-                    {"smallint", SqlDbType.SmallInt},
-                    {"smallmoney", SqlDbType.SmallMoney},
-                    {"sql_variant", SqlDbType.Variant},
-                    {"sysname", SqlDbType.NVarChar},
-                    {"text", SqlDbType.Text},
-                    {"time", SqlDbType.Time},
-                    {"timestamp", SqlDbType.Timestamp},
-                    {"tinyint", SqlDbType.TinyInt},
-                    {"uniqueidentifier", SqlDbType.UniqueIdentifier},
-                    {"varbinary", SqlDbType.VarBinary},
-                    {"varchar", SqlDbType.VarChar},
-                    {"xml", SqlDbType.Xml}
-                };
+            {
+                {"bigint", SqlDbType.BigInt},
+                {"binary", SqlDbType.Binary},
+                {"bit", SqlDbType.Bit},
+                {"char", SqlDbType.Char},
+                {"date", SqlDbType.Date},
+                {"datetime", SqlDbType.DateTime},
+                {"datetime2", SqlDbType.DateTime2},
+                {"datetimeoffset", SqlDbType.DateTimeOffset},
+                {"decimal", SqlDbType.Decimal},
+                {"float", SqlDbType.Float},
+                {"geography", SqlDbType.Udt},
+                {"geometry", SqlDbType.Udt},
+                {"hierarchyid", SqlDbType.Udt},
+                {"image", SqlDbType.Image},
+                {"int", SqlDbType.Int},
+                {"money", SqlDbType.Money},
+                {"nchar", SqlDbType.NChar},
+                {"ntext", SqlDbType.NText},
+                {"numeric", SqlDbType.Decimal},
+                {"nvarchar", SqlDbType.NVarChar},
+                {"real", SqlDbType.Real},
+                {"smalldatetime", SqlDbType.SmallDateTime},
+                {"smallint", SqlDbType.SmallInt},
+                {"smallmoney", SqlDbType.SmallMoney},
+                {"sql_variant", SqlDbType.Variant},
+                {"sysname", SqlDbType.NVarChar},
+                {"text", SqlDbType.Text},
+                {"time", SqlDbType.Time},
+                {"timestamp", SqlDbType.Timestamp},
+                {"tinyint", SqlDbType.TinyInt},
+                {"uniqueidentifier", SqlDbType.UniqueIdentifier},
+                {"varbinary", SqlDbType.VarBinary},
+                {"varchar", SqlDbType.VarChar},
+                {"xml", SqlDbType.Xml}
+            };
 
         /// <summary>
         ///   The base type (if any).
@@ -356,7 +356,7 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public object CastCLRValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            Func<object, TypeConstraintMode, object> converter = GetClrToSqlConverter(typeof(T));
+            Func<object, TypeConstraintMode, object> converter = GetClrToSqlConverter(typeof (T));
             return converter != null ? converter(value, mode) : value;
         }
 
@@ -374,7 +374,7 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         public Func<object, TypeConstraintMode, object> GetClrToSqlConverter<T>()
         {
-            return GetClrToSqlConverter(typeof(T));
+            return GetClrToSqlConverter(typeof (T));
         }
 
         /// <summary>
@@ -586,7 +586,7 @@ namespace WebApplications.Utilities.Database.Schema
                             case SqlDbType.DateTime2:
                             case SqlDbType.DateTimeOffset:
                                 return clrType.IsGenericType &&
-                                       clrType.GetGenericTypeDefinition() == typeof(Nullable<>)
+                                       clrType.GetGenericTypeDefinition() == typeof (Nullable<>)
                                     ? CreateConverter<DateTime?>(
                                         t,
                                         (c, m) =>
@@ -594,7 +594,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             if (c == null)
                                                 return DBNull.Value;
 
-                                            DateTime original = (DateTime)c;
+                                            DateTime original = (DateTime) c;
                                             DateTimeRange range = DateTypeSizes[SqlDbType];
                                             DateTime bound = range.Bind(original);
 
@@ -680,7 +680,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         (c, m) =>
                                         {
                                             if (c == null)
-                                                return (object)SqlXml.Null;
+                                                return (object) SqlXml.Null;
                                             using (XmlReader xmlNodeReader = c.CreateReader())
                                                 return new SqlXml(xmlNodeReader);
                                         })
@@ -690,7 +690,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         (c, m) =>
                                         {
                                             if (c == null)
-                                                return (object)SqlXml.Null;
+                                                return (object) SqlXml.Null;
                                             using (XmlNodeReader xmlNodeReader = new XmlNodeReader(c))
                                                 return new SqlXml(xmlNodeReader);
                                         });
@@ -741,13 +741,13 @@ namespace WebApplications.Utilities.Database.Schema
 
                                 // Check if type implements IEnumerable<T>
                                 Type enumerableInterface =
-                                    t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                    t.IsGenericType && (t.GetGenericTypeDefinition() == typeof (IEnumerable<>))
                                         ? t
                                         : t.GetInterfaces()
                                             .FirstOrDefault(
                                                 it =>
                                                     it.IsGenericType &&
-                                                    it.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+                                                    it.GetGenericTypeDefinition() == typeof (IEnumerable<>));
 
                                 if (enumerableInterface != null)
                                 {
@@ -756,7 +756,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                     // If the type passed in is assignable from IEnumerable<SqlDataRecord> then we can pass straight through
                                     // after checking there are rows available.
-                                    if (typeof(SqlDataRecord).IsAssignableFrom(enumerationType))
+                                    if (typeof (SqlDataRecord).IsAssignableFrom(enumerationType))
                                         // We are the base non-generic table type.
                                         return (Func<object, TypeConstraintMode, object>)
                                             ((c, m) =>
@@ -764,7 +764,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 if (c == null)
                                                     return null;
                                                 List<SqlDataRecord> records =
-                                                    ((IEnumerable<SqlDataRecord>)c).ToList();
+                                                    ((IEnumerable<SqlDataRecord>) c).ToList();
                                                 return records.Count < 1 ? null : records;
                                             });
 
@@ -856,7 +856,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                                 // If we have zero count return DBNull (never return empty enumeration!)
                                                 return records.Count < 1
-                                                    ? (object)null
+                                                    ? (object) null
                                                     : records;
                                             });
                                     }
@@ -888,7 +888,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                                     // If we have zero count return DBNull (never return empty enumeration!)
                                                     return records.Count < 1
-                                                        ? (object)null
+                                                        ? (object) null
                                                         : records;
                                                 });
                                     }
@@ -897,7 +897,7 @@ namespace WebApplications.Utilities.Database.Schema
                                     if ((minColumns < 3) &&
                                         (columns > 1) &&
                                         (enumerationType.IsGenericType &&
-                                         enumerationType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>)))
+                                         enumerationType.GetGenericTypeDefinition() == typeof (KeyValuePair<,>)))
                                     {
                                         // Get converter for key and value column types
                                         Type[] kvpTypes = enumerationType.GetGenericArguments();
@@ -965,7 +965,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                                 // If we have zero count return DBNull (never return empty enumeration!)
                                                 return records.Count < 1
-                                                    ? (object)null
+                                                    ? (object) null
                                                     : records;
                                             });
                                     }
@@ -1037,7 +1037,7 @@ namespace WebApplications.Utilities.Database.Schema
             // Check if we support nullable types and the type is Nullable<>
             if (supportNullable &&
                 actualClrType.IsGenericType &&
-                actualClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                actualClrType.GetGenericTypeDefinition() == typeof (Nullable<>))
             {
                 // Get the generic parameter and find the relevant converter
                 actualClrType = actualClrType.GetGenericArguments().First();
@@ -1045,7 +1045,7 @@ namespace WebApplications.Utilities.Database.Schema
             }
 
             // Find a conversion if any
-            Func<object, object> converter = actualClrType.GetConversion(typeof(TClr));
+            Func<object, object> converter = actualClrType.GetConversion(typeof (TClr));
 
             // If we didn't find one there is no known conversion.
             if (converter == null)
@@ -1081,7 +1081,7 @@ namespace WebApplications.Utilities.Database.Schema
             Contract.Requires(converter != null);
             Func<object, TClr> toInputType = actualClrType.GetConversion<object, TClr>();
             return toInputType != null
-                ? (Func<object, TypeConstraintMode, object>)((c, m) => converter(toInputType(c), m))
+                ? (Func<object, TypeConstraintMode, object>) ((c, m) => converter(toInputType(c), m))
                 : null;
         }
     }

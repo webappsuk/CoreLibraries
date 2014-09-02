@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
+
     #region Delegates
     /// <summary>
     /// A delegate that accepts any method that takes a <see cref="SqlProgramCommand"/> and set's its parameters.
@@ -225,8 +226,8 @@ namespace WebApplications.Utilities.Database
                 if (_defaultCommandTimeout == value)
                     return;
                 _defaultCommandTimeout = value < TimeSpan.Zero
-                                             ? TimeSpan.FromSeconds(30)
-                                             : value;
+                    ? TimeSpan.FromSeconds(30)
+                    : value;
             }
         }
 
@@ -263,7 +264,7 @@ namespace WebApplications.Utilities.Database
 
             DefaultCommandTimeout = (defaultCommandTimeout == null || defaultCommandTimeout < TimeSpan.Zero)
                 ? TimeSpan.FromSeconds(30)
-                : (TimeSpan)defaultCommandTimeout;
+                : (TimeSpan) defaultCommandTimeout;
 
             ConstraintMode = constraintMode;
 
@@ -306,7 +307,7 @@ namespace WebApplications.Utilities.Database
             if (defaultCommandTimeout == null)
                 DefaultCommandTimeout = program.DefaultCommandTimeout;
             else
-                DefaultCommandTimeout = (TimeSpan)defaultCommandTimeout;
+                DefaultCommandTimeout = (TimeSpan) defaultCommandTimeout;
             ConstraintMode = constraintMode;
             KeyValuePair<string, Type>[] p = parameters.ToArray();
             ParameterCount = p.Length;
@@ -580,7 +581,8 @@ namespace WebApplications.Utilities.Database
                 );
 
             // Validate
-            await newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+            await
+                newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
 
             return newProgram;
         }
@@ -612,7 +614,11 @@ namespace WebApplications.Utilities.Database
         /// <returns>Any <see cref="LoggingException">validation errors</see> that occurred (if any).</returns>
         [PublicAPI]
         [NotNull]
-        public async Task<IEnumerable<LoggingException>> Validate(bool checkOrder = false, bool forceSchemaReload = false, bool throwOnError = false, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IEnumerable<LoggingException>> Validate(
+            bool checkOrder = false,
+            bool forceSchemaReload = false,
+            bool throwOnError = false,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Instant requested = Scheduler.Clock.Now;
 
@@ -709,7 +715,10 @@ namespace WebApplications.Utilities.Database
                 catch (Exception exception)
                 {
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    mapping = new CurrentMapping(ExceptionDispatchInfo.Capture(new LoggingException(exception, () => Resources.SqlProgram_Validate_Fatal, Name)));
+                    mapping =
+                        new CurrentMapping(
+                            ExceptionDispatchInfo.Capture(
+                                new LoggingException(exception, () => Resources.SqlProgram_Validate_Fatal, Name)));
                 }
 
                 _connectionMappings[index] = mapping;
@@ -742,7 +751,7 @@ namespace WebApplications.Utilities.Database
                 sqlProgramMapping,
                 (timeout == null || timeout < TimeSpan.Zero)
                     ? DefaultCommandTimeout
-                    : (TimeSpan)timeout);
+                    : (TimeSpan) timeout);
         }
 
         /// <summary>
@@ -758,8 +767,8 @@ namespace WebApplications.Utilities.Database
         public IEnumerable<SqlProgramCommand> CreateCommandsForAllConnections(TimeSpan? timeout = null)
         {
             TimeSpan t = (timeout == null || timeout < TimeSpan.Zero)
-                             ? DefaultCommandTimeout
-                             : (TimeSpan)timeout;
+                ? DefaultCommandTimeout
+                : (TimeSpan) timeout;
             // ReSharper disable once PossibleNullReferenceException
             return Mappings
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -959,7 +968,8 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<IEnumerable<T>> ExecuteScalarAllAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<T>> ExecuteScalarAllAsync<T>(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
@@ -967,7 +977,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
+                        t => (IEnumerable<T>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -997,7 +1007,9 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<T> ExecuteScalarAsync<T>([NotNull] SetParametersDelegate setParameters, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<T> ExecuteScalarAsync<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(setParameters != null);
             SqlProgramCommand command = CreateCommand();
@@ -1027,8 +1039,9 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<IEnumerable<T>> ExecuteScalarAllAsync<T>([NotNull] SetParametersDelegate setParameters,
-                                                                   CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<T>> ExecuteScalarAllAsync<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             Contract.Requires(setParameters != null);
@@ -1041,7 +1054,7 @@ namespace WebApplications.Utilities.Database
                             return command.ExecuteScalarAsync<T>(cancellationToken);
                         }))
                 .ContinueWith(
-                    t => (IEnumerable<T>)t.Result,
+                    t => (IEnumerable<T>) t.Result,
                     cancellationToken,
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.Current);
@@ -1191,7 +1204,8 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
@@ -1199,7 +1213,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<int>)t.Result,
+                        t => (IEnumerable<int>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1228,8 +1242,9 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<int> ExecuteNonQueryAsync([NotNull] SetParametersDelegate setParameters,
-                                                    CancellationToken cancellationToken = default(CancellationToken))
+        public Task<int> ExecuteNonQueryAsync(
+            [NotNull] SetParametersDelegate setParameters,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(setParameters != null);
             SqlProgramCommand command = CreateCommand();
@@ -1255,8 +1270,9 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<IEnumerable<int>> ExecuteNonQueryAllAsync([NotNull] SetParametersDelegate setParameters,
-                                                                    CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(
+            [NotNull] SetParametersDelegate setParameters,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             Contract.Requires(setParameters != null);
@@ -1269,7 +1285,7 @@ namespace WebApplications.Utilities.Database
                             return command.ExecuteNonQueryAsync(cancellationToken);
                         }))
                 .ContinueWith(
-                    t => (IEnumerable<int>)t.Result,
+                    t => (IEnumerable<int>) t.Result,
                     cancellationToken,
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.Current);
@@ -1382,8 +1398,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [PublicAPI]
-        public void ExecuteReader([NotNull] ResultDelegate resultAction,
-                                  CommandBehavior behavior = CommandBehavior.Default)
+        public void ExecuteReader(
+            [NotNull] ResultDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             Contract.Requires(resultAction != null);
             SqlProgramCommand command = CreateCommand();
@@ -1406,7 +1423,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [PublicAPI]
-        public void ExecuteReaderAll([NotNull] ResultDelegate resultAction, CommandBehavior behavior = CommandBehavior.Default)
+        public void ExecuteReaderAll(
+            [NotNull] ResultDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             Contract.Requires(resultAction != null);
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
@@ -1433,7 +1452,9 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [CanBeNull]
-        public T ExecuteReader<T>([NotNull] ResultDelegate<T> resultFunc, CommandBehavior behavior = CommandBehavior.Default)
+        public T ExecuteReader<T>(
+            [NotNull] ResultDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             Contract.Requires(resultFunc != null);
             SqlProgramCommand command = CreateCommand();
@@ -1462,12 +1483,16 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [CanBeNull]
-        public IEnumerable<T> ExecuteReaderAll<T>([NotNull] ResultDelegate<T> resultFunc,
-                                                  CommandBehavior behavior = CommandBehavior.Default)
+        public IEnumerable<T> ExecuteReaderAll<T>(
+            [NotNull] ResultDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             Contract.Requires(resultFunc != null);
             // ReSharper disable once PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(command => command.ExecuteReader(resultFunc, behavior)).ToArray();
+            return
+                CreateCommandsForAllConnections()
+                    .Select(command => command.ExecuteReader(resultFunc, behavior))
+                    .ToArray();
         }
 
         /// <summary>
@@ -1488,9 +1513,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [PublicAPI]
-        public void ExecuteReader([NotNull] SetParametersDelegate setParameters,
-                                  [NotNull] ResultDelegate resultAction,
-                                  CommandBehavior behavior = CommandBehavior.Default)
+        public void ExecuteReader(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             Contract.Requires(setParameters != null);
             Contract.Requires(resultAction != null);
@@ -1516,9 +1542,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [PublicAPI]
-        public void ExecuteReaderAll([NotNull] SetParametersDelegate setParameters,
-                                     [NotNull] ResultDelegate resultAction,
-                                     CommandBehavior behavior = CommandBehavior.Default)
+        public void ExecuteReaderAll(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             // If there's no action, we can execute non query!
             Contract.Requires(setParameters != null);
@@ -1551,9 +1578,10 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [CanBeNull]
-        public T ExecuteReader<T>([NotNull] SetParametersDelegate setParameters,
-                                  [NotNull] ResultDelegate<T> resultFunc,
-                                  CommandBehavior behavior = CommandBehavior.Default)
+        public T ExecuteReader<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             Contract.Requires(setParameters != null);
             Contract.Requires(resultFunc != null);
@@ -1585,9 +1613,10 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public IEnumerable<T> ExecuteReaderAll<T>([NotNull] SetParametersDelegate setParameters,
-                                                  [NotNull] ResultDelegate<T> resultFunc,
-                                                  CommandBehavior behavior = CommandBehavior.Default)
+        public IEnumerable<T> ExecuteReaderAll<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
         {
             Contract.Requires(setParameters != null);
             Contract.Requires(resultFunc != null);
@@ -1654,7 +1683,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<int>)t.Result,
+                        t => (IEnumerable<int>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1703,7 +1732,8 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
@@ -1711,7 +1741,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
+                        t => (IEnumerable<T>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1842,7 +1872,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
+                        t => (IEnumerable<T>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1997,7 +2027,7 @@ namespace WebApplications.Utilities.Database
                                 return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
                             }))
                     .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
+                        t => (IEnumerable<T>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -2209,7 +2239,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [PublicAPI]
-        public void ExecuteXmlReader([NotNull] SetParametersDelegate setParameters, [NotNull] XmlResultDelegate resultAction)
+        public void ExecuteXmlReader(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDelegate resultAction)
         {
             Contract.Requires(setParameters != null);
             Contract.Requires(resultAction != null);
@@ -2234,8 +2266,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [PublicAPI]
-        public void ExecuteXmlReaderAll([NotNull] SetParametersDelegate setParameters,
-                                     [NotNull] XmlResultDelegate resultAction)
+        public void ExecuteXmlReaderAll(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDelegate resultAction)
         {
             // If there's no action, we can execute non query!
             Contract.Requires(setParameters != null);
@@ -2267,8 +2300,9 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [CanBeNull]
-        public T ExecuteXmlReader<T>([NotNull] SetParametersDelegate setParameters,
-                                  [NotNull] XmlResultDelegate<T> resultFunc)
+        public T ExecuteXmlReader<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDelegate<T> resultFunc)
         {
             Contract.Requires(setParameters != null);
             Contract.Requires(resultFunc != null);
@@ -2299,8 +2333,9 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public IEnumerable<T> ExecuteXmlReaderAll<T>([NotNull] SetParametersDelegate setParameters,
-                                                  [NotNull] XmlResultDelegate<T> resultFunc)
+        public IEnumerable<T> ExecuteXmlReaderAll<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDelegate<T> resultFunc)
         {
             Contract.Requires(setParameters != null);
             Contract.Requires(resultFunc != null);
@@ -2367,7 +2402,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<int>)t.Result,
+                        t => (IEnumerable<int>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -2416,7 +2451,8 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [PublicAPI]
         [NotNull]
-        public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
@@ -2424,7 +2460,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
+                        t => (IEnumerable<T>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -2547,7 +2583,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteXmlReaderAsync(resultFunc, cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
+                        t => (IEnumerable<T>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -2694,7 +2730,7 @@ namespace WebApplications.Utilities.Database
                                 return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
                             }))
                     .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
+                        t => (IEnumerable<T>) t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);

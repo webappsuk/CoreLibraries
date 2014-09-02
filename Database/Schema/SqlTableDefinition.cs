@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,10 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <value>The column count.</value>
         [PublicAPI]
-        public int ColumnCount { get { return SqlMetaData.Length; } }
+        public int ColumnCount
+        {
+            get { return SqlMetaData.Length; }
+        }
 
         /// <summary>
         ///   A dictionary containing all of the columns.
@@ -130,7 +133,9 @@ namespace WebApplications.Utilities.Database.Schema
             Name = name;
             TableType = tableType;
             Columns = columns;
-            Dictionary<string, SqlColumn> columnsByName = new Dictionary<string, SqlColumn>(columns.Length, StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<string, SqlColumn> columnsByName = new Dictionary<string, SqlColumn>(
+                columns.Length,
+                StringComparer.InvariantCultureIgnoreCase);
             _columnsByName = columnsByName;
             SqlMetaData = new SqlMetaData[columns.Length];
             if (tableType != null)

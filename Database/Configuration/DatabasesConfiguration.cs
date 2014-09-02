@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -52,11 +51,13 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The <see cref="DatabaseCollection">collection</see> of database elements.
         /// </value>
         [ConfigurationProperty("", IsRequired = true, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof(DatabaseCollection),
+        [ConfigurationCollection(typeof (DatabaseCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
+        [PublicAPI]
         [NotNull]
         public DatabaseCollection Databases
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<DatabaseCollection>(""); }
             set
             {
@@ -118,7 +119,7 @@ namespace WebApplications.Utilities.Database.Configuration
         public Task<LoadBalancedConnection> GetConnection(
             [NotNull] string database,
             [CanBeNull] string connectionName = null,
-            [CanBeNull] bool? ensureIdentical = null, 
+            [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(database != null);
@@ -167,7 +168,7 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public Task<IEnumerable<LoadBalancedConnection>> GetConnections(
             [NotNull] string database,
-            [CanBeNull] bool? ensureIdentical = null, 
+            [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(database != null);

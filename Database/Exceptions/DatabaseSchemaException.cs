@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,9 @@ namespace WebApplications.Utilities.Database.Exceptions
         /// </summary>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        public DatabaseSchemaException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        public DatabaseSchemaException(
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
             : base(resource, parameters)
         {
         }
@@ -53,7 +55,10 @@ namespace WebApplications.Utilities.Database.Exceptions
         /// <param name="level">The severity of the exception being logged.</param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        public DatabaseSchemaException(LoggingLevel level, [CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        public DatabaseSchemaException(
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
             : base(level, resource, parameters)
         {
         }
@@ -74,8 +79,10 @@ namespace WebApplications.Utilities.Database.Exceptions
         /// <param name="innerException">The exception that occurred during parsing.</param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        public DatabaseSchemaException([CanBeNull] Exception innerException, [CanBeNull] Expression<Func<string>> resource,
-                                       [CanBeNull] params object[] parameters)
+        public DatabaseSchemaException(
+            [CanBeNull] Exception innerException,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
             : base(innerException, resource, parameters)
         {
         }
@@ -87,7 +94,11 @@ namespace WebApplications.Utilities.Database.Exceptions
         /// <param name="level">The severity of the exception being logged.</param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        public DatabaseSchemaException([CanBeNull] Exception innerException, LoggingLevel level, [CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        public DatabaseSchemaException(
+            [CanBeNull] Exception innerException,
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
             : base(innerException, resource, level, parameters)
         {
         }

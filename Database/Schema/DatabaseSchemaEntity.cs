@@ -25,9 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Diagnostics.Contracts;
-using System.Linq.Expressions;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema

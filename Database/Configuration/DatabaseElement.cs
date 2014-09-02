@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("connections", IsRequired = true, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof(LoadBalancedConnectionCollection))]
+        [ConfigurationCollection(typeof (LoadBalancedConnectionCollection))]
         [NotNull]
         public LoadBalancedConnectionCollection Connections
         {
@@ -103,7 +103,7 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("programs", IsRequired = false, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof(ProgramCollection),
+        [ConfigurationCollection(typeof (ProgramCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
         [NotNull]
         public ProgramCollection Programs
@@ -221,9 +221,13 @@ namespace WebApplications.Utilities.Database.Configuration
 
             if (connectionElement == null)
                 throw new LoggingException(
-                    () => Resources.DatabaseElement_GetSchemas_No_Connection, Id);
+                    () => Resources.DatabaseElement_GetSchemas_No_Connection,
+                    Id);
 
-            LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken: cancellationToken).ConfigureAwait(false);
+            LoadBalancedConnection connection =
+                await
+                    connectionElement.GetLoadBalancedConnection(cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
 
             Contract.Assert(connection != null);
             Contract.Assert(name != null);
@@ -234,7 +238,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 ignoreValidationErrors,
                 checkOrder,
                 defaultCommandTimeout,
-                (TypeConstraintMode)constraintMode,
+                (TypeConstraintMode) constraintMode,
                 cancellationToken);
         }
 
@@ -258,11 +262,12 @@ namespace WebApplications.Utilities.Database.Configuration
 
             if (connectionElement == null)
                 throw new LoggingException(
-                    () => Resources.DatabaseElement_GetSchemas_No_Connection, Id);
+                    () => Resources.DatabaseElement_GetSchemas_No_Connection,
+                    Id);
 
             return connectionElement.GetSchema(forceReload, cancellationToken);
         }
-        
+
         /// <summary>
         /// Gets the <see cref="LoadBalancedConnection">load balanced connection</see> from the configuration with the optional
         /// connection ID.
@@ -285,7 +290,8 @@ namespace WebApplications.Utilities.Database.Configuration
                 : Connections[connectionName];
             if (connectionElement == null)
                 throw new LoggingException(
-                    () => Resources.DatabaseElement_GetSchemas_No_Connection, Id);
+                    () => Resources.DatabaseElement_GetSchemas_No_Connection,
+                    Id);
 
             return connectionElement.GetLoadBalancedConnection(ensureIdentical, cancellationToken);
         }
@@ -308,7 +314,7 @@ namespace WebApplications.Utilities.Database.Configuration
             return Task.WhenAll(
                 Connections.Select(c => c.GetLoadBalancedConnection(ensureIdentical, cancellationToken)))
                 .ContinueWith(
-                    t => (IEnumerable<LoadBalancedConnection>)t.Result,
+                    t => (IEnumerable<LoadBalancedConnection>) t.Result,
                     cancellationToken,
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.Current);

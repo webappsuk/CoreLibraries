@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics.Contracts;
@@ -99,7 +98,7 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("", IsRequired = true, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof(ConnectionCollection),
+        [ConfigurationCollection(typeof (ConnectionCollection),
             CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
         [NotNull]
         [PublicAPI]
@@ -150,7 +149,9 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <returns>Task&lt;LoadBalancedConnection&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<LoadBalancedConnection> GetLoadBalancedConnection(bool? ensureIdentical = null, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<LoadBalancedConnection> GetLoadBalancedConnection(
+            bool? ensureIdentical = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (!Enabled) return TaskResult<LoadBalancedConnection>.Default;
@@ -195,7 +196,9 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<DatabaseSchema> GetSchema(bool forceReload, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<DatabaseSchema> GetSchema(
+            bool forceReload,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (!Enabled) return TaskResult<DatabaseSchema>.Default;

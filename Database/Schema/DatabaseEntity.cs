@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -35,7 +34,6 @@ using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities.Database.Schema
 {
@@ -48,13 +46,13 @@ namespace WebApplications.Utilities.Database.Schema
         /// The <see cref="PropertyInfo"/> for <see cref="HashCode"/>.
         /// </summary>
         [NotNull]
-        protected static readonly PropertyInfo HashCodeProperty = typeof(DatabaseEntity).GetProperty("HashCode");
+        protected static readonly PropertyInfo HashCodeProperty = typeof (DatabaseEntity).GetProperty("HashCode");
 
         /// <summary>
         /// The <see cref="List{T}.Add"/> method for a <see cref="List{T}">list of</see> <see cref="Difference">differences</see>.
         /// </summary>
         [NotNull]
-        protected static readonly MethodInfo DifferenceAddMethod = typeof(List<Difference>).GetMethod("Add");
+        protected static readonly MethodInfo DifferenceAddMethod = typeof (List<Difference>).GetMethod("Add");
 
         /// <summary>
         /// A hash code.
@@ -100,7 +98,7 @@ namespace WebApplications.Utilities.Database.Schema
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            DatabaseEntity other = (DatabaseEntity)obj;
+            DatabaseEntity other = (DatabaseEntity) obj;
             return HashCode.Equals(other.HashCode) &&
                    GetDifferences(other).IsEmpty;
         }
@@ -179,6 +177,7 @@ namespace WebApplications.Utilities.Database.Schema
     {
         [NotNull]
         private static readonly Func<T, long> _getHashCodeFunc;
+
         [NotNull]
         private static readonly Action<T, T, List<Difference>> _addDifferences;
 
@@ -188,22 +187,22 @@ namespace WebApplications.Utilities.Database.Schema
         static DatabaseEntity()
         {
             // ReSharper disable once PossibleNullReferenceException
-            MemberInfo[] properties = typeof(T).GetGetter<Expression<Func<T, object>>[]>("_properties")()
+            MemberInfo[] properties = typeof (T).GetGetter<Expression<Func<T, object>>[]>("_properties")()
                 .Select(
                     e =>
                         ((MemberExpression)
-                        (e.Body.NodeType == ExpressionType.Convert ? ((UnaryExpression)e.Body).Operand : e.Body))
+                        (e.Body.NodeType == ExpressionType.Convert ? ((UnaryExpression) e.Body).Operand : e.Body))
                         .Member)
                 .ToArray();
             Contract.Assert(properties != null);
 
-            ParameterExpression inputExpression = Expression.Parameter(typeof(T), "input");
+            ParameterExpression inputExpression = Expression.Parameter(typeof (T), "input");
             Expression hcExpression = null;
 
 
-            ParameterExpression leftExpression = Expression.Parameter(typeof(T), "left");
-            ParameterExpression rightExpression = Expression.Parameter(typeof(T), "right");
-            ParameterExpression differencesExpression = Expression.Parameter(typeof(List<Difference>), "differences");
+            ParameterExpression leftExpression = Expression.Parameter(typeof (T), "left");
+            ParameterExpression rightExpression = Expression.Parameter(typeof (T), "right");
+            ParameterExpression differencesExpression = Expression.Parameter(typeof (List<Difference>), "differences");
             List<Expression> adExpressions = new List<Expression>(properties.Length);
             foreach (MemberInfo memberInfo in properties)
             {
@@ -219,7 +218,7 @@ namespace WebApplications.Utilities.Database.Schema
                                     e.Type.GetGenericTypeDefinition() == typeof (IEnumerable<>);
                 if (isEnumerable)
                 {
-                    ParameterExpression variable = Expression.Variable(typeof(long));
+                    ParameterExpression variable = Expression.Variable(typeof (long));
 
                     Expression ee = new[]
                     {
@@ -253,24 +252,23 @@ namespace WebApplications.Utilities.Database.Schema
                 if (isEnumerable)
                 {
                     Type gType = le.Type.GenericTypeArguments.First();
-                    eq = gType == typeof(string)
+                    eq = gType == typeof (string)
                         ? Expression.Call(
-                            typeof(Enumerable).GetMethods()
+                            typeof (Enumerable).GetMethods()
                                 .First(m => m.Name == "SequenceEqual" && m.GetParameters().Count() == 3)
                                 .MakeGenericMethod(gType),
                             le,
                             re,
                             Expression.Constant(StringComparer.InvariantCultureIgnoreCase))
                         : Expression.Call(
-                            typeof(Enumerable).GetMethods()
+                            typeof (Enumerable).GetMethods()
                                 .First(m => m.Name == "SequenceEqual" && m.GetParameters().Count() == 2)
                                 .MakeGenericMethod(gType),
                             le,
                             re);
                 }
                 else
-                {
-                    eq = le.Type == typeof(string)
+                    eq = le.Type == typeof (string)
                         ? (Expression)
                             Expression.Call(
                                 Expression.Constant(StringComparer.InvariantCultureIgnoreCase),
@@ -279,7 +277,6 @@ namespace WebApplications.Utilities.Database.Schema
                                 le,
                                 re)
                         : Expression.Equal(le, re);
-                }
 
                 adExpressions.Add(
                     Expression.IfThenElse(
@@ -320,20 +317,22 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="propertyExpression">The property expression.</param>
         /// <returns>Expression.</returns>
         [NotNull]
-        private static Expression GetHashExpression([CanBeNull] Expression hashCodeExpression, [NotNull] Expression propertyExpression)
+        private static Expression GetHashExpression(
+            [CanBeNull] Expression hashCodeExpression,
+            [NotNull] Expression propertyExpression)
         {
             Contract.Requires(propertyExpression != null);
-            Expression gh = propertyExpression.Type.DescendsFrom(typeof(DatabaseEntity))
-                ? (Expression)Expression.Property(propertyExpression, HashCodeProperty)
+            Expression gh = propertyExpression.Type.DescendsFrom(typeof (DatabaseEntity))
+                ? (Expression) Expression.Property(propertyExpression, HashCodeProperty)
                 : Expression.Convert(
-                    propertyExpression.Type == typeof(string)
+                    propertyExpression.Type == typeof (string)
                         ? Expression.Call(
                             Expression.Constant(StringComparer.InvariantCultureIgnoreCase),
                             "GetHashCode",
                             null,
                             propertyExpression)
                         : Expression.Call(propertyExpression, "GetHashCode", Reflection.EmptyTypes),
-                    typeof(long));
+                    typeof (long));
 
             // Wrap with null check if necessary
             propertyExpression = propertyExpression.Type.IsNullable()
@@ -375,7 +374,7 @@ namespace WebApplications.Utilities.Database.Schema
             : base(fullName)
         {
             Contract.Requires(fullName != null);
-            _hashCode = new Lazy<long>(() => _getHashCodeFunc((T)this), LazyThreadSafetyMode.PublicationOnly);
+            _hashCode = new Lazy<long>(() => _getHashCodeFunc((T) this), LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
@@ -392,7 +391,7 @@ namespace WebApplications.Utilities.Database.Schema
                 throw new LoggingException(
                     () => "Cannot get the differences between diferrent types of DatabaseEntity.");
 
-            T me = (T)this;
+            T me = (T) this;
             List<Difference> differences = new List<Difference>();
             _addDifferences(me, entity, differences);
 

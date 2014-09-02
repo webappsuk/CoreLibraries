@@ -27,11 +27,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Runtime.ExceptionServices;
 using JetBrains.Annotations;
-using NodaTime;
 using WebApplications.Utilities.Database.Schema;
-using WebApplications.Utilities.Scheduling;
 
 namespace WebApplications.Utilities.Database
 {
@@ -46,6 +43,7 @@ namespace WebApplications.Utilities.Database
         [PublicAPI]
         [NotNull]
         public readonly Connection Connection;
+
         /// <summary>
         ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
         /// </summary>

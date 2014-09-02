@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ namespace WebApplications.Utilities.Database
         /// <paramref name="connectionString" /> cannot be <see langword="null" />.</remarks>
         [PublicAPI]
         public LoadBalancedConnection([NotNull] string connectionString, double weight = 1D)
-            : this(new[] { new Connection(connectionString, weight) })
+            : this(new[] {new Connection(connectionString, weight)})
         {
             Contract.Requires(connectionString != null);
             Contract.Requires(weight > 0D);
@@ -90,7 +90,7 @@ namespace WebApplications.Utilities.Database
         public LoadBalancedConnection([NotNull] params string[] connectionStrings)
             : this(connectionStrings
                        .Where(cs => !string.IsNullOrWhiteSpace(cs))
-                // ReSharper disable once AssignNullToNotNullAttribute
+                       // ReSharper disable once AssignNullToNotNullAttribute
                        .Select(cs => new Connection(cs)))
         {
             Contract.Requires(connectionStrings != null);
@@ -105,7 +105,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] IEnumerable<string> connectionStrings)
             : this(connectionStrings
                        .Where(cs => !string.IsNullOrWhiteSpace(cs))
-                // ReSharper disable once AssignNullToNotNullAttribute
+                       // ReSharper disable once AssignNullToNotNullAttribute
                        .Select(cs => new Connection(cs)))
         {
             Contract.Requires(connectionStrings != null);
@@ -124,9 +124,9 @@ namespace WebApplications.Utilities.Database
             // ReSharper disable once AssignNullToNotNullAttribute
             : this(connectionStrings
                        .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
-                // ReSharper disable AssignNullToNotNullAttribute
+                       // ReSharper disable AssignNullToNotNullAttribute
                        .Select(kvp => new Connection(kvp.Key, kvp.Value)))
-        // ReSharper restore AssignNullToNotNullAttribute
+            // ReSharper restore AssignNullToNotNullAttribute
         {
             Contract.Requires(connectionStrings != null);
         }
@@ -187,7 +187,7 @@ namespace WebApplications.Utilities.Database
                     // ReSharper disable PossibleNullReferenceException
                     foreach (DatabaseSchema schema in await
                         Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, false, t))))
-                    // ReSharper restore PossibleNullReferenceException
+                        // ReSharper restore PossibleNullReferenceException
                     {
                         Contract.Assert(schema != null);
                         if (guid.Equals(Guid.Empty)) guid = schema.Guid;

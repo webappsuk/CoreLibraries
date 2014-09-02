@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -133,7 +133,11 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="System.Security.SecurityException">The caller doesn't have the right permissions for deserialization.</exception>
         /// <exception cref="SerializationException">The serialization stream supports seeking but its length is 0.</exception>
         [CanBeNull]
-        public static object GetObjectByName([NotNull] this SqlDataReader reader, [NotNull] string column, [CanBeNull] object nullValue = null, [CanBeNull] object context = null,
+        public static object GetObjectByName(
+            [NotNull] this SqlDataReader reader,
+            [NotNull] string column,
+            [CanBeNull] object nullValue = null,
+            [CanBeNull] object context = null,
             StreamingContextStates contextState = StreamingContextStates.Other)
         {
             Contract.Requires(reader != null);
