@@ -33,6 +33,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
@@ -101,10 +102,15 @@ namespace WebApplications.Utilities.Database.Configuration
         [ConfigurationCollection(typeof(ConnectionCollection),
             CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
         [NotNull]
+        [PublicAPI]
         public ConnectionCollection Connections
         {
             get { return GetProperty<ConnectionCollection>(""); }
-            set { SetProperty("", value); }
+            set
+            {
+                Contract.Requires(value != null);
+                SetProperty("", value);
+            }
         }
 
         /// <summary>
@@ -138,7 +144,8 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <summary>
         /// Gets the load balanced connection based on this element; otherwise <see langword="null" /> if disabled..
         /// </summary>
-        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical.</param>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical; if <see langword="null"/> then falls back to
+        /// the <see cref="EnsureSchemasIdentical">configured value</see>; otherwise does not check the schemas.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;LoadBalancedConnection&gt;.</returns>
         [NotNull]
@@ -178,6 +185,28 @@ namespace WebApplications.Utilities.Database.Configuration
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                     // ReSharper disable once AssignNullToNotNullAttribute
                     TaskScheduler.Current);
+        }
+
+        /// <summary>
+        /// Gets the schema, ensuring all schemas are identical.
+        /// </summary>
+        /// <param name="forceReload">If set to <see langword="true" /> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<DatabaseSchema> GetSchema(bool forceReload, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!Enabled) return TaskResult<DatabaseSchema>.Default;
+
+            return GetLoadBalancedConnection(true, cancellationToken)
+                .ContinueWith(
+                    t => DatabaseSchema.GetOrAdd(t.Result.First(), forceReload, cancellationToken),
+                    cancellationToken,
+                    TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.Current)
+                .Unwrap();
         }
     }
 }

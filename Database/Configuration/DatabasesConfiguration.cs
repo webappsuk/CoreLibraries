@@ -80,18 +80,45 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
-        /// Gets the schema from the configuration with the specified database name; and ensures all connections on the schema are identical.
+        /// Gets the <see cref="LoadBalancedConnection">load balanced connection</see> from the configuration with the specified database ID and optional
+        /// connection ID.
         /// </summary>
         /// <param name="database">The database.</param>
-        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="connectionName">Name of the connection (defaults to first connection).</param>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical; if <see langword="null"/> then falls back to
+        /// the <see cref="LoadBalancedConnectionElement.EnsureSchemasIdentical">configured value</see>; otherwise does not check the schemas.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
         [PublicAPI]
         [NotNull]
-        public Task<DatabaseSchema> GetSchema(
+        public static Task<LoadBalancedConnection> GetConfiguredConnection(
             [NotNull] string database,
-            string connectionName = null,
+            [CanBeNull] string connectionName = null,
+            [CanBeNull] bool? ensureIdentical = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(database != null);
+            return Active.GetConnection(database, connectionName, ensureIdentical, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="LoadBalancedConnection">load balanced connection</see> from the configuration with the specified database ID and optional
+        /// connection ID.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="connectionName">Name of the connection (defaults to first connection).</param>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical; if <see langword="null"/> then falls back to
+        /// the <see cref="LoadBalancedConnectionElement.EnsureSchemasIdentical">configured value</see>; otherwise does not check the schemas.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public Task<LoadBalancedConnection> GetConnection(
+            [NotNull] string database,
+            [CanBeNull] string connectionName = null,
+            [CanBeNull] bool? ensureIdentical = null, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Contract.Requires(database != null);
@@ -104,7 +131,107 @@ namespace WebApplications.Utilities.Database.Configuration
                     () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                     database);
 
-            return db.GetSchema(connectionName, cancellationToken);
+            return db.GetConnection(connectionName, ensureIdentical, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="LoadBalancedConnection">load balanced connections</see> from the configuration with the specified database ID.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical; if <see langword="null"/> then falls back to
+        /// the <see cref="LoadBalancedConnectionElement.EnsureSchemasIdentical">configured value</see>; otherwise does not check the schemas.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public static Task<IEnumerable<LoadBalancedConnection>> GetConfiguredConnections(
+            [NotNull] string database,
+            [CanBeNull] bool? ensureIdentical = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(database != null);
+            return Active.GetConnections(database, ensureIdentical, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="LoadBalancedConnection">load balanced connections</see> from the configuration with the specified database ID.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical; if <see langword="null"/> then falls back to
+        /// the <see cref="LoadBalancedConnectionElement.EnsureSchemasIdentical">configured value</see>; otherwise does not check the schemas.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public Task<IEnumerable<LoadBalancedConnection>> GetConnections(
+            [NotNull] string database,
+            [CanBeNull] bool? ensureIdentical = null, 
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(database != null);
+            DatabaseElement db = Databases[database];
+            if ((db == null) ||
+                (!db.Enabled))
+                // ReSharper disable once AssignNullToNotNullAttribute
+                // TODO should wrap in task!
+                throw new LoggingException(
+                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                    database);
+
+            return db.GetConnections(ensureIdentical, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the schema from the configuration with the specified database ID; and ensures all connections on the schema are identical.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="forceReload">If set to <see langword="true" /> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public static Task<DatabaseSchema> GetConfiguredSchema(
+            [NotNull] string database,
+            [CanBeNull] string connectionName = null,
+            bool forceReload = false,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(database != null);
+            return Active.GetSchema(database, connectionName, forceReload, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the schema from the configuration with the specified database ID; and ensures all connections on the schema are identical.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="forceReload">If set to <see langword="true" /> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public Task<DatabaseSchema> GetSchema(
+            [NotNull] string database,
+            [CanBeNull] string connectionName = null,
+            bool forceReload = false,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Contract.Requires(database != null);
+            DatabaseElement db = Databases[database];
+            if ((db == null) ||
+                (!db.Enabled))
+                // ReSharper disable once AssignNullToNotNullAttribute
+                // TODO should wrap in task!
+                throw new LoggingException(
+                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                    database);
+
+            return db.GetSchema(connectionName, forceReload, cancellationToken);
         }
 
         /// <summary>

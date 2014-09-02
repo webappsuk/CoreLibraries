@@ -239,29 +239,80 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
-        /// Gets the schema for the named database (and ensures all conncetions have identical schemas).
+        /// Gets the schema for the named database (and ensures all connections have identical schemas).
         /// </summary>
         /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="forceReload">If set to <see langword="true" /> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;IEnumerable&lt;DatabaseSchema&gt;&gt;.</returns>
         [PublicAPI]
         [NotNull]
-        public async Task<DatabaseSchema> GetSchema(
-            string connectionName = null,
+        public Task<DatabaseSchema> GetSchema(
+            [CanBeNull] string connectionName = null,
+            bool forceReload = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            LoadBalancedConnectionElement connectionElement;
-
-            connectionElement = string.IsNullOrWhiteSpace(connectionName) ? Connections.FirstOrDefault(c => c.Enabled) : Connections[connectionName];
+            LoadBalancedConnectionElement connectionElement = string.IsNullOrWhiteSpace(connectionName)
+                ? Connections.FirstOrDefault(c => c.Enabled)
+                : Connections[connectionName];
 
             if (connectionElement == null)
                 throw new LoggingException(
                     () => Resources.DatabaseElement_GetSchemas_No_Connection, Id);
 
-            LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(true, cancellationToken).ConfigureAwait(false);
-            Contract.Assert(connection != null);
+            return connectionElement.GetSchema(forceReload, cancellationToken);
+        }
+        
+        /// <summary>
+        /// Gets the <see cref="LoadBalancedConnection">load balanced connection</see> from the configuration with the optional
+        /// connection ID.
+        /// </summary>
+        /// <param name="connectionName">Name of the connection (defaults to first connection).</param>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical; if <see langword="null" /> then falls back to
+        /// the <see cref="LoadBalancedConnectionElement.EnsureSchemasIdentical">configured value</see>; otherwise does not check the schemas.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public Task<LoadBalancedConnection> GetConnection(
+            [CanBeNull] string connectionName = null,
+            [CanBeNull] bool? ensureIdentical = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            LoadBalancedConnectionElement connectionElement = string.IsNullOrWhiteSpace(connectionName)
+                ? Connections.FirstOrDefault(c => c.Enabled)
+                : Connections[connectionName];
+            if (connectionElement == null)
+                throw new LoggingException(
+                    () => Resources.DatabaseElement_GetSchemas_No_Connection, Id);
 
-            return await DatabaseSchema.GetOrAdd(connection.First(), false, cancellationToken);
+            return connectionElement.GetLoadBalancedConnection(ensureIdentical, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="LoadBalancedConnection">load balanced connections</see> from the configuration.
+        /// </summary>
+        /// <param name="ensureIdentical">if set to <see langword="true" /> ensures schemas are identical; if <see langword="null" /> then falls back to
+        /// the <see cref="LoadBalancedConnectionElement.EnsureSchemasIdentical">configured value</see>; otherwise does not check the schemas.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [NotNull]
+        public Task<IEnumerable<LoadBalancedConnection>> GetConnections(
+            [CanBeNull] bool? ensureIdentical = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return Task.WhenAll(
+                Connections.Select(c => c.GetLoadBalancedConnection(ensureIdentical, cancellationToken)))
+                .ContinueWith(
+                    t => (IEnumerable<LoadBalancedConnection>)t.Result,
+                    cancellationToken,
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.Current);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
     }
 }
