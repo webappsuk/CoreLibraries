@@ -18,6 +18,10 @@
     </references>
   </metadata>
   <files>
+    <file src="install.ps1" target="tools\install.ps1" />
+    <file src="uninstall.ps1" target="tools\uninstall.ps1" />
+    <file src="signtool.exe" target="tools\signtool.exe" />
+    <file src="Web Applications Signature.targets" target="tools\Web Applications Signature.targets" />
     <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
     <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
     <file src="bin\Release\JetBrains.Annotations.dll" target="tools\JetBrains.Annotations.dll" />
