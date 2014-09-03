@@ -48,6 +48,16 @@ namespace WebApplications.Utilities
             BindingFlags.Public | BindingFlags.Instance);
 
         /// <summary>
+        /// Gets the debug view of an expression.
+        /// </summary>
+        [NotNull]
+        private static readonly Func<Expression, string> _expressionDebugView = typeof(Expression).GetProperty(
+            "DebugView",
+            BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetGetMethod(true)
+            .Func<Expression, string>();
+
+        /// <summary>
         /// Takes an input source enumerable expression (must be of type 
         /// <see cref="IEnumerable{T}" />) and creates a foreach loop,
         /// where the body is generated using the 
@@ -62,6 +72,7 @@ namespace WebApplications.Utilities
         /// </returns>
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
+        [PublicAPI]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
             [NotNull][InstantHandle] Func<Expression, Expression> getBody,
@@ -86,6 +97,7 @@ namespace WebApplications.Utilities
         /// </returns>
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
+        [PublicAPI]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
             [NotNull][InstantHandle] Func<Expression, IEnumerable<Expression>> getBody,
@@ -143,8 +155,9 @@ namespace WebApplications.Utilities
         /// <param name="locals">The locals.</param>
         /// <returns>A single expression</returns>
         [NotNull]
+        [PublicAPI]
         public static Expression Blockify(
-            this IEnumerable<Expression> expressions,
+            [CanBeNull] this IEnumerable<Expression> expressions,
             [NotNull] IEnumerable<ParameterExpression> locals)
         {
             Contract.Requires(locals != null);
@@ -158,9 +171,10 @@ namespace WebApplications.Utilities
         /// <param name="locals">The locals.</param>
         /// <returns>A single expression</returns>
         [NotNull]
+        [PublicAPI]
         public static Expression Blockify(
-            this IEnumerable<Expression> expressions,
-            params ParameterExpression[] locals)
+            [CanBeNull] this IEnumerable<Expression> expressions, 
+            [CanBeNull] params ParameterExpression[] locals)
         {
             Contract.Ensures(Contract.Result<Expression>() != null);
 
@@ -168,7 +182,7 @@ namespace WebApplications.Utilities
             if ((locals != null) &&
                 (locals.Length > 0))
                 return e.Length > 0
-                    ? (Expression)Expression.Block(locals, e)
+                    ? (Expression) Expression.Block(locals, e)
                     : Expression.Empty();
             return e.Length > 1
                 ? Expression.Block(e)
@@ -184,6 +198,7 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <returns>IEnumerable{Expression}.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<Expression> UnBlockify([NotNull] this Expression expression)
         {
             Contract.Requires(expression != null);
@@ -216,6 +231,7 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <returns>IEnumerable{Expression}.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<Expression> UnBlockify(
             [NotNull] this Expression expression,
             [NotNull] out IEnumerable<ParameterExpression> variables)
@@ -244,6 +260,7 @@ namespace WebApplications.Utilities
         /// <param name="variables">The variables.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
+        [PublicAPI]
         public static Expression AddVariables(
             [NotNull] this Expression block,
             [NotNull] IEnumerable<ParameterExpression> variables)
@@ -261,6 +278,7 @@ namespace WebApplications.Utilities
         /// <param name="variables">The variables.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
+        [PublicAPI]
         public static Expression AddVariables(
             [NotNull] this Expression block,
             [NotNull] params ParameterExpression[] variables)
@@ -286,6 +304,7 @@ namespace WebApplications.Utilities
         /// <param name="expressions">The expressions.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
+        [PublicAPI]
         public static Expression AddExpressions(
             [NotNull] this Expression block,
             [NotNull] IEnumerable<Expression> expressions)
@@ -303,6 +322,7 @@ namespace WebApplications.Utilities
         /// <param name="expressions">The expressions.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
+        [PublicAPI]
         public static Expression AddExpressions(
             [NotNull] this Expression block,
             [NotNull] params Expression[] expressions)
@@ -321,6 +341,7 @@ namespace WebApplications.Utilities
         }
 
         #region GetFuncExpression overloads
+        // TODO Convert to T4 template
         /// <summary>
         /// Gets the lambda expression as a strongly typed function.
         /// </summary>
@@ -1117,7 +1138,7 @@ namespace WebApplications.Utilities
                 {
                     throw new ArgumentOutOfRangeException(
                         "parameters",
-                        string.Format(
+                        String.Format(
                             "The number of parameter replacement expressions '{0}' does not match the number of parameters in the lambda expression '{1}'.",
                         //TODO Translate?
                             parameters.Length,
@@ -1162,6 +1183,22 @@ namespace WebApplications.Utilities
                 // ReSharper disable once AssignNullToNotNullAttribute
                 return _replacements.TryGetValue(node, out replacement) ? replacement : node;
             }
+        }
+
+        /// <summary>
+        /// Gets the debug view of the expression.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>The debug view for the expression.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string GetDebugView([NotNull] this Expression expression)
+        {
+            Contract.Requires(expression != null);
+            Contract.Ensures(Contract.Result<string>() != null);
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return _expressionDebugView(expression);
         }
     }
 }

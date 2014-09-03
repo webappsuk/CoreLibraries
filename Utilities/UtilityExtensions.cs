@@ -30,7 +30,6 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -63,12 +62,14 @@ namespace WebApplications.Utilities
         ///   A dictionary of equality operators by their runtime type.
         ///   This is so that, when requested, they can be retrieved rather than recomputed.
         /// </summary>
+        [NotNull]
         private static readonly ConcurrentDictionary<Type, Func<object, object, bool>> _equalityFunctions =
             new ConcurrentDictionary<Type, Func<object, object, bool>>();
 
         /// <summary>
         /// Characters to escape for JSON (and their new value).
         /// </summary>
+        [NotNull]
         private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string>
         {
             {'\\', @"\\"},
@@ -168,8 +169,11 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   The default split characters for splitting strings.
         /// </summary>
+        [NotNull]
+        [PublicAPI]
         public static readonly char[] DefaultSplitChars = new[] { ' ', ',', '\t', '\r', '\n', '|' };
 
+        [NotNull]
         private static readonly Regex _htmlRegex = new Regex(
             @"<[^<>]*>",
             RegexOptions.Compiled | RegexOptions.IgnoreCase |
@@ -183,6 +187,8 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="number">The number to add the suffix to.</param>
         /// <returns>The <paramref name="number"/> + the correct suffix.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToOrdinal(this int number)
         {
             string suf = "th";
@@ -207,6 +213,8 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="number">The number.</param>
         /// <returns>The ordinal (suffix) for the <paramref name="number"/> specified.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string GetOrdinal(this int number)
         {
             string suf = "th";
@@ -465,7 +473,7 @@ namespace WebApplications.Utilities
         ///   that leverages generics, or by making a call to <see cref="GetTypeEqualityFunction"/> and storing the resulting function
         ///   to avoid the dictionary lookup.
         /// </remarks>
-        public static bool EqualsByRuntimeType(this object objA, object objB)
+        public static bool EqualsByRuntimeType([CanBeNull] this object objA, [CanBeNull] object objB)
         {
             if (objA == null)
                 return objB == null;
@@ -487,7 +495,8 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="type"/> was <see langword="null"/>
         /// </exception>
-        public static Func<object, object, bool> GetTypeEqualityFunction(this Type type)
+        [NotNull]
+        public static Func<object, object, bool> GetTypeEqualityFunction([NotNull] this Type type)
         {
             return _equalityFunctions.GetOrAdd(
                 type,
@@ -515,144 +524,96 @@ namespace WebApplications.Utilities
                 });
         }
 
-
         /// <summary>
-        ///   Compares two enumerables to see if they contain the same elements.
+        /// Compares two enumerables to see if they contain the same elements.
         /// </summary>
         /// <typeparam name="T">The type of the object contained in the enumerable.</typeparam>
         /// <param name="enumerableA">The first enumerable object.</param>
         /// <param name="enumerableB">The second enumerable object</param>
+        /// <param name="comparer">The comparer.</param>
         /// <returns>
-        ///   Returns <see langword="true"/> if both of the enumerable objects are the same size and contain the same elements.
+        /// Returns <see langword="true" /> if both of the enumerable objects are the same size and contain the same elements.
         /// </returns>
         /// <remarks>
-        ///   <para>This does a robust check of enumerable equality with an algorithm that's no worse that O(N).</para>
-        ///   <para>The order in which items appear in the enumerable doesn't matter. For example {1, 2, 2, 3} would be
-        ///   considered equal to {2, 1, 3, 2} but not equal to {1, 2, 3, 3}.</para>
-        ///   <para>If the list does not contain duplicate items use DeepEqualsSimple.</para>
-        ///   <para>If the lists are sorted then use <see cref="System.Linq.Enumerable"/>'s Sequence Equal.</para>
+        /// <para>This does a robust check of enumerable equality with an algorithm that's no worse that O(N).</para>
+        /// <para>The order in which items appear in the enumerable doesn't matter. For example {1, 2, 2, 3} would be
+        /// considered equal to {2, 1, 3, 2} but not equal to {1, 2, 3, 3}.</para>
+        /// <para>If the list does not contain duplicate items use DeepEqualsSimple.</para>
+        /// <para>If the lists are sorted then use <see cref="System.Linq.Enumerable" />'s Sequence Equal.</para>
         /// </remarks>
-        public static bool DeepEquals<T>(this IEnumerable<T> enumerableA, IEnumerable<T> enumerableB)
+        [PublicAPI]
+        public static bool DeepEquals<T>(
+            [CanBeNull] [InstantHandle] this IEnumerable<T> enumerableA,
+            [CanBeNull] [InstantHandle] IEnumerable<T> enumerableB,
+            [CanBeNull] IEqualityComparer<T> comparer = null)
         {
             // Check for nulls
             if (enumerableA == null)
                 return enumerableB == null;
-            int count;
-            // Check counts are the same
-            if ((enumerableB == null) ||
-                ((count = enumerableA.Count()) != enumerableB.Count()))
+            if (enumerableB == null)
                 return false;
 
-            // Create counters for each element in first enumerable
-            Dictionary<T, TypeCounter> counters = new Dictionary<T, TypeCounter>(count);
-            TypeCounter t;
-            foreach (T element in enumerableA)
-            {
-                if (counters.TryGetValue(element, out t))
-                {
-                    t.Increment();
-                    continue;
-                }
-                t = new TypeCounter();
-                counters.Add(element, t);
-            }
-
-            // Decrement counters in second enumerable
-            foreach (T element in enumerableB)
-            {
-                //  If we have an element that was not present in the first enumerable, enumerables are not equal
-                if (!counters.TryGetValue(element, out t))
-                    return false;
-                t.Decrement();
-            }
-
-            // If any of the counters are not zero then we had unequal counts.
-            return !counters.Values.Any(counter => counter.Count != 0);
-        }
-
-        /// <summary>
-        ///   Compares two enumerables to see if they contain the same elements.
-        /// </summary>
-        /// <remarks>
-        ///   <para>This does a robust check of enumerable equality with an algorithm that's no worse that O(N).</para>
-        ///    <para>The order in which items appear in the enumerable doesn't matter. For example {1, 2, 2, 3} would
-        ///   be considered equal to {2, 1, 3, 2} but not equal to {1, 2, 3, 3}.</para>
-        ///   <para>If the list does not contain duplicate items use DeepEqualsSimple.</para>
-        ///   <para>If the lists are sorted then use <see cref="System.Linq.Enumerable">System.Linq.Enumerable</see>'s
-        ///   Sequence Equal.</para>
-        /// </remarks>
-        /// <typeparam name="T">The type of the object contained in the enumerable.</typeparam>
-        /// <param name="enumerableA">The first enumerable object.</param>
-        /// <param name="enumerableB">The second enumerable object</param>
-        /// <param name="comparer">The equality comparer.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if both of the enumerable objects are the same size and contain the same elements.
-        /// </returns>
-        public static bool DeepEquals<T>(
-            this IEnumerable<T> enumerableA,
-            IEnumerable<T> enumerableB,
-            IEqualityComparer<T> comparer)
-        {
-            // Check for nulls
-            if (enumerableA == null)
-                return enumerableB == null;
+            IReadOnlyCollection<T> enumA = enumerableA.Enumerate();
+            IReadOnlyCollection<T> enumB = enumerableB.Enumerate();
 
             int count;
             // Check counts are the same
-            if ((enumerableB == null) ||
-                ((count = enumerableA.Count()) != enumerableB.Count()))
+            if ((count = enumA.Count) != enumB.Count)
                 return false;
 
             // Create counters for each element in first enumerable
             Dictionary<T, TypeCounter> counters = new Dictionary<T, TypeCounter>(count, comparer);
             TypeCounter t;
-            foreach (T element in enumerableA)
+
+            // Nulls cannot be used as the key of a dictionary so have a separate counter for them
+            TypeCounter nullCounter = null;
+            foreach (T element in enumA)
             {
+                if (ReferenceEquals(element, null))
+                {
+                    if (nullCounter == null)
+                        nullCounter = new TypeCounter();
+                    nullCounter.Increment();
+                    continue;
+                }
+
                 if (counters.TryGetValue(element, out t))
                 {
                     t.Increment();
                     continue;
                 }
+
                 t = new TypeCounter();
                 counters.Add(element, t);
             }
 
             // Decrement counters in second enumerable
-            foreach (T element in enumerableB)
+            foreach (T element in enumB)
             {
+                if (ReferenceEquals(element, null))
+                {
+                    if (nullCounter == null)
+                        return false;
+
+                    nullCounter.Decrement();
+                    if (nullCounter.Count < 0)
+                        return false;
+
+                    continue;
+                }
+
                 //  If we have an element that was not present in the first enumerable, enumerables are not equal
                 if (!counters.TryGetValue(element, out t))
                     return false;
+
                 t.Decrement();
+                if (t.Count < 0)
+                    return false;
             }
 
             // If any of the counters are not zero then we had unequal counts.
-            return !counters.Values.Any(counter => counter.Count != 0);
-        }
-
-        /// <summary>
-        ///   Compares two enumerables to see if they contain the same elements.
-        /// </summary>
-        /// <typeparam name="T">The type of the object contained in the enumerable.</typeparam>
-        /// <param name="enumerableA">The first enumerable object.</param>
-        /// <param name="enumerableB">The second enumerable object</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if both of the enumerable objects are the same size and contain the same elements.
-        /// </returns>
-        /// <remarks>
-        ///   <para>For speed, the number of times elements appear in each enumerable is not taken into account, therefore a
-        ///   list of {1, 1, 2} and {1, 2, 2} would be considered equal. Therefore it is recommended that this is only used for
-        ///   enumerables that do not contain duplicates.</para>
-        ///   <para>If the lists are sorted then use <see cref="System.Linq.Enumerable"/>'s Sequence Equal.</para>
-        /// </remarks>
-        public static bool DeepEqualsSimple<T>(this IEnumerable<T> enumerableA, IEnumerable<T> enumerableB)
-        {
-            return enumerableA == null
-                ? enumerableB == null
-                : enumerableB == null
-                    ? false
-                    : enumerableA.Count() == enumerableB.Count() &&
-                      enumerableA.All(i => enumerableB.Contains(i));
+            return (nullCounter == null || nullCounter.Count == 0) &&
+                   !counters.Values.Any(counter => counter.Count != 0);
         }
 
         /// <summary>
@@ -671,17 +632,19 @@ namespace WebApplications.Utilities
         ///   enumerables that do not contain duplicates.</para>
         ///   <para>If the lists are sorted then use <see cref="System.Linq.Enumerable"/>'s Sequence Equal.</para>
         /// </remarks>
+        [PublicAPI]
         public static bool DeepEqualsSimple<T>(
-            this IEnumerable<T> enumerableA,
-            IEnumerable<T> enumerableB,
-            IEqualityComparer<T> comparer)
+            [CanBeNull] [InstantHandle] this IEnumerable<T> enumerableA,
+            [CanBeNull] [InstantHandle] IEnumerable<T> enumerableB,
+            [CanBeNull] IEqualityComparer<T> comparer = null)
         {
-            return enumerableA == null
-                ? enumerableB == null
-                : enumerableB == null
-                    ? false
-                    : (enumerableA.Count() == enumerableB.Count() &&
-                       enumerableA.All(i => enumerableB.Contains(i, comparer)));
+            if (enumerableA == null) return enumerableB == null;
+            if (enumerableB == null) return false;
+
+            IReadOnlyCollection<T> enumA = enumerableA.Enumerate();
+            IReadOnlyCollection<T> enumB = enumerableB.Enumerate();
+
+            return enumA.Count == enumB.Count && enumA.All(i => enumB.Contains(i, comparer));
         }
 
         /// <summary>
@@ -694,12 +657,42 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="collection"/> is a <see langword="null"/>.
         /// </exception>
-        public static Dictionary<string, string> ToDictionary(this NameValueCollection collection)
+        [PublicAPI]
+        [NotNull]
+        public static Dictionary<string, string> ToDictionary([NotNull] this NameValueCollection collection)
         {
-            return collection.Cast<string>().ToDictionary(
-                key => key,
-                key => collection[key],
-                StringComparer.CurrentCultureIgnoreCase);
+            Contract.Requires(collection != null);
+
+            Dictionary<string, string> d = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+            foreach (string name in collection)
+                // ReSharper disable once AssignNullToNotNullAttribute
+                d.Add(name, collection[name]);
+            return d;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Dictionary{TKey,TValue}"/> from an <see cref="IEnumerable{KeyValuePair}"/>
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="source">An <see cref="IEnumerable{KeyValuePair}"/> to create a <see cref="Dictionary{TKey,TValue}"/> from.</param>
+        /// <param name="comparer">An <see cref="IEqualityComparer{TKey}"/> to compare keys.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
+            [NotNull] [InstantHandle] this IEnumerable<KeyValuePair<TKey, TValue>> source,
+            [CanBeNull] IEqualityComparer<TKey> comparer = null)
+        {
+            Contract.Requires(source != null);
+
+            Dictionary<TKey, TValue> d = new Dictionary<TKey, TValue>(comparer);
+
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (KeyValuePair<TKey, TValue> kvp in source)
+                // ReSharper disable once AssignNullToNotNullAttribute
+                d.Add(kvp.Key, kvp.Value);
+
+            return d;
         }
 
         /// <summary>
@@ -707,7 +700,9 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
-        public static string ToJSON(this string input)
+        [NotNull]
+        [PublicAPI]
+        public static string ToJSON([CanBeNull] this string input)
         {
             if (input == null)
                 return "null";
@@ -723,8 +718,12 @@ namespace WebApplications.Utilities
         /// <param name="stringBuilder">The string builder.</param>
         /// <param name="input">The input.</param>
         /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
         public static StringBuilder AppendJSON([NotNull] this StringBuilder stringBuilder, [CanBeNull] string input)
         {
+            Contract.Requires(stringBuilder != null);
+
             if (input == null)
             {
                 stringBuilder.Append("null");
@@ -755,16 +754,21 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   Can be used with other enumerable objects such as Queues, Stacks, etc.
         /// </remarks>
-        public static string ToJSON(this IEnumerable<string> list)
+        [NotNull]
+        [PublicAPI]
+        public static string ToJSON([CanBeNull] [InstantHandle] this IEnumerable<string> list)
         {
-            if ((list == null) ||
-                (!list.Any()))
+            if (list == null)
+                return "[]";
+
+            IReadOnlyCollection<string> collection = list.Enumerate();
+            if (collection.Count < 1)
                 return "[]";
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("[");
             bool includeComma = false;
-            foreach (string s in list)
+            foreach (string s in collection)
             {
                 if (includeComma)
                     stringBuilder.Append(",");
@@ -793,12 +797,17 @@ namespace WebApplications.Utilities
         /// </param>
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
+        [NotNull]
+        [PublicAPI]
         public static IEnumerable<T> GetObjectsById<T>(
-            this string integers,
-            Func<int, T> getObject,
-            char[] splitChars = null,
+            [NotNull] this string integers,
+            [NotNull] Func<int, T> getObject,
+            [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
+            Contract.Requires(integers != null);
+            Contract.Requires(getObject != null);
+
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
@@ -808,8 +817,9 @@ namespace WebApplications.Utilities
                     }).Where(id => id.HasValue)
                     .Distinct()
                     .Select(id => getObject(id.Value));
+
             if (!typeof(T).IsValueType)
-                enumeration = enumeration.Where(o => o != null);
+                enumeration = enumeration.Where(o => !ReferenceEquals(o, null));
 
             // Only retrieve distinct elements
             enumeration = enumeration.Distinct();
@@ -836,12 +846,17 @@ namespace WebApplications.Utilities
         /// </param>
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
+        [NotNull]
+        [PublicAPI]
         public static IEnumerable<T> GetObjectsById16<T>(
-            this string integers,
-            Func<short, T> getObject,
-            char[] splitChars = null,
+            [NotNull] this string integers,
+            [NotNull] Func<short, T> getObject,
+            [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
+            Contract.Requires(integers != null);
+            Contract.Requires(getObject != null);
+
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
@@ -865,7 +880,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///    a <see cref="string"/> of <see cref="int">integer</see> ids and calls a function to retrieve an enumeration of objects.
+        ///   Takes a <see cref="string"/> of <see cref="int">integer</see> ids and calls a function to retrieve an enumeration of objects.
         /// </summary>
         /// <typeparam name="T">The result type for <paramref name="getObject"/>.</typeparam>
         /// <param name="integers">The integers to split.</param>
@@ -879,12 +894,17 @@ namespace WebApplications.Utilities
         /// </param>
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
+        [NotNull]
+        [PublicAPI]
         public static IEnumerable<T> GetObjectsById64<T>(
-            this string integers,
-            Func<long, T> getObject,
-            char[] splitChars = null,
+            [NotNull] this string integers,
+            [NotNull] Func<long, T> getObject,
+            [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
+            Contract.Requires(integers != null);
+            Contract.Requires(getObject != null);
+
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
@@ -912,7 +932,10 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="raw">The raw string.</param>
         /// <returns>The escaped <see cref="string"/>.</returns>
-        public static string XmlEscape(this string raw)
+        [CanBeNull]
+        [ContractAnnotation("raw:null => null; raw:notnull => notnull")]
+        [PublicAPI]
+        public static string XmlEscape([CanBeNull] this string raw)
         {
             string stripped = String.IsNullOrEmpty(raw)
                 ? raw
@@ -925,7 +948,9 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="raw">The object containing the raw value.</param>
         /// <returns>The escaped <see cref="string"/>.</returns>
-        public static string XmlEscape(this object raw)
+        [NotNull]
+        [PublicAPI]
+        public static string XmlEscape([NotNull] this object raw)
         {
             return raw.ToString().XmlEscape();
         }
@@ -941,6 +966,7 @@ namespace WebApplications.Utilities
         /// <para>See http://www.w3.org/TR/xml/#charsets for further info.</para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
         public static bool IsValidXmlCharStrict(this char c)
         {
             return (c >= 0x20 && c <= 0xD7FF) ||
@@ -963,6 +989,7 @@ namespace WebApplications.Utilities
         /// <para>See http://www.w3.org/TR/xml/#charsets for further info.</para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
         public static bool IsValidXmlChar(this char c)
         {
             return (c >= 0x20 && c <= 0x7E) ||
@@ -991,12 +1018,18 @@ namespace WebApplications.Utilities
         /// <exception cref="InvalidOperationException">
         ///   Couldn't load the embedded resource from the specified <paramref name="assembly"/>.
         /// </exception>
-        public static XDocument GetEmbeddedXml(this Assembly assembly, string filename)
+        [NotNull]
+        [PublicAPI]
+        public static XDocument GetEmbeddedXml([NotNull] this Assembly assembly, [NotNull] string filename)
         {
             try
             {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (assembly == null)
+                    // ReSharper disable HeuristicUnreachableCode
                     throw new ArgumentNullException("assembly");
+                // ReSharper restore HeuristicUnreachableCode
+
                 if (String.IsNullOrWhiteSpace(filename))
                     throw new ArgumentNullException("filename");
 
@@ -1040,15 +1073,21 @@ namespace WebApplications.Utilities
         /// <exception cref="InvalidOperationException">
         ///   Couldn't load the embedded resource from the specified <paramref name="assembly"/>.
         /// </exception>
+        [NotNull]
+        [PublicAPI]
         public static XmlSchemaSet GetEmbeddedXmlSchemaSet(
-            this Assembly assembly,
-            string filename,
-            string targetNamespace = "")
+            [NotNull] this Assembly assembly,
+            [NotNull] string filename,
+            [NotNull] string targetNamespace = "")
         {
             try
             {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (assembly == null)
+                    // ReSharper disable HeuristicUnreachableCode
                     throw new ArgumentNullException("assembly");
+                // ReSharper restore HeuristicUnreachableCode
+
                 if (String.IsNullOrWhiteSpace(filename))
                     throw new ArgumentNullException("filename");
 
@@ -1091,6 +1130,7 @@ namespace WebApplications.Utilities
         ///   This is the best way to pass a date time to JavaScript because it ensures that the time will parse successfully
         ///   regardless of the <see cref="DateTime">date</see>'s localisation/format.
         /// </remarks>
+        [PublicAPI]
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
             return (Int64)(dateTime - EpochStart).TotalMilliseconds;
@@ -1108,6 +1148,7 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The result was either less than <see cref="DateTime.MinValue"/> or greater than <see cref="DateTime.MaxValue"/>.
         /// </exception>
+        [PublicAPI]
         public static DateTime GetDateTime(Int64 epochTime)
         {
             return EpochStart.AddMilliseconds(epochTime);
@@ -1123,8 +1164,11 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="input"/> was <see langword="null"/>.
         /// </exception>
-        public static string StripHTML(this string input)
+        [NotNull]
+        [PublicAPI]
+        public static string StripHTML([NotNull] this string input)
         {
+            Contract.Requires(input != null);
             // TODO: a) make more efficient b) question purpose/usage
             int depthCounter = 0;
             StringBuilder builder = new StringBuilder(input.Length);
@@ -1159,11 +1203,13 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maxLength"/> is less than the <paramref name="ellipsisLength"/>.
         /// </exception>
+        [NotNull]
+        [PublicAPI]
         public static string Truncate(
-            this string valueToTruncate,
+            [CanBeNull] this string valueToTruncate,
             int maxLength,
             TruncateOptions options = TruncateOptions.None,
-            string ellipsisString = "...",
+            [NotNull] string ellipsisString = "...",
             int ellipsisLength = -1)
         {
             if (String.IsNullOrEmpty(valueToTruncate) ||
@@ -1212,6 +1258,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="d">The value in degrees to convert.</param>
         /// <returns>The value (<paramref name="d"/>) in radians.</returns>
+        [PublicAPI]
         public static double ToRadians(this double d)
         {
             return (Math.PI / 180) * d;
@@ -1222,6 +1269,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="r">The value in radians to convert.</param>
         /// <returns>The value (<paramref name="r"/>) in degrees.</returns>
+        [PublicAPI]
         public static double ToDegrees(this double r)
         {
             return r * (180.0 / Math.PI);
@@ -1451,7 +1499,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="guid">The Guid.</param>
         /// <returns>The <see cref="System.Guid"/>'s creation <see cref="DateTime"/>.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public static DateTime GetDateTime(this Guid guid)
         {
             return CombGuid.GetDateTime(guid);
@@ -1467,6 +1515,7 @@ namespace WebApplications.Utilities
         /// <returns>The wrapped result.</returns>
         [Obsolete("Consider using TPL or Async.")]
         [NotNull]
+        [PublicAPI]
         public static IAsyncResult Wrap<T>([NotNull] this IAsyncResult result, T data)
         {
             return ApmWrap<T>.Wrap(result, data);
@@ -1480,6 +1529,7 @@ namespace WebApplications.Utilities
         /// <returns>The embedded data.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [Obsolete("Consider using TPL or Async.")]
+        [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result)
         {
             return ApmWrap<T>.Unwrap(ref result);
@@ -1494,6 +1544,7 @@ namespace WebApplications.Utilities
         /// <returns>The embedded data.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [Obsolete("Consider using TPL or Async.")]
+        [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result, out IAsyncResult unwrappedResult)
         {
             unwrappedResult = result;
@@ -1511,6 +1562,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [Obsolete("Consider using TPL or Async.")]
         [NotNull]
+        [PublicAPI]
         public static AsyncCallback WrapCallback<T>(
             [NotNull] this AsyncCallback callback,
             T data,
@@ -1528,8 +1580,12 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
+        [PublicAPI]
         public static T[][] Split<T>([NotNull] this T[] array, [NotNull] params int[] indices)
         {
+            Contract.Requires(array != null);
+            Contract.Requires(indices != null);
+
             int length = array.Length;
 
             // Sort indices, removing any out of bounds and adding an end value of length.
@@ -1566,6 +1622,21 @@ namespace WebApplications.Utilities
             return arrays;
         }
 
+        /// <summary>
+        /// Joins the specified elements. Calls <see cref="String.Join(string,IEnumerable{string})"/>
+        /// </summary>
+        /// <param name="elements">The elements.</param>
+        /// <param name="separator">The separator.</param>
+        /// <returns>The joined elements.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string Join([NotNull] this IEnumerable<string> elements, [NotNull] string separator = "")
+        {
+            Contract.Requires(elements != null);
+            Contract.Requires(separator != null);
+
+            return string.Join(separator, elements);
+        }
 
         /// <summary>
         /// Joins elements that are not null or empty with the separator.
@@ -1574,9 +1645,11 @@ namespace WebApplications.Utilities
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        public static string JoinNotNull([NotNull] this IEnumerable<string> elements, string separator = "")
+        [PublicAPI]
+        public static string JoinNotNull([NotNull] this IEnumerable<string> elements, [NotNull] string separator = "")
         {
             Contract.Requires(elements != null);
+            Contract.Requires(separator != null);
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1599,9 +1672,13 @@ namespace WebApplications.Utilities
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        public static string JoinNotNullOrEmpty([NotNull] this IEnumerable<string> elements, string separator = "")
+        [PublicAPI]
+        public static string JoinNotNullOrEmpty(
+            [NotNull] this IEnumerable<string> elements,
+            [NotNull] string separator = "")
         {
             Contract.Requires(elements != null);
+            Contract.Requires(separator != null);
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1624,10 +1701,14 @@ namespace WebApplications.Utilities
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        public static string JoinNotNullOrWhiteSpace([NotNull] this IEnumerable<string> elements, [NotNull]string separator = "")
+        [PublicAPI]
+        public static string JoinNotNullOrWhiteSpace(
+            [NotNull] this IEnumerable<string> elements,
+            [NotNull] string separator = "")
         {
             Contract.Requires(elements != null);
             Contract.Requires(separator != null);
+
             StringBuilder builder = new StringBuilder();
             bool any = false;
             foreach (string element in elements)
@@ -1648,6 +1729,7 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<string> SplitLines([NotNull] this string input)
         {
             return _lineSplitter.Split(input);
@@ -1659,9 +1741,10 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
+        [PublicAPI]
         public static string LowerCaseFirstLetter([NotNull] this string input)
         {
-            return input.Substring(0, 1).ToLower() + input.Substring(1);
+            return char.ToLower(input[0]) + input.Substring(1);
         }
 
         /// <summary>
@@ -1670,6 +1753,7 @@ namespace WebApplications.Utilities
         /// <param name="number">The number.</param>
         /// <param name="increaseByPercent">Percentage to increase by.</param>
         /// <returns>The number increased by given percentage.</returns>
+        [PublicAPI]
         public static double AddPercentage(this double number, double increaseByPercent)
         {
             return number + (number * increaseByPercent) / 100;
@@ -1683,7 +1767,9 @@ namespace WebApplications.Utilities
         /// <remarks>
         /// <para>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</para>
         /// </remarks>
-        public static byte[] GetAllBytes(this IPAddress ipAddress)
+        [CanBeNull]
+        [PublicAPI]
+        public static byte[] GetAllBytes([CanBeNull] this IPAddress ipAddress)
         {
             if (ipAddress == null) return null;
             byte[] bytes = ipAddress.GetAddressBytes();
@@ -1712,7 +1798,9 @@ namespace WebApplications.Utilities
         /// <param name="bytes">The bytes.</param>
         /// <returns>A byte[] that fully encodes an IPAddress.</returns>
         /// <remarks>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</remarks>
-        public static IPAddress GetFullIPAddress(this byte[] bytes)
+        [CanBeNull]
+        [PublicAPI]
+        public static IPAddress GetFullIPAddress([CanBeNull] this byte[] bytes)
         {
             if (bytes == null) return null;
             int l = bytes.Length;
@@ -1745,7 +1833,7 @@ namespace WebApplications.Utilities
             [CanBeNull] IEqualityComparer<T> equalityComparer = null)
         {
             Contract.Requires(enumerable != null);
-            ICollection<T> collection = (enumerable as ICollection<T>) ?? enumerable.ToArray();
+            IReadOnlyCollection<T> collection = enumerable.Enumerate();
             return collection.Count == collection.Distinct(equalityComparer ?? EqualityComparer<T>.Default).Count();
         }
 
@@ -1800,30 +1888,14 @@ namespace WebApplications.Utilities
             return val;
         }
 
-        /// <summary>
-        /// Creates a <see cref="Dictionary{TKey,TValue}"/> from an <see cref="IEnumerable{KeyValuePair}"/>
-        /// </summary>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <param name="source">An <see cref="IEnumerable{KeyValuePair}"/> to create a <see cref="Dictionary{TKey,TValue}"/> from.</param>
-        /// <param name="comparer">An <see cref="IEqualityComparer{TKey}"/> to compare keys.</param>
-        [NotNull]
-        [PublicAPI]
-        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
-            [NotNull] this IEnumerable<KeyValuePair<TKey, TValue>> source,
-            [CanBeNull] IEqualityComparer<TKey> comparer = null)
-        {
-            Contract.Requires(source != null);
-            return source.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, comparer);
-        }
-
         #region StdDev
         /// <summary>
         /// Calculate the standard deviation of an average
         /// </summary>
         /// <param name="values">The values.</param>
         /// <returns>The standard deviation.</returns>
-        public static double StdDev(this IEnumerable<double> values)
+        [PublicAPI]
+        public static double StdDev([CanBeNull] this IEnumerable<double> values)
         {
             if (values == null) return 0;
 
@@ -1846,7 +1918,8 @@ namespace WebApplications.Utilities
         /// <param name="values">The values.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>The standard deviation.</returns>
-        public static double StdDev<T>(this IEnumerable<T> values, [NotNull] Func<T, double> selector)
+        [PublicAPI]
+        public static double StdDev<T>([CanBeNull] this IEnumerable<T> values, [NotNull] Func<T, double> selector)
         {
             Contract.Requires(selector != null);
             if (values == null) return 0;
@@ -1882,11 +1955,15 @@ namespace WebApplications.Utilities
         /// <returns>The maximal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [NotNull]
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MaxBy<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+
             return source.MaxBy(selector, Comparer<TKey>.Default);
         }
 
@@ -1907,10 +1984,15 @@ namespace WebApplications.Utilities
         /// <returns>The maximal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MaxByOrDefault<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+
             return source.MaxByOrDefault(selector, Comparer<TKey>.Default);
         }
 
@@ -1933,12 +2015,17 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [NotNull]
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MaxBy<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+            Contract.Requires(comparer != null);
+
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
                 if (!sourceIterator.MoveNext())
@@ -1976,11 +2063,17 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MaxByOrDefault<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+            Contract.Requires(comparer != null);
+
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
                 if (!sourceIterator.MoveNext())
@@ -2016,11 +2109,15 @@ namespace WebApplications.Utilities
         /// <returns>The minimal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [NotNull]
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MinBy<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+
             return source.MinBy(selector, Comparer<TKey>.Default);
         }
 
@@ -2041,10 +2138,15 @@ namespace WebApplications.Utilities
         /// <returns>The minimal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MinByOrDefault<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+
             return source.MinByOrDefault(selector, Comparer<TKey>.Default);
         }
 
@@ -2067,12 +2169,17 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [NotNull]
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MinBy<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+            Contract.Requires(comparer != null);
+
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
                 if (!sourceIterator.MoveNext())
@@ -2110,11 +2217,17 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
         public static TSource MinByOrDefault<TSource, TKey>(
             [NotNull] this IEnumerable<TSource> source,
             [NotNull] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+            Contract.Requires(comparer != null);
+
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
                 if (!sourceIterator.MoveNext())
@@ -2134,12 +2247,153 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Invokes a transform function on each element of a generic sequence and returns the maximum resulting value.
+        /// </summary>
+        /// <remarks>
+        /// This overload uses the default comparer for the projected type. This operator uses immediate execution, but
+        /// only buffers a single result (the current maximum value).
+        /// </remarks>
+        /// <typeparam name="TSource">Type of the source sequence</typeparam>
+        /// <typeparam name="TKey">Type of the projected element</typeparam>
+        /// <param name="source">Source sequence</param>
+        /// <param name="selector">Selector to use to pick the results to compare</param>
+        /// <returns>The maximal element, according to the projection.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
+        public static TKey MaxOrDefault<TSource, TKey>(
+            [NotNull] this IEnumerable<TSource> source,
+            [NotNull] Func<TSource, TKey> selector)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+
+            return source.MaxOrDefault(selector, Comparer<TKey>.Default);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a generic sequence and returns the maximum resulting value,
+        /// using the specified comparer for comparing the projected values.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses immediate execution, but
+        /// only buffers a single result (the current maximal element).
+        /// </remarks>
+        /// <typeparam name="TSource">Type of the source sequence</typeparam>
+        /// <typeparam name="TKey">Type of the projected element</typeparam>
+        /// <param name="source">Source sequence</param>
+        /// <param name="selector">Selector to use to pick the results to compare</param>
+        /// <param name="comparer">Comparer to use to compare projected values</param>
+        /// <returns>The maximal element, according to the projection.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
+        /// or <paramref name="comparer"/> is null</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
+        public static TKey MaxOrDefault<TSource, TKey>(
+            [NotNull] this IEnumerable<TSource> source,
+            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] IComparer<TKey> comparer)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+            Contract.Requires(comparer != null);
+
+            using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
+            {
+                if (!sourceIterator.MoveNext())
+                    return default(TKey);
+                TKey max = selector(sourceIterator.Current);
+                while (sourceIterator.MoveNext())
+                {
+                    TKey candidateProjected = selector(sourceIterator.Current);
+                    if (comparer.Compare(candidateProjected, max) <= 0) continue;
+                    max = candidateProjected;
+                }
+                return max;
+            }
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a generic sequence and returns the minimum resulting value.
+        /// </summary>
+        /// <remarks>
+        /// This overload uses the default comparer for the projected type. This operator uses immediate execution, but
+        /// only buffers a single result (the current maximum value).
+        /// </remarks>
+        /// <typeparam name="TSource">Type of the source sequence</typeparam>
+        /// <typeparam name="TKey">Type of the projected element</typeparam>
+        /// <param name="source">Source sequence</param>
+        /// <param name="selector">Selector to use to pick the results to compare</param>
+        /// <returns>The minimal element, according to the projection.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
+        public static TKey MinOrDefault<TSource, TKey>(
+            [NotNull] this IEnumerable<TSource> source,
+            [NotNull] Func<TSource, TKey> selector)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+
+            return source.MinOrDefault(selector, Comparer<TKey>.Default);
+        }
+
+
+        /// <summary>
+        /// Invokes a transform function on each element of a generic sequence and returns the minimum resulting value,
+        /// using the specified comparer for comparing the projected values.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses immediate execution, but
+        /// only buffers a single result (the current maximal element).
+        /// </remarks>
+        /// <typeparam name="TSource">Type of the source sequence</typeparam>
+        /// <typeparam name="TKey">Type of the projected element</typeparam>
+        /// <param name="source">Source sequence</param>
+        /// <param name="selector">Selector to use to pick the results to compare</param>
+        /// <param name="comparer">Comparer to use to compare projected values</param>
+        /// <returns>The minimal element, according to the projection.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
+        /// or <paramref name="comparer"/> is null</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+        [PublicAPI]
+        [CanBeNull]
+        public static TKey MinOrDefault<TSource, TKey>(
+            [NotNull] this IEnumerable<TSource> source,
+            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] IComparer<TKey> comparer)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(selector != null);
+            Contract.Requires(comparer != null);
+
+            using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
+            {
+                if (!sourceIterator.MoveNext())
+                    return default(TKey);
+                TKey max = selector(sourceIterator.Current);
+                while (sourceIterator.MoveNext())
+                {
+                    TKey candidateProjected = selector(sourceIterator.Current);
+                    if (comparer.Compare(candidateProjected, max) >= 0) continue;
+                    max = candidateProjected;
+                }
+                return max;
+            }
+        }
+
+        /// <summary>
         /// Returns the minimum value from the list.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source">The source.</param>
         /// <param name="comparer">The comparer.</param>
         /// <returns>``0.</returns>
+        [PublicAPI]
+        [CanBeNull]
         public static T Min<T>([NotNull] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
@@ -2179,6 +2433,8 @@ namespace WebApplications.Utilities
         /// <param name="source">The source.</param>
         /// <param name="comparer">The comparer.</param>
         /// <returns>``0.</returns>
+        [PublicAPI]
+        [CanBeNull]
         public static T Max<T>([NotNull] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
@@ -2212,6 +2468,255 @@ namespace WebApplications.Utilities
         }
         #endregion
 
+        #region UnionSingle/Append/Prepend
+        /// <summary>
+        /// Produces the set union of a sequence and a single item by using a specified <see cref="IEqualityComparer{T}"/>.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the elements from both input sequences, excluding duplicates.
+        /// </returns>
+        /// <param name="first">First element to return.</param>
+        /// <param name="second">An <see cref="T:System.Collections.Generic.IEnumerable`1"/> whose distinct elements form the second set for the union.</param>
+        /// <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> to compare values.</param>
+        /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<TSource> UnionSingle<TSource>(
+            [CanBeNull] this TSource first,
+            [NotNull] IEnumerable<TSource> second,
+            [CanBeNull] IEqualityComparer<TSource> comparer = null)
+        {
+            Contract.Requires(second != null);
+
+            yield return first;
+
+            if (comparer == null) comparer = EqualityComparer<TSource>.Default;
+            foreach (TSource element in second)
+                if (!comparer.Equals(element, first))
+                    yield return element;
+        }
+
+        /// <summary>
+        /// Produces the set union of a sequence and a single item by using a specified <see cref="IEqualityComparer{T}" />.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
+        /// <param name="first">An <see cref="T:System.Collections.Generic.IEnumerable`1" /> whose distinct elements form the first set for the union.</param>
+        /// <param name="last">The last element to union.</param>
+        /// <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> to compare values.</param>
+        /// <returns>
+        /// An <see cref="T:System.Collections.Generic.IEnumerable`1" /> that contains the elements from both input sequences, excluding duplicates.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<TSource> UnionSingle<TSource>(
+            [NotNull] this IEnumerable<TSource> first,
+            [CanBeNull] TSource last,
+            [CanBeNull] IEqualityComparer<TSource> comparer = null)
+        {
+            Contract.Requires(first != null);
+
+            if (comparer == null) comparer = EqualityComparer<TSource>.Default;
+            foreach (TSource element in first)
+                if (!comparer.Equals(element, last))
+                    yield return element;
+
+            yield return last;
+        }
+
+        /// <summary>
+        /// Prepends an item to the start of an <see cref="IEnumerable{T}"/> sequence.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
+        /// <param name="first">First element to return.</param>
+        /// <param name="sequence">The sequence to be prepended to.</param>
+        /// <returns>
+        /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the first item followed by the elements of the sequence.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<TSource> Prepend<TSource>(
+            [NotNull] this IEnumerable<TSource> sequence,
+            [CanBeNull] TSource first)
+        {
+            Contract.Requires(sequence != null);
+
+            yield return first;
+
+            foreach (TSource element in sequence)
+                yield return element;
+        }
+
+        /// <summary>
+        /// Prepends this item to the start of an <see cref="IEnumerable{T}"/> sequence.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
+        /// <param name="first">First element to return.</param>
+        /// <param name="sequence">The sequence to be prepended to.</param>
+        /// <returns>
+        /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the first item followed by the elements of the sequence.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<TSource> PrependTo<TSource>(
+            [CanBeNull] this TSource first,
+            [NotNull] IEnumerable<TSource> sequence)
+        {
+            Contract.Requires(sequence != null);
+
+            yield return first;
+
+            foreach (TSource element in sequence)
+                yield return element;
+        }
+
+        /// <summary>
+        /// Appends an item to an <see cref="IEnumerable{T}"/> sequence.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
+        /// <param name="sequence">The sequence to append the item to.</param>
+        /// <param name="last">The item to append.</param>
+        /// <returns>
+        /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the elements of the sequence followed by the last item.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<TSource> Append<TSource>(
+            [NotNull] this IEnumerable<TSource> sequence,
+            [CanBeNull] TSource last)
+        {
+            Contract.Requires(sequence != null);
+
+            foreach (TSource element in sequence)
+                yield return element;
+
+            yield return last;
+        }
+
+        /// <summary>
+        /// Appends this item to an <see cref="IEnumerable{T}"/> sequence.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
+        /// <param name="sequence">The sequence to append the item to.</param>
+        /// <param name="last">The item to append.</param>
+        /// <returns>
+        /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the elements of the sequence followed by the last item.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<TSource> AppendTo<TSource>(
+            [CanBeNull] this TSource last,
+            [NotNull] IEnumerable<TSource> sequence)
+        {
+            Contract.Requires(sequence != null);
+
+            foreach (TSource element in sequence)
+                yield return element;
+
+            yield return last;
+        }
+        #endregion
+
+        #region HasAtLeast/HasExact
+        /// <summary>
+        /// Determines whether a sequence contains at least <see cref="count" /> elements.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
+        /// <param name="count">The minimum number of elements the <see cref="source"/> needs.</param>
+        /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public static bool HasAtLeast<TSource>([NotNull] this IEnumerable<TSource> source, int count)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(count > 0);
+
+            foreach (TSource item in source)
+            {
+                count--;
+                if (count < 1)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains at least <see cref="count" /> elements that satisfies a condition.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
+        /// <param name="count">The minimum number of elements the <see cref="source"/> needs.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public static bool HasAtLeast<TSource>(
+            [NotNull] this IEnumerable<TSource> source,
+            int count,
+            [NotNull] Func<TSource, bool> predicate)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(count > 0);
+            Contract.Requires(predicate != null);
+
+            foreach (TSource item in source)
+                if (predicate(item))
+                {
+                    count--;
+                    if (count < 1)
+                        return true;
+                }
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains exactly <see cref="count" /> elements.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
+        /// <param name="count">The exact number of elements the <see cref="source"/> needs.</param>
+        /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public static bool HasExact<TSource>([NotNull] this IEnumerable<TSource> source, int count)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(count > 0);
+
+            foreach (TSource item in source)
+            {
+                count--;
+                if (count < 0)
+                    return false;
+            }
+            return count == 0;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains exactly <see cref="count" /> elements that satisfies a condition.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}" />.</param>
+        /// <param name="count">The exact number of elements the <see cref="source" /> needs.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public static bool HasExact<TSource>(
+            [NotNull] this IEnumerable<TSource> source,
+            int count,
+            [NotNull] Func<TSource, bool> predicate)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(count > 0);
+
+            foreach (TSource item in source)
+                if (predicate(item))
+                {
+                    count--;
+                    if (count < 0)
+                        return false;
+                }
+            return count == 0;
+        }
+        #endregion
+
         #region ToMemorySize
         [NotNull]
         private static readonly string[] _memoryUnitsLong =
@@ -2236,6 +2741,8 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToMemorySize(
             this short bytes,
             bool longUnits = false,
@@ -2253,6 +2760,8 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToMemorySize(
             this ushort bytes,
             bool longUnits = false,
@@ -2270,6 +2779,8 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToMemorySize(
             this int bytes,
             bool longUnits = false,
@@ -2287,6 +2798,8 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToMemorySize(
             this uint bytes,
             bool longUnits = false,
@@ -2304,6 +2817,8 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToMemorySize(
             this long bytes,
             bool longUnits = false,
@@ -2321,6 +2836,8 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToMemorySize(
             this ulong bytes,
             bool longUnits = false,
@@ -2338,6 +2855,8 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
         public static string ToMemorySize(
             this double bytes,
             bool longUnits = false,
@@ -2404,6 +2923,7 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
+        [PublicAPI]
         public static short Mod(this short value, short modulus)
         {
             int mod = value % modulus;
@@ -2418,6 +2938,7 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
+        [PublicAPI]
         public static ushort Mod(this ushort value, ushort modulus)
         {
             return (ushort)(value % modulus);
@@ -2430,6 +2951,7 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
+        [PublicAPI]
         public static int Mod(this int value, int modulus)
         {
             int mod = value % modulus;
@@ -2444,6 +2966,7 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
+        [PublicAPI]
         public static uint Mod(this uint value, uint modulus)
         {
             return value % modulus;
@@ -2456,6 +2979,7 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
+        [PublicAPI]
         public static long Mod(this long value, long modulus)
         {
             long mod = value % modulus;
@@ -2470,6 +2994,7 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
+        [PublicAPI]
         public static ulong Mod(this ulong value, ulong modulus)
         {
             return value % modulus;
@@ -2490,11 +3015,12 @@ namespace WebApplications.Utilities
         /// </returns>
         /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
         public static IEnumerable<T> TopologicalSortDependants<T>(
             [NotNull] this IEnumerable<T> enumerable,
             [NotNull] Func<T, IEnumerable<T>> getDependants)
         {
+            enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
             return TopologicalSortEdges(
                 enumerable,
@@ -2526,6 +3052,7 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<T> enumerable,
             [NotNull] Func<T, IEnumerable<T>> getDependencies)
         {
+            enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
             return TopologicalSortEdges(
                 enumerable,
@@ -2590,11 +3117,16 @@ namespace WebApplications.Utilities
                 if (!dependants.TryGetValue(t, out dependentsOfLastYield)) continue;
                 dependants.Remove(t);
 
+                Contract.Assert(dependentsOfLastYield != null);
+
                 foreach (T dependant in dependentsOfLastYield)
                 {
+                    Contract.Assert(dependant != null);
+
                     // Check the dependant was actually included in enumerable
                     List<T> deps;
                     if (!dependencies.TryGetValue(dependant, out deps)) continue;
+                    Contract.Assert(deps != null);
 
                     // Remove dependency
                     deps.Remove(t);
@@ -2612,14 +3144,31 @@ namespace WebApplications.Utilities
         #endregion
 
         /// <summary>
+        /// Enumerates the given <see cref="IEnumerable{T}"/>. 
+        /// If the enumerable implements <see cref="IReadOnlyCollection{T}"/> then it will just be returned; otherwise it will be enumerated.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IReadOnlyCollection<T> Enumerate<T>([NotNull] [InstantHandle] this IEnumerable<T> source)
+        {
+            return source as IReadOnlyCollection<T> ?? source.ToArray();
+        }
+
+        /// <summary>
         /// Gets the semantic version of an assembly.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <returns></returns>
         [NotNull]
+        [PublicAPI]
         public static SemanticVersion SemanticVersion([NotNull] this Assembly assembly)
         {
             Contract.Requires(assembly != null);
+            Contract.Ensures(Contract.Result<SemanticVersion>() != null);
 
             // Get the assembly version.
             Version version = assembly.GetName().Version;
@@ -2655,7 +3204,8 @@ namespace WebApplications.Utilities
         /// <param name="values">The values.</param>
         /// <returns>A hash set of the values.</returns>
         [NotNull]
-        public static ISet CreateSet([NotNull] this Type elementType, IEnumerable values = null)
+        [PublicAPI]
+        public static ISet CreateSet([NotNull] this Type elementType, [CanBeNull] IEnumerable values = null)
         {
             Contract.Requires(elementType != null);
             return _hashCollectionCreators.GetOrAdd(

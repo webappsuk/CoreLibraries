@@ -28,18 +28,35 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Configuration;
+
+// ReSharper disable InconsistentNaming
 
 namespace WebApplications.Utilities.Test.Configuration
 {
     [TestClass]
     public class ConfigurationSectionTests : ConfigurationTestBase
     {
+        [NotNull]
         private static ConfigurationSectionTestClass GenerateBlankConfigurationSectionTestClass()
         {
             return new ConfigurationSectionTestClass();
+        }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            // HACK Should probably change the tests so that this isn't needed
+            typeof(ConfigurationSection<ConfigurationSectionTestClass>)
+                .GetField("_active", BindingFlags.NonPublic | BindingFlags.Static)
+                .SetValue(null, null);   
         }
 
         [TestMethod]
@@ -58,7 +75,7 @@ namespace WebApplications.Utilities.Test.Configuration
         public void Xmlns_HasConfigurationProperty()
         {
             List<ConfigurationPropertyAttribute> configurationPropertyAttributes =
-                GetConfigurationPropertyAttributesForProperty(typeof (ConfigurationSectionTestClass), "Xmlns");
+                GetConfigurationPropertyAttributesForProperty(typeof(ConfigurationSectionTestClass), "Xmlns");
             Assert.AreEqual(
                 1,
                 configurationPropertyAttributes.Count,
@@ -145,8 +162,7 @@ namespace WebApplications.Utilities.Test.Configuration
             // First set up some data and check the test would fail before Active is set to null:
             ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3>
                 configurationSection =
-                    new ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3>
-                    {PropertyWithDefaultValue = "Not the default value"};
+                    new ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3> { PropertyWithDefaultValue = "Not the default value" };
             ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3>.Active =
                 configurationSection;
             Assert.AreNotEqual(
@@ -405,6 +421,12 @@ namespace WebApplications.Utilities.Test.Configuration
         #region Nested type: ConfigurationSectionTestClass
         private class ConfigurationSectionTestClass : ConfigurationSection<ConfigurationSectionTestClass>
         {
+            [ConfigurationProperty("rand", IsRequired = false)]
+            public int Rand
+            {
+                get { return GetProperty<int>("rand"); }
+                set { SetProperty("rand", value); }
+            }
         }
         #endregion
 
@@ -434,6 +456,18 @@ namespace WebApplications.Utilities.Test.Configuration
             static ConfigurationSectionWithOnChangedEvent()
             {
                 Changed += (o, e) => { ChangedEventCalled = true; };
+            }
+
+            public ConfigurationSectionWithOnChangedEvent()
+            {
+                Rand = ThreadLocal.Random.Next();
+            }
+
+            [ConfigurationProperty("rand", IsRequired = false)]
+            public int Rand
+            {
+                get { return GetProperty<int>("rand"); }
+                set { SetProperty("rand", value); }
             }
 
             public static void ResetChangedEventCalledFlag()

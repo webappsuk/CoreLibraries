@@ -164,8 +164,7 @@ namespace WebApplications.Utilities.Configuration
             }
             set
             {
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                // ReSharper disable once HeuristicUnreachableCode
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse, HeuristicUnreachableCode
                 if (value == null)
                     value = GetConfiguration();
 
@@ -189,7 +188,7 @@ namespace WebApplications.Utilities.Configuration
         [UsedImplicitly]
         public bool IsActive
         {
-            get { return Equals(this, _active); }
+            get { return ReferenceEquals(this, _active); }
         }
 
         /// <summary>
