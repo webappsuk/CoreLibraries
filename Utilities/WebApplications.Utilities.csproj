@@ -195,6 +195,7 @@
     <Compile Include="Configuration\ParameterElement.cs" />
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="EqualityNetwork.cs" />
+    <Compile Include="ExpressionExtensions.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="Formatting\Alignment.cs" />
     <Compile Include="Formatting\ColorHelper.cs" />

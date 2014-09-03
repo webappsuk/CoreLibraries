@@ -29,11 +29,13 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
@@ -570,7 +572,7 @@ namespace WebApplications.Utilities
                 outputType = typeof (TOut);
 
             return (Func<TIn, TOut>) _converters.GetOrAdd(
-                string.Format(
+                String.Format(
                     "{0}|{1}|{2}|{3}",
                     typeof (TIn).FullName,
                     inputType.FullName,
@@ -608,7 +610,7 @@ namespace WebApplications.Utilities
             Expression outputExpression;
             if (!TryConvert(expression, outputType, out outputExpression))
                 throw new InvalidOperationException(
-                    string.Format(
+                    String.Format(
                         Resources.Reflection_Convert_ConversionFailed,
                         expression.Type,
                         outputType));
@@ -1468,9 +1470,9 @@ namespace WebApplications.Utilities
             castsRequired = EmptyBools;
             Type[] typeClosures = EmptyTypes;
             Type[] signatureClosures = EmptyTypes;
-            int castsCount = int.MaxValue;
-            int typeClosureCount = int.MaxValue;
-            int signatureClosureCount = int.MaxValue;
+            int castsCount = Int32.MaxValue;
+            int typeClosureCount = Int32.MaxValue;
+            int signatureClosureCount = Int32.MaxValue;
 
             if (signatures != null)
                 foreach (ISignature signature in signatures)
@@ -1988,6 +1990,264 @@ namespace WebApplications.Utilities
                     expression,
                     parameterAExpression,
                     parameterBExpression).Compile();
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is optional.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified type is <see cref="Optional{T}" />; otherwise, <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsOptional([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
+        }
+
+        /// <summary>
+        /// Determines whether the specified value is optional.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if the specified type is <see cref="Optional{T}" />; otherwise, <see langword="false" />.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsOptional(this object value)
+        {
+            IOptional optional = value as IOptional;
+            return optional != null;
+        }
+
+        /// <summary>
+        /// Gets the type of the non optional equivalent of a type (or the original type if already not optional).
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Type GetNonOptionalType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
+                ? type.GetGenericArguments()[0]
+                : type;
+        }
+
+        /// <summary>
+        /// Gets the optional type equivalent of the non optional equivalent of a type (or the original type if already optional).
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Type GetOptionalType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
+                ? type
+                : typeof(Optional<>).MakeGenericType(type);
+        }
+
+        /// <summary>
+        /// Holds optional nulls by type
+        /// </summary>
+        [NotNull]
+        private static readonly ConcurrentDictionary<Type, object> _optionalDefaultAssigneds =
+            new ConcurrentDictionary<Type, object>();
+
+        /// <summary>
+        /// Gets the optional default assigned value for the optional of type <paramref name="type" />
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        public static object DefaultAssigned([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            if (!type.IsGenericType ||
+                (type.GetGenericTypeDefinition() != typeof(Optional<>)))
+                return type.Default();
+
+            return _optionalDefaultAssigneds.GetOrAdd(
+                type,
+                t =>
+                {
+                    if (!t.IsOptional())
+                        t = typeof(Optional<>).MakeGenericType(t);
+                    return
+                        t.GetField(
+                            "DefaultAssigned",
+                            BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly |
+                            BindingFlags.GetField)
+                            .GetValue(null);
+                });
+        }
+
+        /// <summary>
+        /// Determines whether the specified value is an unassigned optional.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified value is unassigned; otherwise, <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsUnassigned(this object value)
+        {
+            IOptional o = value as IOptional;
+            return (o != null) && !o.IsAssigned;
+        }
+
+        /// <summary>
+        /// Converts a value to an Optional assigned value, unless it is already Optional, in which case it gives a
+        /// non-type specific version of the optional.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>System.Object.</returns>
+        public static Optional<object> ToOptional(this object value)
+        {
+            IOptional o = value as IOptional;
+            if (o != null)
+                return o.IsAssigned
+                    ? new Optional<object>(o.Value)
+                    : Optional<object>.Unassigned;
+
+            return ReferenceEquals(value, null)
+                ? Optional<object>.DefaultAssigned
+                : new Optional<object>(value);
+        }
+
+        /// <summary>
+        /// Whether the type can accept <see langword="null" />.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified value can accept <see langword="null" />; otherwise,
+        ///     <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullable([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            return type.IsClass ||
+                   type.IsInterface ||
+                   type.IsNullableType();
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is nullable.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified type is <see cref="Nullable{T}" />; otherwise, <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullableType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        /// <summary>
+        /// Gets the non-nullable version of a type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [NotNull]
+        public static Type GetNullableType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            if (!type.IsClass &&
+                !type.IsInterface &&
+                !type.IsNullableType())
+                type = typeof(Nullable<>).MakeGenericType(type);
+            return type;
+        }
+
+        /// <summary>
+        /// Gets the non-nullable version of a type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [NotNull]
+        public static Type GetNonNullableType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            if (type.IsNullableType())
+                type = type.GetGenericArguments()[0];
+            return type;
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is numeric.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified type is numeric; otherwise, <see langword="false" />.
+        /// </returns>
+        public static bool IsNumeric([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = type.GetNonNullableType();
+            if (type.IsEnum)
+                return false;
+
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.SByte:
+                case TypeCode.Byte:
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                case TypeCode.Single:
+                case TypeCode.Double:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/>, <see cref="Optional{T}"/> and <see cref="INullable"/> support).
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
+        public static bool IsNull(this object value)
+        {
+            if (ReferenceEquals(value, null) ||
+                ReferenceEquals(value, DBNull.Value))
+                return true;
+            INullable nullable = value as INullable;
+            return !ReferenceEquals(nullable, null) && nullable.IsNull;
+        }
+
+        /// <summary>
+        /// Determines whether the given <paramref name="member" /> is compiler generated.
+        /// </summary>
+        /// <param name="member">The member.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public static bool IsCompilerGenerated(
+            [NotNull] this MemberInfo member)
+        {
+            Contract.Requires(member != null);
+            return member.GetCustomAttributes(typeof (CompilerGeneratedAttribute)).Any();
         }
     }
 }
