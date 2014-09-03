@@ -228,6 +228,7 @@
     <Compile Include="Formatting\ResolveDelegate.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
+    <Compile Include="ThreadLocal.cs" />
     <Compile Include="TupleEnumerable.cs">
       <DependentUpon>TupleEnumerable.tt</DependentUpon>
       <AutoGen>True</AutoGen>
