@@ -172,14 +172,14 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SqlServerTypes\Loader.cs" />
-    <None Include="TestSqlProgram\ConstructorTests.cs" />
-    <None Include="TestSqlProgram\ExecuteNonQueryAndExecuteNonQueryAll.cs" />
-    <None Include="TestSqlProgram\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
-    <None Include="TestSqlProgram\ExecuteReaderAndExecuteReaderAllTests.cs" />
-    <None Include="TestSqlProgram\ExecuteScalarAsyncAndExecuteScalarAllAsyncTests.cs" />
-    <None Include="TestSqlProgram\SqlProgramTestBase.cs" />
-    <None Include="TestSqlProgram\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />
-    <None Include="TestSqlProgram\ExecuteScalarAndExecuteScalarAllTests.cs" />
+    <Compile Include="TestSqlProgram\ConstructorTests.cs" />
+    <Compile Include="TestSqlProgram\ExecuteNonQueryAndExecuteNonQueryAll.cs" />
+    <Compile Include="TestSqlProgram\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
+    <Compile Include="TestSqlProgram\ExecuteReaderAndExecuteReaderAllTests.cs" />
+    <Compile Include="TestSqlProgram\ExecuteScalarAsyncAndExecuteScalarAllAsyncTests.cs" />
+    <Compile Include="TestSqlProgram\SqlProgramTestBase.cs" />
+    <Compile Include="TestSqlProgram\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />
+    <Compile Include="TestSqlProgram\ExecuteScalarAndExecuteScalarAllTests.cs" />
     <Compile Include="DatabaseTestBase.cs" />
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestDatabaseSchema.cs" />

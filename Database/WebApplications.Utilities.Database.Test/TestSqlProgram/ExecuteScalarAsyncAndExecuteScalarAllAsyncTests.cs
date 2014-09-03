@@ -10,10 +10,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
     public partial class SqlProgramTests
     {
         [TestMethod]
-        public void ExecuteScalarAsync_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteScalarAsync_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram scalarTest =
-                Create(_differentConnectionStringWithAsync, "spReturnsScalar");
+                await SqlProgram.Create((Connection)DifferentLocalDatabaseConnectionString, "spReturnsScalar");
 
             Task<string> task = scalarTest.ExecuteScalarAsync<string>();
             Assert.IsNotNull(task);
@@ -23,17 +23,16 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteScalarAsyncAll_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteScalarAsyncAll_ExecutesAndReturnsExpectedResult()
         {
             string[] connectionStrings =
-                new[]
                     {
-                        _localConnectionStringWithAsync,
-                        _localCopyConnectionStringWithAsync
+                        LocalDatabaseConnectionString,
+                        LocalDatabaseCopyConnectionString
                     };
 
             SqlProgram scalarTest =
-            SqlProgram.Create(new LoadBalancedConnection(connectionStrings), "spReturnsScalarString");
+            await SqlProgram.Create(new LoadBalancedConnection(connectionStrings), "spReturnsScalarString");
 
             Task<IEnumerable<string>> tasks = scalarTest.ExecuteScalarAllAsync<string>();
             Assert.AreEqual(2, tasks.Result.Count());
@@ -45,10 +44,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteScalarAsync_WithParameter_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteScalarAsync_WithParameter_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string> scalarTest =
-                new SqlProgram<string>(_differentConnectionStringWithAsync, "spTakesParamAndReturnsScalar", "@firstName");
+                await SqlProgram<string>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesParamAndReturnsScalar", "@firstName");
 
             string randomString = Random.RandomString(10, false);
             Task<string> task = scalarTest.ExecuteScalarAsync<string>(randomString);
@@ -60,10 +59,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteScalarAsync_WithParameterSetViaAction_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteScalarAsync_WithParameterSetViaAction_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string> scalarTest =
-                new SqlProgram<string>(_differentConnectionStringWithAsync, "spTakesParamAndReturnsScalar");
+                await SqlProgram<string>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesParamAndReturnsScalar");
             string name = Random.RandomString(10, false);
             Task<string> task = scalarTest.ExecuteScalarAsync<string>(c => c.SetParameter("@firstName", name));
             Assert.IsNotNull(task);

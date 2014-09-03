@@ -9,9 +9,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
     public partial class SqlProgramTests
     {
         [TestMethod]
-        public void ExecuteNonQueryAsync_ExecutesSuccessfully()
+        public async Task ExecuteNonQueryAsync_ExecutesSuccessfully()
         {
-            SqlProgram nonQueryTest = Create(connectionString: _localConnectionStringWithAsync, name: "spNonQuery");
+            SqlProgram nonQueryTest = await SqlProgram.Create((Connection) LocalDatabaseConnectionString, name: "spNonQuery");
             Task<int> nonQueryResult = nonQueryTest.ExecuteNonQueryAsync();
             Assert.IsNotNull(nonQueryResult);
             nonQueryResult.Wait();
@@ -19,11 +19,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteNonQueryAsyncAll_ExecutesSuccessfully()
+        public async Task ExecuteNonQueryAsyncAll_ExecutesSuccessfully()
         {
 
-            SqlProgram nonQueryTest =
-                SqlProgram.Create(connection: new LoadBalancedConnection(_localConnectionStringWithAsync, _localCopyConnectionStringWithAsync),
+            SqlProgram nonQueryTest = 
+                await SqlProgram.Create(connection: new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
                        name: "spNonQuery");
             Task<IEnumerable<int>> nonQueryResult = nonQueryTest.ExecuteNonQueryAllAsync();
             nonQueryResult.Wait();
@@ -34,9 +34,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteNonQueryAsync_WithParameters_ExecutesSuccessfully()
+        public async Task ExecuteNonQueryAsync_WithParameters_ExecutesSuccessfully()
         {
-            SqlProgram<string, int> nonQueryTest = new SqlProgram<string, int>(connectionString: _localConnectionStringWithAsync, name: "spNonQuery");
+            SqlProgram<string, int> nonQueryTest = await SqlProgram<string, int>.Create((Connection) LocalDatabaseConnectionString, name: "spNonQuery");
 
             Task<int> nonQueryResult = nonQueryTest.ExecuteNonQueryAsync(
                 c =>
@@ -50,10 +50,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteNonQueryAllAsync_WithParameters_ExecutesSuccessfully()
+        public async Task ExecuteNonQueryAllAsync_WithParameters_ExecutesSuccessfully()
         {
             SqlProgram<string, int> nonQueryTest =
-                new SqlProgram<string, int>(connection: new LoadBalancedConnection(_localConnectionStringWithAsync, _localCopyConnectionStringWithAsync),
+                await SqlProgram<string, int>.Create(connection: new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
                                name: "spNonQuery");
 
             Task<IEnumerable<int>> nonQueryResult = nonQueryTest.ExecuteNonQueryAllAsync(

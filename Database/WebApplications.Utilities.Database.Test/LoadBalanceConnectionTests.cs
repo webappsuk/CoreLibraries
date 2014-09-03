@@ -20,15 +20,6 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
-        public void Constructor_WithEmptyString_ThrowsLoggingException()
-        {
-            LoadBalancedConnection loadBalancedConnection =
-                new LoadBalancedConnection(connectionString: string.Empty);
-            Assert.AreEqual(1, loadBalancedConnection.Count());
-        }
-
-        [TestMethod]
         public void Constructor_WithValidConnectionString_CreatesInstanceWithCountOfOne()
         {
             LoadBalancedConnection loadBalancedConnection =
@@ -78,36 +69,36 @@ namespace WebApplications.Utilities.Database.Test
             Assert.IsNull(loadBalancedConnection);
         }
 
-        //[TestMethod]
-        //public void CreateConnection_WithNoParameters_ReturnsSqlConnection()
-        //{
-        //    LoadBalancedConnection loadBalancedConnection =
-        //        new LoadBalancedConnection(CreateConnectionString("LocalData"));
+        [TestMethod]
+        public void CreateConnection_WithNoParameters_ReturnsSqlConnection()
+        {
+            //LoadBalancedConnection loadBalancedConnection =
+            //    new LoadBalancedConnection(CreateConnectionString("LocalData"));
 
-        //    using (SqlConnection connection = loadBalancedConnection.GetSqlConnection())
-        //    {
-        //        Assert.IsNotNull(connection);
-        //        Assert.IsFalse(connection.State == ConnectionState.Open);
+            //using (SqlConnection connection = loadBalancedConnection.GetSqlConnection())
+            //{
+            //    Assert.IsNotNull(connection);
+            //    Assert.IsFalse(connection.State == ConnectionState.Open);
 
-        //        // Check that we are always coerced to being asynchronous
-        //        SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connection.ConnectionString);
-        //        Assert.IsNotNull(builder);
-        //        Assert.IsTrue(builder.AsynchronousProcessing);
-        //    }
-        //}
+            //    // Check that we are always coerced to being asynchronous
+            //    SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connection.ConnectionString);
+            //    Assert.IsNotNull(builder);
+            //    Assert.IsTrue(builder.AsynchronousProcessing);
+            //}
+        }
 
-        //[TestMethod]
-        //[Ignore]
-        //public void ReloadSchemas()
-        //{
-        //    LoadBalancedConnection loadBalancedConnection =
-        //        new LoadBalancedConnection(connectionString: CreateConnectionString("LocalData"));
+        [TestMethod]
+        [Ignore]
+        public void ReloadSchemas()
+        {
+            //LoadBalancedConnection loadBalancedConnection =
+            //    new LoadBalancedConnection(connectionString: CreateConnectionString("LocalData"));
 
-        //    bool reloadSchemas = loadBalancedConnection.ReloadSchemas();
+            //bool reloadSchemas = loadBalancedConnection.ReloadSchemas();
 
-        //    // As we're reloading schemas instantly there should be no changes
-        //    Assert.IsFalse(reloadSchemas);
-        //}
+            //// As we're reloading schemas instantly there should be no changes
+            //Assert.IsFalse(reloadSchemas);
+        }
 
         [TestMethod]
         public void GetEnumerator_ReturnsIEnumerator()
@@ -137,31 +128,14 @@ namespace WebApplications.Utilities.Database.Test
 
         [TestMethod]
         [ExpectedException(typeof(LoggingException))]
-        public void Constructor_WithConnectionsWithDifferentSchemas_ThrowsLoggingException()
-        {
-            List<KeyValuePair<string, double>> connections =
-                new List<KeyValuePair<string, double>>
-                    {
-                        new KeyValuePair<string, double>(CreateConnectionString("LocalData"), 0.5),
-                        new KeyValuePair<string, double>(CreateConnectionString("DifferentLocalData"), 0.5)
-                    };
-
-            LoadBalancedConnection loadBalancedConnection =
-                new LoadBalancedConnection(connectionStrings: connections);
-
-            Assert.IsNotNull(loadBalancedConnection);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
         public void Constructor_WithEmptyConnectionsCollection_ThrowsLoggingException()
         {
             new LoadBalancedConnection(new string[] { });
         }
 
-        //[TestMethod]
-        //public void ReloadSchemas_WithNoChanges_ReturnsFalse()
-        //{
+        [TestMethod]
+        public void ReloadSchemas_WithNoChanges_ReturnsFalse()
+        {
         //    List<KeyValuePair<string, double>> connections =
         //        new List<KeyValuePair<string, double>>
         //            {
@@ -172,20 +146,7 @@ namespace WebApplications.Utilities.Database.Test
         //    LoadBalancedConnection loadBalancedConnection = new LoadBalancedConnection(connections);
         //    bool reloadSchemas = loadBalancedConnection.ReloadSchemas();
         //    Assert.IsFalse(reloadSchemas);
-        //}
-
-        [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
-        public void Constructor_WithConnectionWeightingOfZero_ThrowsLoggingException()
-        {
-            List<KeyValuePair<string, double>> connections =
-                new List<KeyValuePair<string, double>>
-                    {
-                        new KeyValuePair<string, double>(CreateConnectionString("LocalData"), 0),
-                        new KeyValuePair<string, double>(CreateConnectionString("LocalData"), 0)
-                    };
-
-            new LoadBalancedConnection(connections);
         }
+
     }
 }

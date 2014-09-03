@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
@@ -12,20 +13,20 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
     public partial class SqlProgramTests
     {
         [TestMethod]
-        public void ExecuteReader_ExecutesSuccessfully()
+        public async Task ExecuteReader_ExecutesSuccessfully()
         {
-            SqlProgram readerTest = Create(connectionString: _differentConnectionString,
+            SqlProgram readerTest = await SqlProgram.Create((Connection) DifferentLocalDatabaseConnectionString,
                                            name: "spUltimateSproc");
 
             readerTest.ExecuteReader();
         }
 
         [TestMethod]
-        public void ExecuteReaderAll_ExecutesSuccessfully()
+        public async Task ExecuteReaderAll_ExecutesSuccessfully()
         {
 
             SqlProgram readerTest =
-                SqlProgram.Create(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
+                await SqlProgram.Create(connection: new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
                        name: "spNonQuery");
 
             readerTest.ExecuteReader();
@@ -34,9 +35,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithReturnResultSet_ExecutesSuccessfully()
+        public async Task ExecuteReader_WithReturnResultSet_ExecutesSuccessfully()
         {
-            SqlProgram readerTest = Create(connectionString: _differentConnectionString,
+            SqlProgram readerTest = await SqlProgram.Create((Connection) DifferentLocalDatabaseConnectionString,
                                            name: "spUltimateSproc");
 
             dynamic result = readerTest.ExecuteReader<dynamic>(
@@ -66,10 +67,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteReader_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string, int, decimal, bool> readerTest =
-                new SqlProgram<string, int, decimal, bool>(_differentConnectionString, "spUltimateSproc");
+                await SqlProgram<string, int, decimal, bool>.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
 
             dynamic result = readerTest.ExecuteReader<dynamic>(
                 c =>
@@ -104,10 +105,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithEnumerableIntParameter_ReturnsSingleColumnTableMatchingTheParameterType()
+        public async Task ExecuteReader_WithEnumerableIntParameter_ReturnsSingleColumnTableMatchingTheParameterType()
         {
             SqlProgram<IEnumerable<int>> tableTypeTest =
-                new SqlProgram<IEnumerable<int>>(_differentConnectionString, "spTakesIntTable");
+                await SqlProgram<IEnumerable<int>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesIntTable");
 
             IList<int> result = tableTypeTest.ExecuteReader(
                 reader =>
@@ -125,10 +126,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithEnumerableKeyValuePairParameter_ReturnsTwoColumnTableMatchingTheParameterTypes()
+        public async Task ExecuteReader_WithEnumerableKeyValuePairParameter_ReturnsTwoColumnTableMatchingTheParameterTypes()
         {
             SqlProgram<IEnumerable<KeyValuePair<int, string>>> tableTypeTest =
-                new SqlProgram<IEnumerable<KeyValuePair<int, string>>>(_differentConnectionString, "spTakesKvpTable");
+                await SqlProgram<IEnumerable<KeyValuePair<int, string>>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesKvpTable");
 
             string str1 = Random.RandomString(10, false);
             string str2 = Random.RandomString(10, false);
@@ -156,10 +157,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithTupleParameter_ExecutesSuccessfully()
+        public async Task ExecuteReader_WithTupleParameter_ExecutesSuccessfully()
         {
             SqlProgram<IEnumerable<Tuple<int, string, bool>>> tableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(_differentConnectionString, "spTakesTupleTable");
+                await SqlProgram<IEnumerable<Tuple<int, string, bool>>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesTupleTable");
 
             string str1 = Random.RandomString(10, false);
             string str2 = Random.RandomString(10, false);
@@ -198,9 +199,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithByteArrayParameter_ReturnsSameArrayInReader()
+        public async Task ExecuteReader_WithByteArrayParameter_ReturnsSameArrayInReader()
         {
-            SqlProgram<byte[]> byteArrayTest = new SqlProgram<byte[]>(_differentConnectionString, "spTakeByteArrayLength10");
+            SqlProgram<byte[]> byteArrayTest = await SqlProgram<byte[]>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakeByteArrayLength10");
 
             int length = Random.Next(1, 10);
             byte[] testParam = new byte[length];
@@ -221,11 +222,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
         [TestMethod]
         [ExpectedException(typeof(DatabaseSchemaException))]
-        public void ExecuteReader_WithByteArrayParameterTooLong_ThrowsExceptionWhenTypeConstraintModeError()
+        public async Task ExecuteReader_WithByteArrayParameterTooLong_ThrowsExceptionWhenTypeConstraintModeError()
         {
             // This Sql Program is configured in the app.config to use TypeConstraintMode Error, so will throw error
             // if byte[] is truncated.
-            SqlProgram<byte[]> byteArrayTest = DatabasesConfiguration.GetConfiguredSqlProgram<byte[]>("test",
+            SqlProgram<byte[]> byteArrayTest = await DatabasesConfiguration.GetConfiguredSqlProgram<byte[]>("test",
                                                                                                       "spTakeByteArrayLength10",
                                                                                                       "@byteArrayParam");
 
@@ -246,9 +247,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithSerializableObjectParameter_ReturnsByteArray()
+        public async Task ExecuteReader_WithSerializableObjectParameter_ReturnsByteArray()
         {
-            SqlProgram<TestSerializableObject> serializeObjectTest = new SqlProgram<TestSerializableObject>(_differentConnectionString, "spTakeByteArray");
+            SqlProgram<TestSerializableObject> serializeObjectTest = await  SqlProgram<TestSerializableObject>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakeByteArray");
 
             TestSerializableObject objecToSerialize = new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() };
             serializeObjectTest.ExecuteReader(
@@ -271,10 +272,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReader_WithNestedTupleParameter_ExecutesSuccessfully()
+        public async Task ExecuteReader_WithNestedTupleParameter_ExecutesSuccessfully()
         {
             SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>> tupleTableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>>(_differentConnectionString, "spTakesMultiTupleTable");
+                await SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesMultiTupleTable");
 
             var rows =
                 new List

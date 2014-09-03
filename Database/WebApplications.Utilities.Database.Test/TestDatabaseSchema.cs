@@ -64,8 +64,14 @@ namespace WebApplications.Utilities.Database.Test
             DatabaseSchema databaseSchema2 = await DatabaseSchema.GetOrAdd((Connection)(LocalDatabaseConnectionString + " "));
             DatabaseSchema databaseSchema3 =
                 await DatabaseSchema.GetOrAdd((Connection) LocalDatabaseCopyConnectionString);
+            // Asserting that Get or Add returns the same one (it should)
             Assert.AreEqual(databaseSchema, databaseSchema2);
-            Assert.AreEqual(databaseSchema, databaseSchema3);
+
+            // Asserting that 2 seperate connection strings returns 2 different Database Schemas
+            Assert.AreNotEqual(databaseSchema,databaseSchema3);
+
+            // Asserting that despite the 2 schemas being different, their inner Schema is identical
+            Assert.AreEqual(databaseSchema.Current, databaseSchema3.Current);
         }
 
         [TestMethod]
@@ -141,7 +147,7 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FormatException))]
+        [ExpectedException(typeof(LoggingException))]
         public async Task Test_DatabaseProgramCall_ParamOrderMatters_WrongOrderExecuted()
         {
             int rowCount = 0;

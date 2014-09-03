@@ -9,27 +9,27 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
     public partial class SqlProgramTests
     {
         [TestMethod]
-        public void ExecuteReaderAsync_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteReaderAsync_ExecutesAndReturnsExpectedResult()
         {
-            SqlProgram readerTest = Create(_differentConnectionStringWithAsync, "spUltimateSproc");
+            SqlProgram readerTest = await SqlProgram.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
             Task readerTask = readerTest.ExecuteReaderAsync();
             Assert.IsNotNull(readerTask);
         }
 
         [TestMethod]
-        public void ExecuteReaderAllAsync_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteReaderAllAsync_ExecutesAndReturnsExpectedResult()
         {
-            SqlProgram program = SqlProgram.Create(new LoadBalancedConnection(_localConnectionStringWithAsync, _localCopyConnectionStringWithAsync), "spReturnsTable");
+            SqlProgram program = await SqlProgram.Create(new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString), "spReturnsTable");
 
             Task readerTask = program.ExecuteReaderAllAsync();
             Assert.IsNotNull(readerTask);
         }
 
         [TestMethod]
-        public void ExecuteReaderAsync_WithReturnType_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteReaderAsync_WithReturnType_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram readerTest =
-                Create(_differentConnectionStringWithAsync, "spUltimateSproc");
+                await SqlProgram.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
 
             Task<dynamic> result = readerTest.ExecuteReaderAsync(
                 async (reader, token) =>
@@ -51,10 +51,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReaderAsync_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteReaderAsync_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string, int, decimal, bool> readerTest =
-                new SqlProgram<string, int, decimal, bool>(_differentConnectionStringWithAsync, "spUltimateSproc");
+                await SqlProgram<string, int, decimal, bool>.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
 
             Task<dynamic> result = readerTest.ExecuteReaderAsync(
                 c =>
@@ -84,10 +84,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public void ExecuteReaderAllAsync_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
+        public async Task ExecuteReaderAllAsync_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
         {
-            SqlProgram<string, int, decimal, bool> readerTest = new SqlProgram<string, int, decimal, bool>(
-                new LoadBalancedConnection(_localConnectionStringWithAsync, _localCopyConnectionStringWithAsync), "spReturnsTable");
+            SqlProgram<string, int, decimal, bool> readerTest = await SqlProgram<string, int, decimal, bool>.Create(
+                new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString), "spReturnsTable");
 
             Task<IEnumerable<dynamic>> result = readerTest.ExecuteReaderAllAsync(
                 c =>
