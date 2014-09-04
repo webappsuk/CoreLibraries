@@ -858,10 +858,13 @@ namespace WebApplications.Utilities.Database.Configuration
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-                // TODO should wrap in task!
-                throw new LoggingException(
-                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
-                    database);
+                {
+					return TaskResult<SqlProgram<<#= Strings.TypeParams#>>>.FromException(
+                        new LoggingException(
+                            () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                            database));
+				}
+
             return db.GetSqlProgram<<#= Strings.TypeParams#>>(name, <#= Strings.ConstructorNames2#>, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, cancellationToken);
         }
     }
@@ -890,8 +893,8 @@ namespace WebApplications.Utilities.Database.Configuration
         public async Task<SqlProgram<<#= Strings.TypeParams#>>> GetSqlProgram<<#= Strings.TypeParams#>>(
             [NotNull] string name,
             <#= Strings.ConstructorNames #>,
-            bool ignoreValidationErrors = false,
-            bool checkOrder = false,
+            bool? ignoreValidationErrors = null,
+            bool? checkOrder = null,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -913,8 +916,8 @@ namespace WebApplications.Utilities.Database.Configuration
                     name = prog.MapTo;
 
                 // Set options if not already set.
-                ignoreValidationErrors = ignoreValidationErrors && prog.IgnoreValidationErrors;
-                checkOrder = checkOrder && prog.CheckOrder;
+                ignoreValidationErrors = ignoreValidationErrors ?? prog.IgnoreValidationErrors;
+                checkOrder = checkOrder ?? prog.CheckOrder;
                 defaultCommandTimeout = defaultCommandTimeout ?? prog.DefaultCommandTimeout;
                 constraintMode = constraintMode ?? prog.ConstraintMode;
 
@@ -945,7 +948,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
             LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
 
-            return await SqlProgram<<#= Strings.TypeParams#>>.Create(connection, name, <#= Strings.ConstructorNames2#>, ignoreValidationErrors, checkOrder, defaultCommandTimeout, (TypeConstraintMode) constraintMode, cancellationToken);
+            return await SqlProgram<<#= Strings.TypeParams#>>.Create(connection, name, <#= Strings.ConstructorNames2#>, ignoreValidationErrors.Value, checkOrder.Value, defaultCommandTimeout, (TypeConstraintMode) constraintMode, cancellationToken);
         }
     }
     #endregion

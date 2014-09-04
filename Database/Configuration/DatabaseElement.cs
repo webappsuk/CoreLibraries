@@ -151,8 +151,8 @@ namespace WebApplications.Utilities.Database.Configuration
         public async Task<SqlProgram> GetSqlProgram(
             [NotNull] string name,
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
-            bool ignoreValidationErrors = false,
-            bool checkOrder = false,
+            bool? ignoreValidationErrors = null,
+            bool? checkOrder = null,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -178,8 +178,8 @@ namespace WebApplications.Utilities.Database.Configuration
                     name = prog.MapTo;
 
                 // Set options if not already set.
-                ignoreValidationErrors = ignoreValidationErrors && prog.IgnoreValidationErrors;
-                checkOrder = checkOrder && prog.CheckOrder;
+                ignoreValidationErrors = ignoreValidationErrors ?? prog.IgnoreValidationErrors;
+                checkOrder = checkOrder ?? prog.CheckOrder;
                 defaultCommandTimeout = defaultCommandTimeout ?? prog.DefaultCommandTimeout;
                 constraintMode = constraintMode ?? prog.ConstraintMode;
 
@@ -235,8 +235,8 @@ namespace WebApplications.Utilities.Database.Configuration
                 connection,
                 name,
                 parameters,
-                ignoreValidationErrors,
-                checkOrder,
+                ignoreValidationErrors.Value,
+                checkOrder.Value,
                 defaultCommandTimeout,
                 (TypeConstraintMode) constraintMode,
                 cancellationToken);

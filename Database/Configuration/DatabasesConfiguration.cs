@@ -126,11 +126,12 @@ namespace WebApplications.Utilities.Database.Configuration
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-                // ReSharper disable once AssignNullToNotNullAttribute
-                // TODO should wrap in task!
-                throw new LoggingException(
-                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
-                    database);
+            {
+                return TaskResult<LoadBalancedConnection>.FromException(
+                    new LoggingException(
+                        () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                        database));
+            }
 
             return db.GetConnection(connectionName, ensureIdentical, cancellationToken);
         }
@@ -175,11 +176,12 @@ namespace WebApplications.Utilities.Database.Configuration
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-                // ReSharper disable once AssignNullToNotNullAttribute
-                // TODO should wrap in task!
-                throw new LoggingException(
-                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
-                    database);
+            {
+                return TaskResult<IEnumerable<LoadBalancedConnection>>.FromException(
+                    new LoggingException(
+                        () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                        database));
+            }
 
             return db.GetConnections(ensureIdentical, cancellationToken);
         }
@@ -226,11 +228,12 @@ namespace WebApplications.Utilities.Database.Configuration
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-                // ReSharper disable once AssignNullToNotNullAttribute
-                // TODO should wrap in task!
-                throw new LoggingException(
-                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
-                    database);
+            {
+                return TaskResult<DatabaseSchema>.FromException(
+                    new LoggingException(
+                        () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                        database));
+            }
 
             return db.GetSchema(connectionName, forceReload, cancellationToken);
         }
@@ -310,10 +313,12 @@ namespace WebApplications.Utilities.Database.Configuration
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-                // TODO should wrap in task!
-                throw new LoggingException(
-                    () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
-                    database);
+            {
+                return TaskResult<SqlProgram>.FromException(
+                    new LoggingException(
+                        () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
+                        database));
+            }
 
             return db.GetSqlProgram(
                 name,
