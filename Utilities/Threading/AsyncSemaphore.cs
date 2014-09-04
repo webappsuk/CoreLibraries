@@ -50,6 +50,9 @@ namespace WebApplications.Utilities.Threading
 
         private int _currentCount;
 
+        // TODO Add property to change this?
+        private readonly int _maxCount;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncSemaphore" /> class.
         /// </summary>
@@ -58,11 +61,12 @@ namespace WebApplications.Utilities.Threading
         public AsyncSemaphore(int initialCount = 1)
         {
             if (initialCount < 1) throw new ArgumentOutOfRangeException("initialCount");
-            _currentCount = initialCount;
+            _maxCount = initialCount;
+            _currentCount = 0;
         }
 
         /// <summary>
-        /// Waits on the semaphire.
+        /// Waits on the semaphore.
         /// </summary>
         /// <param name="token">The optional cancellation token.</param>
         /// <returns>Task.</returns>
@@ -72,14 +76,19 @@ namespace WebApplications.Utilities.Threading
         {
             lock (_waiters)
             {
-                if (_currentCount > 0)
+                if (_currentCount < _maxCount)
                 {
-                    --_currentCount;
+                    ++_currentCount;
                     return _completed;
                 }
 
-                TaskCompletionSource<bool> waiter = new TaskCompletionSource<bool>(token);
-                _waiters.Enqueue(waiter);
+                TaskCompletionSource<bool> waiter = new TaskCompletionSource<bool>();
+                token.Register(waiter.SetCanceled);
+
+                if (token.IsCancellationRequested) waiter.TrySetCanceled();
+                else _waiters.Enqueue(waiter);
+
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return waiter.Task;
             }
         }
@@ -89,16 +98,20 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         public void Release()
         {
-            TaskCompletionSource<bool> toRelease = null;
-            lock (_waiters)
+            if (_currentCount == 0) return;
+
+            TaskCompletionSource<bool> toRelease;
+            do
             {
-                if (_waiters.Count > 0)
-                    toRelease = _waiters.Dequeue();
-                else
-                    ++_currentCount;
-            }
-            if (toRelease != null)
-                toRelease.SetResult(true);
+                toRelease = null;
+                lock (_waiters)
+                {
+                    if (_currentCount <= _maxCount && _waiters.Count > 0)
+                        toRelease = _waiters.Dequeue();
+                    else
+                        --_currentCount;
+                }
+            } while (toRelease != null && !toRelease.TrySetResult(true));
         }
     }
 }
