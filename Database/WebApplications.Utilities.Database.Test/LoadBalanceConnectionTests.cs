@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Logging;
@@ -73,28 +74,27 @@ namespace WebApplications.Utilities.Database.Test
         [TestMethod]
         public async Task CreateConnection_WithNoParameters_ReturnsSqlConnection()
         {
-            // TODO: Check test validity
-            Assert.Fail("Don't think this is valid any more.");
-            //LoadBalancedConnection loadBalancedConnection =
-            //    new LoadBalancedConnection(CreateConnectionString("LocalData"));
+            LoadBalancedConnection loadBalancedConnection =
+                new LoadBalancedConnection(CreateConnectionString("LocalData"));
 
-            //using (SqlConnection connection = new SqlConnection())
-            //{
-            //    Assert.IsNotNull(connection);
-            //    Assert.IsFalse(connection.State == ConnectionState.Open);
+            using (SqlConnection connection = new SqlConnection(loadBalancedConnection.ChooseConnectionString()))
+            {
+                Assert.IsNotNull(connection);
+                Assert.IsFalse(connection.State == ConnectionState.Open);
 
-            //    // Check that we are always coerced to being asynchronous
-            //    SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connection.ConnectionString);
-            //    Assert.IsNotNull(builder);
-            //    Assert.IsTrue(builder.AsynchronousProcessing);
-            //}
+                // Check that we are always coerced to being asynchronous
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connection.ConnectionString);
+                Assert.IsNotNull(builder);
+                Assert.IsTrue(builder.AsynchronousProcessing);
+            }
+            
         }
 
         [TestMethod]
         [Ignore]
         public async Task ReloadSchemas()
         {
-            // TODO: Check test validity
+            // TODO: Check test validity - method signature change
             LoadBalancedConnection loadBalancedConnection =
                 new LoadBalancedConnection(connectionString: LocalDatabaseConnectionString);
 
@@ -136,24 +136,6 @@ namespace WebApplications.Utilities.Database.Test
         public void Constructor_WithEmptyConnectionsCollection_ThrowsLoggingException()
         {
             new LoadBalancedConnection(new string[] { });
-        }
-
-        [TestMethod]
-        public async Task ReloadSchemas_WithNoChanges_ReturnsFalse()
-        {
-            // TODO: Check test validity
-            List<KeyValuePair<string, double>> connections =
-                new List<KeyValuePair<string, double>>
-                    {
-                        new KeyValuePair<string, double>(CreateConnectionString("LocalDataCopy"), 0.5),
-                        new KeyValuePair<string, double>(CreateConnectionString("LocalDataSecondCopy"), 0.5)
-                    };
-
-            LoadBalancedConnection loadBalancedConnection = new LoadBalancedConnection(connections);
-            //bool reloadSchemas = await loadBalancedConnection.ReloadSchemas();
-            Assert.Fail("Failing this test because the signature of the commented out method has changed but documentation has not");
-
-            //Assert.IsFalse(reloadSchemas);
         }
 
     }

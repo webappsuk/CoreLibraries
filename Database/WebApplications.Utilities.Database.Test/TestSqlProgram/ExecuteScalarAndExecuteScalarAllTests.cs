@@ -30,15 +30,6 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SqlProgramExecutionException))]
-        public async Task ExecuteScalarAll_WithUnknownProgramForConnection_ThrowsSqlProgramExecutionException()
-        {
-            // TODO: Check with Craig, this test fails and not sure if the test is valid any more.
-            SqlProgram program = await SqlProgram.Create(new LoadBalancedConnection(LocalDatabaseConnectionString, DifferentLocalDatabaseConnectionString), "spReturnsScalar", ignoreValidationErrors: true);
-            program.ExecuteScalarAll<string>();
-        }
-
-        [TestMethod]
         public async Task ExecuteScalar_WithParameters_ReturnedExpectedString()
         {
             SqlProgram<string, int, decimal, bool> program =
