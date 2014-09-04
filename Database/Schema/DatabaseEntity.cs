@@ -34,6 +34,7 @@ using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities.Database.Schema
 {
@@ -46,13 +47,15 @@ namespace WebApplications.Utilities.Database.Schema
         /// The <see cref="PropertyInfo"/> for <see cref="HashCode"/>.
         /// </summary>
         [NotNull]
-        protected static readonly PropertyInfo HashCodeProperty = typeof (DatabaseEntity).GetProperty("HashCode");
+        protected static readonly PropertyInfo HashCodeProperty =
+            InfoHelper.GetPropertyInfo<DatabaseEntity, long>(e => e.HashCode);
 
         /// <summary>
         /// The <see cref="List{T}.Add"/> method for a <see cref="List{T}">list of</see> <see cref="Difference">differences</see>.
         /// </summary>
         [NotNull]
-        protected static readonly MethodInfo DifferenceAddMethod = typeof (List<Difference>).GetMethod("Add");
+        protected static readonly MethodInfo DifferenceAddMethod =
+            InfoHelper.GetMethodInfo<List<Difference>>(l => l.Add(default(Difference)));
 
         /// <summary>
         /// A hash code.
