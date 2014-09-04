@@ -72,13 +72,13 @@ namespace WebApplications.Utilities
         [NotNull]
         private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string>
         {
-            {'\\', @"\\"},
-            {'\"', @"\"""},
-            {'\b', @"\b"},
-            {'\f', @"\f"},
-            {'\n', @"\n"},
-            {'\r', @"\r"},
-            {'\t', @"\t"}
+            { '\\', @"\\" },
+            { '\"', @"\""" },
+            { '\b', @"\b" },
+            { '\f', @"\f" },
+            { '\n', @"\n" },
+            { '\r', @"\r" },
+            { '\t', @"\t" }
         };
 
         /// <summary>
@@ -393,11 +393,7 @@ namespace WebApplications.Utilities
             byte group = 0;
             while (number >= 1)
             {
-                groups.Push(
-                    (number < double.Epsilon)
-                        ? 0
-                        : (int)number % 1000,
-                    group++);
+                groups.Push((int)(number % 1000), group++);
                 number = number / 1000;
             }
 
@@ -498,6 +494,8 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Func<object, object, bool> GetTypeEqualityFunction([NotNull] this Type type)
         {
+            Contract.Requires(type != null);
+
             return _equalityFunctions.GetOrAdd(
                 type,
                 t =>
@@ -801,7 +799,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<T> GetObjectsById<T>(
             [NotNull] this string integers,
-            [NotNull] Func<int, T> getObject,
+            [NotNull] [InstantHandle] Func<int, T> getObject,
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
@@ -850,7 +848,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<T> GetObjectsById16<T>(
             [NotNull] this string integers,
-            [NotNull] Func<short, T> getObject,
+            [NotNull] [InstantHandle] Func<short, T> getObject,
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
@@ -898,7 +896,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<T> GetObjectsById64<T>(
             [NotNull] this string integers,
-            [NotNull] Func<long, T> getObject,
+            [NotNull] [InstantHandle] Func<long, T> getObject,
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
@@ -952,6 +950,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string XmlEscape([NotNull] this object raw)
         {
+            Contract.Requires<ArgumentNullException>(raw != null);
             return raw.ToString().XmlEscape();
         }
 
@@ -1212,6 +1211,10 @@ namespace WebApplications.Utilities
             [NotNull] string ellipsisString = "...",
             int ellipsisLength = -1)
         {
+            Contract.Requires<ArgumentOutOfRangeException>(maxLength > 0);
+            Contract.Requires<ArgumentNullException>(ellipsisString != null);
+            Contract.Requires<ArgumentOutOfRangeException>(maxLength > (ellipsisLength < 0 ? ellipsisString.Length : ellipsisLength));
+
             if (String.IsNullOrEmpty(valueToTruncate) ||
                 valueToTruncate.Length <= maxLength)
                 return valueToTruncate ?? String.Empty;
@@ -1532,6 +1535,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result)
         {
+            Contract.Requires(result != null);
             return ApmWrap<T>.Unwrap(ref result);
         }
 
@@ -1547,6 +1551,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result, out IAsyncResult unwrappedResult)
         {
+            Contract.Requires(result != null);
             unwrappedResult = result;
             return ApmWrap<T>.Unwrap(ref unwrappedResult);
         }
@@ -1565,9 +1570,10 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static AsyncCallback WrapCallback<T>(
             [NotNull] this AsyncCallback callback,
-            T data,
-            SynchronizationContext syncContext = null)
+            [CanBeNull] T data,
+            [CanBeNull] SynchronizationContext syncContext = null)
         {
+            Contract.Requires(callback != null);
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
         }
 
@@ -1630,7 +1636,9 @@ namespace WebApplications.Utilities
         /// <returns>The joined elements.</returns>
         [NotNull]
         [PublicAPI]
-        public static string Join([NotNull] this IEnumerable<string> elements, [NotNull] string separator = "")
+        public static string Join(
+            [NotNull] [InstantHandle] this IEnumerable<string> elements,
+            [NotNull] string separator = "")
         {
             Contract.Requires(elements != null);
             Contract.Requires(separator != null);
@@ -1646,7 +1654,9 @@ namespace WebApplications.Utilities
         /// <returns>The joined elements.</returns>
         [NotNull]
         [PublicAPI]
-        public static string JoinNotNull([NotNull] this IEnumerable<string> elements, [NotNull] string separator = "")
+        public static string JoinNotNull(
+            [NotNull] [InstantHandle] this IEnumerable<string> elements,
+            [NotNull] string separator = "")
         {
             Contract.Requires(elements != null);
             Contract.Requires(separator != null);
@@ -1674,7 +1684,7 @@ namespace WebApplications.Utilities
         [NotNull]
         [PublicAPI]
         public static string JoinNotNullOrEmpty(
-            [NotNull] this IEnumerable<string> elements,
+            [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
             Contract.Requires(elements != null);
@@ -1703,7 +1713,7 @@ namespace WebApplications.Utilities
         [NotNull]
         [PublicAPI]
         public static string JoinNotNullOrWhiteSpace(
-            [NotNull] this IEnumerable<string> elements,
+            [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
             Contract.Requires(elements != null);
@@ -1732,6 +1742,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<string> SplitLines([NotNull] this string input)
         {
+            Contract.Requires(input != null);
             return _lineSplitter.Split(input);
         }
 
@@ -1744,6 +1755,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string LowerCaseFirstLetter([NotNull] this string input)
         {
+            Contract.Requires(input != null);
             return char.ToLower(input[0]) + input.Substring(1);
         }
 
@@ -1829,7 +1841,7 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true" /> if all the elements of the enumerable are distinct, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
         public static bool AreDistinct<T>(
-            [NotNull] this IEnumerable<T> enumerable,
+            [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [CanBeNull] IEqualityComparer<T> equalityComparer = null)
         {
             Contract.Requires(enumerable != null);
@@ -1877,7 +1889,7 @@ namespace WebApplications.Utilities
         public static TValue GetOrAdd<TKey, TValue>(
             [NotNull] this Dictionary<TKey, TValue> dict,
             [NotNull] TKey key,
-            [NotNull] Func<TKey, TValue> valueFactory)
+            [NotNull] [InstantHandle] Func<TKey, TValue> valueFactory)
         {
             Contract.Requires(dict != null);
             Contract.Requires(!ReferenceEquals(key, null));
@@ -1895,20 +1907,20 @@ namespace WebApplications.Utilities
         /// <param name="values">The values.</param>
         /// <returns>The standard deviation.</returns>
         [PublicAPI]
-        public static double StdDev([CanBeNull] this IEnumerable<double> values)
+        public static double StdDev([CanBeNull] [InstantHandle] this IEnumerable<double> values)
         {
             if (values == null) return 0;
 
-            IEnumerable<double> enumerable = values as double[] ?? values.ToArray();
+            IReadOnlyCollection<double> collection = values.Enumerate();
 
-            int count = enumerable.Count();
+            int count = collection.Count;
             if (count < 2) return 0;
 
             // Compute the Average
-            double avg = enumerable.Average();
+            double avg = collection.Average();
 
             // Return standard deviation
-            return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
+            return Math.Sqrt(collection.Sum(d => (d - avg) * (d - avg)) / count);
         }
 
         /// <summary>
@@ -1919,21 +1931,23 @@ namespace WebApplications.Utilities
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>The standard deviation.</returns>
         [PublicAPI]
-        public static double StdDev<T>([CanBeNull] this IEnumerable<T> values, [NotNull] Func<T, double> selector)
+        public static double StdDev<T>(
+            [CanBeNull] [InstantHandle] this IEnumerable<T> values,
+            [NotNull] [InstantHandle] Func<T, double> selector)
         {
             Contract.Requires(selector != null);
             if (values == null) return 0;
 
-            IEnumerable<double> enumerable = values.Select(selector).ToArray();
+            double[] array = values.Select(selector).ToArray();
 
-            int count = enumerable.Count();
+            int count = array.Length;
             if (count < 2) return 0;
 
             // Compute the Average
-            double avg = enumerable.Average();
+            double avg = array.Average();
 
             // Return standard deviation
-            return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
+            return Math.Sqrt(array.Sum(d => (d - avg) * (d - avg)) / count);
         }
         #endregion
 
@@ -1958,8 +1972,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MaxBy<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector)
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
             Contract.Requires(source != null);
             Contract.Requires(selector != null);
@@ -1987,8 +2001,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MaxByOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector)
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
             Contract.Requires(source != null);
             Contract.Requires(selector != null);
@@ -2018,8 +2032,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MaxBy<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
             Contract.Requires(source != null);
@@ -2066,8 +2080,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MaxByOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
             Contract.Requires(source != null);
@@ -2112,8 +2126,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MinBy<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector)
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
             Contract.Requires(source != null);
             Contract.Requires(selector != null);
@@ -2141,8 +2155,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MinByOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector)
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
             Contract.Requires(source != null);
             Contract.Requires(selector != null);
@@ -2172,8 +2186,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MinBy<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
             Contract.Requires(source != null);
@@ -2220,8 +2234,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TSource MinByOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
             Contract.Requires(source != null);
@@ -2263,8 +2277,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TKey MaxOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector)
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
             Contract.Requires(source != null);
             Contract.Requires(selector != null);
@@ -2292,8 +2306,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TKey MaxOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
             Contract.Requires(source != null);
@@ -2332,8 +2346,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TKey MinOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector)
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
             Contract.Requires(source != null);
             Contract.Requires(selector != null);
@@ -2362,8 +2376,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [CanBeNull]
         public static TKey MinOrDefault<TSource, TKey>(
-            [NotNull] this IEnumerable<TSource> source,
-            [NotNull] Func<TSource, TKey> selector,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
             Contract.Requires(source != null);
@@ -2394,7 +2408,7 @@ namespace WebApplications.Utilities
         /// <returns>``0.</returns>
         [PublicAPI]
         [CanBeNull]
-        public static T Min<T>([NotNull] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
+        public static T Min<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
             Contract.Requires(source != null);
@@ -2435,7 +2449,7 @@ namespace WebApplications.Utilities
         /// <returns>``0.</returns>
         [PublicAPI]
         [CanBeNull]
-        public static T Max<T>([NotNull] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
+        public static T Max<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
             Contract.Requires(source != null);
@@ -2483,7 +2497,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<TSource> UnionSingle<TSource>(
             [CanBeNull] this TSource first,
-            [NotNull] IEnumerable<TSource> second,
+            [NotNull] [InstantHandle] IEnumerable<TSource> second,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
             Contract.Requires(second != null);
@@ -2509,7 +2523,7 @@ namespace WebApplications.Utilities
         [NotNull]
         [PublicAPI]
         public static IEnumerable<TSource> UnionSingle<TSource>(
-            [NotNull] this IEnumerable<TSource> first,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> first,
             [CanBeNull] TSource last,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
@@ -2535,7 +2549,7 @@ namespace WebApplications.Utilities
         [NotNull]
         [PublicAPI]
         public static IEnumerable<TSource> Prepend<TSource>(
-            [NotNull] this IEnumerable<TSource> sequence,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource first)
         {
             Contract.Requires(sequence != null);
@@ -2559,7 +2573,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<TSource> PrependTo<TSource>(
             [CanBeNull] this TSource first,
-            [NotNull] IEnumerable<TSource> sequence)
+            [NotNull] [InstantHandle] IEnumerable<TSource> sequence)
         {
             Contract.Requires(sequence != null);
 
@@ -2581,7 +2595,7 @@ namespace WebApplications.Utilities
         [NotNull]
         [PublicAPI]
         public static IEnumerable<TSource> Append<TSource>(
-            [NotNull] this IEnumerable<TSource> sequence,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource last)
         {
             Contract.Requires(sequence != null);
@@ -2605,7 +2619,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<TSource> AppendTo<TSource>(
             [CanBeNull] this TSource last,
-            [NotNull] IEnumerable<TSource> sequence)
+            [NotNull] [InstantHandle] IEnumerable<TSource> sequence)
         {
             Contract.Requires(sequence != null);
 
@@ -2625,7 +2639,7 @@ namespace WebApplications.Utilities
         /// <param name="count">The minimum number of elements the <see cref="source"/> needs.</param>
         /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
         [PublicAPI]
-        public static bool HasAtLeast<TSource>([NotNull] this IEnumerable<TSource> source, int count)
+        public static bool HasAtLeast<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
             Contract.Requires(source != null);
             Contract.Requires(count > 0);
@@ -2649,9 +2663,9 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
         [PublicAPI]
         public static bool HasAtLeast<TSource>(
-            [NotNull] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             int count,
-            [NotNull] Func<TSource, bool> predicate)
+            [NotNull] [InstantHandle] Func<TSource, bool> predicate)
         {
             Contract.Requires(source != null);
             Contract.Requires(count > 0);
@@ -2675,7 +2689,7 @@ namespace WebApplications.Utilities
         /// <param name="count">The exact number of elements the <see cref="source"/> needs.</param>
         /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
         [PublicAPI]
-        public static bool HasExact<TSource>([NotNull] this IEnumerable<TSource> source, int count)
+        public static bool HasExact<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
             Contract.Requires(source != null);
             Contract.Requires(count > 0);
@@ -2699,9 +2713,9 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
         [PublicAPI]
         public static bool HasExact<TSource>(
-            [NotNull] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             int count,
-            [NotNull] Func<TSource, bool> predicate)
+            [NotNull] [InstantHandle] Func<TSource, bool> predicate)
         {
             Contract.Requires(source != null);
             Contract.Requires(count > 0);
@@ -3017,9 +3031,12 @@ namespace WebApplications.Utilities
         [NotNull]
         [PublicAPI]
         public static IEnumerable<T> TopologicalSortDependants<T>(
-            [NotNull] this IEnumerable<T> enumerable,
-            [NotNull] Func<T, IEnumerable<T>> getDependants)
+            [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
+            [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependants)
         {
+            Contract.Requires(enumerable != null);
+            Contract.Requires(getDependants != null);
+
             enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
             return TopologicalSortEdges(
@@ -3049,9 +3066,12 @@ namespace WebApplications.Utilities
         [NotNull]
         [UsedImplicitly]
         public static IEnumerable<T> TopologicalSortDependencies<T>(
-            [NotNull] this IEnumerable<T> enumerable,
-            [NotNull] Func<T, IEnumerable<T>> getDependencies)
+            [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
+            [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependencies)
         {
+            Contract.Requires(enumerable != null);
+            Contract.Requires(getDependencies != null);
+
             enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
             return TopologicalSortEdges(
@@ -3075,8 +3095,8 @@ namespace WebApplications.Utilities
         [NotNull]
         [UsedImplicitly]
         public static IEnumerable<T> TopologicalSortEdges<T>(
-            [NotNull] this IEnumerable<T> enumerable,
-            [NotNull] IEnumerable<KeyValuePair<T, T>> edges)
+            [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
+            [NotNull] [InstantHandle] IEnumerable<KeyValuePair<T, T>> edges)
         {
             // Create lookup dictionaries from edges
             Dictionary<T, List<T>> dependants = new Dictionary<T, List<T>>();
@@ -3205,7 +3225,9 @@ namespace WebApplications.Utilities
         /// <returns>A hash set of the values.</returns>
         [NotNull]
         [PublicAPI]
-        public static ISet CreateSet([NotNull] this Type elementType, [CanBeNull] IEnumerable values = null)
+        public static ISet CreateSet(
+            [NotNull] this Type elementType,
+            [CanBeNull] [InstantHandle] IEnumerable values = null)
         {
             Contract.Requires(elementType != null);
             return _hashCollectionCreators.GetOrAdd(
@@ -3269,7 +3291,7 @@ namespace WebApplications.Utilities
         /// <returns>A random item.</returns>
         [PublicAPI]
         [CanBeNull]
-        public static T Choose<T>([NotNull] this IEnumerable<T> enumerable)
+        public static T Choose<T>([NotNull] [InstantHandle] this IEnumerable<T> enumerable)
         {
             Contract.Requires(enumerable != null);
             // Get an array
@@ -3289,7 +3311,9 @@ namespace WebApplications.Utilities
         /// <returns>A random item.</returns>
         [PublicAPI]
         [CanBeNull]
-        public static T Choose<T>([NotNull] this IEnumerable<T> enumerable, [NotNull] Func<T, double> getWeightFunc)
+        public static T Choose<T>(
+            [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
+            [NotNull] [InstantHandle] Func<T, double> getWeightFunc)
         {
             Contract.Requires(enumerable != null);
             Contract.Requires(getWeightFunc != null);

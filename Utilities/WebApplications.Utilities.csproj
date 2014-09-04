@@ -203,6 +203,11 @@
     <Compile Include="DependencyGraph.cs" />
     <Compile Include="Dictionary.cs" />
     <Compile Include="EqualityNetwork.cs" />
+    <Compile Include="ExpressionExtensionOverloads.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExpressionExtensionOverloads.tt</DependentUpon>
+    </Compile>
     <Compile Include="ExpressionExtensions.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="Formatting\Alignment.cs" />
@@ -390,6 +395,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ExpressionExtensionOverloads.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ExpressionExtensionOverloads.cs</LastGenOutput>
+    </None>
     <None Include="TupleEnumerable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TupleEnumerable.cs</LastGenOutput>

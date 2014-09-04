@@ -1,0 +1,139 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
+using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
+using JetBrains.Annotations;
+
+namespace WebApplications.Utilities
+{
+    public static partial class ExpressionExtensions
+    {
+<# 
+        StringBuilder typeParams = new StringBuilder();
+        StringBuilder typeComments = new StringBuilder();
+        StringBuilder paramConvert = new StringBuilder();
+        StringBuilder inlineParamExpressions = new StringBuilder();
+        StringBuilder paramExpressions = new StringBuilder();
+
+        for (int i = 0; i <= 16; i++)
+        {
+            string funcTypeParams;
+            string actionTypeParams;
+            string inlineExpression;
+            string funcReturnTypeComment;
+            string actionReturnTypeComment;
+
+            if (i > 0)
+            {
+                typeParams.AppendFormat("{0}T{1}", i > 1 ? ", " : string.Empty, i);
+                typeComments.AppendFormat("{0}        /// <typeparam name=\"T{1}\">The type of parameter {1}.</typeparam>",
+                    Environment.NewLine,
+                    i);
+
+                paramConvert
+                    .AppendLine()
+                    .AppendFormat("            ParameterExpression p{0} = Expression.Parameter(typeof(T{0}));", i).AppendLine()
+                    .AppendFormat("            Expression i{0} = p{0}.Type != typeof(T{0})", i).AppendLine()
+                    .AppendFormat("                ? Expression.Convert(p{0}, typeof(T{0}))", i).AppendLine()
+                    .AppendFormat("                : (Expression)p{0};", i).AppendLine()
+                    ;
+
+                inlineParamExpressions.AppendFormat("{0}i{1}", i > 1 ? ", " : string.Empty, i);
+                paramExpressions.AppendFormat(", p{0}", i);
+
+                funcTypeParams = "<" + typeParams + ", TResult>";
+                actionTypeParams = "<" + typeParams + ">";
+                inlineExpression = "expression.Inline(" + inlineParamExpressions + ")";
+                funcReturnTypeComment = "{" + typeParams + ", TResult}";
+                actionReturnTypeComment = "{" + typeParams + "}";
+            }
+            else
+            {
+                funcTypeParams = "<TResult>";
+                actionTypeParams = string.Empty;
+                inlineExpression = "expression";
+                funcReturnTypeComment = "{TResult}";
+                actionReturnTypeComment = string.Empty;
+            }
+
+#>
+        #region <#= i #> parameters
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary><#= typeComments #>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// <see cref="Expression{Func<#= funcReturnTypeComment #>}"/>.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<#= funcTypeParams #>> GetFuncExpression<#= funcTypeParams #>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression != null);
+            Contract.Requires(expression.Parameters.Count == <#= i #>);
+            <#= paramConvert #>
+            Expression body = <#= inlineExpression #>;
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<#= funcTypeParams #>>(body<#= paramExpressions #>);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary><#= typeComments #>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// <see cref="Expression{Action<#= actionReturnTypeComment #>}"/>.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<#= actionTypeParams #>> GetActionExpression<#= actionTypeParams #>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression != null);
+            Contract.Requires(expression.Parameters.Count == <#= i #>);
+            Contract.Requires(expression.ReturnType == typeof(void));
+            <#= paramConvert #>
+            return Expression.Lambda<Action<#= actionTypeParams #>>(<#= inlineExpression #><#= paramExpressions #>);
+        }
+        #endregion
+
+<#
+        }
+#>
+    }
+}
