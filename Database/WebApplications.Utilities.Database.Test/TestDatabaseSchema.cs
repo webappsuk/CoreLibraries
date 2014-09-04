@@ -64,6 +64,9 @@ namespace WebApplications.Utilities.Database.Test
             DatabaseSchema databaseSchema2 = await DatabaseSchema.GetOrAdd((Connection)(LocalDatabaseConnectionString + " "));
             DatabaseSchema databaseSchema3 =
                 await DatabaseSchema.GetOrAdd((Connection) LocalDatabaseCopyConnectionString);
+
+            // TODO: Check with craig whether or not this test is valid now.
+
             // Asserting that Get or Add returns the same one (it should)
             Assert.AreEqual(databaseSchema, databaseSchema2);
 

@@ -104,7 +104,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<SqlParameter> SetParameters<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(T1 p1Value, T2 p2Value, T3 p3Value, T4 p4Value, T5 p5Value, T6 p6Value, T7 p7Value, T8 p8Value, T9 p9Value, T10 p10Value, T11 p11Value, T12 p12Value, T13 p13Value, T14 p14Value, T15 p15Value, T16 p16Value, T17 p17Value, T18 p18Value, T19 p19Value, T20 p20Value, T21 p21Value, T22 p22Value, T23 p23Value, T24 p24Value, T25 p25Value, T26 p26Value, T27 p27Value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            SqlProgramParameter[] parameters = _mapping.Definition.Parameters.ToArray();
+            SqlProgramParameter[] parameters = _mapping.Parameters.ToArray();
             int pCount = parameters.GetLength(0);
             if (pCount < 27)
                 throw new LoggingException(

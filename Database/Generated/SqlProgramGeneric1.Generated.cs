@@ -52,7 +52,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<SqlParameter> SetParameters<T1>(T1 p1Value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            SqlProgramParameter[] parameters = _mapping.Definition.Parameters.ToArray();
+            SqlProgramParameter[] parameters = _mapping.Parameters.ToArray();
             int pCount = parameters.GetLength(0);
             if (pCount < 1)
                 throw new LoggingException(

@@ -58,7 +58,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<SqlParameter> SetParameters<T1, T2, T3, T4>(T1 p1Value, T2 p2Value, T3 p3Value, T4 p4Value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            SqlProgramParameter[] parameters = _mapping.Definition.Parameters.ToArray();
+            SqlProgramParameter[] parameters = _mapping.Parameters.ToArray();
             int pCount = parameters.GetLength(0);
             if (pCount < 4)
                 throw new LoggingException(
