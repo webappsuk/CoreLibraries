@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Reflect;
 using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service
@@ -48,16 +49,6 @@ namespace WebApplications.Utilities.Service
     {
 #if DEBUG
         /// <summary>
-        /// Grabs the debug view for an expression.
-        /// </summary>
-        [NotNull]
-        private static readonly Func<Expression, string> _expressionDebugView = typeof (Expression).GetProperty(
-            "DebugView",
-            BindingFlags.NonPublic | BindingFlags.Instance)
-            .GetGetMethod(true)
-            .Func<Expression, string>();
-
-        /// <summary>
         /// The debug view
         /// </summary>
         [PublicAPI]
@@ -68,24 +59,22 @@ namespace WebApplications.Utilities.Service
         /// The <see cref="MethodInfo"/> for <see cref="string.Split(char[])"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _stringSplit = typeof (string).GetMethod(
-            "Split",
-            new[] {typeof (char[]), typeof (StringSplitOptions)});
+        private static readonly MethodInfo _stringSplit =
+            InfoHelper.GetMethodInfo<string>(s => s.Split(default(char[]), default(StringSplitOptions)));
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="string.IsNullOrEmpty(string)"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _stringIsNullOrEmpty = typeof (string).GetMethod(
-            "IsNullOrEmpty",
-            new[] {typeof (string)});
+        private static readonly MethodInfo _stringIsNullOrEmpty =
+            InfoHelper.GetMethodInfo(() => string.IsNullOrEmpty(default(string)));
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="Enum.Parse(Type, string, bool)"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _enumParse = typeof (Enum)
-            .GetMethod("Parse", new[] {typeof (Type), typeof (string), typeof (bool)});
+        private static readonly MethodInfo _enumParse =
+            InfoHelper.GetMethodInfo(() => Enum.Parse(default(Type), default(string), default(bool)));
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="Task.ContinueWith{T}(Func{Task,T}, CancellationToken, TaskContinuationOptions, TaskScheduler)"/>
@@ -518,7 +507,7 @@ namespace WebApplications.Utilities.Service
 
 #if DEBUG
             // Update the DebugView
-            DebugView = _expressionDebugView(lambda);
+            DebugView = lambda.GetDebugView();
 #endif
 
             _execute = lambda.Compile();
