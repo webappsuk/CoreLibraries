@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Service
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     [Serializable]
     [PublicAPI]
+    [MeansImplicitUse]
     public class ServiceCommandAttribute : Attribute
     {
         /// <summary>
