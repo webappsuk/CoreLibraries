@@ -674,10 +674,23 @@ namespace WebApplications.Utilities.Service
             // ReSharper disable once AssignNullToNotNullAttribute
             writer.Write(ServiceResources.BaseService_Install_CopyingService, installDirectory);
 
-            // ReSharper disable AssignNullToNotNullAttribute
-            foreach (string file in Directory.GetFiles(Path.GetDirectoryName(fileName)))
-                File.Copy(file, Path.Combine(installDirectory, Path.GetFileName(file)));
-            // ReSharper restore AssignNullToNotNullAttribute
+            // ReSharper disable once PossibleNullReferenceException
+            string currentDirectory = Path.GetDirectoryName(fileName).TrimEnd('\\');
+
+            foreach (string file in Directory.GetFiles(currentDirectory, "*", SearchOption.AllDirectories))
+            {
+                Contract.Assert(file != null);
+
+                string target = Path.Combine(installDirectory, file.Substring(currentDirectory.Length + 1));
+                string targetDir = Path.GetDirectoryName(target);
+
+                Contract.Assert(targetDir != null);
+
+                if (!Directory.Exists(targetDir))
+                    Directory.CreateDirectory(targetDir);
+
+                File.Copy(file, target);
+            }
 
             writer.WriteLine(ServiceResources.Done);
 
