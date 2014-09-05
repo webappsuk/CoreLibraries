@@ -332,7 +332,7 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        public void Truncate_EllipsisLengthGreaterThanMaxLengthButNoEllipsisFlag_ThrowsArgumentOutOfRangeException()
+        public void Truncate_EllipsisLengthGreaterThanMaxLengthButNoEllipsisFlag_Works()
         {
             // Need to have the string to be truncated long enough for it to not be immediately returned
             int maxLength = Random.Next(5, 100);

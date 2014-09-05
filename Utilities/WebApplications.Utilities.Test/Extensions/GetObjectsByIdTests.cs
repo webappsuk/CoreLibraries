@@ -86,7 +86,7 @@ namespace WebApplications.Utilities.Test.Extensions
             return Enumerable.Range(1, Random.Next(5, 20)).Select(n => Random.Next(0, maxId)).Distinct().ToList();
         }
 
-        [ExpectedException(typeof (NullReferenceException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
         public void GetObjectsById_NullList_ThrowsNullReferenceException()
         {
@@ -258,7 +258,7 @@ namespace WebApplications.Utilities.Test.Extensions
                 Enumerable.Range(1, Random.Next(5, 20)).Select(n => (short) Random.Next(0, maxId)).Distinct().ToList();
         }
 
-        [ExpectedException(typeof (NullReferenceException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         [TestMethod]
         public void GetObjectsById16_NullList_ThrowsNullReferenceException()
         {
@@ -432,7 +432,7 @@ namespace WebApplications.Utilities.Test.Extensions
                     ToList();
         }
 
-        [ExpectedException(typeof (NullReferenceException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
         public void GetObjectsById64_NullList_ThrowsNullReferenceException()
         {

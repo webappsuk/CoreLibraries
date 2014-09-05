@@ -656,8 +656,8 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        [ExpectedException(typeof (NullReferenceException))]
-        public void XmlEscape_NullObject_ThrowsNullReferenceException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void XmlEscape_NullObject_ThrowsArgumentNullException()
         {
             Assert.IsNull(((object) null).XmlEscape());
         }

@@ -803,8 +803,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            Contract.Requires(integers != null);
-            Contract.Requires(getObject != null);
+            Contract.Requires<ArgumentNullException>(integers != null);
+            Contract.Requires<ArgumentNullException>(getObject != null);
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -852,8 +852,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            Contract.Requires(integers != null);
-            Contract.Requires(getObject != null);
+            Contract.Requires<ArgumentNullException>(integers != null);
+            Contract.Requires<ArgumentNullException>(getObject != null);
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -900,8 +900,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            Contract.Requires(integers != null);
-            Contract.Requires(getObject != null);
+            Contract.Requires<ArgumentNullException>(integers != null);
+            Contract.Requires<ArgumentNullException>(getObject != null);
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -1208,12 +1208,13 @@ namespace WebApplications.Utilities
             [CanBeNull] this string valueToTruncate,
             int maxLength,
             TruncateOptions options = TruncateOptions.None,
-            [NotNull] string ellipsisString = "...",
+            [CanBeNull] string ellipsisString = "...",
             int ellipsisLength = -1)
         {
             Contract.Requires<ArgumentOutOfRangeException>(maxLength > 0);
-            Contract.Requires<ArgumentNullException>(ellipsisString != null);
-            Contract.Requires<ArgumentOutOfRangeException>(maxLength > (ellipsisLength < 0 ? ellipsisString.Length : ellipsisLength));
+            Contract.Requires<ArgumentOutOfRangeException>(
+                (options & TruncateOptions.IncludeEllipsis) != TruncateOptions.IncludeEllipsis ||
+                maxLength > (ellipsisString != null && ellipsisLength < 0 ? ellipsisString.Length : ellipsisLength));
 
             if (String.IsNullOrEmpty(valueToTruncate) ||
                 valueToTruncate.Length <= maxLength)
