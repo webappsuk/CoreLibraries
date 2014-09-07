@@ -332,6 +332,7 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
+        [Ignore]
         public async Task TestAll()
         {
 

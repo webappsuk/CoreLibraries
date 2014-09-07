@@ -800,11 +800,11 @@ namespace WebApplications.Utilities.Database.Configuration
             if ((db == null) ||
                 (!db.Enabled))
                 {
-					return TaskResult<SqlProgram<T1>>.FromException(
+                    return TaskResult<SqlProgram<T1>>.FromException(
                         new LoggingException(
                             () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                             database));
-				}
+                }
 
             return db.GetSqlProgram<T1>(name, p1Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, cancellationToken);
         }

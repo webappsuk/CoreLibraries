@@ -859,11 +859,11 @@ namespace WebApplications.Utilities.Database.Configuration
             if ((db == null) ||
                 (!db.Enabled))
                 {
-					return TaskResult<SqlProgram<<#= Strings.TypeParams#>>>.FromException(
+                    return TaskResult<SqlProgram<<#= Strings.TypeParams#>>>.FromException(
                         new LoggingException(
                             () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                             database));
-				}
+                }
 
             return db.GetSqlProgram<<#= Strings.TypeParams#>>(name, <#= Strings.ConstructorNames2#>, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, cancellationToken);
         }

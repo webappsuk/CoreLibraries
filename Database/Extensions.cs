@@ -44,7 +44,6 @@ namespace WebApplications.Utilities.Database
     /// </summary>
     public static class Extensions
     {
-
         /// <summary>
         /// Gets a serialized object from a data reader by column name.
         /// </summary>
