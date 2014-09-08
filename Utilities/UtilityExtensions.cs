@@ -3352,5 +3352,114 @@ namespace WebApplications.Utilities
             return list.Last().Item1;
             // ReSharper restore PossibleNullReferenceException
         }
+
+        /// <summary>
+        /// Flattens the specified <see cref="Exception"/> to an enumeration of <see cref="Exception">Exceptions</see>.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <remarks>Unwraps <see cref="TargetInvocationException"/> and <see cref="AggregateException"/> automatically.</remarks>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<Exception> Flatten([CanBeNull] this Exception exception)
+        {
+            if (exception == null) yield break;
+
+            Stack<Exception> exceptions = new Stack<Exception>();
+            exceptions.Push(exception);
+
+            while (exceptions.Count > 0)
+            {
+                exception = exceptions.Pop();
+                if (ReferenceEquals(exception, null)) continue;
+
+                AggregateException aggregateException = exception as AggregateException;
+                if (!ReferenceEquals(aggregateException, null))
+                {
+                    if (aggregateException.InnerExceptions != null)
+                    {
+                        // Place the inner exceptions on the stack for further processing.
+                        foreach (Exception e in aggregateException.InnerExceptions.Reverse())
+                            exceptions.Push(e);
+                        continue;
+                    }
+                    // Fall through
+                }
+                else
+                {
+                    TargetInvocationException targetInvocationException = exception as TargetInvocationException;
+                    if (!ReferenceEquals(targetInvocationException, null) &&
+                        !ReferenceEquals(targetInvocationException.InnerException, null))
+                    {
+                        exceptions.Push(targetInvocationException.InnerException);
+                        continue;
+                    }
+                }
+
+                // Convert the exception
+                yield return exception;
+            }
+        }
+
+        /// <summary>
+        /// Flattens the specified <see cref="Exception"/> to an enumeration of the <typeparamref name="TException">required exception</typeparamref>.
+        /// </summary>
+        /// <typeparam name="TException">The type of the exception required.</typeparam>
+        /// <param name="exception">The exception.</param>
+        /// <param name="convert">The function that converts any <see cref="Exception"/> that doesn't already descend from <typeparamref name="TException"/>.</param>
+        /// <returns>An enumeration of <typeparamref name="TException"/></returns>
+        /// <remarks>Unwraps <see cref="TargetInvocationException"/> and <see cref="AggregateException"/> automatically.</remarks>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<TException> Flatten<TException>([CanBeNull] this Exception exception, [NotNull] Func<Exception, TException> convert)
+            where TException : Exception
+        {
+            Contract.Requires(convert != null);
+
+            if (exception == null) yield break;
+
+            Stack<Exception> exceptions = new Stack<Exception>();
+            exceptions.Push(exception);
+
+            while (exceptions.Count > 0)
+            {
+                exception = exceptions.Pop();
+                if (ReferenceEquals(exception, null)) continue;
+
+                TException tException = exception as TException;
+                if (!ReferenceEquals(tException, null))
+                {
+                    yield return tException;
+                    continue;
+                }
+
+                AggregateException aggregateException = exception as AggregateException;
+                if (!ReferenceEquals(aggregateException, null))
+                {
+                    if (aggregateException.InnerExceptions != null)
+                    {
+                        // Place the inner exceptions on the stack for further processing.
+                        foreach (Exception e in aggregateException.InnerExceptions.Reverse())
+                            exceptions.Push(e);
+                        continue;
+                    }
+                    // Fall through
+                }
+                else
+                {
+                    TargetInvocationException targetInvocationException = exception as TargetInvocationException;
+                    if (!ReferenceEquals(targetInvocationException, null) &&
+                        !ReferenceEquals(targetInvocationException.InnerException, null))
+                    {
+                        exceptions.Push(targetInvocationException.InnerException);
+                        continue;
+                    }
+                }
+
+                // Convert the exception
+                tException = convert(exception);
+                if (!ReferenceEquals(tException, null))
+                    yield return tException;
+            }
+        }
     }
 }
