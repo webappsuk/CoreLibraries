@@ -34,15 +34,15 @@ using NodaTime;
 using WebApplications.Testing;
 using WebApplications.Utilities.Scheduling.Ranges;
 
-namespace WebApplications.Utilities.Scheduling.Test
+namespace WebApplications.Utilities.Scheduling.Test.Ranges
 {
     [TestClass]
     public class InstantRangeTests
     {
         private static readonly Duration MinDuration = Duration.FromSeconds(1);
         private static readonly Duration MaxDuration = Duration.FromTicks(long.MaxValue);
-        public static readonly Instant TestMinInstant = Instant.FromTicksSinceUnixEpoch(long.MinValue / 2);
-        public static readonly Instant TestMaxInstant = Instant.FromTicksSinceUnixEpoch(long.MaxValue / 2);
+        public static readonly Instant TestMinInstant = Instant.FromTicksSinceUnixEpoch(long.MinValue / 4);
+        public static readonly Instant TestMaxInstant = Instant.FromTicksSinceUnixEpoch(long.MaxValue / 4);
         protected static readonly Random Random = Tester.RandomGenerator;
 
         /// <summary>

@@ -71,15 +71,16 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InstantRangeTests.cs" />
+    <Compile Include="Ranges\InstantRangeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ranges\LocalDateRangeTests.cs" />
     <Compile Include="SchedulerTester.cs" />
     <Compile Include="TestAggregateSchedule.cs" />
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestSchedule.cs" />
     <Compile Include="TestScheduler.cs" />
     <Compile Include="TestSingleDateSchedule.cs" />
-    <Compile Include="ZonedDateTimeRangeTests.cs" />
+    <Compile Include="Ranges\ZonedDateTimeRangeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebApplications.Utilities.Scheduling.csproj">

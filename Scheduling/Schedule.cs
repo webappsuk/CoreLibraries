@@ -688,10 +688,69 @@ namespace WebApplications.Utilities.Scheduling
         [JetBrains.Annotations.Pure]
         public static Instant Ceiling(this Instant instant)
         {
-            return
-                new Instant(
-                    ((instant.Ticks + NodaConstants.TicksPerSecond - 1) / NodaConstants.TicksPerSecond) *
-                    NodaConstants.TicksPerSecond);
+            return new Instant(
+                ((instant.Ticks + NodaConstants.TicksPerSecond - 1) / NodaConstants.TicksPerSecond) *
+                NodaConstants.TicksPerSecond);
+        }
+
+        /// <summary>
+        /// Floors the <see cref="Instant"/> to the nearest minute.
+        /// </summary>
+        /// <param name="instant">The instant.</param>
+        /// <returns>Instant.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        public static Instant FloorMinute(this Instant instant)
+        {
+            return new Instant((instant.Ticks / NodaConstants.TicksPerMinute) * NodaConstants.TicksPerMinute);
+        }
+
+        /// <summary>
+        /// Ceilings the <see cref="Instant"/> to the nearest minute.
+        /// </summary>
+        /// <param name="instant">The instant.</param>
+        /// <returns>Instant.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        public static Instant CeilingMinute(this Instant instant)
+        {
+            return new Instant(
+                ((instant.Ticks * NodaConstants.TicksPerMinute - 1) / NodaConstants.TicksPerMinute) *
+                NodaConstants.TicksPerMinute);
+        }
+
+        /// <summary>
+        /// Floors the <see cref="Instant"/> to the nearest hour.
+        /// </summary>
+        /// <param name="instant">The instant.</param>
+        /// <returns>Instant.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        public static Instant FloorHour(this Instant instant)
+        {
+            return new Instant((instant.Ticks / NodaConstants.TicksPerHour) * NodaConstants.TicksPerHour);
+        }
+
+        /// <summary>
+        /// Ceilings the <see cref="Instant"/> to the nearest hour.
+        /// </summary>
+        /// <param name="instant">The instant.</param>
+        /// <returns>Instant.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        public static Instant CeilingHour(this Instant instant)
+        {
+            return new Instant(
+                ((instant.Ticks * NodaConstants.TicksPerHour - 1) / NodaConstants.TicksPerHour) *
+                NodaConstants.TicksPerHour);
         }
 
         /// <summary>

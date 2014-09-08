@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -34,29 +34,19 @@ using WebApplications.Utilities.Ranges;
 namespace WebApplications.Utilities.Scheduling.Ranges
 {
     /// <summary>
-    ///   A range of <see cref="NodaTime.Duration">Duration</see>s.
+    /// A range of <see cref="LocalDateTime"/>.
     /// </summary>
     [PublicAPI]
-    public class DurationRange : Range<Duration>, IFormattable
+    public class LocalDateTimeRange : Range<LocalDateTime, Period>, IFormattable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DurationRange"/> class.
+        /// Initializes a new instance of the <see cref="LocalDateTimeRange"/> class.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
-        public DurationRange(Duration start, Duration end)
-            : base(start, end, AutoStep(end - start))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DurationRange"/> class.
-        /// </summary>
-        /// <param name="start">The start.</param>
-        /// <param name="end">The end.</param>
-        /// <param name="step">The step.</param>
-        public DurationRange(Duration start, Duration end, Duration step)
-            : base(start, end, step)
+        public LocalDateTimeRange(LocalDateTime start, LocalDateTime end)
+            // ReSharper disable once AssignNullToNotNullAttribute
+            : base(start, end, AutoStep(Period.Between(start, end)))
         {
         }
 
@@ -64,23 +54,56 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// Given a delta automatically returns a sensible step size.
         /// </summary>
         /// <param name="delta">The delta.</param>
-        /// <returns>Duration.</returns>
+        /// <returns>Period.</returns>
+        [NotNull]
         [PublicAPI]
-        public static Duration AutoStep(Duration delta)
+        public static Period AutoStep([NotNull] Period delta)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(delta >= Duration.Zero);
+            Contract.Requires(delta != null);
 
-            if (delta < Duration.FromMilliseconds(1))
-                return Duration.FromTicks(1);
-            if (delta < Duration.FromSeconds(1))
-                return Duration.FromMilliseconds(1);
-            if (delta < Duration.FromMinutes(1))
-                return Duration.FromSeconds(1);
-            if (delta < Duration.FromHours(1))
-                return Duration.FromMinutes(1);
-            if (delta < Duration.FromStandardDays(1))
-                return Duration.FromHours(1);
-            return Duration.FromStandardDays(1);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            delta = delta.Normalize();
+            Contract.Assert(delta != null);
+
+            if (delta.Months < 0 ||
+                delta.Years < 0 ||
+                delta.Weeks < 0 ||
+                delta.Days < 0 ||
+                delta.Hours < 0 ||
+                delta.Minutes < 0 ||
+                delta.Seconds < 0 ||
+                delta.Milliseconds < 0 ||
+                delta.Ticks < 0)
+                throw new ArgumentOutOfRangeException();
+
+            // ReSharper disable AssignNullToNotNullAttribute
+            if (delta.Months > 0 ||
+                delta.Years > 0 ||
+                delta.Weeks > 0 ||
+                delta.Days > 0)
+                return Period.FromDays(1);
+            if (delta.Hours > 0)
+                return Period.FromHours(1);
+            if (delta.Minutes > 0)
+                return Period.FromMinutes(1);
+            if (delta.Seconds > 0)
+                return Period.FromSeconds(1);
+            if (delta.Milliseconds > 0)
+                return Period.FromMilliseconds(1);
+            return Period.FromTicks(1);
+            // ReSharper restore AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalDateTimeRange"/> class.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="end">The end.</param>
+        /// <param name="step">The step.</param>
+        public LocalDateTimeRange(LocalDateTime start, LocalDateTime end, [NotNull] Period step)
+            : base(start, end, step)
+        {
+            Contract.Requires(step != null);
         }
 
         /// <summary>
@@ -102,7 +125,6 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        [StringFormatMethod("format")]
         public string ToString(string format, IFormatProvider formatProvider = null)
         {
             return String.Format(
