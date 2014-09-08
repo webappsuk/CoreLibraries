@@ -128,20 +128,21 @@
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="WebApplications.Utilities, Version=5.1.5360.18528, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.1.5364.16469, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5360.18528\lib\net451\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5364.16469\lib\net451\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5360.18915, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5360.18915\lib\net451\WebApplications.Utilities.Logging.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Logging">
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5364.23158\lib\net451\WebApplications.Utilities.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5360.18749, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5360.18749\lib\net451\WebApplications.Utilities.Performance.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Performance">
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5364.16536\lib\net451\WebApplications.Utilities.Performance.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Scheduling">
-      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5360.18839\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5364.23112\lib\net451\WebApplications.Utilities.Scheduling.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -202,8 +203,9 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <Import Project="..\packages\WebApplications.Utilities.5.1.5360.18528\tools\Web%20Applications%20Signature.targets" Condition="Exists('..\packages\WebApplications.Utilities.5.1.5360.18528\tools\Web%20Applications%20Signature.targets') AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5360.18749\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5360.18749\tools\PerfSetup.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5360.18839\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5360.18839\tools\Scheduling.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.5.1.5364.16469\tools\Web%20Applications%20Signature.targets" Condition="Exists('..\packages\WebApplications.Utilities.5.1.5364.16469\tools\Web%20Applications%20Signature.targets') AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5364.16536\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5364.16536\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Scheduling.5.1.5364.23112\tools\Scheduling.targets" Condition="Exists('..\packages\WebApplications.Utilities.Scheduling.5.1.5364.23112\tools\Scheduling.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
