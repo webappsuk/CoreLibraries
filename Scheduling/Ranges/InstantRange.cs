@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
     /// <summary>
     ///   A range of <see cref="NodaTime.Instant">Instant</see>s.
     /// </summary>
+    [PublicAPI]
     public class InstantRange : Range<Instant, Duration>, IFormattable
     {
         /// <summary>

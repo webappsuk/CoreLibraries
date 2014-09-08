@@ -36,6 +36,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
     /// <summary>
     ///   A range of <see cref="NodaTime.ZonedDateTime">ZonedDateTime</see>s.
     /// </summary>
+    [PublicAPI]
     public class ZonedDateTimeRange : Range<ZonedDateTime, Duration>, IFormattable
     {
         /// <summary>
