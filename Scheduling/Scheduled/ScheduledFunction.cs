@@ -123,7 +123,11 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [CanBeNull]
         public new ScheduledFunctionResult<T> LastResult
         {
-            get { return HistoryQueue.LastOrDefault() as ScheduledFunctionResult<T>; }
+            get
+            {
+                Contract.Requires(IsFunction); 
+                return HistoryQueue.LastOrDefault() as ScheduledFunctionResult<T>;
+            }
         }
 
         /// <summary>
@@ -205,7 +209,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     // De-bounce - we started before the last execution finished, so return last result, so long as it wasn't cancelled.
                     if (started <= LastExecutionFinished)
                     {
-                        result = History.LastOrDefault();
+                        result = HistoryQueue.LastOrDefault() as ScheduledFunctionResult<T>;
                         if (result != null && !result.Cancelled) return result;
                     }
 

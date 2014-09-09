@@ -109,7 +109,8 @@ namespace WebApplications.Utilities.Scheduling.Test
                 () =>
                 {
                     ran = true;
-                    Thread.Sleep(10);
+                    // This needs to sleep longer than the max duration to ensure it will be cancelled
+                    Thread.Sleep((int)duration.TotalMilliseconds() * 2);
                 },
                 new OneOffSchedule(due),
                 maximumDuration: duration);
