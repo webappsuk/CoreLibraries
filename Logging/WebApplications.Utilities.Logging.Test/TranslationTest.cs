@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace WebApplications.Utilities.Logging.Test
 {
     [TestClass]
-    public class TranslationTest
+    public class TranslationTest : LoggingTestBase
     {
         [TestInitialize]
         public void TestInitialize()

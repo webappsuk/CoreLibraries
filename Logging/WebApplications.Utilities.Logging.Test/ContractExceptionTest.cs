@@ -10,13 +10,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace WebApplications.Utilities.Logging.Test
 {
     [TestClass]
-    public class ContractExceptionTest
+    public class ContractExceptionTest : LoggingTestBase
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            Log.Flush().Wait();
-        }
+        
 
         [TestMethod]
         public void TestRequiresException()
@@ -46,10 +42,6 @@ namespace WebApplications.Utilities.Logging.Test
 #endif
         }
 
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Log.Flush().Wait();
-        }
+        
     }
 }

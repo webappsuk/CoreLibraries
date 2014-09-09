@@ -9,7 +9,7 @@ using WebApplications.Utilities.Reflect;
 namespace WebApplications.Utilities.Logging.Test
 {
     [TestClass]
-    public class LogContextTest
+    public class LogContextTest : LoggingTestBase
     {
         /// <summary>
         /// Points directly to LogContext._keyReservations

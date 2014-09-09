@@ -49,7 +49,8 @@ using WebApplications.Utilities.Logging.Loggers;
 namespace WebApplications.Utilities.Logging.Test
 {
     [TestClass]
-    public class LoggingTests : TestBase
+
+    public class LoggingTests : LoggingTestBase
     {
         [NotNull]
         private static readonly Dictionary<string, string> _logDictionary;
@@ -84,11 +85,6 @@ namespace WebApplications.Utilities.Logging.Test
             };
         }
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            Log.Flush().Wait();
-        }
 
         [TestInitialize]
         public void TestInitialize()
@@ -452,10 +448,5 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.AreSame(log, thrownLog);
         }
 
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Log.Flush().Wait();
-        }
     }
 }
