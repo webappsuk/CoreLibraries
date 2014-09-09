@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Ranges;
@@ -46,8 +47,22 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         public LocalTimeRange(LocalTime start, LocalTime end)
             // ReSharper disable once AssignNullToNotNullAttribute
-            : base(start, end, AutoStep(Period.Between(start, end)))
+            : base(start, end, FixUnits(start, AutoStep(Period.Between(start, end))))
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalTimeRange"/> class.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="end">The end.</param>
+        /// <param name="step">The step.</param>
+        public LocalTimeRange(LocalTime start, LocalTime end, [NotNull] Period step)
+            : base(start, end, FixUnits(start, step))
+        {
+            Contract.Requires(step != null);
+            Contract.Requires(!step.HasDateComponent);
+            Contract.Requires(step.IsPositive(start.LocalDateTime));
         }
 
         /// <summary>
@@ -68,15 +83,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
             delta = delta.Normalize();
             Contract.Assert(delta != null);
 
-            if (delta.Months < 0 ||
-                delta.Years < 0 ||
-                delta.Weeks < 0 ||
-                delta.Days < 0 ||
-                delta.Hours < 0 ||
-                delta.Minutes < 0 ||
-                delta.Seconds < 0 ||
-                delta.Milliseconds < 0 ||
-                delta.Ticks < 0)
+            if (delta.IsNegative(new LocalTime().LocalDateTime))
                 throw new ArgumentOutOfRangeException();
 
             // ReSharper disable AssignNullToNotNullAttribute
@@ -97,16 +104,18 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalTimeRange"/> class.
+        /// Fixes the units of a period so that they only contain fixed length fields.
+        /// If the field contains months/years then the length of the period depends on the month/year.
         /// </summary>
         /// <param name="start">The start.</param>
-        /// <param name="end">The end.</param>
-        /// <param name="step">The step.</param>
-        public LocalTimeRange(LocalTime start, LocalTime end, [NotNull] Period step)
-            : base(start, end, step)
+        /// <param name="period">The period.</param>
+        /// <returns></returns>
+        /// <remarks>Shouldn't be needed for LocalTimes but might as well have it for safety.</remarks>
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Period FixUnits(LocalTime start, [NotNull] Period period)
         {
-            Contract.Requires(step != null);
-            Contract.Requires(!step.HasDateComponent);
+            return Period.Between(start, start + period, PeriodUnits.AllTimeUnits);
         }
 
         /// <summary>

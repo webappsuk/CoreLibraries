@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Ranges;
@@ -46,48 +47,8 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         public LocalDateRange(LocalDate start, LocalDate end)
             // ReSharper disable once AssignNullToNotNullAttribute
-            : base(start, end, AutoStep(Period.Between(start, end)))
+            : base(start, end, AutoStep(start, Period.Between(start, end)))
         {
-        }
-
-        /// <summary>
-        /// Given a delta automatically returns a sensible step size.
-        /// </summary>
-        /// <param name="delta">The delta.</param>
-        /// <returns>Period.</returns>
-        [NotNull]
-        [PublicAPI]
-        public static Period AutoStep([NotNull] Period delta)
-        {
-            Contract.Requires(delta != null);
-            Contract.Ensures(Contract.Result<Period>() != null);
-            // ReSharper disable once PossibleNullReferenceException
-            Contract.Ensures(!Contract.Result<Period>().HasTimeComponent);
-
-            // ReSharper disable once AssignNullToNotNullAttribute
-            delta = delta.Normalize();
-            Contract.Assert(delta != null);
-
-            if (delta.Months < 0 ||
-                delta.Years < 0 ||
-                delta.Weeks < 0 ||
-                delta.Days < 0 ||
-                delta.Hours < 0 ||
-                delta.Minutes < 0 ||
-                delta.Seconds < 0 ||
-                delta.Milliseconds < 0 ||
-                delta.Ticks < 0)
-                throw new ArgumentOutOfRangeException();
-
-            // ReSharper disable AssignNullToNotNullAttribute
-            if (delta.Years > 0)
-                return Period.FromYears(1);
-            if (delta.Months > 0)
-                return Period.FromMonths(1);
-            if (delta.Weeks > 0)
-                return Period.FromWeeks(1);
-            return Period.FromDays(1);
-            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>
@@ -97,10 +58,57 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         /// <param name="step">The step.</param>
         public LocalDateRange(LocalDate start, LocalDate end, [NotNull] Period step)
-            : base(start, end, step)
+            : base(start, end, FixUnits(start, step))
         {
             Contract.Requires(step != null);
             Contract.Requires(!step.HasTimeComponent);
+            Contract.Requires(step.IsPositive(start.AtMidnight()));
+        }
+
+        /// <summary>
+        /// Given a delta automatically returns a sensible step size.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="delta">The delta.</param>
+        /// <returns>
+        /// Period.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        [NotNull]
+        [PublicAPI]
+        public static Period AutoStep(LocalDate start, [NotNull] Period delta)
+        {
+            Contract.Requires(delta != null);
+            Contract.Ensures(Contract.Result<Period>() != null);
+            // ReSharper disable once PossibleNullReferenceException
+            Contract.Ensures(!Contract.Result<Period>().HasTimeComponent);
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            delta = FixUnits(start, delta);
+            Contract.Assert(delta != null);
+
+            if (delta.Days < 0)
+                throw new ArgumentOutOfRangeException();
+
+            long days = delta.Days < 10 ? 1 : delta.Days / 10;
+            Contract.Assert(days > 0);
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return Period.FromDays(days);
+        }
+
+        /// <summary>
+        /// Fixes the units of a period so that they only contain fixed length fields.
+        /// If the field contains months/years then the length of the period depends on the month/year.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="period">The period.</param>
+        /// <returns></returns>
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Period FixUnits(LocalDate start, [NotNull] Period period)
+        {
+            return Period.Between(start, start + period, PeriodUnits.Days);
         }
 
         /// <summary>

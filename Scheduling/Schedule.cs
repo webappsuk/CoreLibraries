@@ -753,6 +753,54 @@ namespace WebApplications.Utilities.Scheduling
                 NodaConstants.TicksPerHour);
         }
 
+        #region Periods
+        /// <summary>
+        /// Determines whether the specified period is zero.
+        /// </summary>
+        /// <param name="period">The period.</param>
+        /// <returns></returns>
+        public static bool IsZero([NotNull] this Period period)
+        {
+            Contract.Requires(period != null);
+
+            return period.Ticks == 0 &&
+                   period.Milliseconds == 0 &&
+                   period.Seconds == 0 &&
+                   period.Minutes == 0 &&
+                   period.Hours == 0 &&
+                   period.Days == 0 &&
+                   period.Weeks == 0 &&
+                   period.Months == 0 &&
+                   period.Years == 0;
+        }
+
+        /// <summary>
+        /// Determines whether the specified period is positive, relative to a <see cref="LocalDateTime" />.
+        /// </summary>
+        /// <param name="period">The period.</param>
+        /// <param name="local">The local.</param>
+        /// <returns></returns>
+        public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
+        {
+            Contract.Requires(period != null);
+
+            return (local + period) > local;
+        }
+
+        /// <summary>
+        /// Determines whether the specified period is negative, relative to a <see cref="LocalDateTime" />.
+        /// </summary>
+        /// <param name="period">The period.</param>
+        /// <param name="local">The local.</param>
+        /// <returns></returns>
+        public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
+        {
+            Contract.Requires(period != null);
+
+            return (local + period) < local;
+        }
+        #endregion
+
         /// <summary>
         /// Gets the next valid second after the current <paramref name="instant" />.
         /// </summary>
