@@ -90,20 +90,6 @@ namespace WebApplications.Utilities.Database.Test
             
         }
 
-        [TestMethod]
-        [Ignore]
-        public async Task ReloadSchemas()
-        {
-            // TODO: Check test validity - method signature change
-            LoadBalancedConnection loadBalancedConnection =
-                new LoadBalancedConnection(connectionString: LocalDatabaseConnectionString);
-
-            //bool reloadSchemas = await loadBalancedConnection.ReloadSchemas();
-            Assert.Fail("Failing this test because the signature of the commented out method has changed but documentation has not");
-
-            // As we're reloading schemas instantly there should be no changes
-            //Assert.IsFalse(reloadSchemas);
-        }
 
         [TestMethod]
         public void GetEnumerator_ReturnsIEnumerator()
