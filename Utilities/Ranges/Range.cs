@@ -28,6 +28,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Ranges
 {
@@ -41,12 +43,20 @@ namespace WebApplications.Utilities.Ranges
         /// <summary>
         ///   Method for performing additions.
         /// </summary>
+        [NotNull]
         private static readonly Func<TValue, TStep, TValue> _add;
 
         /// <summary>
         ///   Method for performing LessThan comparison.
         /// </summary>
+        [NotNull]
         private static readonly Func<TValue, TValue, bool> _lessThan;
+
+        /// <summary>
+        ///   Method for performing LessThan comparison.
+        /// </summary>
+        [NotNull]
+        private static readonly Func<TValue, TValue, bool> _lessThanOrEqual;
 
         /// <summary>
         ///   The end of the range (inclusive).
@@ -68,8 +78,11 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         static Range()
         {
+            // ReSharper disable AssignNullToNotNullAttribute
             _add = Reflection.AddFunc<TValue, TStep, TValue>();
             _lessThan = Reflection.LessThanFunc<TValue>();
+            _lessThanOrEqual = Reflection.LessThanOrEqualFunc<TValue>();
+            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>
@@ -90,7 +103,7 @@ namespace WebApplications.Utilities.Ranges
                         Resources.Range_StartGreaterThanEnd,
                         start,
                         end,
-                        typeof (TValue)));
+                        typeof(TValue)));
             _start = start;
             _end = end;
         }
@@ -114,7 +127,7 @@ namespace WebApplications.Utilities.Ranges
                         Resources.Range_StartGreaterThanEnd,
                         start,
                         end,
-                        typeof (TValue)));
+                        typeof(TValue)));
             _start = start;
             _end = end;
             _step = step;
@@ -206,6 +219,7 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <param name="value">The value to bind.</param>
         /// <returns>The bound value.</returns>
+        [PublicAPI]
         public TValue Bind(TValue value)
         {
             if (_lessThan(value, _start))
@@ -216,6 +230,18 @@ namespace WebApplications.Utilities.Ranges
         }
 
         /// <summary>
+        /// Determines whether the <paramref name="value"/> given is within this range.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Contains(TValue value)
+        {
+            return _lessThanOrEqual(_start, value) && _lessThanOrEqual(value, _end);
+        }
+
+        /// <summary>
         ///   Returns an enumerator that iterates through the collection and allows a specific step size.
         /// </summary>
         /// <param name="step">The step to iterate by.</param>
@@ -223,6 +249,7 @@ namespace WebApplications.Utilities.Ranges
         ///   A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
+        [PublicAPI]
         public IEnumerator<TValue> GetEnumerator(TStep step)
         {
             for (TValue loop = _start, next = _start; !_lessThan(_end, loop); loop = next)
