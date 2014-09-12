@@ -128,7 +128,7 @@
       <HintPath>..\packages\WebApplications.Testing.5.1.5339.27198\lib\net451\WebApplications.Testing.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5364.25605\lib\net451\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5368.27838\lib\net451\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +168,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5364.25605\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5364.25605\tools\webapplicationssignature.targets') AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5368.27838\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5368.27838\tools\webapplicationssignature.targets') AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
