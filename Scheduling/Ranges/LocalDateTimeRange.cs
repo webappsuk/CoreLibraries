@@ -46,9 +46,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         public LocalDateTimeRange(LocalDateTime start, LocalDateTime end)
-            // ReSharper disable AssignNullToNotNullAttribute
-            : base(start, end, FixUnits(start, AutoStep(Period.Between(start, end), start)))
-        // ReSharper restore AssignNullToNotNullAttribute
+            : base(start, end, AutoStep(start, end))
         {
         }
 
@@ -59,32 +57,29 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         /// <param name="step">The step.</param>
         public LocalDateTimeRange(LocalDateTime start, LocalDateTime end, [NotNull] Period step)
-            : base(start, end, FixUnits(start, step))
+            : base(start, end, step)
         {
             Contract.Requires(step != null);
             Contract.Requires(step.IsPositive(start));
         }
 
         /// <summary>
-        /// Given a delta automatically returns a sensible step size.
+        /// Given a start and end automatically returns a sensible step size.
         /// </summary>
-        /// <param name="delta">The delta.</param>
         /// <param name="start">The start.</param>
+        /// <param name="end">The end.</param>
         /// <returns>
         /// Period.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         [NotNull]
         [PublicAPI]
-        public static Period AutoStep([NotNull] Period delta, LocalDateTime start)
+        public static Period AutoStep(LocalDateTime start, LocalDateTime end)
         {
-            Contract.Requires(delta != null);
+            Contract.Requires<ArgumentOutOfRangeException>(start < end);
 
-            if (delta.IsNegative(start))
-                throw new ArgumentOutOfRangeException();
-
-            // ReSharper disable once AssignNullToNotNullAttribute
-            delta = delta.Normalize();
+            // ReSharper disable once PossibleNullReferenceException
+            Period delta = Period.Between(start, end).Normalize();
             Contract.Assert(delta != null);
 
             // ReSharper disable AssignNullToNotNullAttribute
@@ -103,21 +98,6 @@ namespace WebApplications.Utilities.Scheduling.Ranges
                 return Period.FromMilliseconds(1);
             return Period.FromTicks(1);
             // ReSharper restore AssignNullToNotNullAttribute
-        }
-
-        /// <summary>
-        /// Fixes the units of a period so that they only contain fixed length fields.
-        /// If the field contains months/years then the length of the period depends on the month/year.
-        /// </summary>
-        /// <param name="start">The start.</param>
-        /// <param name="period">The period.</param>
-        /// <returns></returns>
-        [NotNull]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Period FixUnits(LocalDateTime start, [NotNull] Period period)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return Period.Between(start, start + period, PeriodUnits.AllTimeUnits | PeriodUnits.Days);
         }
 
         /// <summary>

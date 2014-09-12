@@ -759,6 +759,7 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="period">The period.</param>
         /// <returns></returns>
+        [PublicAPI]
         public static bool IsZero([NotNull] this Period period)
         {
             Contract.Requires(period != null);
@@ -780,6 +781,10 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="period">The period.</param>
         /// <param name="local">The local.</param>
         /// <returns></returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
         {
             Contract.Requires(period != null);
@@ -793,7 +798,45 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="period">The period.</param>
         /// <param name="local">The local.</param>
         /// <returns></returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
+        {
+            Contract.Requires(period != null);
+
+            return (local + period) < local;
+        }
+
+        /// <summary>
+        /// Determines whether the specified period is positive, relative to a <see cref="LocalDateTime" />.
+        /// </summary>
+        /// <param name="period">The period.</param>
+        /// <param name="local">The local.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        public static bool IsPositive([NotNull] this Period period, LocalDate local)
+        {
+            Contract.Requires(period != null);
+
+            return (local + period) > local;
+        }
+
+        /// <summary>
+        /// Determines whether the specified period is negative, relative to a <see cref="LocalDateTime" />.
+        /// </summary>
+        /// <param name="period">The period.</param>
+        /// <param name="local">The local.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        public static bool IsNegative([NotNull] this Period period, LocalDate local)
         {
             Contract.Requires(period != null);
 

@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Ranges;
@@ -47,7 +46,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         public LocalTimeRange(LocalTime start, LocalTime end)
             // ReSharper disable once AssignNullToNotNullAttribute
-            : base(start, end, FixUnits(start, AutoStep(Period.Between(start, end))))
+            : base(start, end, AutoStep(start, end))
         {
         }
 
@@ -58,40 +57,39 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         /// <param name="step">The step.</param>
         public LocalTimeRange(LocalTime start, LocalTime end, [NotNull] Period step)
-            : base(start, end, FixUnits(start, step))
+            : base(start, end, step)
         {
             Contract.Requires(step != null);
-            Contract.Requires(!step.HasDateComponent);
+            // ReSharper disable once PossibleNullReferenceException
+            Contract.Requires(!step.Normalize().HasDateComponent);
             Contract.Requires(step.IsPositive(start.LocalDateTime));
         }
 
         /// <summary>
-        /// Given a delta automatically returns a sensible step size.
+        /// Given a start and end automatically returns a sensible step size.
         /// </summary>
-        /// <param name="delta">The delta.</param>
-        /// <returns>Period.</returns>
+        /// <param name="start">The start.</param>
+        /// <param name="end">The end.</param>
+        /// <returns>
+        /// Period.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         [NotNull]
         [PublicAPI]
-        public static Period AutoStep([NotNull] Period delta)
+        public static Period AutoStep(LocalTime start, LocalTime end)
         {
-            Contract.Requires(delta != null);
+            Contract.Requires<ArgumentOutOfRangeException>(start < end);
             Contract.Ensures(Contract.Result<Period>() != null);
             // ReSharper disable once PossibleNullReferenceException
             Contract.Ensures(!Contract.Result<Period>().HasDateComponent);
 
-            // ReSharper disable once AssignNullToNotNullAttribute
-            delta = delta.Normalize();
+            // ReSharper disable once PossibleNullReferenceException
+            Period delta = Period.Between(start, end).Normalize();
             Contract.Assert(delta != null);
-
-            if (delta.IsNegative(new LocalTime().LocalDateTime))
-                throw new ArgumentOutOfRangeException();
+            Contract.Assert(!delta.HasDateComponent);
 
             // ReSharper disable AssignNullToNotNullAttribute
-            if (delta.Months > 0 ||
-                delta.Years > 0 ||
-                delta.Weeks > 0 ||
-                delta.Days > 0 ||
-                delta.Hours > 0)
+            if (delta.Hours > 0)
                 return Period.FromHours(1);
             if (delta.Minutes > 0)
                 return Period.FromMinutes(1);
@@ -101,21 +99,6 @@ namespace WebApplications.Utilities.Scheduling.Ranges
                 return Period.FromMilliseconds(1);
             return Period.FromTicks(1);
             // ReSharper restore AssignNullToNotNullAttribute
-        }
-
-        /// <summary>
-        /// Fixes the units of a period so that they only contain fixed length fields.
-        /// If the field contains months/years then the length of the period depends on the month/year.
-        /// </summary>
-        /// <param name="start">The start.</param>
-        /// <param name="period">The period.</param>
-        /// <returns></returns>
-        /// <remarks>Shouldn't be needed for LocalTimes but might as well have it for safety.</remarks>
-        [NotNull]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Period FixUnits(LocalTime start, [NotNull] Period period)
-        {
-            return Period.Between(start, start + period, PeriodUnits.AllTimeUnits);
         }
 
         /// <summary>
