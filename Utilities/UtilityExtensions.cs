@@ -2496,16 +2496,24 @@ namespace WebApplications.Utilities
         /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> UnionSingle<TSource>(
             [CanBeNull] this TSource first,
-            [NotNull] [InstantHandle] IEnumerable<TSource> second,
+            [NotNull] IEnumerable<TSource> second,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
             Contract.Requires(second != null);
+            return UnionSingleIterator(first, second, comparer ?? EqualityComparer<TSource>.Default);
+        }
 
+        [NotNull]
+        private static IEnumerable<TSource> UnionSingleIterator<TSource>(
+            [CanBeNull] TSource first,
+            [NotNull] IEnumerable<TSource> second,
+            [NotNull] IEqualityComparer<TSource> comparer)
+        {
             yield return first;
 
-            if (comparer == null) comparer = EqualityComparer<TSource>.Default;
             foreach (TSource element in second)
                 if (!comparer.Equals(element, first))
                     yield return element;
@@ -2523,14 +2531,22 @@ namespace WebApplications.Utilities
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> UnionSingle<TSource>(
-            [NotNull] [InstantHandle] this IEnumerable<TSource> first,
+            [NotNull] this IEnumerable<TSource> first,
             [CanBeNull] TSource last,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
             Contract.Requires(first != null);
+            return UnionSingleIterator(first, last, comparer ?? EqualityComparer<TSource>.Default);
+        }
 
-            if (comparer == null) comparer = EqualityComparer<TSource>.Default;
+        [NotNull]
+        private static IEnumerable<TSource> UnionSingleIterator<TSource>(
+            [NotNull] this IEnumerable<TSource> first,
+            [CanBeNull] TSource last,
+            [NotNull] IEqualityComparer<TSource> comparer)
+        {
             foreach (TSource element in first)
                 if (!comparer.Equals(element, last))
                     yield return element;
@@ -2549,16 +2565,14 @@ namespace WebApplications.Utilities
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> Prepend<TSource>(
-            [NotNull] [InstantHandle] this IEnumerable<TSource> sequence,
+            [NotNull] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource first)
         {
             Contract.Requires(sequence != null);
 
-            yield return first;
-
-            foreach (TSource element in sequence)
-                yield return element;
+            return PrependIterator(sequence, first);
         }
 
         /// <summary>
@@ -2572,12 +2586,21 @@ namespace WebApplications.Utilities
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> PrependTo<TSource>(
             [CanBeNull] this TSource first,
-            [NotNull] [InstantHandle] IEnumerable<TSource> sequence)
+            [NotNull] IEnumerable<TSource> sequence)
         {
             Contract.Requires(sequence != null);
 
+            return PrependIterator(sequence, first);
+        }
+
+        [NotNull]
+        private static IEnumerable<TSource> PrependIterator<TSource>(
+            [NotNull] IEnumerable<TSource> sequence,
+            [CanBeNull] TSource first)
+        {
             yield return first;
 
             foreach (TSource element in sequence)
@@ -2595,16 +2618,15 @@ namespace WebApplications.Utilities
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> Append<TSource>(
-            [NotNull] [InstantHandle] this IEnumerable<TSource> sequence,
+            [NotNull] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource last)
         {
             Contract.Requires(sequence != null);
 
-            foreach (TSource element in sequence)
-                yield return element;
 
-            yield return last;
+            return AppendIterator(sequence, last);
         }
 
         /// <summary>
@@ -2618,18 +2640,27 @@ namespace WebApplications.Utilities
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> AppendTo<TSource>(
             [CanBeNull] this TSource last,
-            [NotNull] [InstantHandle] IEnumerable<TSource> sequence)
+            [NotNull] IEnumerable<TSource> sequence)
         {
             Contract.Requires(sequence != null);
 
+            return AppendIterator(sequence, last);
+        }
+
+        [NotNull]
+        private static IEnumerable<TSource> AppendIterator<TSource>(
+            [NotNull] IEnumerable<TSource> sequence,
+            [CanBeNull] TSource last)
+        {
             foreach (TSource element in sequence)
                 yield return element;
 
             yield return last;
         }
-        #endregion
+            #endregion
 
         #region HasAtLeast/HasExact
         /// <summary>
@@ -2644,6 +2675,13 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(source != null);
             Contract.Requires(count > 0);
+
+            ICollection<TSource> collection1 = source as ICollection<TSource>;
+            if (collection1 != null)
+                return collection1.Count >= count;
+            ICollection collection2 = source as ICollection;
+            if (collection2 != null)
+                return collection2.Count >= count;
 
             foreach (TSource item in source)
             {
@@ -2672,6 +2710,13 @@ namespace WebApplications.Utilities
             Contract.Requires(count > 0);
             Contract.Requires(predicate != null);
 
+            ICollection<TSource> collection1 = source as ICollection<TSource>;
+            if (collection1 != null && collection1.Count < count)
+                return false;
+            ICollection collection2 = source as ICollection;
+            if (collection2 != null && collection2.Count < count)
+                return false;
+
             foreach (TSource item in source)
                 if (predicate(item))
                 {
@@ -2694,6 +2739,13 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(source != null);
             Contract.Requires(count > 0);
+
+            ICollection<TSource> collection1 = source as ICollection<TSource>;
+            if (collection1 != null)
+                return collection1.Count == count;
+            ICollection collection2 = source as ICollection;
+            if (collection2 != null)
+                return collection2.Count == count;
 
             foreach (TSource item in source)
             {
@@ -2720,6 +2772,13 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(source != null);
             Contract.Requires(count > 0);
+
+            ICollection<TSource> collection1 = source as ICollection<TSource>;
+            if (collection1 != null && collection1.Count < count)
+                return false;
+            ICollection collection2 = source as ICollection;
+            if (collection2 != null && collection2.Count < count)
+                return false;
 
             foreach (TSource item in source)
                 if (predicate(item))

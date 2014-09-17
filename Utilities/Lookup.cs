@@ -27,6 +27,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -37,8 +38,7 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The type of the T key.</typeparam>
     /// <typeparam name="TElement">The type of the T element.</typeparam>
-    // TODO IReadOnlyLookup<,> interface that has the TryGet method?
-    public class Lookup<TKey, TElement> : ILookup<TKey, TElement>
+    public class Lookup<TKey, TElement> : IReadOnlyLookup<TKey, TElement>
     {
         /// <summary>
         /// The underlying data.
@@ -53,7 +53,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="capacity">The capacity.</param>
         /// <param name="comparer">The comparer.</param>
-        public Lookup(int capacity = 0, IEqualityComparer<TKey> comparer = null)
+        public Lookup(int capacity = 0, [CanBeNull] IEqualityComparer<TKey> comparer = null)
         {
             _data = new Dictionary<TKey, List<TElement>>(capacity, comparer);
         }
@@ -77,7 +77,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Gets the <see cref="IEnumerable{" /> with the specified key.
+        /// Gets the <see cref="IEnumerable{T}" /> with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>IEnumerable{.</returns>
@@ -86,6 +86,7 @@ namespace WebApplications.Utilities
             get
             {
                 List<TElement> value;
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return _data.TryGetValue(key, out value)
                     ? value
                     : Enumerable.Empty<TElement>();
@@ -130,7 +131,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
         {
-            return _data.Select(kvp => (IGrouping<TKey, TElement>) new Grouping<TKey, TElement>(kvp)).GetEnumerator();
+            return _data.Select(kvp => (IGrouping<TKey, TElement>)new Grouping<TKey, TElement>(kvp)).GetEnumerator();
         }
 
         /// <summary>
@@ -149,12 +150,14 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="element">The element.</param>
-        public void Add(TKey key, TElement element)
+        [PublicAPI]
+        public void Add([NotNull] TKey key, TElement element)
         {
             List<TElement> list;
             if (!_data.TryGetValue(key, out list))
                 _data[key] = list = new List<TElement>();
             _valuesCount++;
+            // ReSharper disable once PossibleNullReferenceException
             list.Add(element);
         }
 
@@ -162,12 +165,15 @@ namespace WebApplications.Utilities
         /// Adds the specified key value pair.
         /// </summary>
         /// <param name="keyValuePair">The key value pair.</param>
+        [PublicAPI]
         public void Add(KeyValuePair<TKey, TElement> keyValuePair)
         {
+            Contract.Requires(!ReferenceEquals(keyValuePair.Key, null));
             List<TElement> list;
             if (!_data.TryGetValue(keyValuePair.Key, out list))
                 _data[keyValuePair.Key] = list = new List<TElement>();
             _valuesCount++;
+            // ReSharper disable once PossibleNullReferenceException
             list.Add(keyValuePair.Value);
         }
 
@@ -176,12 +182,14 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="elements">The elements.</param>
-        public void AddRange(TKey key, [NotNull] IEnumerable<TElement> elements)
+        [PublicAPI]
+        public void AddRange([NotNull] TKey key, [NotNull][InstantHandle]  IEnumerable<TElement> elements)
         {
             List<TElement> list;
             if (!_data.TryGetValue(key, out list))
                 _data[key] = list = new List<TElement>();
             _valuesCount++;
+            // ReSharper disable once PossibleNullReferenceException
             list.AddRange(elements);
         }
 
@@ -189,7 +197,8 @@ namespace WebApplications.Utilities
         /// Adds the specified values.
         /// </summary>
         /// <param name="elements">The elements.</param>
-        public void AddRange(IEnumerable<KeyValuePair<TKey, TElement>> elements)
+        [PublicAPI]
+        public void AddRange([NotNull] [InstantHandle] IEnumerable<KeyValuePair<TKey, TElement>> elements)
         {
             foreach (KeyValuePair<TKey, TElement> kvp in elements)
                 Add(kvp);
@@ -199,12 +208,14 @@ namespace WebApplications.Utilities
         /// Removes all elements corresponding to a given key.
         /// </summary>
         /// <param name="key">The key</param>
+        [PublicAPI]
         public bool Remove([NotNull] TKey key)
         {
             List<TElement> list;
             if (!_data.TryGetValue(key, out list))
                 return false;
 
+            // ReSharper disable once PossibleNullReferenceException
             _valuesCount -= list.Count;
             _data.Remove(key);
             return true;
@@ -215,10 +226,12 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key</param>
         /// <param name="element">The element</param>
+        [PublicAPI]
         public bool Remove([NotNull] TKey key, [NotNull] TElement element)
         {
             List<TElement> list;
             if (!_data.TryGetValue(key, out list) ||
+                // ReSharper disable once PossibleNullReferenceException
                 !list.Remove(element))
                 return false;
 
@@ -228,6 +241,15 @@ namespace WebApplications.Utilities
                 _data.Remove(key);
 
             return true;
+        }
+
+        /// <summary>
+        /// Removes all the keys and values from the lookup.
+        /// </summary>
+        [PublicAPI]
+        public void Clear()
+        {
+            _data.Clear();
         }
     }
 }
