@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities
@@ -223,11 +224,18 @@ namespace WebApplications.Utilities
         /// <exception cref="System.ArgumentOutOfRangeException">value;The value given is not in the graph</exception>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<T> GetAllDependencies([NotNull] T obj)
         {
             Contract.Requires<ArgumentNullException>(!ReferenceEquals(obj, null));
             Contract.Requires<ArgumentOutOfRangeException>(_all.Contains(obj), "The value given is not in the graph");
 
+            return GetAllDependenciesIterator(obj);
+        }
+
+        [NotNull]
+        private IEnumerable<T> GetAllDependenciesIterator([NotNull] T obj)
+        {
             HashSet<T> seen = new HashSet<T>(_comparer);
             Queue<T> queue = new Queue<T>();
             queue.Enqueue(obj);

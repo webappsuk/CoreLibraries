@@ -241,6 +241,7 @@
     <Compile Include="Formatting\ResolveDelegate.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
+    <Compile Include="IReadOnlyLookup.cs" />
     <Compile Include="Reflect\InfoHelper.cs" />
     <Compile Include="ThreadLocal.cs" />
     <Compile Include="TupleEnumerable.cs">

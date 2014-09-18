@@ -32,6 +32,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities
@@ -155,7 +156,6 @@ namespace WebApplications.Utilities
                     @continue));
         }
 
-        // todo: says that it takes an optional set of locals but it's a required field. 
         /// <summary>
         /// Takes an enumeration of expressions and locals, and returns the most compact single expression.
         /// </summary>
@@ -207,11 +207,18 @@ namespace WebApplications.Utilities
         /// <returns>IEnumerable{Expression}.</returns>
         [NotNull]
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Expression> UnBlockify([NotNull] this Expression expression)
         {
             Contract.Requires(expression != null);
             Contract.Ensures(Contract.Result<IEnumerable<Expression>>() != null);
 
+            return UnBlockifyIterator(expression);
+        }
+
+        [NotNull]
+        private static IEnumerable<Expression> UnBlockifyIterator([NotNull] Expression expression)
+        {
             BlockExpression block = expression as BlockExpression;
             // Check we have a block.
             if (block == null)
