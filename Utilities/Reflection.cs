@@ -38,7 +38,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web.UI.WebControls;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Reflect;
 
@@ -90,7 +89,7 @@ namespace WebApplications.Utilities
         public static readonly Type[] EmptyTypes = new Type[0];
 
         /// <summary>
-        /// An empty type array.
+        /// An empty bool array.
         /// </summary>
         [NotNull]
         public static readonly bool[] EmptyBools = new bool[0];

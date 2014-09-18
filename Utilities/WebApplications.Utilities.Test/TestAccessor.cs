@@ -235,7 +235,7 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(5, tca.Count);
             Assert.IsFalse(tca.ContainsKey(kvp2.Key));
 
-            tca.Clear();
+            tca.Clear(false);
 
             Assert.AreEqual(4, tca.Count);
             Assert.IsFalse(tca.ContainsKey(kvp3.Key));

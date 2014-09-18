@@ -36,7 +36,7 @@ namespace WebApplications.Utilities.Test.Configuration
     {
         private const string NameUsedInAttribute = "Name used in attribute.";
 
-        // Technically the existance of this class is a test... if it compiles then the attribute is a valid registered attribute.
+        // Technically the existence of this class is a test... if it compiles then the attribute is a valid registered attribute.
 
 
         [TestMethod]

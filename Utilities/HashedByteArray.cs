@@ -52,7 +52,7 @@ namespace WebApplications.Utilities
         private const long LargePrime = 1125899906842597L;
 
         /// <summary>
-        /// A large prime number.
+        /// A small prime number.
         /// </summary>
         private const long SmallPrime = 397L;
 
@@ -205,7 +205,7 @@ namespace WebApplications.Utilities
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return _data.GetEnumerator();
         }
 
         /// <summary>

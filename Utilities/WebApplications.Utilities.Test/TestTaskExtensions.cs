@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Test
         public void TestContinueWithAll()
         {
             Random random = new Random();
-            //TODO: Check if there was any reason for performing this test a thousand times (and so taking over a minute to complete)
+            // TODO: Check if there was any reason for performing this test a thousand times (and so taking over a minute to complete)
             //Parallel.For(0, 1000, i =>
             //                          {
             int taskCount = random.Next(50);

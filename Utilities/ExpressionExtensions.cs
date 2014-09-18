@@ -127,8 +127,10 @@ namespace WebApplications.Utilities
                 enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
             }
             else
+            {
+                // TODO Translate?
                 throw new ArgumentException("The source enumerable is not of an enumerable type", "sourceEnumerable");
-            //TODO Translate?
+            }
 
             MethodInfo getEnumeratorMethod = enumerableType.GetMethod(
                 "GetEnumerator",
@@ -155,7 +157,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Takes an enumeration of expressions (and optional a set of locals), and returns the most compact single expression.
+        /// Takes an enumeration of expressions and locals, and returns the most compact single expression.
         /// </summary>
         /// <param name="expressions">The expressions.</param>
         /// <param name="locals">The locals.</param>
@@ -408,7 +410,7 @@ namespace WebApplications.Utilities
                         "parameters",
                         String.Format(
                             "The number of parameter replacement expressions '{0}' does not match the number of parameters in the lambda expression '{1}'.",
-                        //TODO Translate?
+                        // TODO Translate?
                             parameters.Length,
                             pcount));
                 }
