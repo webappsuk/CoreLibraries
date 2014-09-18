@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Test.Extensions
     [TestClass]
     public class TopologicalSortTests : UtilitiesTestBase
     {
-        //TODO: cyclic dependancies, duplicate elements, duplicate edges, edges referencing unlisted elements
+        // TODO: cyclic dependencies, duplicate elements, duplicate edges, edges referencing unlisted elements
 
         [TestMethod]
         public void TopologicalSortEdges_SimpleDependancyChainOfValueTypes_CountMatchesInput()

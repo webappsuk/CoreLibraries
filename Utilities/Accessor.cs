@@ -166,6 +166,12 @@ namespace WebApplications.Utilities
         /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         public abstract void Clear();
+
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <param name="all">If set to <see langword="true" /> removes all the items; otherwise only the none field or property items.</param>
+        public abstract void Clear(bool all);
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
         /// </summary>
@@ -453,7 +459,7 @@ namespace WebApplications.Utilities
         /// <param name="supportsNew">if set to <see langword="true" /> unknown keys are supported and stored.</param>
         /// <param name="isCaseSensitive">if set to 
         /// <see langword="true" /> then keys are case sensitive;
-        /// otherwise matching keys (due to case insensitivity) will resultin missing accessors so this setting should be used with caution.</param>
+        /// otherwise matching keys (due to case insensitivity) will result in missing accessors so this setting should be used with caution.</param>
         public Accessor(
             [CanBeNull] T instance,
             bool includeFields = true,
@@ -543,13 +549,34 @@ namespace WebApplications.Utilities
         /// </summary>
         public override void Clear()
         {
-            if (!_supportsNew)
+            if (_dictionary.Values.Any(o => o is Access))
+            {
+                throw new InvalidOperationException("Can't clear away property or field accessors");
+            }
+
+            _dictionary.Clear();
+        }
+
+        /// <summary>
+        /// Removes elements from the collection that aren't accessors to properties or fields.
+        /// </summary>
+        public override void Clear(bool all)
+        {
+            if (all)
+            {
+                Clear();
                 return;
+            }
+
+            if (!_supportsNew) return;
+
             foreach (string key in _dictionary
                 .Where(kvp => !(kvp.Value is Access))
                 .Select(kvp => kvp.Key)
                 .ToArray())
+            {
                 _dictionary.Remove(key);
+            }
         }
 
         /// <summary>

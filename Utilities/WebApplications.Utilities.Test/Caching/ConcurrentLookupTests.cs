@@ -37,27 +37,7 @@ namespace WebApplications.Utilities.Test.Caching
     [TestClass]
     public class ConcurrentLookupTests : UtilitiesTestBase
     {
-        [TestMethod]
-        public void ConcurrentLookup_NoParameters_IsNotNull()
-        {
-            ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>();
-            Assert.IsNotNull(concurrentLookup);
-        }
 
-        [TestMethod]
-        public void ConcurrentLookup_NoCollectionParameter_IsNotNull()
-        {
-            ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(0, 0, null, null);
-            Assert.IsNotNull(concurrentLookup);
-        }
-
-        [TestMethod]
-        public void ConcurrentLookup_WithInitialCollection_IsNotNull()
-        {
-            ConcurrentLookup<Guid, String> concurrentLookup =
-                new ConcurrentLookup<Guid, string>(Enumerable.Empty<KeyValuePair<Guid, string>>(), 0, 0, null, null);
-            Assert.IsNotNull(concurrentLookup);
-        }
 
         [TestMethod]
         public void Count_InitialCollectionContainsNoDuplicates_MatchesInitialCollection()

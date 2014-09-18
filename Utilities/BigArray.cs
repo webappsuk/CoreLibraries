@@ -178,7 +178,7 @@ namespace WebApplications.Utilities
         }
 
         /// <inheritdoc/>
-        public void CopyTo(Array array, int index)
+        void ICollection.CopyTo(Array array, int index)
         {
             throw new NotSupportedException();
         }
@@ -208,7 +208,7 @@ namespace WebApplications.Utilities
         }
 
         /// <inheritdoc/>
-        public int Add(object value)
+        int IList.Add(object value)
         {
             throw new NotSupportedException();
         }
@@ -247,19 +247,19 @@ namespace WebApplications.Utilities
         }
 
         /// <inheritdoc/>
-        public void Insert(int index, object value)
+        void IList.Insert(int index, object value)
         {
             throw new NotSupportedException();
         }
 
         /// <inheritdoc/>
-        public void Remove(object value)
+        void IList.Remove(object value)
         {
             throw new NotSupportedException();
         }
 
         /// <inheritdoc/>
-        public void RemoveAt(int index)
+        void IList.RemoveAt(int index)
         {
             throw new NotSupportedException();
         }
@@ -267,8 +267,20 @@ namespace WebApplications.Utilities
         /// <inheritdoc/>
         object IList.this[int index]
         {
-            get { return this[(ulong) index]; }
-            set { this[(ulong) index] = (T) value; }
+            get
+            {
+                Contract.Requires<IndexOutOfRangeException>(index >= 0);
+                return this[(ulong) index];
+            }
+            set
+            {
+                if (index < 0)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+
+                this[(ulong) index] = (T) value;
+            }
         }
 
         /// <inheritdoc/>
@@ -351,7 +363,6 @@ namespace WebApplications.Utilities
         {
             if (comparer == null)
                 throw new ArgumentNullException("comparer");
-            Contract.EndContractBlock();
 
             int ret = 0;
 

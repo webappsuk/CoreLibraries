@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.Test.Configuration
 {
@@ -44,7 +45,7 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             if (types == null ||
                 !types.Any())
-                throw new ArgumentException("The list of types to choose from must contain at least one item.");
+                Assert.Fail("The list of types to choose from must contain at least one item.");
             return types.ElementAt(Random.Next(0, types.Count()));
         }
 

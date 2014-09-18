@@ -127,6 +127,11 @@ namespace WebApplications.Utilities.Configuration
         private static T _active;
 
         /// <summary>
+        /// Holds whether or not a default active configuration has been set.
+        /// </summary>
+        private static bool _isSet;
+
+        /// <summary>
         ///   Gets the name of the configuration section.
         /// </summary>
         /// <remarks>
@@ -160,15 +165,23 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
-                return _active ?? GetConfiguration();
+                if (_active == null)
+                {
+                    _active = GetConfiguration();
+                    _active.SetReadOnly();
+                }
+                return _active;
             }
             set
             {
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse, HeuristicUnreachableCode
                 if (value == null)
+                {
                     value = GetConfiguration();
+                    _isSet = false;
+                }
 
-                if (Equals(_active, value))
+                else if (Equals(_active, value))
                     return;
 
                 T oldConfiguration = _active;
@@ -176,9 +189,12 @@ namespace WebApplications.Utilities.Configuration
                 _active.SetReadOnly();
 
                 ConfigurationChangedEventHandler onChanged = Changed;
-                if ((oldConfiguration != null) &&
+                if (_isSet &&
+                    (oldConfiguration != null) &&
                     (onChanged != null))
                     onChanged(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
+
+                _isSet = true;
             }
         }
 

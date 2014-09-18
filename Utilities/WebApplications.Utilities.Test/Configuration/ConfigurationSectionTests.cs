@@ -238,32 +238,6 @@ namespace WebApplications.Utilities.Test.Configuration
                 "The IsReadOnly method for a previous value of Active should be false after the configuration section is reloaded by setting Active to null.");
         }
 
-        /*
-         * This code relies upon certain sections being present in the App.config, and so are being removed.
-         * 
-        class TestConfigurationSectionWhichIsPresentInConfigFile : ConfigurationSection<TestConfigurationSectionWhichIsPresentInConfigFile>
-        {
-            [ConfigurationProperty("someAttribute", DefaultValue = "A String")]
-            public string someAttribute
-            {
-                get { return GetProperty<string>("someAttribute"); }
-                set { SetProperty("someAttribute", value); }
-            }
-        }
-
-        [TestMethod]
-        public void IsReadOnly_AfterExistingSectionIsReloaded_ReturnsFalse()
-        {
-            TestConfigurationSectionWhichIsPresentInConfigFile.Active = null; // Load the section (to prove this works even when the contents of the section will be identical)
-            Assert.AreEqual("some value", TestConfigurationSectionWhichIsPresentInConfigFile.Active.someAttribute); // Test that the data is loaded correctly as this value is given in App.config
-            TestConfigurationSectionWhichIsPresentInConfigFile oldConfigurationSection = TestConfigurationSectionWhichIsPresentInConfigFile.Active; // Store this old instantiation for later
-
-            TestConfigurationSectionWhichIsPresentInConfigFile.Active = null; // Force the section to be reloaded
-
-            Assert.IsTrue(oldConfigurationSection.IsReadOnly(), "The IsReadOnly method for a previous value of Active should be false after the configuration section is reloaded by setting Active to null.");
-        }
-        */
-
         [TestMethod]
         public void Changed_ActiveSetToNewValueForFirstTimeEver_EventNotCalled()
         {
