@@ -2660,7 +2660,30 @@ namespace WebApplications.Utilities
 
             yield return last;
         }
-            #endregion
+
+        /// <summary>
+        /// Concatenates two sequences.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="first">The first sequence to concatenate.</param>
+        /// <param name="second">The second sequence to concatenate.</param>
+        /// <returns></returns>
+        [NotNull, MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<TSource> Concat<TSource>([NotNull] this IEnumerable<TSource> first, [NotNull] params TSource[] second)
+        {
+            Contract.Requires(first != null);
+            Contract.Requires(second != null);
+            return ConcatIterator(first, second);
+        }
+
+        [NotNull]
+        private static IEnumerable<TSource> ConcatIterator<TSource>([NotNull] IEnumerable<TSource> first, [NotNull] IEnumerable<TSource> second)
+        {
+            foreach (TSource element in first) yield return element;
+            foreach (TSource element in second) yield return element;
+        }
+
+        #endregion
 
         #region HasAtLeast/HasExact
         /// <summary>
