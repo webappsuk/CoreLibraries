@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Ranges;
@@ -39,7 +40,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
     public class InstantRange : Range<Instant, Duration>, IFormattable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InstantRange"/> class using the specified start date and end date.
+        /// Initializes a new instance of the <see cref="InstantRange"/> class using the specified start and end instants.
         /// </summary>
         /// <param name="start">The start instant.</param>
         /// <param name="end">The end instant.</param>
@@ -52,6 +53,20 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstantRange" /> class using the specified start instant and duration.
+        /// </summary>
+        /// <param name="start">The start instant.</param>
+        /// <param name="duration">The duration.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="duration" /> was negative.</exception>
+        /// <remarks>
+        /// The step size is 00:00:01.
+        /// </remarks>
+        public InstantRange(Instant start, Duration duration)
+            : base(start, start + duration, DurationRange.AutoStep(duration))
+        {
+            Contract.Requires<ArgumentOutOfRangeException>(duration >= Duration.Zero);
+        }
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="InstantRange"/> class using the specified start instant,
@@ -60,9 +75,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="start">The start instant.</param>
         /// <param name="end">The end instant.</param>
         /// <param name="step">The step between each instant in the range.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        ///   The <paramref name="start"/> was after the <see cref="DateTime">date</see> specified for
-        /// <paramref name="end"/>.
+        /// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="start"/> was after the <see cref="DateTime">date</see> specified for <paramref name="end"/>.
         /// </exception>
         public InstantRange(Instant start, Instant end, Duration step)
             : base(start, end, step)
@@ -70,11 +83,26 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InstantRange"/> class.
+        /// Initializes a new instance of the 
+        /// <see cref="InstantRange" /> class using the specified start instant,
+        /// end instant and step size.
+        /// </summary>
+        /// <param name="start">The start instant.</param>
+        /// <param name="duration">The duration.</param>
+        /// <param name="step">The step between each instant in the range.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The <paramref name="duration" /> was negative.</exception>
+        public InstantRange(Instant start, Duration duration, Duration step)
+            : base(start, start + duration, step)
+        {
+            Contract.Requires<ArgumentOutOfRangeException>(duration >= Duration.Zero);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InstantRange"/> class using the specified zoned date time range.
         /// </summary>
         /// <param name="zonedDateTimeRange">The zoned date time range.</param>
-        public InstantRange(ZonedDateTimeRange zonedDateTimeRange)
-            : base(zonedDateTimeRange.Start.ToInstant(), zonedDateTimeRange.End.ToInstant(),zonedDateTimeRange.Step)
+        public InstantRange([NotNull] ZonedDateTimeRange zonedDateTimeRange)
+            : base(zonedDateTimeRange.Start.ToInstant(), zonedDateTimeRange.End.ToInstant(), zonedDateTimeRange.Step)
         {
         }
 

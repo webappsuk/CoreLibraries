@@ -32,6 +32,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Ranges;
+using WebApplications.Utilities.Scheduling.Ranges;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling
@@ -663,6 +665,7 @@ namespace WebApplications.Utilities.Scheduling
         }
         #endregion
 
+        #region Floor/Ceiling
         /// <summary>
         /// Floors the specified instant to the second.
         /// </summary>
@@ -752,6 +755,7 @@ namespace WebApplications.Utilities.Scheduling
                 ((instant.Ticks * NodaConstants.TicksPerHour - 1) / NodaConstants.TicksPerHour) *
                 NodaConstants.TicksPerHour);
         }
+        #endregion
 
         #region Periods
         /// <summary>

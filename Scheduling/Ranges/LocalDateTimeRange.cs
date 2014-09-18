@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Ranges;
@@ -41,7 +40,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
     public class LocalDateTimeRange : Range<LocalDateTime, Period>, IFormattable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalDateTimeRange"/> class.
+        /// Initializes a new instance of the <see cref="LocalDateTimeRange"/> class using the specified start and end date time.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
@@ -51,16 +50,43 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalDateTimeRange"/> class.
+        /// Initializes a new instance of the <see cref="LocalDateTimeRange" /> class using the specified start date time and duration.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="duration">The duration.</param>
+        public LocalDateTimeRange(LocalDateTime start, [NotNull] Period duration)
+            : base(start, start + duration, AutoStep(start, start + duration))
+        {
+            Contract.Requires<ArgumentNullException>(duration != null);
+            Contract.Requires<ArgumentOutOfRangeException>(duration.IsPositive(start));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalDateTimeRange"/> class using the specified start date time, end date time and step.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         /// <param name="step">The step.</param>
         public LocalDateTimeRange(LocalDateTime start, LocalDateTime end, [NotNull] Period step)
-            : base(start, end, step)
+            : base(start, end, step.Normalize())
         {
-            Contract.Requires(step != null);
-            Contract.Requires(step.IsPositive(start));
+            Contract.Requires<ArgumentNullException>(step != null);
+            Contract.Requires<ArgumentOutOfRangeException>(step.IsPositive(start));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalDateTimeRange" /> class using the specified start date time, duration and step.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="duration">The duration.</param>
+        /// <param name="step">The step.</param>
+        public LocalDateTimeRange(LocalDateTime start, [NotNull] Period duration, [NotNull] Period step)
+            : base(start, start + duration, step.Normalize())
+        {
+            Contract.Requires<ArgumentNullException>(step != null);
+            Contract.Requires<ArgumentNullException>(duration != null);
+            Contract.Requires<ArgumentOutOfRangeException>(step.IsPositive(start));
+            Contract.Requires<ArgumentOutOfRangeException>(duration.IsPositive(start));
         }
 
         /// <summary>
@@ -98,6 +124,61 @@ namespace WebApplications.Utilities.Scheduling.Ranges
                 return Period.FromMilliseconds(1);
             return Period.FromTicks(1);
             // ReSharper restore AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Converts this range to a <see cref="DateTimeRange"/> with a <see cref="DateTime.Kind" /> of <see cref="DateTimeKind.Unspecified"/>.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public DateTimeRange ToDateTimeRangeUnspecified()
+        {
+            return new DateTimeRange(
+                Start.ToDateTimeUnspecified(),
+                End.ToDateTimeUnspecified(),
+                // ReSharper disable once PossibleNullReferenceException
+                new TimeSpan(Period.Between(Start, Start + Step, PeriodUnits.Ticks).Ticks));
+        }
+
+        /// <summary>
+        /// Gets a <see cref="LocalDateRange"/> of the date components of this <see cref="LocalDateTimeRange"/>. 
+        /// The step will be rounded to the nearest day, rounded up to 1 day if less.
+        /// </summary>
+        /// <value>
+        /// The date range.
+        /// </value>
+        [NotNull]
+        [PublicAPI]
+        public LocalDateRange DateRange
+        {
+            get { return new LocalDateRange(Start.Date, End.Date, DateStep()); }
+        }
+
+        /// <summary>
+        /// Rounds the step to the nearest day, rounding up to 1 day if less.
+        /// </summary>
+        /// <returns></returns>
+        [NotNull]
+        private Period DateStep()
+        {
+            // ReSharper disable PossibleNullReferenceException
+            PeriodBuilder step = (Step + Period.FromTicks(NodaConstants.TicksPerStandardDay >> 1)).Normalize().ToBuilder();
+            // ReSharper restore PossibleNullReferenceException
+
+            Contract.Assert(step != null);
+
+            step.Ticks = 0;
+            step.Milliseconds = 0;
+            step.Seconds = 0;
+            step.Minutes = 0;
+            step.Hours = 0;
+
+            Period rounded = step.Build();
+            Contract.Assert(rounded != null);
+            Contract.Assert(!rounded.HasTimeComponent);
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return rounded.IsZero() ? Period.FromDays(1) : rounded;
         }
 
         /// <summary>

@@ -40,7 +40,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
     public class LocalTimeRange : Range<LocalTime, Period>, IFormattable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalTimeRange"/> class.
+        /// Initializes a new instance of the <see cref="LocalTimeRange"/> class using the specified start and end times.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
@@ -51,7 +51,22 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalTimeRange"/> class.
+        /// Initializes a new instance of the <see cref="LocalTimeRange" /> class using the specified start time and duration.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="duration">The duration.</param>
+        public LocalTimeRange(LocalTime start, [NotNull] Period duration)
+            // ReSharper disable once AssignNullToNotNullAttribute
+            : base(start, start + duration, AutoStep(start, start + duration))
+        {
+            Contract.Requires<ArgumentNullException>(duration != null);
+            // ReSharper disable once PossibleNullReferenceException
+            Contract.Requires<ArgumentOutOfRangeException>(!duration.Normalize().HasDateComponent);
+            Contract.Requires<ArgumentOutOfRangeException>(duration.IsPositive(start.LocalDateTime));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalTimeRange"/> class using the specified start time, end time and step.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
@@ -59,10 +74,29 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         public LocalTimeRange(LocalTime start, LocalTime end, [NotNull] Period step)
             : base(start, end, step)
         {
-            Contract.Requires(step != null);
+            Contract.Requires<ArgumentNullException>(step != null);
             // ReSharper disable once PossibleNullReferenceException
-            Contract.Requires(!step.Normalize().HasDateComponent);
-            Contract.Requires(step.IsPositive(start.LocalDateTime));
+            Contract.Requires<ArgumentOutOfRangeException>(!step.Normalize().HasDateComponent);
+            Contract.Requires<ArgumentOutOfRangeException>(step.IsPositive(start.LocalDateTime));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalTimeRange" /> class using the specified start time, duration and step.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        /// <param name="duration">The duration.</param>
+        /// <param name="step">The step.</param>
+        public LocalTimeRange(LocalTime start, [NotNull] Period duration, [NotNull] Period step)
+            : base(start, start + duration, step)
+        {
+            Contract.Requires<ArgumentNullException>(step != null);
+            Contract.Requires<ArgumentNullException>(duration != null);
+            // ReSharper disable PossibleNullReferenceException
+            Contract.Requires<ArgumentOutOfRangeException>(!step.Normalize().HasDateComponent);
+            Contract.Requires<ArgumentOutOfRangeException>(!duration.Normalize().HasDateComponent);
+            // ReSharper restore PossibleNullReferenceException
+            Contract.Requires<ArgumentOutOfRangeException>(step.IsPositive(start.LocalDateTime));
+            Contract.Requires<ArgumentOutOfRangeException>(duration.IsPositive(start.LocalDateTime));
         }
 
         /// <summary>
@@ -99,6 +133,56 @@ namespace WebApplications.Utilities.Scheduling.Ranges
                 return Period.FromMilliseconds(1);
             return Period.FromTicks(1);
             // ReSharper restore AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Gets a <see cref="LocalDateTimeRange"/> with these local times, on January 1st 1970 in the ISO calendar.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public LocalDateTimeRange LocalDateTimeRange
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return new LocalDateTimeRange(Start.LocalDateTime, End.LocalDateTime, Step); }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="LocalDateTimeRange"/> from this local time range on the date given.
+        /// </summary>
+        /// <param name="date">The date to combine with the times in the range.</param>
+        [NotNull]
+        [PublicAPI]
+        public LocalDateTimeRange On(LocalDate date)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return new LocalDateTimeRange(Start.On(date), End.On(date), Step);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="LocalDateTimeRange" /> from this local time range on the date given.
+        /// </summary>
+        /// <param name="startDate">The date to combine with the start time.</param>
+        /// <param name="endDate">The date to combine with the end time.</param>
+        [NotNull]
+        [PublicAPI]
+        public LocalDateTimeRange On(LocalDate startDate, LocalDate endDate)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return new LocalDateTimeRange(Start.On(startDate), End.On(endDate), Step);
+        }
+
+        /// <summary>
+        /// Converts this range to a <see cref="TimeSpanRange"/>.
+        /// </summary>
+        /// <returns></returns>
+        [NotNull]
+        public TimeSpanRange ToTimeSpanRange()
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            return new TimeSpanRange(
+                new TimeSpan(Start.TickOfDay),
+                new TimeSpan(End.TickOfDay),
+                Step.ToDuration().ToTimeSpan());
         }
 
         /// <summary>

@@ -65,9 +65,10 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// </summary>
         /// <param name="instantRange">The instant range.</param>
         /// <param name="dateTimeZone">The date time zone.</param>
-        public ZonedDateTimeRange([NotNull]InstantRange instantRange, DateTimeZone dateTimeZone)
+        public ZonedDateTimeRange([NotNull]InstantRange instantRange, [NotNull] DateTimeZone dateTimeZone)
             : base(new ZonedDateTime(instantRange.Start, dateTimeZone), new ZonedDateTime(instantRange.End, dateTimeZone), instantRange.Step)
         {
+            Contract.Requires<ArgumentNullException>(dateTimeZone != null);
         }
 
         /// <summary>
@@ -76,9 +77,11 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="instantRange">The instant range.</param>
         /// <param name="startDateTimeZone">The start date time zone.</param>
         /// <param name="endDateTimeZone">The end date time zone.</param>
-        public ZonedDateTimeRange([NotNull]InstantRange instantRange, DateTimeZone startDateTimeZone, DateTimeZone endDateTimeZone)
+        public ZonedDateTimeRange([NotNull]InstantRange instantRange, [NotNull] DateTimeZone startDateTimeZone, [NotNull] DateTimeZone endDateTimeZone)
             : base(new ZonedDateTime(instantRange.Start, startDateTimeZone), new ZonedDateTime(instantRange.End, endDateTimeZone))
         {
+            Contract.Requires<ArgumentNullException>(startDateTimeZone != null);
+            Contract.Requires<ArgumentNullException>(endDateTimeZone != null);
         }
 
         /// <summary>
@@ -87,9 +90,10 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         /// <param name="dateTimeZone">The date time zone.</param>
-        public ZonedDateTimeRange(Instant start, Instant end, DateTimeZone dateTimeZone)
+        public ZonedDateTimeRange(Instant start, Instant end, [NotNull] DateTimeZone dateTimeZone)
             : base(new ZonedDateTime(start, dateTimeZone), new ZonedDateTime(end, dateTimeZone))
         {
+            Contract.Requires<ArgumentNullException>(dateTimeZone != null);
         }
 
         /// <summary>
@@ -99,9 +103,10 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         /// <param name="dateTimeZone">The date time zone.</param>
         /// <param name="step">The step.</param>
-        public ZonedDateTimeRange(Instant start, Instant end, DateTimeZone dateTimeZone, Duration step)
+        public ZonedDateTimeRange(Instant start, Instant end, [NotNull] DateTimeZone dateTimeZone, Duration step)
             : base(new ZonedDateTime(start, dateTimeZone), new ZonedDateTime(end, dateTimeZone), step)
         {
+            Contract.Requires<ArgumentNullException>(dateTimeZone != null);
         }
 
         /// <summary>
@@ -111,9 +116,11 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="startDateTimeZone">The start date time zone.</param>
         /// <param name="end">The end.</param>
         /// <param name="endDateTimeZone">The end date time zone.</param>
-        public ZonedDateTimeRange(Instant start, DateTimeZone startDateTimeZone, Instant end, DateTimeZone endDateTimeZone)
+        public ZonedDateTimeRange(Instant start, [NotNull] DateTimeZone startDateTimeZone, Instant end, [NotNull] DateTimeZone endDateTimeZone)
             : base(new ZonedDateTime(start, startDateTimeZone), new ZonedDateTime(end, endDateTimeZone))
         {
+            Contract.Requires<ArgumentNullException>(startDateTimeZone != null);
+            Contract.Requires<ArgumentNullException>(endDateTimeZone != null);
         }
 
         /// <summary>
@@ -124,9 +131,11 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <param name="end">The end.</param>
         /// <param name="endDateTimeZone">The end date time zone.</param>
         /// <param name="step">The step.</param>
-        public ZonedDateTimeRange(Instant start, DateTimeZone startDateTimeZone, Instant end, DateTimeZone endDateTimeZone, Duration step)
+        public ZonedDateTimeRange(Instant start, [NotNull] DateTimeZone startDateTimeZone, Instant end, [NotNull] DateTimeZone endDateTimeZone, Duration step)
             : base(new ZonedDateTime(start, startDateTimeZone), new ZonedDateTime(end, endDateTimeZone), step)
         {
+            Contract.Requires<ArgumentNullException>(startDateTimeZone != null);
+            Contract.Requires<ArgumentNullException>(endDateTimeZone != null);
         }
 
         /// <summary>
@@ -136,7 +145,7 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator InstantRange(ZonedDateTimeRange zonedDateTimeRange)
+        public static implicit operator InstantRange([NotNull] ZonedDateTimeRange zonedDateTimeRange)
         {
             return new InstantRange(zonedDateTimeRange);
         }
