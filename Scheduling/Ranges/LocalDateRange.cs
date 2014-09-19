@@ -126,6 +126,40 @@ namespace WebApplications.Utilities.Scheduling.Ranges
         }
 
         /// <summary>
+        /// Gets the number of days between the start date and the end date, inclusively.
+        /// This will return 1 where the start and end date are equal.
+        /// </summary>
+        /// <remarks>
+        /// This is always the same as <see cref="Nights"/> + 1.
+        /// </remarks>
+        [PublicAPI]
+        public int Days
+        {
+            get
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                return (int)Period.Between(Start, End, PeriodUnits.Days).Days + 1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of nights in the date range.
+        /// Where the start and end date are equal this will return 0.
+        /// </summary>
+        /// <remarks>
+        /// This is always the same as <see cref="Days"/> - 1.
+        /// </remarks>
+        [PublicAPI]
+        public int Nights
+        {
+            get
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                return (int)Period.Between(Start, End, PeriodUnits.Days).Days;
+            }
+        }
+
+        /// <summary>
         /// Given a start and end automatically returns a sensible step size.
         /// </summary>
         /// <param name="start">The start.</param>
