@@ -118,8 +118,9 @@
       <HintPath>..\packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5368.27838\lib\net451\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities, Version=5.1.5375.19656, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5375.19656\lib\net451\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -175,7 +176,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\webapplications.utilities.5.1.5368.27838\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5368.27838\tools\webapplicationssignature.targets') AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5375.19656\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5375.19656\tools\webapplicationssignature.targets') AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
