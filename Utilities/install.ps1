@@ -22,5 +22,5 @@ $msbuild.Xml.Imports | Where-Object {$_.Project.EndsWith("webapplicationssignatu
 
 # Add import to targets file
 $import = $msbuild.Xml.AddImport($relativePath)
-$import.Condition = "Exists('$relativePath') AND '`$(Configuration)|`$(Platform)' == 'Release|AnyCPU'"
+$import.Condition = "Exists('$relativePath') AND '`$(Configuration)' == 'Release'"
 [string]::Format("Added import of '{0}'.", $relativePath )
