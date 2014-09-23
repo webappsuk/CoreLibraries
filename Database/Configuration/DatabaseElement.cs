@@ -216,8 +216,9 @@ namespace WebApplications.Utilities.Database.Configuration
                             }).ToList();
             }
 
+            if (ignoreValidationErrors == null) ignoreValidationErrors = false;
+            if (checkOrder == null) checkOrder = false;
             if (constraintMode == null) constraintMode = TypeConstraintMode.Warn;
-
 
             if (connectionElement == null)
                 throw new LoggingException(

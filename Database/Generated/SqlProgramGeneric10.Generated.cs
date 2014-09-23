@@ -1477,6 +1477,8 @@ namespace WebApplications.Utilities.Database.Configuration
                 }
             }
             
+            if (ignoreValidationErrors == null) ignoreValidationErrors = false;
+            if (checkOrder == null) checkOrder = false;
             if (constraintMode == null) constraintMode = TypeConstraintMode.Warn;
 
             LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
