@@ -1,6 +1,4 @@
-﻿ 
- 
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -89,7 +87,7 @@ namespace WebApplications.Utilities
             item2 = tuple.Item2;
         }
     }
-	#endregion
+    #endregion
     #region List with 3 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3}"/>.
@@ -151,7 +149,7 @@ namespace WebApplications.Utilities
             item3 = tuple.Item3;
         }
     }
-	#endregion
+    #endregion
     #region List with 4 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4}"/>.
@@ -219,7 +217,7 @@ namespace WebApplications.Utilities
             item4 = tuple.Item4;
         }
     }
-	#endregion
+    #endregion
     #region List with 5 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5}"/>.
@@ -293,7 +291,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
         }
     }
-	#endregion
+    #endregion
     #region List with 6 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>.
@@ -373,7 +371,7 @@ namespace WebApplications.Utilities
             item6 = tuple.Item6;
         }
     }
-	#endregion
+    #endregion
     #region List with 7 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>.
@@ -459,7 +457,7 @@ namespace WebApplications.Utilities
             item7 = tuple.Item7;
         }
     }
-	#endregion
+    #endregion
     #region List with 8 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
@@ -551,7 +549,7 @@ namespace WebApplications.Utilities
             item8 = tuple.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
     #region List with 9 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
@@ -649,7 +647,7 @@ namespace WebApplications.Utilities
             item9 = tuple.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
     #region List with 10 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
@@ -753,7 +751,7 @@ namespace WebApplications.Utilities
             item10 = tuple.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
     #region List with 11 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
@@ -863,7 +861,7 @@ namespace WebApplications.Utilities
             item11 = tuple.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
     #region List with 12 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
@@ -979,7 +977,7 @@ namespace WebApplications.Utilities
             item12 = tuple.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
     #region List with 13 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
@@ -1101,7 +1099,7 @@ namespace WebApplications.Utilities
             item13 = tuple.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
     #region List with 14 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
@@ -1229,7 +1227,7 @@ namespace WebApplications.Utilities
             item14 = tuple.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
     #region List with 15 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
@@ -1363,7 +1361,7 @@ namespace WebApplications.Utilities
             item15 = tuple.Rest.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
     #region List with 16 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
@@ -1503,7 +1501,7 @@ namespace WebApplications.Utilities
             item16 = tuple.Rest.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
     #region List with 17 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
@@ -1649,7 +1647,7 @@ namespace WebApplications.Utilities
             item17 = tuple.Rest.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
     #region List with 18 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
@@ -1801,7 +1799,7 @@ namespace WebApplications.Utilities
             item18 = tuple.Rest.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
     #region List with 19 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
@@ -1959,7 +1957,7 @@ namespace WebApplications.Utilities
             item19 = tuple.Rest.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
     #region List with 20 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
@@ -2123,7 +2121,7 @@ namespace WebApplications.Utilities
             item20 = tuple.Rest.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
     #region List with 21 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
@@ -2293,7 +2291,7 @@ namespace WebApplications.Utilities
             item21 = tuple.Rest.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
     #region List with 22 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
@@ -2469,7 +2467,7 @@ namespace WebApplications.Utilities
             item22 = tuple.Rest.Rest.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
     #region List with 23 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
@@ -2651,7 +2649,7 @@ namespace WebApplications.Utilities
             item23 = tuple.Rest.Rest.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
     #region List with 24 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
@@ -2839,7 +2837,7 @@ namespace WebApplications.Utilities
             item24 = tuple.Rest.Rest.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
     #region List with 25 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
@@ -3033,7 +3031,7 @@ namespace WebApplications.Utilities
             item25 = tuple.Rest.Rest.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
     #region List with 26 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
@@ -3233,7 +3231,7 @@ namespace WebApplications.Utilities
             item26 = tuple.Rest.Rest.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
     #region List with 27 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
@@ -3439,7 +3437,7 @@ namespace WebApplications.Utilities
             item27 = tuple.Rest.Rest.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
     #region List with 28 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
@@ -3651,7 +3649,7 @@ namespace WebApplications.Utilities
             item28 = tuple.Rest.Rest.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
     #region List with 29 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
@@ -3869,7 +3867,7 @@ namespace WebApplications.Utilities
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
     #region List with 30 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
@@ -4093,7 +4091,7 @@ namespace WebApplications.Utilities
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
     #region List with 31 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
@@ -4323,7 +4321,7 @@ namespace WebApplications.Utilities
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
     #region List with 32 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
@@ -4559,7 +4557,7 @@ namespace WebApplications.Utilities
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
     #region List with 33 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
@@ -4801,7 +4799,7 @@ namespace WebApplications.Utilities
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
     #region List with 34 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
@@ -5049,7 +5047,7 @@ namespace WebApplications.Utilities
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
     #region List with 35 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
@@ -5303,6 +5301,6 @@ namespace WebApplications.Utilities
             item35 = tuple.Rest.Rest.Rest.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
 }
  

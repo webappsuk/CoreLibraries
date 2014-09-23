@@ -7,8 +7,8 @@
 <#@ import namespace="System.Diagnostics" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Collections" #>
-<#@ import namespace="System.Collections.Generic" #> 
-<#@ import namespace="System.Text" #> 
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text" #>
 <#
 int maxParameters = 35;
 #>#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
@@ -55,6 +55,7 @@ namespace WebApplications.Utilities
             StringBuilder outParamsWithType = new StringBuilder();
             StringBuilder paramsWithoutType = new StringBuilder();
             StringBuilder assignments = new StringBuilder();
+            StringBuilder defaultAssignments = new StringBuilder();
             for (int i = 1; i <= maxParameters; i++)
             {
                 typeParams.Append(String.Format("{0}T{1}", i > 1 ? ", " : String.Empty, i));
@@ -120,19 +121,41 @@ namespace WebApplications.Utilities
                 assignments.Append(String.Format("{0}            item{1} = tuple{2}.Item{3};",
                                                     Environment.NewLine,
                                                     i,
-													string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
+                                                    string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
                                                     (i-1)%7+1));
+                defaultAssignments.Append(String.Format("{0}                item{1} = default(T{1});",
+                                                    Environment.NewLine,
+                                                    i));
                 String t = tuple.ToString() + tupleEnd.ToString();
-				if (i<2) continue;
-	#>
+                if (i<2) continue;
+    #>
 
-	#region Queue with <#= i #> items.
+    #region Queue with <#= i #> items.
     /// <summary>
     /// A Queue of <see cref="Tuple{<#= typeParams #>}"/>.
     /// </summary><#= typeComments #>
     [PublicAPI]
     public class Queue<<#= typeParams #>> : Queue<Tuple<<#= t #>>>, IEnumerable<<#= typeParams #>>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Queue{<#= typeParams #>}"/> class that is empty 
+        /// and has the specified initial capacity or the default initial capacity, whichever is greater.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
+        public Queue(int capacity = 4) : base(capacity)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Queue{<#= typeParams #>}"/> class that contains elements copied 
+        /// from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection to copy elements from.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public Queue(IEnumerable<Tuple<<#= t #>>> collection) : base(collection)
+        {
+        }
+
         /// <summary>
         /// Inserts an object at the beginning of the <see cref="Queue{<#= typeParams #>}" />.
         /// </summary><#= paramsComments #>
@@ -141,7 +164,7 @@ namespace WebApplications.Utilities
         {
             Enqueue(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
         }
-	    
+        
         /// <summary>
         /// Removes and returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/>.
         /// </summary><#= paramsComments #>
@@ -151,7 +174,7 @@ namespace WebApplications.Utilities
             Tuple<<#= t #>> tuple = Dequeue();
             Contract.Assert(tuple != null);<#= assignments #>
         }
-	    
+        
         /// <summary>
         /// Returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/> without removing it.
         /// </summary><#= paramsComments #>
@@ -161,8 +184,40 @@ namespace WebApplications.Utilities
             Tuple<<#= t #>> tuple = Peek();
             Contract.Assert(tuple != null);<#= assignments #>
         }
+        
+        /// <summary>
+        /// Removes and returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/>.
+        /// </summary><#= paramsComments #>
+        /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public bool TryDequeue(<#= outParamsWithType #>)
+        {
+            if (Count < 1) 
+            {<#= defaultAssignments #>
+                return false;
+            }
+            Tuple<<#= t #>> tuple = Dequeue();
+            Contract.Assert(tuple != null);<#= assignments #>
+            return true;
+        }
+        
+        /// <summary>
+        /// Returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/> without removing it.
+        /// </summary><#= paramsComments #>
+        /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public bool TryPeek(<#= outParamsWithType #>)
+        {
+            if (Count < 1) 
+            {<#= defaultAssignments #>
+                return false;
+            }
+            Tuple<<#= t #>> tuple = Peek();
+            Contract.Assert(tuple != null);<#= assignments #>
+            return true;
+        }
     }
-	#endregion
+    #endregion
 <# 
 }
 #>

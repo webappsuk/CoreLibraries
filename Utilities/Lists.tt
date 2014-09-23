@@ -7,8 +7,8 @@
 <#@ import namespace="System.Diagnostics" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Collections" #>
-<#@ import namespace="System.Collections.Generic" #> 
-<#@ import namespace="System.Text" #> 
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text" #>
 <#int maxParameters = 35;#>
 #region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
@@ -119,11 +119,11 @@ namespace WebApplications.Utilities
                 assignments.Append(String.Format("{0}            item{1} = tuple{2}.Item{3};",
                                                     Environment.NewLine,
                                                     i,
-													string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
+                                                    string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
                                                     (i-1)%7+1));
                 String t = tuple.ToString() + tupleEnd.ToString();
-				if (i<2) continue;
-	#>
+                if (i<2) continue;
+    #>
     #region List with <#= i #> items.
     /// <summary>
     /// A List of <see cref="Tuple{<#= typeParams #>}"/>.
@@ -167,7 +167,7 @@ namespace WebApplications.Utilities
             Contract.Assert(tuple != null);<#= assignments #>
         }
     }
-	#endregion
+    #endregion
 <# 
 }
 #>
