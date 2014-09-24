@@ -356,7 +356,7 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public object CastCLRValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            Func<object, TypeConstraintMode, object> converter = GetClrToSqlConverter(typeof (T));
+            Func<object, TypeConstraintMode, object> converter = GetClrToSqlConverter(typeof(T));
             return converter != null ? converter(value, mode) : value;
         }
 
@@ -374,7 +374,7 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         public Func<object, TypeConstraintMode, object> GetClrToSqlConverter<T>()
         {
-            return GetClrToSqlConverter(typeof (T));
+            return GetClrToSqlConverter(typeof(T));
         }
 
         /// <summary>
@@ -427,8 +427,8 @@ namespace WebApplications.Utilities.Database.Schema
                         {
                             case SqlDbType.BigInt:
                                 return CreateConverter<long>(t);
-                            case SqlDbType.Binary:
                             case SqlDbType.Image:
+                            case SqlDbType.Binary:
                             case SqlDbType.Timestamp:
                             case SqlDbType.VarBinary:
                                 // If we have a byte[] (or can cast to byte[]) then use that.
@@ -439,7 +439,9 @@ namespace WebApplications.Utilities.Database.Schema
                                         if (c == null)
                                             return SqlBinary.Null;
                                         // Check for truncation.
-                                        if ((m != TypeConstraintMode.Silent) &&
+                                        // Note: the Image type cannot have a max length (and Size.MaximumLength will always be 16), so don't check
+                                        if ((SqlDbType != SqlDbType.Image) &&
+                                            (m != TypeConstraintMode.Silent) &&
                                             (Size.MaximumLength > -1) &&
                                             (Size.MaximumLength < c.Length))
                                         {
@@ -476,17 +478,21 @@ namespace WebApplications.Utilities.Database.Schema
                                             byte[] serializedObject = c.SerializeToByteArray();
 
                                             // Check for truncation.
-                                            if (Size.MaximumLength > -1)
-                                                // NOTE We always fail regardless of truncation mode as a partially serialized object is junk.
-                                                if (Size.MaximumLength < serializedObject.Length)
-                                                    throw new DatabaseSchemaException(
-                                                        LoggingLevel.Error,
-                                                        () => Resources.
-                                                            SqlType_GetClrToSqlConverter_CouldNotSerializeObject,
-                                                        t.FullName,
-                                                        FullName,
-                                                        serializedObject.Length,
-                                                        Size.MaximumLength);
+                                            // NOTE We always fail regardless of truncation mode as a partially serialized object is junk.
+                                            // Note: the Image type cannot have a max length (and Size.MaximumLength will always be 16), so don't check
+                                            if ((SqlDbType != SqlDbType.Image) &&
+                                                (Size.MaximumLength > -1) &&
+                                                (Size.MaximumLength < serializedObject.Length))
+                                            {
+                                                throw new DatabaseSchemaException(
+                                                    LoggingLevel.Error,
+                                                    () => Resources.
+                                                        SqlType_GetClrToSqlConverter_CouldNotSerializeObject,
+                                                    t.FullName,
+                                                    FullName,
+                                                    serializedObject.Length,
+                                                    Size.MaximumLength);
+                                            }
                                             return serializedObject;
                                         };
 
@@ -494,8 +500,8 @@ namespace WebApplications.Utilities.Database.Schema
                                 return null;
                             case SqlDbType.Bit:
                                 return CreateConverter<bool>(t);
-                            case SqlDbType.Char:
                             case SqlDbType.Text:
+                            case SqlDbType.Char:
                             case SqlDbType.VarChar:
                                 return CreateConverter<string>(
                                     t,
@@ -506,7 +512,9 @@ namespace WebApplications.Utilities.Database.Schema
                                         if (m != TypeConstraintMode.Silent)
                                         {
                                             // Check for truncation
-                                            if ((Size.MaximumLength > -1) &&
+                                            // Note: the Text type cannot have a max length (and Size.MaximumLength will always be 16), so don't check
+                                            if ((SqlDbType != SqlDbType.Text) &&
+                                                (Size.MaximumLength > -1) &&
                                                 (c.Length > Size.MaximumLength))
                                             {
                                                 if (m == TypeConstraintMode.Error)
@@ -556,8 +564,10 @@ namespace WebApplications.Utilities.Database.Schema
                                         if (c == null)
                                             return SqlString.Null;
                                         // SQL reports size in bytes rather than characters - so divide by 2.
+                                        // Note: the NText type cannot have a max length (and Size.MaximumLength will always be 16), so don't check
                                         int sqlSize = Size.MaximumLength / 2;
-                                        if ((m != TypeConstraintMode.Silent) &&
+                                        if ((SqlDbType != SqlDbType.NText) &&
+                                            (m != TypeConstraintMode.Silent) &&
                                             (Size.MaximumLength > -1) &&
                                             (c.Length > Size.MaximumLength / 2))
                                         {
@@ -586,7 +596,7 @@ namespace WebApplications.Utilities.Database.Schema
                             case SqlDbType.DateTime2:
                             case SqlDbType.DateTimeOffset:
                                 return clrType.IsGenericType &&
-                                       clrType.GetGenericTypeDefinition() == typeof (Nullable<>)
+                                       clrType.GetGenericTypeDefinition() == typeof(Nullable<>)
                                     ? CreateConverter<DateTime?>(
                                         t,
                                         (c, m) =>
@@ -594,7 +604,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             if (c == null)
                                                 return DBNull.Value;
 
-                                            DateTime original = (DateTime) c;
+                                            DateTime original = (DateTime)c;
                                             DateTimeRange range = DateTypeSizes[SqlDbType];
                                             DateTime bound = range.Bind(original);
 
@@ -680,7 +690,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         (c, m) =>
                                         {
                                             if (c == null)
-                                                return (object) SqlXml.Null;
+                                                return (object)SqlXml.Null;
                                             using (XmlReader xmlNodeReader = c.CreateReader())
                                                 return new SqlXml(xmlNodeReader);
                                         })
@@ -690,7 +700,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         (c, m) =>
                                         {
                                             if (c == null)
-                                                return (object) SqlXml.Null;
+                                                return (object)SqlXml.Null;
                                             using (XmlNodeReader xmlNodeReader = new XmlNodeReader(c))
                                                 return new SqlXml(xmlNodeReader);
                                         });
@@ -741,13 +751,13 @@ namespace WebApplications.Utilities.Database.Schema
 
                                 // Check if type implements IEnumerable<T>
                                 Type enumerableInterface =
-                                    t.IsGenericType && (t.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                                    t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                                         ? t
                                         : t.GetInterfaces()
                                             .FirstOrDefault(
                                                 it =>
                                                     it.IsGenericType &&
-                                                    it.GetGenericTypeDefinition() == typeof (IEnumerable<>));
+                                                    it.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
                                 if (enumerableInterface != null)
                                 {
@@ -756,7 +766,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                     // If the type passed in is assignable from IEnumerable<SqlDataRecord> then we can pass straight through
                                     // after checking there are rows available.
-                                    if (typeof (SqlDataRecord).IsAssignableFrom(enumerationType))
+                                    if (typeof(SqlDataRecord).IsAssignableFrom(enumerationType))
                                         // We are the base non-generic table type.
                                         return (Func<object, TypeConstraintMode, object>)
                                             ((c, m) =>
@@ -764,7 +774,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 if (c == null)
                                                     return null;
                                                 List<SqlDataRecord> records =
-                                                    ((IEnumerable<SqlDataRecord>) c).ToList();
+                                                    ((IEnumerable<SqlDataRecord>)c).ToList();
                                                 return records.Count < 1 ? null : records;
                                             });
 
@@ -856,7 +866,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                                 // If we have zero count return DBNull (never return empty enumeration!)
                                                 return records.Count < 1
-                                                    ? (object) null
+                                                    ? (object)null
                                                     : records;
                                             });
                                     }
@@ -888,7 +898,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                                     // If we have zero count return DBNull (never return empty enumeration!)
                                                     return records.Count < 1
-                                                        ? (object) null
+                                                        ? (object)null
                                                         : records;
                                                 });
                                     }
@@ -897,7 +907,7 @@ namespace WebApplications.Utilities.Database.Schema
                                     if ((minColumns < 3) &&
                                         (columns > 1) &&
                                         (enumerationType.IsGenericType &&
-                                         enumerationType.GetGenericTypeDefinition() == typeof (KeyValuePair<,>)))
+                                         enumerationType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>)))
                                     {
                                         // Get converter for key and value column types
                                         Type[] kvpTypes = enumerationType.GetGenericArguments();
@@ -965,7 +975,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                                 // If we have zero count return DBNull (never return empty enumeration!)
                                                 return records.Count < 1
-                                                    ? (object) null
+                                                    ? (object)null
                                                     : records;
                                             });
                                     }
@@ -1037,7 +1047,7 @@ namespace WebApplications.Utilities.Database.Schema
             // Check if we support nullable types and the type is Nullable<>
             if (supportNullable &&
                 actualClrType.IsGenericType &&
-                actualClrType.GetGenericTypeDefinition() == typeof (Nullable<>))
+                actualClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 // Get the generic parameter and find the relevant converter
                 actualClrType = actualClrType.GetGenericArguments().First();
@@ -1045,7 +1055,7 @@ namespace WebApplications.Utilities.Database.Schema
             }
 
             // Find a conversion if any
-            Func<object, object> converter = actualClrType.GetConversion(typeof (TClr));
+            Func<object, object> converter = actualClrType.GetConversion(typeof(TClr));
 
             // If we didn't find one there is no known conversion.
             if (converter == null)
@@ -1081,7 +1091,7 @@ namespace WebApplications.Utilities.Database.Schema
             Contract.Requires(converter != null);
             Func<object, TClr> toInputType = actualClrType.GetConversion<object, TClr>();
             return toInputType != null
-                ? (Func<object, TypeConstraintMode, object>) ((c, m) => converter(toInputType(c), m))
+                ? (Func<object, TypeConstraintMode, object>)((c, m) => converter(toInputType(c), m))
                 : null;
         }
     }
