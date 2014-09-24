@@ -119,13 +119,18 @@ namespace WebApplications.Utilities.Database.Schema
                 case SqlDbType.Binary:
                 case SqlDbType.Char:
                 case SqlDbType.Image:
-                case SqlDbType.NChar:
-                case SqlDbType.NText:
-                case SqlDbType.NVarChar:
                 case SqlDbType.Text:
                 case SqlDbType.VarBinary:
                 case SqlDbType.VarChar:
                     SqlMetaData = new SqlMetaData(name, Type.SqlDbType, Type.Size.MaximumLength);
+                    break;
+                case SqlDbType.NChar:
+                case SqlDbType.NText:
+                case SqlDbType.NVarChar:
+                    SqlMetaData = new SqlMetaData(
+                        name,
+                        Type.SqlDbType,
+                        Type.Size.MaximumLength > 0 ? Type.Size.MaximumLength / 2 : Type.Size.MaximumLength);
                     break;
                 case SqlDbType.Decimal:
                     SqlMetaData = new SqlMetaData(

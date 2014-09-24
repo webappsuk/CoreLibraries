@@ -38,7 +38,7 @@ namespace WebApplications.Utilities.Database.Schema
     public struct SqlTypeSize : IEquatable<SqlTypeSize>
     {
         /// <summary>
-        ///   The maximum length.
+        ///   The maximum length in bytes.
         /// </summary>
         [FieldOffset(0)]
         public readonly short MaximumLength;

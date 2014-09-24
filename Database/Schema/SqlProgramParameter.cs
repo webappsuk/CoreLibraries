@@ -124,8 +124,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         public SqlParameter CreateSqlParameter()
         {
-            SqlParameter parameter = new SqlParameter(FullName, Type.SqlDbType, Type.Size.MaximumLength)
-            {Size = Type.Size.MaximumLength};
+            SqlParameter parameter = new SqlParameter(FullName, Type.SqlDbType, Type.Size.MaximumLength);
             if (Type.Size.Precision != 0)
                 parameter.Precision = Type.Size.Precision;
             if (Type.Size.Scale != 0)
