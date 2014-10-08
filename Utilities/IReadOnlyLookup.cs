@@ -50,6 +50,7 @@ namespace WebApplications.Utilities
         /// <param name="key">The key.</param>
         /// <param name="values">The values.</param>
         /// <returns><see langword="true" /> if the key was found, <see langword="false" /> otherwise.</returns>
+        [ContractAnnotation("=>values:notnull")]
         bool TryGetValues([NotNull] TKey key, out IEnumerable<TElement> values);
     }
 }
