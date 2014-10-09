@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -75,16 +76,33 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Gets all the objects in the graph.
+        /// Gets all the objects in the graph, unordered.
         /// </summary>
-        /// <value>
-        /// All the objects in the graph.
-        /// </value>
         [NotNull]
         [PublicAPI]
         public IEnumerable<T> All
         {
             get { return _all; }
+        }
+
+        /// <summary>
+        /// Gets all the objects in the graph, top down.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<T> AllTopDown
+        {
+            get { return GetAllIterator(_dependencies, TopLeaves); }
+        }
+
+        /// <summary>
+        /// Gets all the objects in the graph, bottom up.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<T> AllBottomUp
+        {
+            get { return GetAllIterator(_dependsOn, BottomLeaves); }
         }
 
         /// <summary>
@@ -143,15 +161,18 @@ namespace WebApplications.Utilities
         /// Adds an object with no dependencies to the dependency graph.
         /// </summary>
         /// <param name="obj">The object to add.</param>
+        /// <returns><see langword="true"/> if the object was added; <see langword="false"/> if the graph already contained the object.</returns>
         [PublicAPI]
-        public void Add([NotNull] T obj)
+        public bool Add([NotNull] T obj)
         {
             Contract.Requires<ArgumentNullException>(!ReferenceEquals(obj, null));
 
-            if (!_all.Add(obj)) return;
+            if (!_all.Add(obj)) return false;
 
             _dependencies.Add(obj, new HashSet<T>(_comparer));
             _dependsOn.Add(obj, new HashSet<T>(_comparer));
+            
+            return true;
         }
 
         /// <summary>
@@ -255,6 +276,43 @@ namespace WebApplications.Utilities
                             yield return val;
                         queue.Enqueue(val);
                     }
+                }
+            }
+        }
+
+        [NotNull]
+        private IEnumerable<T> GetAllIterator([NotNull] Dictionary<T, HashSet<T>> dict, [NotNull] IEnumerable<T> objs)
+        {
+            HashSet<T> seen = new HashSet<T>(_comparer);
+            Queue<T> queue = new Queue<T>();
+
+            foreach (T current in objs)
+            {
+                Contract.Assert(!ReferenceEquals(current, null));
+                yield return current;
+
+                HashSet<T> depends;
+                if (dict.TryGetValue(current, out depends))
+                {
+                    Contract.Assert(depends != null);
+                    foreach (T val in depends)
+                        queue.Enqueue(val);
+                }
+            }
+
+            while (queue.Count > 0)
+            {
+                T current = queue.Dequeue();
+                Contract.Assert(!ReferenceEquals(current, null));
+                if (seen.Add(current))
+                    yield return current;
+
+                HashSet<T> depends;
+                if (dict.TryGetValue(current, out depends))
+                {
+                    Contract.Assert(depends != null);
+                    foreach (T val in depends)
+                        queue.Enqueue(val);
                 }
             }
         }

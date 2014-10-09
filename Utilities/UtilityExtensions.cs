@@ -3543,5 +3543,111 @@ namespace WebApplications.Utilities
                     yield return tException;
             }
         }
+
+        /// <summary>
+        /// Attempts to remove the object at the top of the <see cref="Stack{T}"/>, returning it if successful.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the stack.</typeparam>
+        /// <param name="stack">The stack to pop.</param>
+        /// <param name="value">The value at the top of the stack, or <see langword="default{T}"/> if the stack is empty.</param>
+        /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
+        public static bool TryPop<T>([NotNull] this Stack<T> stack, out T value)
+        {
+            Contract.Requires(stack != null);
+            if (stack.Count < 1)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = stack.Pop();
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to return the object at the top of the <see cref="Stack{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the stack.</typeparam>
+        /// <param name="stack">The stack to peek.</param>
+        /// <param name="value">The value at the top of the stack, or <see langword="default{T}"/> if the stack is empty.</param>
+        /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
+        public static bool TryPeek<T>([NotNull] this Stack<T> stack, out T value)
+        {
+            Contract.Requires(stack != null);
+            if (stack.Count < 1)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = stack.Peek();
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to remove the object at the beginning of the <see cref="Queue{T}"/>, returning it if successful.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the queue.</typeparam>
+        /// <param name="queue">The queue to dequeue.</param>
+        /// <param name="value">The value at the beginning of the queue, or <see langword="default{T}"/> if the queue is empty.</param>
+        /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
+        public static bool TryDequeue<T>([NotNull] this Queue<T> queue, out T value)
+        {
+            Contract.Requires(queue != null);
+            if (queue.Count < 1)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = queue.Dequeue();
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to return the object at the beginning of the <see cref="Queue{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the queue.</typeparam>
+        /// <param name="queue">The queue to peek.</param>
+        /// <param name="value">The value at the beginning of the queue, or <see langword="default{T}"/> if the queue is empty.</param>
+        /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
+        public static bool TryPeek<T>([NotNull] this Queue<T> queue, out T value)
+        {
+            Contract.Requires(queue != null);
+            if (queue.Count < 1)
+            {
+                value = default(T);
+                return false;
+            }
+
+            value = queue.Peek();
+            return true;
+        }
+
+        /// <summary>
+        /// Performs the given action on each element of the sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of them elements in the sequence</typeparam>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="action">The action to perform on each element.</param>
+        /// <returns>The sequence.</returns>
+        [NotNull]
+        public static IEnumerable<T> Do<T>([NotNull] this IEnumerable<T> sequence, [NotNull] Action<T> action)
+        {
+            Contract.Requires(sequence != null);
+            Contract.Requires(action != null);
+
+            return DoEnumerator(sequence, action);
+        }
+
+        [NotNull]
+        private static IEnumerable<T> DoEnumerator<T>([NotNull] IEnumerable<T> sequence, [NotNull] Action<T> action)
+        {
+            foreach (T item in sequence)
+            {
+                action(item);
+                yield return item;
+            }
+        }
     }
 }

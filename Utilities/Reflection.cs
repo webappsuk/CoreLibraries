@@ -474,7 +474,7 @@ namespace WebApplications.Utilities
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
                     BindingFlags.CreateInstance,
                     null,
-                    paramTypes.Take(paramTypes.Count() - 1).ToArray(),
+                    paramTypes.Take(paramTypes.Length - 1).ToArray(),
                     null),
                 checkParameterAssignability,
                 paramTypes);
@@ -1594,6 +1594,51 @@ namespace WebApplications.Utilities
             return false;
         }
 
+        /// <summary>
+        /// Checks to see if a type descends from another type.
+        /// </summary>
+        /// <typeparam name="TBase">The type of the base.</typeparam>
+        /// <param name="sourceType">Type of the source.</param>
+        /// <returns></returns>
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        public static bool DescendsFrom<TBase>([NotNull] this Type sourceType)
+        {
+            do
+            {
+                if (sourceType == typeof(TBase))
+                    return true;
+                sourceType = sourceType.BaseType;
+            } while (sourceType != null);
+            return false;
+        }
+
+        /// <summary>
+        /// Checks to see if a type implements an interface.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <param name="interfaceType">The type of the interface.</param>
+        /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
+        public static bool ImplementsInterface([NotNull] this Type type, [NotNull] Type interfaceType)
+        {
+            Contract.Requires(type != null);
+            Contract.Requires(interfaceType != null);
+            Contract.Requires(interfaceType.IsInterface);
+            return type.GetInterfaces().Contains(interfaceType);
+        }
+
+        /// <summary>
+        /// Checks to see if a type implements an interface.
+        /// </summary>
+        /// <typeparam name="TInterface">The type of the interface.</typeparam>
+        /// <param name="type">The type to check.</param>
+        /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
+        public static bool ImplementsInterface<TInterface>([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+            Contract.Requires(typeof(TInterface).IsInterface);
+            return type.GetInterfaces().Contains(typeof(TInterface));
+        }
 
         /// <summary>
         /// Creates a function that will add parameters of the specified type.
