@@ -1620,6 +1620,9 @@ namespace WebApplications.Utilities.Reflect
                                         mi,
                                         expression);
 
+                                if (outputExpression.Type != Type)
+                                    outputExpression = Expression.Convert(outputExpression, Type);
+
                                 return true;
                             }
                         }
