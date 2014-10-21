@@ -95,11 +95,7 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 1);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
-            Expression body = expression.Inline(i1);
+            Expression body = expression.Inline(p1);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -124,11 +120,7 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
-            return Expression.Lambda<Action<T1>>(expression.Inline(i1), p1);
+            return Expression.Lambda<Action<T1>>(expression.Inline(p1), p1);
         }
         #endregion
 
@@ -151,16 +143,8 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 2);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
-            Expression body = expression.Inline(i1, i2);
+            Expression body = expression.Inline(p1, p2);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -186,16 +170,8 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
-            return Expression.Lambda<Action<T1, T2>>(expression.Inline(i1, i2), p1, p2);
+            return Expression.Lambda<Action<T1, T2>>(expression.Inline(p1, p2), p1, p2);
         }
         #endregion
 
@@ -219,21 +195,9 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 3);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
-            Expression body = expression.Inline(i1, i2, i3);
+            Expression body = expression.Inline(p1, p2, p3);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -260,21 +224,9 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
-            return Expression.Lambda<Action<T1, T2, T3>>(expression.Inline(i1, i2, i3), p1, p2, p3);
+            return Expression.Lambda<Action<T1, T2, T3>>(expression.Inline(p1, p2, p3), p1, p2, p3);
         }
         #endregion
 
@@ -299,26 +251,10 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 4);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
-            Expression body = expression.Inline(i1, i2, i3, i4);
+            Expression body = expression.Inline(p1, p2, p3, p4);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -346,26 +282,10 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4>>(expression.Inline(i1, i2, i3, i4), p1, p2, p3, p4);
+            return Expression.Lambda<Action<T1, T2, T3, T4>>(expression.Inline(p1, p2, p3, p4), p1, p2, p3, p4);
         }
         #endregion
 
@@ -391,31 +311,11 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 5);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -444,31 +344,11 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5>>(expression.Inline(i1, i2, i3, i4, i5), p1, p2, p3, p4, p5);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5>>(expression.Inline(p1, p2, p3, p4, p5), p1, p2, p3, p4, p5);
         }
         #endregion
 
@@ -495,36 +375,12 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 6);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -554,36 +410,12 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6>>(expression.Inline(i1, i2, i3, i4, i5, i6), p1, p2, p3, p4, p5, p6);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6>>(expression.Inline(p1, p2, p3, p4, p5, p6), p1, p2, p3, p4, p5, p6);
         }
         #endregion
 
@@ -611,41 +443,13 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 7);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -676,41 +480,13 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7), p1, p2, p3, p4, p5, p6, p7);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7), p1, p2, p3, p4, p5, p6, p7);
         }
         #endregion
 
@@ -739,46 +515,14 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 8);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -810,46 +554,14 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8), p1, p2, p3, p4, p5, p6, p7, p8);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8), p1, p2, p3, p4, p5, p6, p7, p8);
         }
         #endregion
 
@@ -879,51 +591,15 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 9);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -956,51 +632,15 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9), p1, p2, p3, p4, p5, p6, p7, p8, p9);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9), p1, p2, p3, p4, p5, p6, p7, p8, p9);
         }
         #endregion
 
@@ -1031,56 +671,16 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 10);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -1114,56 +714,16 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
         }
         #endregion
 
@@ -1195,61 +755,17 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 11);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -1284,61 +800,17 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
         }
         #endregion
 
@@ -1371,66 +843,18 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 12);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -1466,66 +890,18 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
         }
         #endregion
 
@@ -1559,71 +935,19 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 13);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -1660,71 +984,19 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13);
         }
         #endregion
 
@@ -1759,76 +1031,20 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 14);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
             ParameterExpression p14 = Expression.Parameter(typeof(T14));
-            Expression i14 = p14.Type != typeof(T14)
-                ? Expression.Convert(p14, typeof(T14))
-                : (Expression)p14;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -1866,76 +1082,20 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
             ParameterExpression p14 = Expression.Parameter(typeof(T14));
-            Expression i14 = p14.Type != typeof(T14)
-                ? Expression.Convert(p14, typeof(T14))
-                : (Expression)p14;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14);
         }
         #endregion
 
@@ -1971,81 +1131,21 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 15);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
             ParameterExpression p14 = Expression.Parameter(typeof(T14));
-            Expression i14 = p14.Type != typeof(T14)
-                ? Expression.Convert(p14, typeof(T14))
-                : (Expression)p14;
-
             ParameterExpression p15 = Expression.Parameter(typeof(T15));
-            Expression i15 = p15.Type != typeof(T15)
-                ? Expression.Convert(p15, typeof(T15))
-                : (Expression)p15;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -2084,81 +1184,21 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
             ParameterExpression p14 = Expression.Parameter(typeof(T14));
-            Expression i14 = p14.Type != typeof(T14)
-                ? Expression.Convert(p14, typeof(T14))
-                : (Expression)p14;
-
             ParameterExpression p15 = Expression.Parameter(typeof(T15));
-            Expression i15 = p15.Type != typeof(T15)
-                ? Expression.Convert(p15, typeof(T15))
-                : (Expression)p15;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
         }
         #endregion
 
@@ -2195,86 +1235,22 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.Parameters.Count == 16);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
             ParameterExpression p14 = Expression.Parameter(typeof(T14));
-            Expression i14 = p14.Type != typeof(T14)
-                ? Expression.Convert(p14, typeof(T14))
-                : (Expression)p14;
-
             ParameterExpression p15 = Expression.Parameter(typeof(T15));
-            Expression i15 = p15.Type != typeof(T15)
-                ? Expression.Convert(p15, typeof(T15))
-                : (Expression)p15;
-
             ParameterExpression p16 = Expression.Parameter(typeof(T16));
-            Expression i16 = p16.Type != typeof(T16)
-                ? Expression.Convert(p16, typeof(T16))
-                : (Expression)p16;
-
-            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16);
+            Expression body = expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16);
 
             if (expression.ReturnType != typeof(TResult))
                 body = Expression.Convert(body, typeof(TResult));
@@ -2314,86 +1290,22 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
-            Expression i1 = p1.Type != typeof(T1)
-                ? Expression.Convert(p1, typeof(T1))
-                : (Expression)p1;
-
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
-            Expression i2 = p2.Type != typeof(T2)
-                ? Expression.Convert(p2, typeof(T2))
-                : (Expression)p2;
-
             ParameterExpression p3 = Expression.Parameter(typeof(T3));
-            Expression i3 = p3.Type != typeof(T3)
-                ? Expression.Convert(p3, typeof(T3))
-                : (Expression)p3;
-
             ParameterExpression p4 = Expression.Parameter(typeof(T4));
-            Expression i4 = p4.Type != typeof(T4)
-                ? Expression.Convert(p4, typeof(T4))
-                : (Expression)p4;
-
             ParameterExpression p5 = Expression.Parameter(typeof(T5));
-            Expression i5 = p5.Type != typeof(T5)
-                ? Expression.Convert(p5, typeof(T5))
-                : (Expression)p5;
-
             ParameterExpression p6 = Expression.Parameter(typeof(T6));
-            Expression i6 = p6.Type != typeof(T6)
-                ? Expression.Convert(p6, typeof(T6))
-                : (Expression)p6;
-
             ParameterExpression p7 = Expression.Parameter(typeof(T7));
-            Expression i7 = p7.Type != typeof(T7)
-                ? Expression.Convert(p7, typeof(T7))
-                : (Expression)p7;
-
             ParameterExpression p8 = Expression.Parameter(typeof(T8));
-            Expression i8 = p8.Type != typeof(T8)
-                ? Expression.Convert(p8, typeof(T8))
-                : (Expression)p8;
-
             ParameterExpression p9 = Expression.Parameter(typeof(T9));
-            Expression i9 = p9.Type != typeof(T9)
-                ? Expression.Convert(p9, typeof(T9))
-                : (Expression)p9;
-
             ParameterExpression p10 = Expression.Parameter(typeof(T10));
-            Expression i10 = p10.Type != typeof(T10)
-                ? Expression.Convert(p10, typeof(T10))
-                : (Expression)p10;
-
             ParameterExpression p11 = Expression.Parameter(typeof(T11));
-            Expression i11 = p11.Type != typeof(T11)
-                ? Expression.Convert(p11, typeof(T11))
-                : (Expression)p11;
-
             ParameterExpression p12 = Expression.Parameter(typeof(T12));
-            Expression i12 = p12.Type != typeof(T12)
-                ? Expression.Convert(p12, typeof(T12))
-                : (Expression)p12;
-
             ParameterExpression p13 = Expression.Parameter(typeof(T13));
-            Expression i13 = p13.Type != typeof(T13)
-                ? Expression.Convert(p13, typeof(T13))
-                : (Expression)p13;
-
             ParameterExpression p14 = Expression.Parameter(typeof(T14));
-            Expression i14 = p14.Type != typeof(T14)
-                ? Expression.Convert(p14, typeof(T14))
-                : (Expression)p14;
-
             ParameterExpression p15 = Expression.Parameter(typeof(T15));
-            Expression i15 = p15.Type != typeof(T15)
-                ? Expression.Convert(p15, typeof(T15))
-                : (Expression)p15;
-
             ParameterExpression p16 = Expression.Parameter(typeof(T16));
-            Expression i16 = p16.Type != typeof(T16)
-                ? Expression.Convert(p16, typeof(T16))
-                : (Expression)p16;
-
-            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16);
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>(expression.Inline(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16);
         }
         #endregion
 

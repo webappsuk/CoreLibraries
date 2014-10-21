@@ -64,13 +64,10 @@ namespace WebApplications.Utilities
 
                 paramConvert
                     .AppendLine()
-                    .AppendFormat("            ParameterExpression p{0} = Expression.Parameter(typeof(T{0}));", i).AppendLine()
-                    .AppendFormat("            Expression i{0} = p{0}.Type != typeof(T{0})", i).AppendLine()
-                    .AppendFormat("                ? Expression.Convert(p{0}, typeof(T{0}))", i).AppendLine()
-                    .AppendFormat("                : (Expression)p{0};", i).AppendLine()
+                    .AppendFormat("            ParameterExpression p{0} = Expression.Parameter(typeof(T{0}));", i)
                     ;
 
-                inlineParamExpressions.AppendFormat("{0}i{1}", i > 1 ? ", " : string.Empty, i);
+                inlineParamExpressions.AppendFormat("{0}p{1}", i > 1 ? ", " : string.Empty, i);
                 paramExpressions.AppendFormat(", p{0}", i);
 
                 funcTypeParams = "<" + typeParams + ", TResult>";

@@ -34,6 +34,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities
 {
@@ -46,9 +47,15 @@ namespace WebApplications.Utilities
         /// The <see cref="IEnumerator.MoveNext" /> method.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _enumeratorMoveNextMethod = typeof(IEnumerator).GetMethod(
-            "MoveNext",
-            BindingFlags.Public | BindingFlags.Instance);
+        private static readonly MethodInfo _enumeratorMoveNextMethod =
+            InfoHelper.GetMethodInfo<IEnumerator>(e => e.MoveNext());
+
+        /// <summary>
+        /// The <see cref="IDisposable.Dispose"/> method.
+        /// </summary>
+        [NotNull]
+        private static readonly MethodInfo _disposeMethod =
+            InfoHelper.GetMethodInfo<IDisposable>(d => d.Dispose());
 
         /// <summary>
         /// Gets the debug view of an expression.
@@ -115,16 +122,19 @@ namespace WebApplications.Utilities
             Type enumerableType = sourceEnumerable.Type;
             Type elementType;
             Type enumeratorType;
+            bool enumeratorDisposable;
             if (enumerableType == typeof(IEnumerable))
             {
                 elementType = typeof(object);
                 enumeratorType = typeof(IEnumerator);
+                enumeratorDisposable = false;
             }
             else if ((enumerableType.IsGenericType) &&
                      (enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
             {
                 elementType = enumerableType.GetGenericArguments().Single();
                 enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
+                enumeratorDisposable = true;
             }
             else
             {
@@ -144,16 +154,26 @@ namespace WebApplications.Utilities
             Expression[] expressions = getBody(Expression.Property(enumerator, currentProperty)).ToArray();
             if (expressions.Length < 1) return Expression.Empty();
 
+            Expression loopExpression = Expression.Loop(
+                Expression.IfThenElse(
+                    Expression.Call(enumerator, _enumeratorMoveNextMethod),
+                    expressions.Length > 1 ? Expression.Block(expressions) : expressions.First(),
+                    Expression.Break(@break)),
+                @break,
+                @continue);
+
+            if (enumeratorDisposable)
+            {
+                loopExpression =
+                    Expression.TryFinally(
+                        loopExpression,
+                        Expression.Call(enumerator, _disposeMethod));
+            }
+
             return Expression.Block(
                 new[] { enumerator },
                 Expression.Assign(enumerator, Expression.Call(sourceEnumerable, getEnumeratorMethod)),
-                Expression.Loop(
-                    Expression.IfThenElse(
-                        Expression.Call(enumerator, _enumeratorMoveNextMethod),
-                        expressions.Length > 1 ? Expression.Block(expressions) : expressions.First(),
-                        Expression.Break(@break)),
-                    @break,
-                    @continue));
+                loopExpression);
         }
 
         /// <summary>
@@ -181,7 +201,7 @@ namespace WebApplications.Utilities
         [NotNull]
         [PublicAPI]
         public static Expression Blockify(
-            [CanBeNull] this IEnumerable<Expression> expressions, 
+            [CanBeNull] this IEnumerable<Expression> expressions,
             [CanBeNull] params ParameterExpression[] locals)
         {
             Contract.Ensures(Contract.Result<Expression>() != null);
@@ -190,7 +210,7 @@ namespace WebApplications.Utilities
             if ((locals != null) &&
                 (locals.Length > 0))
                 return e.Length > 0
-                    ? (Expression) Expression.Block(locals, e)
+                    ? (Expression)Expression.Block(locals, e)
                     : Expression.Empty();
             return e.Length > 1
                 ? Expression.Block(e)
@@ -354,7 +374,51 @@ namespace WebApplications.Utilities
                 ? Expression.Block(new[] { block }.Concat(expressions))
                 : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
         }
-        
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed delegate.
+        /// </summary>
+        /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">expression;The expression does not have the same number of parameters as the delegate.</exception>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<TDelegate> GetDelegateExpression<TDelegate>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(typeof(TDelegate).DescendsFrom(typeof(Delegate)));
+            Contract.Requires(expression != null);
+
+            Type delegateType = typeof(TDelegate);
+            MethodInfo delegateMethod = delegateType.GetMethod("Invoke");
+            Contract.Assert(delegateMethod != null);
+
+            ParameterInfo[] delegateParameters = delegateMethod.GetParameters();
+
+            if (expression.Parameters.Count != delegateParameters.Length)
+                throw new ArgumentOutOfRangeException(
+                    "expression",
+                    "The expression does not have the same number of parameters as the delegate.");
+
+            ParameterExpression[] parameters = new ParameterExpression[delegateParameters.Length];
+
+            for (int i = 0; i < delegateParameters.Length; i++)
+            {
+                ParameterInfo pi = delegateParameters[i];
+
+                parameters[i] = Expression.Parameter(pi.ParameterType, pi.Name);
+            }
+
+            // ReSharper disable once CoVariantArrayConversion
+            Expression body = expression.Inline(parameters);
+
+            if (delegateMethod.ReturnType != typeof(void) &&
+                body.Type != delegateMethod.ReturnType)
+                body = body.Convert(delegateMethod.ReturnType);
+
+            return Expression.Lambda<TDelegate>(body, delegateType.Name, parameters);
+        }
+
         /// <summary>
         /// Takes a lambda expression and returns new expression where the parameters have been replaced by the specified
         /// expressions, effectively inlining the expression.

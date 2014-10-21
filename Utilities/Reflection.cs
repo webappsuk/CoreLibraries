@@ -1619,12 +1619,19 @@ namespace WebApplications.Utilities
         /// <param name="type">The type to check.</param>
         /// <param name="interfaceType">The type of the interface.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        [PublicAPI]
         public static bool ImplementsInterface([NotNull] this Type type, [NotNull] Type interfaceType)
         {
             Contract.Requires(type != null);
             Contract.Requires(interfaceType != null);
             Contract.Requires(interfaceType.IsInterface);
-            return type.GetInterfaces().Contains(interfaceType);
+
+            return type == interfaceType || ExtendedType.Get(type).Implements(interfaceType) ||
+                   (interfaceType.IsGenericTypeDefinition &&
+                    ExtendedType.Get(type)
+                        .Interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType));
         }
 
         /// <summary>
@@ -1633,11 +1640,14 @@ namespace WebApplications.Utilities
         /// <typeparam name="TInterface">The type of the interface.</typeparam>
         /// <param name="type">The type to check.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
+        [System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        [PublicAPI]
         public static bool ImplementsInterface<TInterface>([NotNull] this Type type)
         {
             Contract.Requires(type != null);
             Contract.Requires(typeof(TInterface).IsInterface);
-            return type.GetInterfaces().Contains(typeof(TInterface));
+            return type == typeof(TInterface) || ((ExtendedType)type).Implements(typeof(TInterface));
         }
 
         /// <summary>

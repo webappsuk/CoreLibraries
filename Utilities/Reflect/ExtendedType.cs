@@ -310,7 +310,7 @@ namespace WebApplications.Utilities.Reflect
 
             _interfaces =
                 new Lazy<Dictionary<string, Type>>(
-                    () => Type.GetInterfaces().ToDictionary(t => t.FullName, t => t),
+                    () => Type.GetInterfaces().ToDictionary(t => t.FullName ?? t.Name, t => t),
                     LazyThreadSafetyMode.PublicationOnly);
         }
 
@@ -874,7 +874,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns><see langword="true"/> if <see cref="Type"/> implements the interface type; otherwise <see langword="false"/>.</returns>
         public bool Implements([NotNull] Type interfaceType)
         {
-            return _interfaces.Value.ContainsKey(interfaceType.FullName);
+            return _interfaces.Value.ContainsKey(interfaceType.FullName ?? interfaceType.Name);
         }
 
         /// <summary>

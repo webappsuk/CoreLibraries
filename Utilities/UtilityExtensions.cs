@@ -3377,11 +3377,11 @@ namespace WebApplications.Utilities
         public static T Choose<T>([NotNull] [InstantHandle] this IEnumerable<T> enumerable)
         {
             Contract.Requires(enumerable != null);
-            // Get an array
-            T[] array = enumerable.ToArray();
-            return array.Length > 0
-                // ReSharper disable once PossibleNullReferenceException
-                ? array[ThreadLocal.Random.Next(array.Length)]
+
+            IList<T> list = enumerable as IList<T> ?? enumerable.ToArray();
+            return list.Count > 0
+                    // ReSharper disable once PossibleNullReferenceException
+                ? list[ThreadLocal.Random.Next(list.Count)]
                 : default(T);
         }
 
@@ -3551,6 +3551,7 @@ namespace WebApplications.Utilities
         /// <param name="stack">The stack to pop.</param>
         /// <param name="value">The value at the top of the stack, or <see langword="default{T}"/> if the stack is empty.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
         public static bool TryPop<T>([NotNull] this Stack<T> stack, out T value)
         {
             Contract.Requires(stack != null);
@@ -3571,6 +3572,7 @@ namespace WebApplications.Utilities
         /// <param name="stack">The stack to peek.</param>
         /// <param name="value">The value at the top of the stack, or <see langword="default{T}"/> if the stack is empty.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
         public static bool TryPeek<T>([NotNull] this Stack<T> stack, out T value)
         {
             Contract.Requires(stack != null);
@@ -3591,6 +3593,7 @@ namespace WebApplications.Utilities
         /// <param name="queue">The queue to dequeue.</param>
         /// <param name="value">The value at the beginning of the queue, or <see langword="default{T}"/> if the queue is empty.</param>
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
         public static bool TryDequeue<T>([NotNull] this Queue<T> queue, out T value)
         {
             Contract.Requires(queue != null);
@@ -3611,6 +3614,7 @@ namespace WebApplications.Utilities
         /// <param name="queue">The queue to peek.</param>
         /// <param name="value">The value at the beginning of the queue, or <see langword="default{T}"/> if the queue is empty.</param>
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
         public static bool TryPeek<T>([NotNull] this Queue<T> queue, out T value)
         {
             Contract.Requires(queue != null);
@@ -3632,6 +3636,7 @@ namespace WebApplications.Utilities
         /// <param name="action">The action to perform on each element.</param>
         /// <returns>The sequence.</returns>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<T> Do<T>([NotNull] this IEnumerable<T> sequence, [NotNull] Action<T> action)
         {
             Contract.Requires(sequence != null);
