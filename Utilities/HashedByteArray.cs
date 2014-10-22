@@ -193,9 +193,20 @@ namespace WebApplications.Utilities
         public bool Equals(HashedByteArray other)
         {
             if (ReferenceEquals(other, null)) return false;
-            return (_hash == other._hash) &&
-                   (_data.LongLength == other._data.LongLength) &&
-                   ((_data.LongLength < 9) || _data.SequenceEqual(other._data));
+
+            if ((_hash != other._hash) ||
+                (_data.LongLength != other._data.LongLength))
+                return false;
+
+            if (_data.LongLength < 9) return true;
+
+            for (long i = 0, l = _data.LongLength; i < l; i++)
+            {
+                if (_data[i] != other._data[i])
+                    return false;
+            }
+
+            return true;
         }
         #endregion
 
