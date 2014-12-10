@@ -1288,7 +1288,7 @@ namespace WebApplications.Utilities.Test.Extensions
             Assert.IsNotNull(expression.Expressions);
             Assert.AreEqual(1, expression.Expressions.Count);
 
-            Assert.AreSame(expression, expression.AddExpressions(new Expression[0]));
+            Assert.AreSame(expression, expression.AddExpressions());
 
             expression = expression.AddExpressions(
                 new Expression[]
@@ -1312,7 +1312,7 @@ namespace WebApplications.Utilities.Test.Extensions
             Assert.IsNotNull(expression.Variables);
             Assert.AreEqual(0, expression.Variables.Count);
 
-            Assert.AreSame(expression, expression.AddVariables(new ParameterExpression[0]));
+            Assert.AreSame(expression, expression.AddVariables());
 
             expression = expression.AddVariables(
                 new[]
@@ -1471,8 +1471,8 @@ namespace WebApplications.Utilities.Test.Extensions
         public void ForEach_ReturnsEmptyExpressionWithEmptyEnumerables()
         {
             Expression expression =
-                Expression.Constant(new int[0], typeof (IEnumerable<int>))
-                    .ForEach(x => new Expression[0]);
+                Expression.Constant(Array<int>.Empty, typeof(IEnumerable<int>))
+                    .ForEach(x => Array<Expression>.Empty);
             Assert.AreEqual("default(Void)", expression.ToString());
         }
 

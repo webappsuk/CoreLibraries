@@ -83,24 +83,6 @@ namespace WebApplications.Utilities
             new Regex(@"(?<FullName>\[(?<Name>\w[.+'\w]*?),\s*(?<Assembly>\w[.+\w]*?),.*?\])", RegexOptions.Compiled);
 
         /// <summary>
-        /// An empty type array.
-        /// </summary>
-        [NotNull]
-        public static readonly Type[] EmptyTypes = new Type[0];
-
-        /// <summary>
-        /// An empty bool array.
-        /// </summary>
-        [NotNull]
-        public static readonly bool[] EmptyBools = new bool[0];
-
-        /// <summary>
-        /// An empty generic arguments array.
-        /// </summary>
-        [NotNull]
-        public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
-
-        /// <summary>
         /// Retrieves the lambda function equivalent of the specified property/field getter static method.
         /// </summary>
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
@@ -1183,8 +1165,9 @@ namespace WebApplications.Utilities
             int genericArguments,
             params TypeSearch[] types)
         {
-            castsRequired = EmptyBools;
-            signatureClosures = typeClosures = EmptyTypes;
+            castsRequired = Array<bool>.Empty;
+            var emptyTypes = Array<Type>.Empty;
+            signatureClosures = typeClosures = emptyTypes;
             if ((signature == null) ||
                 (types == null))
                 return false;
@@ -1197,7 +1180,7 @@ namespace WebApplications.Utilities
 
             // Get parameters as array.
             IEnumerable<Type> p = signature.ParameterTypes;
-            Type[] parameters = p == null ? EmptyTypes : p.ToArray();
+            Type[] parameters = p == null ? emptyTypes : p.ToArray();
 
             // Check we have right number of parameters (+1 for return type)
             if ((parameters.Length + 1) != searches)
@@ -1205,8 +1188,9 @@ namespace WebApplications.Utilities
 
             // Grab signature generic arguments safely.
             IEnumerable<GenericArgument> sga = signature.SignatureGenericArguments;
+            var emptyGenericArguments = Array<GenericArgument>.Empty;
             GenericArgument[] signatureArguments = sga == null
-                ? EmptyGenericArguments
+                ? emptyGenericArguments
                 : sga.Where(g => g.Location == GenericArgumentLocation.Signature)
                     .ToArray();
 
@@ -1217,7 +1201,7 @@ namespace WebApplications.Utilities
             // Grab type generic arguments safely.
             IEnumerable<GenericArgument> tga = signature.TypeGenericArguments;
             GenericArgument[] typeArguments = tga == null
-                ? EmptyGenericArguments
+                ? emptyGenericArguments
                 : tga.Where(g => g.Location == GenericArgumentLocation.Type).ToArray();
 
             // Initialise output arrays
@@ -1466,9 +1450,10 @@ namespace WebApplications.Utilities
         {
             // Holds matches along with order.
             ISignature bestMatch = null;
-            castsRequired = EmptyBools;
-            Type[] typeClosures = EmptyTypes;
-            Type[] signatureClosures = EmptyTypes;
+            castsRequired = Array<bool>.Empty;
+            var emptyTypes = Array<Type>.Empty;
+            Type[] typeClosures = emptyTypes;
+            Type[] signatureClosures = emptyTypes;
             int castsCount = Int32.MaxValue;
             int typeClosureCount = Int32.MaxValue;
             int signatureClosureCount = Int32.MaxValue;
@@ -2209,7 +2194,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Gets the non-nullable version of a type.
+        /// Gets the nullable version of a type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>Type.</returns>
@@ -2282,7 +2267,8 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
-        public static bool IsNull(this object value)
+        [ContractAnnotation("value:null=>true")]
+        public static bool IsNull([CanBeNull] this object value)
         {
             if (ReferenceEquals(value, null) ||
                 ReferenceEquals(value, DBNull.Value))

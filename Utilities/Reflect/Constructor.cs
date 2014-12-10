@@ -198,7 +198,7 @@ namespace WebApplications.Utilities.Reflect
                 Contract.Assert(_parameters.Value[i] != null);
                 Type pType = _parameters.Value[i].ParameterType;
                 Contract.Assert(pType != null);
-                searchTypes[i] = Reflection.ExpandParameterType(pType, Reflection.EmptyTypes, typeGenericArguments);
+                searchTypes[i] = Reflection.ExpandParameterType(pType, Array<Type>.Empty, typeGenericArguments);
             }
 
             // Add return type

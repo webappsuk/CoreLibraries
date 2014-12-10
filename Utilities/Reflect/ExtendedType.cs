@@ -1014,7 +1014,7 @@ namespace WebApplications.Utilities.Reflect
                     return indexer;
                 type = type.BaseType;
             }
-            castsRequired = Reflection.EmptyBools;
+            castsRequired = Array<bool>.Empty;
             return null;
         }
 
@@ -1245,7 +1245,7 @@ namespace WebApplications.Utilities.Reflect
                 if (!includeBase) break;
                 type = type.BaseType;
             }
-            castsRequired = Reflection.EmptyBools;
+            castsRequired = Array<bool>.Empty;
             return null;
         }
 
@@ -1306,7 +1306,7 @@ namespace WebApplications.Utilities.Reflect
                     return constructor;
                 type = type.BaseType;
             }
-            castsRequired = Reflection.EmptyBools;
+            castsRequired = Array<bool>.Empty;
             return null;
         }
 

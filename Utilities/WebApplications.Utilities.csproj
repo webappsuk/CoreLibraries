@@ -200,6 +200,8 @@
     <Compile Include="Configuration\ParameterCollection.cs" />
     <Compile Include="Configuration\ParameterElement.cs" />
     <Compile Include="ConsoleHelper.cs" />
+    <Compile Include="CSharpExpressionWriter.cs" />
+    <Compile Include="CyclicQueue.cs" />
     <Compile Include="DependencyGraph.cs" />
     <Compile Include="Dictionary.cs" />
     <Compile Include="EqualityNetwork.cs" />
@@ -242,7 +244,13 @@
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
     <Compile Include="IReadOnlyLookup.cs" />
+    <Compile Include="Array.cs" />
+    <Compile Include="ParameterUsageVisitor.cs" />
     <Compile Include="Reflect\InfoHelper.cs" />
+    <Compile Include="ResettableLazy.cs" />
+    <Compile Include="Threading\AsyncTimer.cs" />
+    <Compile Include="Threading\CancelableTask.cs" />
+    <Compile Include="Threading\ICancelableTask.cs" />
     <Compile Include="ThreadLocal.cs" />
     <Compile Include="TupleEnumerable.cs">
       <DependentUpon>TupleEnumerable.tt</DependentUpon>

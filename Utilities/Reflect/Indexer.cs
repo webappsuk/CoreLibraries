@@ -167,17 +167,18 @@ namespace WebApplications.Utilities.Reflect
             Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
 
             // Search for closed 
+            var emptyTypes = Array<Type>.Empty;
             for (int i = 0; i < pCount; i++)
             {
                 Contract.Assert(_indexParameters.Value[i] != null);
                 Type pType = _indexParameters.Value[i].ParameterType;
-                searchTypes[i] = Reflection.ExpandParameterType(pType, Reflection.EmptyTypes, typeGenericArguments);
+                searchTypes[i] = Reflection.ExpandParameterType(pType, emptyTypes, typeGenericArguments);
             }
 
             // Add return type
             searchTypes[pCount] = Reflection.ExpandParameterType(
                 Info.PropertyType,
-                Reflection.EmptyTypes,
+                emptyTypes,
                 typeGenericArguments);
 
             // Search for indexer on new type.

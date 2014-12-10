@@ -184,7 +184,7 @@ namespace WebApplications.Utilities.IO
                             lpOverlapped.OffsetLow = 0;
                             // ReSharper disable once PossibleNullReferenceException
                             lpOverlapped.EventHandle = dataReadyHandle.SafeWaitHandle.DangerousGetHandle();
-                            byte[] b = new byte[0];
+                            byte[] b = Array<byte>.Empty;
                             // Set to read zero bytes, should work asynchronously.
                             uint read;
                             bool rval = ReadFile(

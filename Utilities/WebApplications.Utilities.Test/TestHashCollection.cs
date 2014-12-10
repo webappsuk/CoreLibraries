@@ -122,12 +122,12 @@ namespace WebApplications.Utilities.Test
             Assert.IsFalse(hashCollection.Contains(2));
             Assert.IsFalse(hashCollection.Contains(3));
 
-            Assert.IsTrue(set.IsSupersetOf(new int[0]));
+            Assert.IsTrue(set.IsSupersetOf(Array<int>.Empty));
             Assert.IsFalse(set.IsSupersetOf(new[] {2}));
             Assert.IsTrue(set.IsSubsetOf(new[] {1, 2}));
             Assert.IsFalse(set.IsSubsetOf(new[] {2}));
 
-            Assert.IsTrue(set.IsProperSupersetOf(new int[0]));
+            Assert.IsTrue(set.IsProperSupersetOf(Array<int>.Empty));
             Assert.IsFalse(set.IsProperSupersetOf(set));
             Assert.IsTrue(set.IsProperSubsetOf(new[] {1, 2}));
             Assert.IsFalse(set.IsProperSubsetOf(set));

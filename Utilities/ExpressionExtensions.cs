@@ -534,5 +534,131 @@ namespace WebApplications.Utilities
             // ReSharper disable once AssignNullToNotNullAttribute
             return _expressionDebugView(expression);
         }
+
+        /// <summary>
+        /// Gets a CSharp like view of the given expression.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static string GetCSharpView([NotNull] this Expression expression)
+        {
+            return CSharpExpressionWriter.ToString(expression);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ParameterExpression">ParameterExpressions</see> that are used within an expression.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static ParameterUsageVisitor GetParameterUsage([NotNull] this Expression expression)
+        {
+            Contract.Requires(expression != null);
+            return ParameterUsageVisitor.Create(expression);
+        }
+
+        /// <summary>
+        /// Determines whether <paramref name="expression" /> contains <paramref name="subExpression">the sub-expression</paramref>.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="subExpression">The sub expression.</param>
+        /// <returns><see langword="true"/> if found; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public static bool Contains(this Expression expression, Expression subExpression)
+        {
+            if (ReferenceEquals(expression, subExpression)) return true;
+            if (ReferenceEquals(expression, null) || ReferenceEquals(subExpression, null)) return false;
+            return FinderExpressionVisitor.Contains(expression, subExpression, false);
+        }
+
+        /// <summary>
+        /// Determines whether <paramref name="expression" /> uses <paramref name="subExpression">the sub-expression</paramref>.
+        /// This will search everywhere except inside the signature of a <see cref="LambdaExpression"/>, which is useful for finding the
+        /// usage of a parameter, without including the parameters of signatures.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="subExpression">The sub expression.</param>
+        /// <returns><see langword="true"/> if found; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        public static bool Uses(this LambdaExpression expression, Expression subExpression)
+        {
+            if (ReferenceEquals(expression, subExpression)) return true;
+            if (ReferenceEquals(expression, null) || ReferenceEquals(subExpression, null)) return false;
+            return FinderExpressionVisitor.Contains(expression, subExpression, true);
+        }
+
+        /// <summary>
+        /// An <see cref="ExpressionVisitor"/> that looks for an expression in a tree.
+        /// </summary>
+        private class FinderExpressionVisitor : ExpressionVisitor
+        {
+            public readonly Expression TargetExpression;
+            public readonly bool SkipLambdaSignatures;
+            public bool Found { get; private set; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="FinderExpressionVisitor" /> class.
+            /// </summary>
+            /// <param name="targetExpression">The search expression.</param>
+            /// <param name="skipLambdaSignatures">if set to <see langword="true" /> skip lambda signatures.</param>
+            private FinderExpressionVisitor(Expression targetExpression, bool skipLambdaSignatures)
+            {
+                TargetExpression = targetExpression;
+                SkipLambdaSignatures = skipLambdaSignatures;
+            }
+
+            /// <summary>
+            /// Dispatches the expression to one of the more specialized visit methods in this class.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
+            public override Expression Visit(Expression node)
+            {
+                if (ReferenceEquals(node, TargetExpression))
+                {
+                    Found = true;
+                    return null;
+                }
+                if (Found || ReferenceEquals(node, null))
+                    return null;
+                return base.Visit(node);
+            }
+
+            /// <summary>
+            /// Visits the lambda.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="node">The node.</param>
+            /// <returns></returns>
+            protected override Expression VisitLambda<T>(Expression<T> node)
+            {
+                // ReSharper disable AssignNullToNotNullAttribute
+                return SkipLambdaSignatures
+                    ? Visit(node.Body)
+                    : base.VisitLambda(node);
+                // ReSharper restore AssignNullToNotNullAttribute
+            }
+
+            /// <summary>
+            /// Determines whether [contains] [the specified expression].
+            /// </summary>
+            /// <param name="expression">The expression.</param>
+            /// <param name="subExpression">The sub expression.</param>
+            /// <param name="skipLambdaSignatures">if set to <see langword="true" /> skip lambda signatures.</param>
+            /// <returns></returns>
+            public static bool Contains(Expression expression, Expression subExpression, bool skipLambdaSignatures)
+            {
+                if (ReferenceEquals(expression, null) ||
+                    ReferenceEquals(subExpression, null)) return false;
+                FinderExpressionVisitor fev = new FinderExpressionVisitor(subExpression, skipLambdaSignatures);
+                fev.Visit(expression);
+                return fev.Found;
+            }
+        }
     }
 }

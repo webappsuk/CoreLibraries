@@ -33,6 +33,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 
@@ -126,6 +127,41 @@ namespace WebApplications.Utilities
             Contract.Requires(expression.ReturnType == typeof(void));
             <#= paramConvert #>
             return Expression.Lambda<Action<#= actionTypeParams #>>(<#= inlineExpression #><#= paramExpressions #>);
+        }
+
+        /// <summary>
+        /// Used for creating a lambda when it needs to be assigned directly to a <see cref="LambdaExpression" />.
+        /// </summary><#= typeComments #>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns>
+        /// <see cref="Expression{Func<#= funcReturnTypeComment #>}"/>.
+        /// </returns>
+        [CanBeNull]
+        [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static Expression<Func<#= funcTypeParams #>> Lambda<#= funcTypeParams #>(
+            [NotNull] Expression<Func<#= funcTypeParams #>> expression)
+        {
+            return expression;
+        }
+
+        /// <summary>
+        /// Used for creating a lambda when it needs to be assigned directly to a <see cref="LambdaExpression" />.
+        /// </summary><#= typeComments #>
+        /// <param name="expression">The expression.</param>
+        /// <returns>
+        /// <see cref="Expression{Func<#= actionReturnTypeComment #>}"/>.
+        /// </returns>
+        [CanBeNull]
+        [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static Expression<Action<#= actionTypeParams #>> Lambda<#= actionTypeParams #>(
+            [NotNull] Expression<Action<#= actionTypeParams #>> expression)
+        {
+            return expression;
         }
         #endregion
 
