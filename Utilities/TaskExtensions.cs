@@ -739,11 +739,123 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Configures an awaiter used to await cancellation on a <see cref="CancellationToken" />.
+        /// </summary>
+        /// <param name="token">The cancellation token.</param>
+        /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
+        /// <returns> An object used to await the <see cref="CancellationToken" />.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ConfiguredTaskAwaitable ConfigureAwait(
+            this CancellationToken token,
+            bool continueOnCapturedContext)
+        {
+            Contract.Requires(token.WaitHandle != null);
+            return token.WaitHandle.ToTask().ConfigureAwait(continueOnCapturedContext);
+        }
+
+        /// <summary>
+        /// Configures an awaiter used to await cancellation on an <see cref="ITokenSource" />.
+        /// </summary>
+        /// <param name="tokenSource">The token source.</param>
+        /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
+        /// <returns> An object used to await the <see cref="ITokenSource" />.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ConfiguredTaskAwaitable ConfigureAwait(
+            this ITokenSource tokenSource,
+            bool continueOnCapturedContext)
+        {
+            Contract.Requires(tokenSource != null);
+            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            return tokenSource.Token.WaitHandle.ToTask().ConfigureAwait(continueOnCapturedContext);
+        }
+
+        /// <summary>
+        /// Configures an awaiter used to await cancellation on a <see cref="CancelableTokenSource" />.
+        /// </summary>
+        /// <param name="tokenSource">The token source.</param>
+        /// <param name="continueOnCapturedContext"><see langword="true" /> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false" />.</param>
+        /// <returns>
+        /// An object used to await the <see cref="CancelableTokenSource" />.
+        /// </returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ConfiguredTaskAwaitable ConfigureAwait(
+            this CancelableTokenSource tokenSource,
+            bool continueOnCapturedContext)
+        {
+            Contract.Requires(tokenSource != null);
+            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            return tokenSource.Token.WaitHandle.ToTask().ConfigureAwait(continueOnCapturedContext);
+        }
+
+        /// <summary>
+        /// Configures an awaiter used to await cancellation on a <see cref="WaitHandle" />.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <param name="continueOnCapturedContext"><see langword="true" /> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false" />.</param>
+        /// <returns>
+        /// An object used to await the <see cref="WaitHandle" />.
+        /// </returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ConfiguredTaskAwaitable ConfigureAwait(
+            this WaitHandle handle,
+            bool continueOnCapturedContext)
+        {
+            Contract.Requires(handle != null);
+            return handle.ToTask().ConfigureAwait(continueOnCapturedContext);
+        }
+
+        /// <summary>
+        /// Gets an awaiter used to await cancellation on a <see cref="CancellationToken" />.
+        /// </summary>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>The awaiter.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TaskAwaiter GetAwaiter(this CancellationToken token)
+        {
+            Contract.Requires(token.WaitHandle != null);
+            return token.WaitHandle.ToTask().GetAwaiter();
+        }
+
+        /// <summary>
+        /// Gets an awaiter used to await cancellation on an <see cref="ITokenSource" />.
+        /// </summary>
+        /// <param name="tokenSource">The token source.</param>
+        /// <returns>The awaiter.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TaskAwaiter GetAwaiter([NotNull] this ITokenSource tokenSource)
+        {
+            Contract.Requires(tokenSource != null);
+            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            return tokenSource.Token.WaitHandle.ToTask().GetAwaiter();
+        }
+
+        /// <summary>
+        /// Gets an awaiter used to await cancellation on a <see cref="CancellationTokenSource" />.
+        /// </summary>
+        /// <param name="tokenSource">The token source.</param>
+        /// <returns>The awaiter.</returns>
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TaskAwaiter GetAwaiter([NotNull] this CancellationTokenSource tokenSource)
+        {
+            Contract.Requires(tokenSource != null);
+            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            return tokenSource.Token.WaitHandle.ToTask().GetAwaiter();
+        }
+
+        /// <summary>
         /// Provides await functionality for ordinary <see cref="WaitHandle"/>s.
         /// </summary>
         /// <param name="handle">The handle to wait on.</param>
         /// <returns>The awaiter.</returns>
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter([NotNull] this WaitHandle handle)
         {
             Contract.Requires(handle != null);
@@ -751,20 +863,26 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Creates a TPL Task that is marked as completed when a <see cref="WaitHandle"/> is signaled.
+        /// Creates a TPL Task that is marked as completed when a <see cref="WaitHandle" /> is signaled.
         /// </summary>
         /// <param name="handle">The handle whose signal triggers the task to be completed.</param>
-        /// <returns>A Task that is completed after the handle is signaled.</returns>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>
+        /// A Task that is completed after the handle is signaled.
+        /// </returns>
         /// <remarks>
         /// There is a (brief) time delay between when the handle is signaled and when the task is marked as completed.
         /// </remarks>
         [NotNull, PublicAPI]
-        public static Task ToTask([NotNull] this WaitHandle handle)
+        public static Task ToTask([NotNull] this WaitHandle handle, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(handle != null);
             Contract.Ensures(Contract.Result<Task>() != null);
 
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            if (token.CanBeCanceled)
+                token.Register(tcs.SetCanceled);
+
             object localVariableInitLock = new object();
             lock (localVariableInitLock)
             {

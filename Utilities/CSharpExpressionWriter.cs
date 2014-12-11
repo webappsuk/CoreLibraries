@@ -1593,43 +1593,43 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         private string ConstantString(int value)
         {
-            return value.ToString("D");
+            return value.ToString("D", CultureInfo.InvariantCulture);
         }
 
         [UsedImplicitly]
         private string ConstantString(uint value)
         {
-            return value.ToString("D") + "U";
+            return value.ToString("D", CultureInfo.InvariantCulture) + "U";
         }
 
         [UsedImplicitly]
         private string ConstantString(long value)
         {
-            return value.ToString("D") + "L";
+            return value.ToString("D", CultureInfo.InvariantCulture) + "L";
         }
 
         [UsedImplicitly]
         private string ConstantString(ulong value)
         {
-            return value.ToString("D") + "UL";
+            return value.ToString("D", CultureInfo.InvariantCulture) + "UL";
         }
 
         [UsedImplicitly]
         private string ConstantString(decimal value)
         {
-            return value.ToString(CultureInfo.InvariantCulture) + "M";
+            return value.ToString("G", CultureInfo.InvariantCulture) + "M";
         }
 
         [UsedImplicitly]
         private string ConstantString(float value)
         {
-            return value.ToString("R") + "F";
+            return value.ToString("R", CultureInfo.InvariantCulture) + "F";
         }
 
         [UsedImplicitly]
         private string ConstantString(double value)
         {
-            return value.ToString("R") + "D";
+            return value.ToString("R", CultureInfo.InvariantCulture) + "D";
         }
 
         [UsedImplicitly]
