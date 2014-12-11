@@ -77,9 +77,9 @@ namespace WebApplications.Utilities.Threading
             /// <param name="dueTime">The due time.</param>
             /// <param name="minimumGap">The minimum gap.</param>
             /// <param name="period">The period.</param>
-            public TimeOuts(TimeSpan dueTime, TimeSpan minimumGap, TimeSpan period)
+            public TimeOuts(TimeSpan dueTime, TimeSpan minimumGap, TimeSpan period, long timeStamp)
             {
-                TimeStamp = Stopwatch.GetTimestamp();
+                TimeStamp = timeStamp;
                 if (dueTime < TimeSpan.Zero)
                 {
                     DueTimeMs = -1;
@@ -136,10 +136,10 @@ namespace WebApplications.Utilities.Threading
             PauseToken pauseToken = default(PauseToken))
         {
             Contract.Requires<ArgumentNullException>(callback != null);
-
+            long timeStamp = Stopwatch.GetTimestamp();
             _callback = callback;
             _pauseToken = pauseToken;
-            _timeOuts = new TimeOuts(dueTime, minimumGap, period);
+            _timeOuts = new TimeOuts(dueTime, minimumGap, period, timeStamp);
 
             _cancellationTokenSource = new CancellationTokenSource();
             _timeOutsChanged = new CancellationTokenSource();
@@ -258,21 +258,74 @@ namespace WebApplications.Utilities.Threading
         }
 
         /// <summary>
+        /// Executes the timer's callback immediately, if it's not currently executing, and allows you to wait for it to finish.  Otheriwse,
+        /// it waits for the current execution to finish.  The next execution will then be calculated based on the start/end of this execution.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
+        /// <remarks>
+        /// This makes it easy to programmatically trigger the execution of a task that normally runs on a timer.
+        /// (e.g. a Log flush)
+        /// </remarks>
+        public Task Execute(CancellationToken cancellationToken)
+        {
+            // TODO Effectively we need to tell the timer task to cancel the current wait and proceed immediately to execution
+            // then we need to wait on a signal that the current execution has completed.
+            // Probably easiest to use a ManualResetEventSlim and await the WaitHandle?
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Changes the specified due time and period.
         /// </summary>
-        /// <param name="dueTime">The due time (in milliseconds) between the last time the timeouts were changed and the start of the task invocation.</param>
-        /// <param name="minimumGap">The minimum gap (in milliseconds) between the start of the task invocation and the end of the previous task invocation.</param>
-        /// <param name="period">The minimum gap (in milliseconds) between the start of the task invocation and the start of the previous task invocation.</param>
+        /// <param name="dueTime">The optional due time (in milliseconds) between the last time the timeouts were changed and the start of the task invocation; use <see langword="null"/> to leave the value unchaged.</param>
+        /// <param name="minimumGap">The optional minimum gap (in milliseconds) between the start of the task invocation and the end of the previous task invocation; use <see langword="null"/> to leave the value unchaged.</param>
+        /// <param name="period">The optional minimum gap (in milliseconds) between the start of the task invocation and the start of the previous task invocation; use <see langword="null"/> to leave the value unchaged.</param>
         [PublicAPI]
-        public void Change(TimeSpan dueTime, TimeSpan minimumGap, TimeSpan period)
+        public void Change(TimeSpan? dueTime, TimeSpan? minimumGap, TimeSpan? period)
         {
-            CancellationTokenSource timeOutsChanged = _timeOutsChanged;
-            // If we don't have a cancellation token we're disposed
-            if (ReferenceEquals(timeOutsChanged, null)) return;
+            long timeStamp = Stopwatch.GetTimestamp();
+            bool dueTimeUnchanged = !ReferenceEquals(dueTime, null);
+            bool minimumGapUnchanged = !ReferenceEquals(minimumGap, null);
+            bool periodUnchanged = !ReferenceEquals(period, null);
+            if (dueTimeUnchanged &&
+                minimumGapUnchanged &&
+                periodUnchanged)
+            {
+                // Changing everything so we can just go ahea an change
 
-            // Update the timeOuts and cancel timeOutsChanged, as timeOuts includes a timestamp it always changes.
-            _timeOuts = new TimeOuts(dueTime, minimumGap, period);
-            timeOutsChanged.Cancel();
+                CancellationTokenSource timeOutsChanged = _timeOutsChanged;
+                // If we don't have a cancellation token we're disposed
+                if (ReferenceEquals(timeOutsChanged, null)) return;
+
+                // Update the timeOuts and cancel timeOutsChanged, as timeOuts includes a timestamp it always changes.
+                _timeOuts = new TimeOuts(dueTime.Value, minimumGap.Value, period.Value, timeStamp);
+                timeOutsChanged.Cancel();
+            } else if (dueTimeUnchanged ||
+                       minimumGapUnchanged ||
+                       periodUnchanged)
+            {
+                TimeOuts newTimeOuts, oldTimeOuts;
+                // We're changing at least one thing
+                do
+                {
+                    oldTimeOuts = _timeOuts;
+                    // Check we have timeouts (might be disposed)
+                    if (ReferenceEquals(oldTimeOuts, null)) return;
+
+                    // If the current timestamp is newer than this ignore
+                    if (oldTimeOuts.TimeStamp >= timeStamp) return;
+
+                    newTimeOuts = new TimeOuts(
+                        dueTime ?? oldTimeOuts.DueTime,
+                        minimumGap ?? oldTimeOuts.MinimumGap,
+                        period ?? oldTimeOuts.Period,
+                        timeStamp);
+
+                } while (Interlocked.CompareExchange(ref _timeOuts, newTimeOuts, oldTimeOuts) != oldTimeOuts);
+            }
         }
 
         /// <summary>
