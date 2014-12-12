@@ -26,7 +26,7 @@
 #endregion
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
 {

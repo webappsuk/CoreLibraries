@@ -31,7 +31,7 @@ using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
 {

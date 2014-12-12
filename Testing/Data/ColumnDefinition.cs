@@ -29,7 +29,7 @@ using System;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 using Microsoft.SqlServer.Types;
 
 namespace WebApplications.Testing.Data

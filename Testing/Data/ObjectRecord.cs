@@ -31,7 +31,7 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.Globalization;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
 {

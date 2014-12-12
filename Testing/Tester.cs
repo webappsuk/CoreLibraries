@@ -34,7 +34,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 using Microsoft.SqlServer.Types;
 using WebApplications.Testing.Data;
 

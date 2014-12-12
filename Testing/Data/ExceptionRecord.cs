@@ -28,7 +28,7 @@
 using System;
 using System.Data;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
 {

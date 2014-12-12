@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Testing.Data

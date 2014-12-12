@@ -1,5 +1,5 @@
 using System.Data;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
 {

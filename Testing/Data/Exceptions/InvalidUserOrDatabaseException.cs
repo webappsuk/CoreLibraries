@@ -1,7 +1,7 @@
 using System;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data.Exceptions
 {
