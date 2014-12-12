@@ -110,10 +110,6 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=8.0.4.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\JetBrains.Annotations.8.0.4.0\lib\net20\JetBrains.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Moq, Version=4.2.1409.1722, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
@@ -134,9 +130,9 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=5.1.5379.28126, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Testing, Version=5.1.5459.27186, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.5.1.5379.28126\lib\net451\WebApplications.Testing.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Testing.5.1.5459.27186\lib\net452\WebApplications.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
