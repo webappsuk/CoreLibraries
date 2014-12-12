@@ -35,6 +35,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DownloadCurrencies.cs" />
     <Compile Include="DownloadTZDB.cs" />
     <Compile Include="DownloadFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

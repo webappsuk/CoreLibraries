@@ -9,6 +9,8 @@
              AssemblyFile="$(UtilityBuildTasks)" />
   <UsingTask TaskName="DownloadTZDB"
              AssemblyFile="$(UtilityBuildTasks)" />
+  <UsingTask TaskName="DownloadCurrencies"
+             AssemblyFile="$(UtilityBuildTasks)" />
 
   <Target Name="CheckPrerequisites">
     <!-- Raise an error if we're unable to locate the resources  -->
@@ -25,6 +27,12 @@
       OutputFolderPath="$(ResourcesPath)"
       OutputFileName="tzdb.nzd"
       Condition="'$(DownloadTZDB)'=='true'"/>
+
+    <DownloadCurrencies
+      ISO4271Uri="http://www.currency-iso.org/dam/downloads/table_a1.xml"
+      OutputFilePath="$(ResourcesPath)iso4271.bcr"
+      Condition="'$(DownloadISO4271)'=='true'"/>
+    
     <ItemGroup>
       <ResourceFiles Include="$(ResourcesPath)\*.*"/>
     </ItemGroup>

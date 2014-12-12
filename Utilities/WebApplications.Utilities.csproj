@@ -150,6 +150,7 @@
     <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
     <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
     <DownloadTZDB>True</DownloadTZDB>
+    <DownloadISO4271>True</DownloadISO4271>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
