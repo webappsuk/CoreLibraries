@@ -2,7 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ResourcesPath Condition="!Exists('$(ResourcesPath)')">$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
+    <UtilityBuildTasks Condition="!Exists('$(UtilityBuildTasks)')">$(MSBuildThisFileDirectory)\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
   </PropertyGroup>
+
+  <UsingTask TaskName="DownloadFile"
+             AssemblyFile="$(UtilityBuildTasks)" />
+  <UsingTask TaskName="DownloadTZDB"
+             AssemblyFile="$(UtilityBuildTasks)" />
 
   <Target Name="CheckPrerequisites">
     <!-- Raise an error if we're unable to locate the resources  -->
@@ -10,9 +16,15 @@
   </Target>
 
   <Target Name="UtilitiesTarget"
-           Condition="'$(BuildingProject)'=='true' AND
-                 Exists('$(ResourcesPath)')">
+          Condition="'$(BuildingProject)'=='true'"
+          Outputs="@(ResourceFiles)">
 
+    <DownloadTZDB
+      TZDBUri="http://nodatime.org/tzdb/latest.txt"
+      Overwrite="true"
+      OutputFolderPath="$(ResourcesPath)"
+      OutputFileName="tzdb.nzd"
+      Condition="'$(DownloadTZDB)'=='true'"/>
     <ItemGroup>
       <ResourceFiles Include="$(ResourcesPath)\*.*"/>
     </ItemGroup>

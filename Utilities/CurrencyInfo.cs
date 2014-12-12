@@ -56,28 +56,37 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Stores currency info (by code).
         /// </summary>
+        [NotNull]
         private static readonly Dictionary<string, CurrencyInfo> _currencyInfos = new Dictionary<string, CurrencyInfo>();
 
         /// <summary>
         ///   Stores the <see cref="RegionInfo"/>s associated with <see cref="CurrencyInfo"/>.
         /// </summary>
+        [NotNull]
         private static readonly Dictionary<RegionInfo, CurrencyInfo> _currencyInfoRegions =
             new Dictionary<RegionInfo, CurrencyInfo>();
 
         /// <summary>
         ///   Stores the <see cref="CultureInfo"/>s associated with <see cref="CurrencyInfo"/>.
         /// </summary>
+        [NotNull]
         private static readonly Dictionary<CultureInfo, CurrencyInfo> _currencyInfoCultures =
             new Dictionary<CultureInfo, CurrencyInfo>();
 
         /// <summary>
         ///   The enumerator to iterate through the associated <see cref="CultureInfo">cultures</see>.
         /// </summary>
+        [NotNull]
+        [ItemNotNull]
+        [PublicAPI]
         public readonly IEnumerable<CultureInfo> Cultures;
 
         /// <summary>
         ///   The enumerator to iterate through the associated <see cref="RegionInfo">regions</see>.
         /// </summary>
+        [NotNull]
+        [ItemNotNull]
+        [PublicAPI]
         public readonly IEnumerable<RegionInfo> Regions;
 
         /// <summary>
@@ -124,6 +133,9 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>All.</value>
         /// <remarks>TODO Add remarks</remarks>
+        [NotNull]
+        [ItemNotNull]
+        [PublicAPI]
         public static IEnumerable<CurrencyInfo> All
         {
             get { return _currencyInfos.Values; }
@@ -133,23 +145,27 @@ namespace WebApplications.Utilities
         ///   Gets the ISO Code.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public string Code { get; private set; }
 
         /// <summary>
         ///   Gets the ISO Number.
         /// </summary>
+        [PublicAPI]
         public int ISONumber { get; private set; }
 
         /// <summary>
         ///   Gets the exponent, which is the number of decimals available in the currency.
         /// </summary>
         [CanBeNull]
+        [PublicAPI]
         public int? Exponent { get; private set; }
 
         /// <summary>
         ///   Gets the currency's full name.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public string FullName { get; private set; }
 
         /// <summary>
@@ -218,6 +234,7 @@ namespace WebApplications.Utilities
         ///   <paramref name="currencyCode"/> is <see langword="null"/>.
         /// </exception>
         [CanBeNull]
+        [PublicAPI]
         public static CurrencyInfo Get([NotNull] string currencyCode)
         {
             Contract.Requires(currencyCode != null, Resources.CurrencyInfo_CurrencyCodeCannotBeNull);
@@ -243,6 +260,7 @@ namespace WebApplications.Utilities
         ///   <paramref name="regionInfo"/> is <see langword="null"/>.
         /// </exception>
         [CanBeNull]
+        [PublicAPI]
         public static CurrencyInfo Get([NotNull] RegionInfo regionInfo)
         {
             Contract.Requires(regionInfo != null, Resources.CurrencyInfo_RegionInfoCannotBeNull);
@@ -268,6 +286,7 @@ namespace WebApplications.Utilities
         ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
         /// </exception>
         [CanBeNull]
+        [PublicAPI]
         public static CurrencyInfo Get([NotNull] CultureInfo cultureInfo)
         {
             Contract.Requires(cultureInfo != null, Resources.CurrencyInfo_CultureInfoCannotBeNull);

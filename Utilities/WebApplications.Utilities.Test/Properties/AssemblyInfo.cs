@@ -33,16 +33,10 @@ using WebApplications.Utilities;
 [assembly: AssemblyDescription("Standard Web Applications .NET Utilities Tests")]
 [assembly: ComVisible(false)]
 [assembly: Guid("4762B5F6-7AEF-4D2A-8376-04F420B69BE1")]
-/*[assembly: ToString(AttributeTargetTypes = "WebApplications.*", AttributePriority = 1)]
-[assembly:
-        ToString(AttributeTargetTypes = "WebApplications.Utilities.Aspects.*", AttributePriority = 2,
-                AttributeExclude = true)]
- */
-
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
+[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2015")]
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("5.0.*")]

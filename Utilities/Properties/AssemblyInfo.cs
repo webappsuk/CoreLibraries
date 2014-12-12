@@ -36,7 +36,7 @@ using WebApplications.Utilities;
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
+[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2015")]
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("5.1.*")]
