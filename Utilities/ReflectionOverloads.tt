@@ -35,7 +35,7 @@ int maxParameters = 16;
 
 using System;
 using System.Reflection;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -50,10 +50,10 @@ StringBuilder typeComments = new StringBuilder();
 StringBuilder aTypeParamsBuilder = new StringBuilder();
 string aTypeParams = string.Empty;
 for (int i = 0; i < maxParameters; i++) {
-	
-	#>
-		
-		#region <#= i #> parameters.
+    
+    #>
+        
+        #region <#= i #> parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary><#=typeComments#>
@@ -63,8 +63,8 @@ for (int i = 0; i < maxParameters; i++) {
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<#= typeParams #>TResult> Func<#= typeParams #>TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -77,7 +77,7 @@ for (int i = 0; i < maxParameters; i++) {
         {
             return (Func<#= typeParams #>TResult>) GetFunc(methodBase, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary><#=typeComments#>
@@ -87,8 +87,8 @@ for (int i = 0; i < maxParameters; i++) {
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<#= typeParams #>TResult> ConstructorFunc<#= typeParams #>TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -101,7 +101,7 @@ for (int i = 0; i < maxParameters; i++) {
         {
             return (Func<#= typeParams #>TResult>) GetConstructorFunc(type, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary><#=typeComments#>
@@ -124,17 +124,17 @@ for (int i = 0; i < maxParameters; i++) {
         {
             return (Action<#= aTypeParams #>) GetAction(methodInfo, checkParameterAssignability<#= typeOfs #>);
         }
-		#endregion
+        #endregion
 <# 
-	typeParams.Append(string.Format("T{0}, ", (i+1)));
-	typeOfs.Append(string.Format(", typeof(T{0})", (i+1)));
-	typeComments.Append(string.Format("{0}        /// <typeparam name=\"T{1}\">The type of parameter {1}.</typeparam>",
-		Environment.NewLine,
-		(i+1)));
-	aTypeParamsBuilder.Append(string.Format("{0}T{1}", i < 1 ? "<":", ", (i+1)));
-	aTypeParams = aTypeParamsBuilder.ToString() + ">";
+    typeParams.Append(string.Format("T{0}, ", (i+1)));
+    typeOfs.Append(string.Format(", typeof(T{0})", (i+1)));
+    typeComments.Append(string.Format("{0}        /// <typeparam name=\"T{1}\">The type of parameter {1}.</typeparam>",
+        Environment.NewLine,
+        (i+1)));
+    aTypeParamsBuilder.Append(string.Format("{0}T{1}", i < 1 ? "<":", ", (i+1)));
+    aTypeParams = aTypeParamsBuilder.ToString() + ">";
 } #>
-	}
+    }
 }
  
 <#+

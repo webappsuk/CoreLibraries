@@ -34,8 +34,8 @@ namespace WebApplications.Utilities
     ///</summary>
     public static partial class TaskExtensions
     {
-		
-		#region 0 parameters.
+        
+        #region 0 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -65,9 +65,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 1 parameters.
+        #endregion
+        
+        #region 1 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -100,9 +100,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 2 parameters.
+        #endregion
+        
+        #region 2 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -138,9 +138,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 3 parameters.
+        #endregion
+        
+        #region 3 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -179,9 +179,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 4 parameters.
+        #endregion
+        
+        #region 4 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -223,9 +223,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 5 parameters.
+        #endregion
+        
+        #region 5 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -270,9 +270,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 6 parameters.
+        #endregion
+        
+        #region 6 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -320,9 +320,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 7 parameters.
+        #endregion
+        
+        #region 7 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -373,9 +373,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 8 parameters.
+        #endregion
+        
+        #region 8 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -429,9 +429,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 9 parameters.
+        #endregion
+        
+        #region 9 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -488,9 +488,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 10 parameters.
+        #endregion
+        
+        #region 10 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -550,9 +550,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 11 parameters.
+        #endregion
+        
+        #region 11 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -615,9 +615,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 12 parameters.
+        #endregion
+        
+        #region 12 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -683,9 +683,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 13 parameters.
+        #endregion
+        
+        #region 13 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -754,9 +754,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
-		
-		#region 14 parameters.
+        #endregion
+        
+        #region 14 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -828,7 +828,7 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
+        #endregion
 /*
 
         /// <summary>
@@ -865,6 +865,6 @@ namespace WebApplications.Utilities
             // ReSharper restore AssignNullToNotNullAttribute
         }
 */
-	}
+    }
 }
  

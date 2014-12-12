@@ -34,8 +34,8 @@ namespace WebApplications.Utilities
     /// </summary>
     public static partial class ExtendedTuple
     {
-		
-		#region 1 items.
+        
+        #region 1 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -48,9 +48,9 @@ namespace WebApplications.Utilities
             T1 item1
             )
         {
-		    return new Tuple< T1>(item1);
+            return new Tuple< T1>(item1);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -68,9 +68,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1>(func1(input)));
         }
-		#endregion
-		
-		#region 2 items.
+        #endregion
+        
+        #region 2 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -86,9 +86,9 @@ namespace WebApplications.Utilities
             T2 item2
             )
         {
-		    return new Tuple< T1, T2>(item1, item2);
+            return new Tuple< T1, T2>(item1, item2);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -109,9 +109,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2>(func1(input), func2(input)));
         }
-		#endregion
-		
-		#region 3 items.
+        #endregion
+        
+        #region 3 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -130,9 +130,9 @@ namespace WebApplications.Utilities
             T3 item3
             )
         {
-		    return new Tuple< T1, T2, T3>(item1, item2, item3);
+            return new Tuple< T1, T2, T3>(item1, item2, item3);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -156,9 +156,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3>(func1(input), func2(input), func3(input)));
         }
-		#endregion
-		
-		#region 4 items.
+        #endregion
+        
+        #region 4 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -180,9 +180,9 @@ namespace WebApplications.Utilities
             T4 item4
             )
         {
-		    return new Tuple< T1, T2, T3, T4>(item1, item2, item3, item4);
+            return new Tuple< T1, T2, T3, T4>(item1, item2, item3, item4);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -209,9 +209,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4>(func1(input), func2(input), func3(input), func4(input)));
         }
-		#endregion
-		
-		#region 5 items.
+        #endregion
+        
+        #region 5 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -236,9 +236,9 @@ namespace WebApplications.Utilities
             T5 item5
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5>(item1, item2, item3, item4, item5);
+            return new Tuple< T1, T2, T3, T4, T5>(item1, item2, item3, item4, item5);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -268,9 +268,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5>(func1(input), func2(input), func3(input), func4(input), func5(input)));
         }
-		#endregion
-		
-		#region 6 items.
+        #endregion
+        
+        #region 6 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -298,9 +298,9 @@ namespace WebApplications.Utilities
             T6 item6
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6>(item1, item2, item3, item4, item5, item6);
+            return new Tuple< T1, T2, T3, T4, T5, T6>(item1, item2, item3, item4, item5, item6);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -333,9 +333,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input)));
         }
-		#endregion
-		
-		#region 7 items.
+        #endregion
+        
+        #region 7 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -366,9 +366,9 @@ namespace WebApplications.Utilities
             T7 item7
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7>(item1, item2, item3, item4, item5, item6, item7);
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7>(item1, item2, item3, item4, item5, item6, item7);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -404,9 +404,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input)));
         }
-		#endregion
-		
-		#region 8 items.
+        #endregion
+        
+        #region 8 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -440,9 +440,9 @@ namespace WebApplications.Utilities
             T8 item8
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8>(item8));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8>(item8));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -481,9 +481,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8>(func8(input))));
         }
-		#endregion
-		
-		#region 9 items.
+        #endregion
+        
+        #region 9 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -520,9 +520,9 @@ namespace WebApplications.Utilities
             T9 item9
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9>(item8, item9));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9>(item8, item9));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -564,9 +564,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9>(func8(input), func9(input))));
         }
-		#endregion
-		
-		#region 10 items.
+        #endregion
+        
+        #region 10 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -606,9 +606,9 @@ namespace WebApplications.Utilities
             T10 item10
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10>(item8, item9, item10));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10>(item8, item9, item10));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -653,9 +653,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10>(func8(input), func9(input), func10(input))));
         }
-		#endregion
-		
-		#region 11 items.
+        #endregion
+        
+        #region 11 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -698,9 +698,9 @@ namespace WebApplications.Utilities
             T11 item11
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11>(item8, item9, item10, item11));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11>(item8, item9, item10, item11));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -748,9 +748,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11>(func8(input), func9(input), func10(input), func11(input))));
         }
-		#endregion
-		
-		#region 12 items.
+        #endregion
+        
+        #region 12 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -796,9 +796,9 @@ namespace WebApplications.Utilities
             T12 item12
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12>(item8, item9, item10, item11, item12));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12>(item8, item9, item10, item11, item12));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -849,9 +849,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12>(func8(input), func9(input), func10(input), func11(input), func12(input))));
         }
-		#endregion
-		
-		#region 13 items.
+        #endregion
+        
+        #region 13 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -900,9 +900,9 @@ namespace WebApplications.Utilities
             T13 item13
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13>(item8, item9, item10, item11, item12, item13));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13>(item8, item9, item10, item11, item12, item13));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -956,9 +956,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input))));
         }
-		#endregion
-		
-		#region 14 items.
+        #endregion
+        
+        #region 14 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1010,9 +1010,9 @@ namespace WebApplications.Utilities
             T14 item14
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14>(item8, item9, item10, item11, item12, item13, item14));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14>(item8, item9, item10, item11, item12, item13, item14));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -1069,9 +1069,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input))));
         }
-		#endregion
-		
-		#region 15 items.
+        #endregion
+        
+        #region 15 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1126,9 +1126,9 @@ namespace WebApplications.Utilities
             T15 item15
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15>(item15)));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15>(item15)));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -1188,9 +1188,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15>(func15(input)))));
         }
-		#endregion
-		
-		#region 16 items.
+        #endregion
+        
+        #region 16 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1248,9 +1248,9 @@ namespace WebApplications.Utilities
             T16 item16
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16>(item15, item16)));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16>(item15, item16)));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -1313,9 +1313,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16>(func15(input), func16(input)))));
         }
-		#endregion
-		
-		#region 17 items.
+        #endregion
+        
+        #region 17 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1376,9 +1376,9 @@ namespace WebApplications.Utilities
             T17 item17
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17>(item15, item16, item17)));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17>(item15, item16, item17)));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -1444,9 +1444,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17>(func15(input), func16(input), func17(input)))));
         }
-		#endregion
-		
-		#region 18 items.
+        #endregion
+        
+        #region 18 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1510,9 +1510,9 @@ namespace WebApplications.Utilities
             T18 item18
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18>(item15, item16, item17, item18)));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18>(item15, item16, item17, item18)));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -1581,9 +1581,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18>(func15(input), func16(input), func17(input), func18(input)))));
         }
-		#endregion
-		
-		#region 19 items.
+        #endregion
+        
+        #region 19 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1650,9 +1650,9 @@ namespace WebApplications.Utilities
             T19 item19
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19>(item15, item16, item17, item18, item19)));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19>(item15, item16, item17, item18, item19)));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -1724,9 +1724,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19>(func15(input), func16(input), func17(input), func18(input), func19(input)))));
         }
-		#endregion
-		
-		#region 20 items.
+        #endregion
+        
+        #region 20 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1796,9 +1796,9 @@ namespace WebApplications.Utilities
             T20 item20
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20>(item15, item16, item17, item18, item19, item20)));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20>(item15, item16, item17, item18, item19, item20)));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -1873,9 +1873,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input)))));
         }
-		#endregion
-		
-		#region 21 items.
+        #endregion
+        
+        #region 21 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -1948,9 +1948,9 @@ namespace WebApplications.Utilities
             T21 item21
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21>(item15, item16, item17, item18, item19, item20, item21)));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21>(item15, item16, item17, item18, item19, item20, item21)));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -2028,9 +2028,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input)))));
         }
-		#endregion
-		
-		#region 22 items.
+        #endregion
+        
+        #region 22 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -2106,9 +2106,9 @@ namespace WebApplications.Utilities
             T22 item22
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22>(item22))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22>(item22))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -2189,9 +2189,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22>(func22(input))))));
         }
-		#endregion
-		
-		#region 23 items.
+        #endregion
+        
+        #region 23 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -2270,9 +2270,9 @@ namespace WebApplications.Utilities
             T23 item23
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23>(item22, item23))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23>(item22, item23))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -2356,9 +2356,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23>(func22(input), func23(input))))));
         }
-		#endregion
-		
-		#region 24 items.
+        #endregion
+        
+        #region 24 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -2440,9 +2440,9 @@ namespace WebApplications.Utilities
             T24 item24
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24>(item22, item23, item24))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24>(item22, item23, item24))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -2529,9 +2529,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24>(func22(input), func23(input), func24(input))))));
         }
-		#endregion
-		
-		#region 25 items.
+        #endregion
+        
+        #region 25 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -2616,9 +2616,9 @@ namespace WebApplications.Utilities
             T25 item25
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25>(item22, item23, item24, item25))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25>(item22, item23, item24, item25))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -2708,9 +2708,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25>(func22(input), func23(input), func24(input), func25(input))))));
         }
-		#endregion
-		
-		#region 26 items.
+        #endregion
+        
+        #region 26 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -2798,9 +2798,9 @@ namespace WebApplications.Utilities
             T26 item26
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26>(item22, item23, item24, item25, item26))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26>(item22, item23, item24, item25, item26))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -2893,9 +2893,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26>(func22(input), func23(input), func24(input), func25(input), func26(input))))));
         }
-		#endregion
-		
-		#region 27 items.
+        #endregion
+        
+        #region 27 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -2986,9 +2986,9 @@ namespace WebApplications.Utilities
             T27 item27
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27>(item22, item23, item24, item25, item26, item27))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27>(item22, item23, item24, item25, item26, item27))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -3084,9 +3084,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input))))));
         }
-		#endregion
-		
-		#region 28 items.
+        #endregion
+        
+        #region 28 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -3180,9 +3180,9 @@ namespace WebApplications.Utilities
             T28 item28
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28>(item22, item23, item24, item25, item26, item27, item28))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28>(item22, item23, item24, item25, item26, item27, item28))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -3281,9 +3281,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input))))));
         }
-		#endregion
-		
-		#region 29 items.
+        #endregion
+        
+        #region 29 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -3380,9 +3380,9 @@ namespace WebApplications.Utilities
             T29 item29
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29>(item29)))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29>(item29)))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -3484,9 +3484,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29>(func29(input)))))));
         }
-		#endregion
-		
-		#region 30 items.
+        #endregion
+        
+        #region 30 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -3586,9 +3586,9 @@ namespace WebApplications.Utilities
             T30 item30
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30>(item29, item30)))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30>(item29, item30)))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -3693,9 +3693,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30>(func29(input), func30(input)))))));
         }
-		#endregion
-		
-		#region 31 items.
+        #endregion
+        
+        #region 31 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -3798,9 +3798,9 @@ namespace WebApplications.Utilities
             T31 item31
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31>(item29, item30, item31)))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31>(item29, item30, item31)))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -3908,9 +3908,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31>(func29(input), func30(input), func31(input)))))));
         }
-		#endregion
-		
-		#region 32 items.
+        #endregion
+        
+        #region 32 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -4016,9 +4016,9 @@ namespace WebApplications.Utilities
             T32 item32
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32>(item29, item30, item31, item32)))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32>(item29, item30, item31, item32)))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -4129,9 +4129,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32>(func29(input), func30(input), func31(input), func32(input)))))));
         }
-		#endregion
-		
-		#region 33 items.
+        #endregion
+        
+        #region 33 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -4240,9 +4240,9 @@ namespace WebApplications.Utilities
             T33 item33
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33>(item29, item30, item31, item32, item33)))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33>(item29, item30, item31, item32, item33)))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -4356,9 +4356,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32, T33>(func29(input), func30(input), func31(input), func32(input), func33(input)))))));
         }
-		#endregion
-		
-		#region 34 items.
+        #endregion
+        
+        #region 34 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -4470,9 +4470,9 @@ namespace WebApplications.Utilities
             T34 item34
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33, T34>(item29, item30, item31, item32, item33, item34)))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33, T34>(item29, item30, item31, item32, item33, item34)))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -4589,9 +4589,9 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32, T33, T34>(func29(input), func30(input), func31(input), func32(input), func33(input), func34(input)))))));
         }
-		#endregion
-		
-		#region 35 items.
+        #endregion
+        
+        #region 35 items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary>
@@ -4706,9 +4706,9 @@ namespace WebApplications.Utilities
             T35 item35
             )
         {
-		    return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33, T34, T35>(item29, item30, item31, item32, item33, item34, item35)))));
+            return new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33, T34, T35>(item29, item30, item31, item32, item33, item34, item35)))));
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -4828,7 +4828,7 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32, T33, T34, T35>(func29(input), func30(input), func31(input), func32(input), func33(input), func34(input), func35(input)))))));
         }
-		#endregion
-	}
+        #endregion
+    }
 }
  

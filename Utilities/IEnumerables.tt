@@ -40,7 +40,7 @@ int maxParameters = 35;
 
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -67,8 +67,8 @@ namespace WebApplications.Utilities
                                   Environment.NewLine,
                                   i));
                 String t = tuple.ToString() + tupleEnd.ToString();
-				if (i<2) continue;
-	#>
+                if (i<2) continue;
+    #>
 
     /// <summary>
     /// An IEnumerable of <see cref="Tuple{<#= typeParams #>}"/>.

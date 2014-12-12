@@ -36,7 +36,7 @@ int maxParameters = 35;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -70,13 +70,13 @@ namespace WebApplications.Utilities
                 }
                 tuple.Append(String.Format("T{0}", i));
                 paramsWithoutType.Clear();
-				paramsFuncWithoutType.Clear();
+                paramsFuncWithoutType.Clear();
                 for (int j = 1; j <= i; j++)
                 {
                     if (j > 1)
                     {
                         paramsWithoutType.Append(", ");
-						paramsFuncWithoutType.Append(", ");
+                        paramsFuncWithoutType.Append(", ");
                         if ((j - 1)%7 == 0)
                         {
                             int closeCount = 1;
@@ -120,7 +120,7 @@ namespace WebApplications.Utilities
                     String.Format("{0}        /// <param name=\"item{1}\">Item {1} of the tuple.</param>",
                                   Environment.NewLine,
                                   i));
-				paramsFuncComments.Append(
+                paramsFuncComments.Append(
                     String.Format("{0}        /// <param name=\"func{1}\">Function that returns item {1} of the tuple.</param>",
                                   Environment.NewLine,
                                   i));
@@ -128,14 +128,14 @@ namespace WebApplications.Utilities
                                                     Environment.NewLine,
                                                     i,
                                                     i > 1 ? "," : ""));
-				paramsFuncWithType.Append(String.Format("{2}{0}            [NotNull]Func<TInput, T{1}> func{1}",
+                paramsFuncWithType.Append(String.Format("{2}{0}            [NotNull]Func<TInput, T{1}> func{1}",
                                                     Environment.NewLine,
                                                     i,
                                                     i > 1 ? "," : ""));
                 String t = tuple.ToString() + tupleEnd.ToString();
-	#>
-		
-		#region <#= i #> items.
+    #>
+        
+        #region <#= i #> items.
         /// <summary>
         /// Used to create a tuple in nested format.
         /// </summary><#= typeComments #><#= paramsComments #>
@@ -145,9 +145,9 @@ namespace WebApplications.Utilities
         public static Tuple< <#= t #>> Create<<#= typeParams #>>(<#= paramsWithType #>
             )
         {
-		    return new Tuple< <#= t #>>(<#= paramsWithoutType #>);
+            return new Tuple< <#= t #>>(<#= paramsWithoutType #>);
         }
-		
+        
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -162,11 +162,11 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple< <#= t #>>(<#= paramsFuncWithoutType #>));
         }
-		#endregion
+        #endregion
 <# 
 }
 #>
-	}
+    }
 }
  
 <#+

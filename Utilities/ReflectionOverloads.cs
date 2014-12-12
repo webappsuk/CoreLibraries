@@ -32,8 +32,8 @@ namespace WebApplications.Utilities
     /// Extensions to the reflection namespace.
     ///</summary>
     public static partial class Reflection
-    {		
-		#region 0 parameters.
+    {        
+        #region 0 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -43,8 +43,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<TResult> Func<TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -57,7 +57,7 @@ namespace WebApplications.Utilities
         {
             return (Func<TResult>) GetFunc(methodBase, checkParameterAssignability, typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -67,8 +67,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<TResult> ConstructorFunc<TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -81,7 +81,7 @@ namespace WebApplications.Utilities
         {
             return (Func<TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -104,9 +104,9 @@ namespace WebApplications.Utilities
         {
             return (Action) GetAction(methodInfo, checkParameterAssignability);
         }
-		#endregion
-		
-		#region 1 parameters.
+        #endregion
+        
+        #region 1 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -117,8 +117,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, TResult> Func<T1, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -131,7 +131,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -142,8 +142,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, TResult> ConstructorFunc<T1, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -156,7 +156,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -180,9 +180,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1>) GetAction(methodInfo, checkParameterAssignability, typeof(T1));
         }
-		#endregion
-		
-		#region 2 parameters.
+        #endregion
+        
+        #region 2 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -194,8 +194,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, TResult> Func<T1, T2, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -208,7 +208,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -220,8 +220,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, TResult> ConstructorFunc<T1, T2, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -234,7 +234,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -259,9 +259,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2));
         }
-		#endregion
-		
-		#region 3 parameters.
+        #endregion
+        
+        #region 3 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -274,8 +274,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, TResult> Func<T1, T2, T3, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -288,7 +288,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -301,8 +301,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, TResult> ConstructorFunc<T1, T2, T3, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -315,7 +315,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -341,9 +341,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3));
         }
-		#endregion
-		
-		#region 4 parameters.
+        #endregion
+        
+        #region 4 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -357,8 +357,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, TResult> Func<T1, T2, T3, T4, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -371,7 +371,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -385,8 +385,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, TResult> ConstructorFunc<T1, T2, T3, T4, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -399,7 +399,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -426,9 +426,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4));
         }
-		#endregion
-		
-		#region 5 parameters.
+        #endregion
+        
+        #region 5 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -443,8 +443,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, TResult> Func<T1, T2, T3, T4, T5, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -457,7 +457,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -472,8 +472,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, TResult> ConstructorFunc<T1, T2, T3, T4, T5, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -486,7 +486,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -514,9 +514,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
         }
-		#endregion
-		
-		#region 6 parameters.
+        #endregion
+        
+        #region 6 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -532,8 +532,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, TResult> Func<T1, T2, T3, T4, T5, T6, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -546,7 +546,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -562,8 +562,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -576,7 +576,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -605,9 +605,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6));
         }
-		#endregion
-		
-		#region 7 parameters.
+        #endregion
+        
+        #region 7 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -624,8 +624,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Func<T1, T2, T3, T4, T5, T6, T7, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -638,7 +638,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -655,8 +655,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -669,7 +669,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -699,9 +699,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7));
         }
-		#endregion
-		
-		#region 8 parameters.
+        #endregion
+        
+        #region 8 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -719,8 +719,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -733,7 +733,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -751,8 +751,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -765,7 +765,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -796,9 +796,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8));
         }
-		#endregion
-		
-		#region 9 parameters.
+        #endregion
+        
+        #region 9 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -817,8 +817,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -831,7 +831,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -850,8 +850,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -864,7 +864,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -896,9 +896,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9));
         }
-		#endregion
-		
-		#region 10 parameters.
+        #endregion
+        
+        #region 10 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -918,8 +918,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -932,7 +932,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -952,8 +952,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -966,7 +966,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -999,9 +999,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10));
         }
-		#endregion
-		
-		#region 11 parameters.
+        #endregion
+        
+        #region 11 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -1022,8 +1022,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -1036,7 +1036,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -1057,8 +1057,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -1071,7 +1071,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -1105,9 +1105,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11));
         }
-		#endregion
-		
-		#region 12 parameters.
+        #endregion
+        
+        #region 12 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -1129,8 +1129,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -1143,7 +1143,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -1165,8 +1165,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -1179,7 +1179,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -1214,9 +1214,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12));
         }
-		#endregion
-		
-		#region 13 parameters.
+        #endregion
+        
+        #region 13 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -1239,8 +1239,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -1253,7 +1253,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -1276,8 +1276,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -1290,7 +1290,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -1326,9 +1326,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13));
         }
-		#endregion
-		
-		#region 14 parameters.
+        #endregion
+        
+        #region 14 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -1352,8 +1352,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -1366,7 +1366,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -1390,8 +1390,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -1404,7 +1404,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -1441,9 +1441,9 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14));
         }
-		#endregion
-		
-		#region 15 parameters.
+        #endregion
+        
+        #region 15 parameters.
         /// <summary>
         ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
         /// </summary>
@@ -1468,8 +1468,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a method base.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -1482,7 +1482,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
         /// </summary>
@@ -1507,8 +1507,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A functional equivalent of a type constructor.
         /// </returns>
-		[NotNull]
-		[PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -1521,7 +1521,7 @@ namespace WebApplications.Utilities
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof (TResult));
         }
-		
+        
         /// <summary>
         ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
         /// </summary>
@@ -1559,7 +1559,7 @@ namespace WebApplications.Utilities
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15));
         }
-		#endregion
-	}
+        #endregion
+    }
 }
  

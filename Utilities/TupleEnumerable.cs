@@ -1,4 +1,13 @@
-﻿ 
+﻿
+
+
+
+
+
+
+
+
+ 
  
 #region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
@@ -43,6 +52,7 @@ namespace WebApplications.Utilities
     public static class TupleEnumerable
     {
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2}"/> that has the specified type arguments.
         /// </summary>
@@ -84,6 +94,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3}"/> that has the specified type arguments.
@@ -127,6 +138,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4}"/> that has the specified type arguments.
@@ -172,6 +184,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5}"/> that has the specified type arguments.
         /// </summary>
@@ -216,6 +229,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6}"/> that has the specified type arguments.
@@ -263,6 +277,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7}"/> that has the specified type arguments.
         /// </summary>
@@ -309,6 +324,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8}"/> that has the specified type arguments.
@@ -358,6 +374,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/> that has the specified type arguments.
         /// </summary>
@@ -406,6 +423,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/> that has the specified type arguments.
@@ -457,6 +475,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/> that has the specified type arguments.
         /// </summary>
@@ -507,6 +526,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/> that has the specified type arguments.
@@ -560,6 +580,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/> that has the specified type arguments.
         /// </summary>
@@ -612,6 +633,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/> that has the specified type arguments.
@@ -667,6 +689,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/> that has the specified type arguments.
         /// </summary>
@@ -721,6 +744,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/> that has the specified type arguments.
@@ -778,6 +802,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/> that has the specified type arguments.
         /// </summary>
@@ -834,6 +859,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/> that has the specified type arguments.
@@ -893,6 +919,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/> that has the specified type arguments.
         /// </summary>
@@ -951,6 +978,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/> that has the specified type arguments.
@@ -1012,6 +1040,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/> that has the specified type arguments.
         /// </summary>
@@ -1072,6 +1101,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/> that has the specified type arguments.
@@ -1135,6 +1165,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/> that has the specified type arguments.
         /// </summary>
@@ -1197,6 +1228,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/> that has the specified type arguments.
@@ -1262,6 +1294,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/> that has the specified type arguments.
         /// </summary>
@@ -1326,6 +1359,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/> that has the specified type arguments.
@@ -1393,6 +1427,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/> that has the specified type arguments.
         /// </summary>
@@ -1459,6 +1494,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/> that has the specified type arguments.
@@ -1528,6 +1564,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/> that has the specified type arguments.
         /// </summary>
@@ -1596,6 +1633,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/> that has the specified type arguments.
@@ -1667,6 +1705,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/> that has the specified type arguments.
         /// </summary>
@@ -1737,6 +1776,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/> that has the specified type arguments.
@@ -1810,6 +1850,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/> that has the specified type arguments.
         /// </summary>
@@ -1882,6 +1923,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/> that has the specified type arguments.
@@ -1957,6 +1999,7 @@ namespace WebApplications.Utilities
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
 
+
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/> that has the specified type arguments.
         /// </summary>
@@ -2031,6 +2074,7 @@ namespace WebApplications.Utilities
             public IEnumerator<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>> GetEnumerator() { return _enum.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() {  return _enum.GetEnumerator(); }
         }
+
     }
 }
  

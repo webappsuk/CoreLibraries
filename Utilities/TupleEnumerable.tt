@@ -43,7 +43,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -76,8 +76,8 @@ namespace WebApplications.Utilities
                                   Environment.NewLine,
                                   i));
                 String t = tuple.ToString() + tupleEnd.ToString();
-				if (i<2) continue;
-	#>
+                if (i<2) continue;
+    #>
 
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{<#= typeParams #>}"/> that has the specified type arguments.

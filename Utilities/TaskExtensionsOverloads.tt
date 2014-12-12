@@ -36,7 +36,7 @@ int maxParameters = 15;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -52,8 +52,8 @@ StringBuilder paramsComments = new StringBuilder();
 StringBuilder paramsWithType = new StringBuilder();
 StringBuilder paramsWithoutType = new StringBuilder("(");
 for (int i = 0; i < maxParameters; i++) { #>
-		
-		#region <#= i #> parameters.
+        
+        #region <#= i #> parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary><#= typeComments #>
@@ -83,19 +83,19 @@ for (int i = 0; i < maxParameters; i++) { #>
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-		#endregion
+        #endregion
 <# 
-	typeParams.Append(string.Format("TArg{0}, ", (i+1)));
-	typeComments.Append(string.Format("{0}        /// <typeparam name=\"TArg{1}\">The type of argument {1}.</typeparam>",
-		Environment.NewLine,
-		(i+1)));
-	paramsComments.Append(string.Format("{0}        /// <param name=\"arg{1}\">Argument {1} of the begin call.</param>",
-		Environment.NewLine,
-		(i+1)));
-	paramsWithType.Append(string.Format("{0}            TArg{1} arg{1},",
-		Environment.NewLine,
-		(i+1)));
-	paramsWithoutType.Append(string.Format("arg{0}, ", (i+1)));
+    typeParams.Append(string.Format("TArg{0}, ", (i+1)));
+    typeComments.Append(string.Format("{0}        /// <typeparam name=\"TArg{1}\">The type of argument {1}.</typeparam>",
+        Environment.NewLine,
+        (i+1)));
+    paramsComments.Append(string.Format("{0}        /// <param name=\"arg{1}\">Argument {1} of the begin call.</param>",
+        Environment.NewLine,
+        (i+1)));
+    paramsWithType.Append(string.Format("{0}            TArg{1} arg{1},",
+        Environment.NewLine,
+        (i+1)));
+    paramsWithoutType.Append(string.Format("arg{0}, ", (i+1)));
 } #>
 /*
 
@@ -133,7 +133,7 @@ for (int i = 0; i < maxParameters; i++) { #>
             // ReSharper restore AssignNullToNotNullAttribute
         }
 */
-	}
+    }
 }
  
 <#+
