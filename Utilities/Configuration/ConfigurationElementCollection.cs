@@ -29,7 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
 {

@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime;
 using System.Runtime.Caching;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Caching
 {

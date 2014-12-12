@@ -31,7 +31,7 @@ using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Formatting
 {

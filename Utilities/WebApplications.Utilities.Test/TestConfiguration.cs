@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Configuration;
 

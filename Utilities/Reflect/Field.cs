@@ -30,7 +30,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Reflect
 {

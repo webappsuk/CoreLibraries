@@ -33,7 +33,7 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.Win32.SafeHandles;
 using WebApplications.Utilities.Threading;
 

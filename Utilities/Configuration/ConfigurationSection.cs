@@ -32,7 +32,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Configuration;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
 {
@@ -177,8 +177,10 @@ namespace WebApplications.Utilities.Configuration
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse, HeuristicUnreachableCode
                 if (value == null)
                 {
+                    // ReSharper disable HeuristicUnreachableCode
                     value = GetConfiguration();
                     _isSet = false;
+                    // ReSharper restore HeuristicUnreachableCode
                 }
 
                 else if (Equals(_active, value))

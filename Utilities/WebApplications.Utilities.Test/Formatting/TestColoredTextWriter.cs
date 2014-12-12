@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Test.Formatting

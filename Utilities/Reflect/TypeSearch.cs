@@ -27,7 +27,7 @@
 
 using System;
 using System.Diagnostics;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Reflect
 {

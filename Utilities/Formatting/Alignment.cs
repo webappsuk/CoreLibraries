@@ -26,7 +26,7 @@
 #endregion
 
 using System.ComponentModel;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Formatting
 {

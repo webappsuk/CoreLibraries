@@ -26,7 +26,7 @@
 #endregion
 
 using System.IO;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting

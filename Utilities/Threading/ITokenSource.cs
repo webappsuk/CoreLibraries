@@ -27,7 +27,7 @@
 
 using System;
 using System.Threading;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
 {

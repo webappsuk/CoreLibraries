@@ -157,8 +157,9 @@
     <AssemblyOriginatorKeyFile>Web Applications UK - Core.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations">
-      <HintPath>packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
+    <Reference Include="NodaTime">
+      <HintPath>packages\NodaTime.1.3.0\lib\net35-Client\NodaTime.dll</HintPath>
+      <Aliases>global</Aliases>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -181,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accessor.cs" />
+    <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
     <Compile Include="BigArray.cs" />
     <Compile Include="Caching\CachingDictionaryBase.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="Configuration\ConfigurationSection.cs" />
     <Compile Include="Configuration\ParameterCollection.cs" />
     <Compile Include="Configuration\ParameterElement.cs" />
+    <Compile Include="Configuration\UtilityConfiguration.cs" />
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="CSharpExpressionWriter.cs" />
     <Compile Include="CyclicQueue.cs" />
@@ -252,12 +255,19 @@
     <Compile Include="IReadOnlyLookup.cs" />
     <Compile Include="Array.cs" />
     <Compile Include="ParameterUsageVisitor.cs" />
+    <Compile Include="Ranges\DurationRange.cs" />
+    <Compile Include="Ranges\InstantRange.cs" />
+    <Compile Include="Ranges\LocalDateRange.cs" />
+    <Compile Include="Ranges\LocalDateTimeRange.cs" />
+    <Compile Include="Ranges\LocalTimeRange.cs" />
+    <Compile Include="Ranges\ZonedDateTimeRange.cs" />
     <Compile Include="Reflect\InfoHelper.cs" />
     <Compile Include="ResettableLazy.cs" />
     <Compile Include="Threading\AsyncTimer.cs" />
     <Compile Include="Threading\CancelableTask.cs" />
     <Compile Include="Threading\ICancelableTask.cs" />
     <Compile Include="ThreadLocal.cs" />
+    <Compile Include="TimeHelpers.cs" />
     <Compile Include="TupleEnumerable.cs">
       <DependentUpon>TupleEnumerable.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -409,10 +419,14 @@
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="ExpressionExtensionOverloads.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ExpressionExtensionOverloads.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\tzdb2014f.nzd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TupleEnumerable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

@@ -26,7 +26,7 @@
 #endregion
 
 using System.Data.SqlTypes;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {

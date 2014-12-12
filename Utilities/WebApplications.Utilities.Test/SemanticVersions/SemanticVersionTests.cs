@@ -27,7 +27,7 @@
 
 using System;
 using System.Diagnostics;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.Test.SemanticVersions

@@ -26,7 +26,7 @@
 #endregion
 
 using System.Threading;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities

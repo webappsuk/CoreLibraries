@@ -27,7 +27,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {

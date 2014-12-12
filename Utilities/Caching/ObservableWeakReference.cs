@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Caching

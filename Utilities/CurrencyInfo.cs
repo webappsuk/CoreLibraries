@@ -33,7 +33,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {

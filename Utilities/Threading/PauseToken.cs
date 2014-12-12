@@ -28,7 +28,7 @@
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
 {
@@ -101,7 +101,7 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         [PublicAPI]
         [NotNull]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         [System.Diagnostics.Contracts.Pure]
         public Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {

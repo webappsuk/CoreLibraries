@@ -38,7 +38,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities
@@ -1567,7 +1567,7 @@ namespace WebApplications.Utilities
         /// <returns></returns> 
         /// <remarks></remarks> 
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static bool DescendsFrom([NotNull] this Type sourceType, [NotNull] Type baseType)
         {
             do
@@ -1586,7 +1586,7 @@ namespace WebApplications.Utilities
         /// <param name="sourceType">Type of the source.</param>
         /// <returns></returns>
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static bool DescendsFrom<TBase>([NotNull] this Type sourceType)
         {
             do
@@ -1605,7 +1605,7 @@ namespace WebApplications.Utilities
         /// <param name="interfaceType">The type of the interface.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         [PublicAPI]
         public static bool ImplementsInterface([NotNull] this Type type, [NotNull] Type interfaceType)
         {
@@ -1626,7 +1626,7 @@ namespace WebApplications.Utilities
         /// <param name="type">The type to check.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         [PublicAPI]
         public static bool ImplementsInterface<TInterface>([NotNull] this Type type)
         {
