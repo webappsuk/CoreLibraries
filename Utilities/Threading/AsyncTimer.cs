@@ -155,7 +155,7 @@ namespace WebApplications.Utilities.Threading
 
         private TimeOuts _timeOuts;
 
-        private int _rumImmediate;
+        private int _runImmediate;
         private TaskCompletionSource<bool> _callbackCompletionSource;
 
         /// <summary>
@@ -220,95 +220,96 @@ namespace WebApplications.Utilities.Threading
             long endTicks = long.MinValue;
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Check for pausing.
-                await _pauseToken.WaitWhilePausedAsync(cancellationToken).ConfigureAwait(false);
-                if (cancellationToken.IsCancellationRequested) return;
-
                 CancellationTokenSource timeoutsChanged;
-                do
-                {
-                    // Create new cancellation token source and set _timeOutsChanged to it in a thread-safe none-locking way.
-                    timeoutsChanged = new CancellationTokenSource();
-                    CancellationTokenSource toc = Interlocked.Exchange(ref _timeOutsChanged, timeoutsChanged);
-                    if (ReferenceEquals(toc, null))
-                    {
-                        toc = Interlocked.CompareExchange(ref _timeOutsChanged, null, timeoutsChanged);
-                        if (!ReferenceEquals(toc, null))
-                            toc.Dispose();
-                        return;
-                    }
 
-                    using (ITokenSource tokenSource = cancellationToken.CreateLinked(timeoutsChanged.Token))
+                // Check we're not set to run immediately
+                if (Interlocked.Exchange(ref _runImmediate, 0) == 0)
+                    do
                     {
-                        // Get timeouts
-                        TimeOuts timeOuts = _timeOuts;
-                        if (ReferenceEquals(timeOuts, null)) return;
-
-                        if (timeOuts.DueTimeMs < 0 ||
-                            (startTicks > -1 && (timeOuts.MinimumGapMs < 0 || timeOuts.PeriodMs < 0)))
+                        // Create new cancellation token source and set _timeOutsChanged to it in a thread-safe none-locking way.
+                        timeoutsChanged = new CancellationTokenSource();
+                        CancellationTokenSource toc = Interlocked.Exchange(ref _timeOutsChanged, timeoutsChanged);
+                        if (ReferenceEquals(toc, null))
                         {
-                            // If we have infinite waits then we are effectively awaiting cancellation
-                            // ReSharper disable once PossibleNullReferenceException
-                            await tokenSource.ConfigureAwait(false);
+                            toc = Interlocked.CompareExchange(ref _timeOutsChanged, null, timeoutsChanged);
+                            if (!ReferenceEquals(toc, null))
+                                toc.Dispose();
+                            return;
+                        }
 
+                        // If we have run immediate set at this point, we can't rely on the correct _timeOutsChanged cts being cancelled.
+                        if (Interlocked.Exchange(ref _runImmediate, 0) > 0) break;
+
+                        using (ITokenSource tokenSource = cancellationToken.CreateLinked(timeoutsChanged.Token))
+                        {
+                            // Check for pausing.
+                            await _pauseToken.WaitWhilePausedAsync(tokenSource.Token).ConfigureAwait(false);
                             if (cancellationToken.IsCancellationRequested) return;
-                            continue;
+
+                            // Get timeouts
+                            TimeOuts timeOuts = _timeOuts;
+                            if (ReferenceEquals(timeOuts, null)) return;
+
+                            if (timeOuts.DueTimeMs < 0 ||
+                                (startTicks > -1 && (timeOuts.MinimumGapMs < 0 || timeOuts.PeriodMs < 0)))
+                            {
+                                // If we have infinite waits then we are effectively awaiting cancellation
+                                // ReSharper disable once PossibleNullReferenceException
+                                await tokenSource.ConfigureAwait(false);
+
+                                if (cancellationToken.IsCancellationRequested) return;
+                                continue;
+                            }
+
+                            // If all timeouts are zero we effectively run again immediately (after checking we didn't get a cancellation
+                            // indicating the value have changed again).
+                            if (timeOuts.DueTimeMs == 0 &&
+                                timeOuts.MinimumGapMs == 0 &&
+                                timeOuts.PeriodMs == 0)
+                                continue;
+
+                            int wait;
+
+                            if (startTicks > -1)
+                            {
+                                // Calculate the wait time based on the minimum gap and the period.
+                                long now = Stopwatch.GetTimestamp();
+                                int a = timeOuts.PeriodMs - (int)(_ticksToMs * (now - startTicks));
+                                int b = timeOuts.MinimumGapMs - (int)(_ticksToMs * (now - endTicks));
+                                int c = (int)(_ticksToMs * (timeOuts.DueTimeStamp - now));
+
+                                wait = Math.Max(a, Math.Max(b, c));
+                            }
+                            else
+                            // Wait the initial due time
+                                wait = (int)(_ticksToMs * (timeOuts.DueTimeStamp - Stopwatch.GetTimestamp()));
+
+                            // If we don't need to wait run again immediately (after checking values haven't changed).
+                            if (wait < 1) continue;
+
+                            try
+                            {
+                                // Wait for set milliseconds
+                                // ReSharper disable PossibleNullReferenceException
+                                await Task.Delay(wait, tokenSource.Token).ConfigureAwait(false);
+                                // ReSharper restore PossibleNullReferenceException
+                            }
+                            catch (OperationCanceledException)
+                            {
+                            }
                         }
 
-                        // If we need to run immediately, we dont check for cancellation indicating value change
-                        if (Interlocked.CompareExchange(ref _rumImmediate, 0, 1) == 1)
-                            break;
-
-                        // If all timeouts are zero we effectively run again immediately (after checking we didn't get a cancellation
-                        // indicating the value have changed again).
-                        if (timeOuts.DueTimeMs == 0 &&
-                            timeOuts.MinimumGapMs == 0 &&
-                            timeOuts.PeriodMs == 0)
-                            continue;
-
-                        int wait;
-
-                        if (startTicks > -1)
-                        {
-                            // Calculate the wait time based on the minimum gap and the period.
-                            long now = Stopwatch.GetTimestamp();
-                            int a = timeOuts.PeriodMs - (int)(_ticksToMs * (now - startTicks));
-                            int b = timeOuts.MinimumGapMs - (int)(_ticksToMs * (now - endTicks));
-                            int c = (int)(_ticksToMs * (timeOuts.DueTimeStamp - now));
-
-                            wait = Math.Max(a, Math.Max(b, c));
-                        }
-                        else
-                        // Wait the initial due time
-                            wait = (int)(_ticksToMs * (timeOuts.DueTimeStamp - Stopwatch.GetTimestamp()));
-
-                        // If we don't need to wait run again immediately (after checking values haven't changed).
-                        if (wait < 1) continue;
-
-                        try
-                        {
-                            // Wait for set milliseconds
-                            // ReSharper disable PossibleNullReferenceException
-                            await Task.Delay(wait, tokenSource.Token).ConfigureAwait(false);
-                            // ReSharper restore PossibleNullReferenceException
-                        }
-                        catch (OperationCanceledException)
-                        {
-                        }
-                    }
-
-                    // Recalculate wait time if 'cancelled' due to signal
-                } while (timeoutsChanged.IsCancellationRequested &&
-                         !cancellationToken.IsCancellationRequested);
+                        // Recalculate wait time if 'cancelled' due to signal, and not set to run immediately; or if we're currently paused.
+                    } while (
+                        _pauseToken.IsPaused ||
+                        (timeoutsChanged.IsCancellationRequested &&
+                         !cancellationToken.IsCancellationRequested &&
+                         Interlocked.Exchange(ref _runImmediate, 0) < 1));
 
                 if (cancellationToken.IsCancellationRequested) return;
 
                 try
                 {
-                    // Check for pausing.
-                    await _pauseToken.WaitWhilePausedAsync(cancellationToken).ConfigureAwait(false);
-                    if (cancellationToken.IsCancellationRequested) return;
-
                     Interlocked.CompareExchange(ref _callbackCompletionSource, new TaskCompletionSource<bool>(), null);
 
                     startTicks = Stopwatch.GetTimestamp();
@@ -331,7 +332,7 @@ namespace WebApplications.Utilities.Threading
 
                     return;
                 }
-                    // ReSharper disable once EmptyGeneralCatchClause
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch (Exception exception)
                 {
                     // Supress errors thrown by callback, unless someone is awaiting it.
@@ -346,6 +347,9 @@ namespace WebApplications.Utilities.Threading
                 finally
                 {
                     endTicks = Stopwatch.GetTimestamp();
+
+                    // If run immediately was set whilst we were running, we can clear it.
+                    Interlocked.Exchange(ref _runImmediate, 0);
 
                     TaskCompletionSource<bool> callbackCompletionSource =
                         Interlocked.Exchange(ref _callbackCompletionSource, null);
@@ -366,7 +370,7 @@ namespace WebApplications.Utilities.Threading
         /// An awaitable task.
         /// </returns>
         /// <remarks>
-        /// This makes it easy to programmatically trigger the execution of a task that normally runs on a timer.
+        /// <para>This makes it easy to programmatically trigger the execution of a task that normally runs on a timer.</para>
         /// </remarks>#
         [NotNull]
         [PublicAPI]
@@ -384,7 +388,7 @@ namespace WebApplications.Utilities.Threading
                 null);
             if (ReferenceEquals(oldTcs, null))
             {
-                Interlocked.Exchange(ref _rumImmediate, 1);
+                Interlocked.Exchange(ref _runImmediate, 1);
 
                 timeOutsChanged.Cancel();
             }
