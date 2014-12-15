@@ -17,7 +17,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;BUILD_TASKS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -38,6 +38,11 @@
     <Compile Include="DownloadCurrencies.cs" />
     <Compile Include="DownloadTZDB.cs" />
     <Compile Include="DownloadFile.cs" />
+    <Compile Include="..\CurrencyInfoProvider.cs" />
+    <Compile Include="..\CurrencyInfoExtensions.cs" />
+    <Compile Include="..\ICurrencyInfoProvider.cs" />
+    <Compile Include="..\CurrencyInfo.cs" />
+    <Compile Include="..\Annotations\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

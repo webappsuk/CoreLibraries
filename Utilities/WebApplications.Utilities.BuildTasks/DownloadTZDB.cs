@@ -32,12 +32,14 @@ using System.Linq;
 using System.Net;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.BuildTasks
 {
     /// <summary>
     /// Downloads a file from the internet to a specified location.
     /// </summary>
+    [UsedImplicitly]
     public class DownloadTZDB : Task
     {
         /// <summary>
@@ -46,6 +48,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The URL.
         /// </value>
+        [UsedImplicitly]
         public string TZDBUri { get; set; }
 
         /// <summary>
@@ -53,6 +56,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// </summary>
         /// <value>The output file path.</value>
         /// <remarks></remarks>
+        [UsedImplicitly]
         public string OutputFolderPath { get; set; }
 
         /// <summary>
@@ -60,6 +64,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// </summary>
         /// <value>The output file path.</value>
         /// <remarks></remarks>
+        [UsedImplicitly]
         public string OutputFileName { get; set; }
 
         /// <summary>
@@ -68,6 +73,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// <see langword="true" /> if overwrite; otherwise, <see langword="false" />.
         /// </value>
+        [UsedImplicitly]
         public bool Overwrite { get; set; }
 
         /// <summary>
@@ -76,6 +82,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// <see langword="true" /> to use default credentials; otherwise, <see langword="false" />.
         /// </value>
+        [UsedImplicitly]
         public bool UseDefaultCredentials { get; set; }
 
         /// <summary>
@@ -84,6 +91,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The username.
         /// </value>
+        [UsedImplicitly]
         public string Username { get; set; }
 
         /// <summary>
@@ -92,6 +100,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The password.
         /// </value>
+        [UsedImplicitly]
         public string Password { get; set; }
 
         /// <summary>
@@ -100,6 +109,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The domain.
         /// </value>
+        [UsedImplicitly]
         public string Domain { get; set; }
 
         /// <summary>
@@ -159,21 +169,16 @@ namespace WebApplications.Utilities.BuildTasks
 
                     // Create the download file path.
                     path = Path.Combine(path, fileName);
-                    if (File.Exists(path))
+                    if (File.Exists(path) &&
+                        !Overwrite)
                     {
-                        if (!Overwrite)
-                        {
-                            Log.LogMessage(
-                                MessageImportance.Normal,
-                                string.Format(
-                                    "The output file path '{0}' exists and we are not overwriting so skipping download from '{1}'.",
-                                    path,
-                                    uri));
-                            return true;
-                        }
-
-                        // Delete the existing.
-                        File.Delete(path);
+                        Log.LogMessage(
+                            MessageImportance.Normal,
+                            string.Format(
+                                "The output file path '{0}' exists and we are not overwriting so skipping download from '{1}'.",
+                                path,
+                                uri));
+                        return true;
                     }
 
                     Log.LogMessage("Downloading TZDB from '{0}' to '{1}'.", uri, path);

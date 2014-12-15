@@ -29,13 +29,15 @@
       Condition="'$(DownloadTZDB)'=='true'"/>
 
     <DownloadCurrencies
-      ISO4271Uri="http://www.currency-iso.org/dam/downloads/table_a1.xml"
-      OutputFilePath="$(ResourcesPath)iso4271.bcr"
-      Condition="'$(DownloadISO4271)'=='true'"/>
+      ISO4217Uri="http://www.currency-iso.org/dam/downloads/table_a1.xml"
+      OutputFilePath="$(ResourcesPath)iso4217.ccy"
+      Merge="true"
+      Condition="'$(DownloadISO4217)'=='true'"/>
     
     <ItemGroup>
       <ResourceFiles Include="$(ResourcesPath)\*.*"/>
     </ItemGroup>
+    
     <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)\Resources"/>
   </Target>
 

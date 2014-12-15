@@ -196,6 +196,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter &apos;cultureCode&apos; can not be null.
+        /// </summary>
+        internal static string CultureInfoProvider_CultureNameCannotBeNull {
+            get {
+                return ResourceManager.GetString("CultureInfoProvider_CultureNameCannotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter &apos;cultureInfo&apos; can not be null.
         /// </summary>
         internal static string CurrencyInfo_CultureInfoCannotBeNull {
@@ -228,6 +237,33 @@ namespace WebApplications.Utilities {
         internal static string CurrencyInfo_ToString {
             get {
                 return ResourceManager.GetString("CurrencyInfo_ToString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load the currency information from the ISO 4217 file &apos;{0}&apos;..
+        /// </summary>
+        internal static string CurrencyInfoProvider_CurrencyInfoProvider_DataInvalid {
+            get {
+                return ResourceManager.GetString("CurrencyInfoProvider_CurrencyInfoProvider_DataInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified path to the ISO 4217 file &apos;{0}&apos; does not exist..
+        /// </summary>
+        internal static string CurrencyInfoProvider_CurrencyInfoProvider_FileNotFound {
+            get {
+                return ResourceManager.GetString("CurrencyInfoProvider_CurrencyInfoProvider_FileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A fatal exception occurred whilst trying to load the ISO 4217 file &apos;{0}..
+        /// </summary>
+        internal static string CurrencyInfoProvider_CurrencyInfoProvider_LoadError {
+            get {
+                return ResourceManager.GetString("CurrencyInfoProvider_CurrencyInfoProvider_LoadError", resourceCulture);
             }
         }
         

@@ -26,13 +26,8 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Resources;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -54,91 +49,34 @@ namespace WebApplications.Utilities
     public class CurrencyInfo
     {
         /// <summary>
-        ///   Stores currency info (by code).
-        /// </summary>
-        [NotNull]
-        private static readonly Dictionary<string, CurrencyInfo> _currencyInfos = new Dictionary<string, CurrencyInfo>();
-
-        /// <summary>
-        ///   Stores the <see cref="RegionInfo"/>s associated with <see cref="CurrencyInfo"/>.
-        /// </summary>
-        [NotNull]
-        private static readonly Dictionary<RegionInfo, CurrencyInfo> _currencyInfoRegions =
-            new Dictionary<RegionInfo, CurrencyInfo>();
-
-        /// <summary>
-        ///   Stores the <see cref="CultureInfo"/>s associated with <see cref="CurrencyInfo"/>.
-        /// </summary>
-        [NotNull]
-        private static readonly Dictionary<CultureInfo, CurrencyInfo> _currencyInfoCultures =
-            new Dictionary<CultureInfo, CurrencyInfo>();
-
-        /// <summary>
-        ///   The enumerator to iterate through the associated <see cref="CultureInfo">cultures</see>.
-        /// </summary>
-        [NotNull]
-        [ItemNotNull]
-        [PublicAPI]
-        public readonly IEnumerable<CultureInfo> Cultures;
-
-        /// <summary>
-        ///   The enumerator to iterate through the associated <see cref="RegionInfo">regions</see>.
-        /// </summary>
-        [NotNull]
-        [ItemNotNull]
-        [PublicAPI]
-        public readonly IEnumerable<RegionInfo> Regions;
-
-        /// <summary>
-        ///   Load currency resources, which are located in Currencies.resx.
-        /// </summary>
-        static CurrencyInfo()
-        {
-            ResourceManager resourceManager =
-                new ResourceManager("WebApplications.Utilities.Currencies", Assembly.GetExecutingAssembly());
-
-            ResourceSet resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-            if (resourceSet == null)
-                return;
-
-            foreach (DictionaryEntry entry in resourceSet)
-                CreateCurrencyInfo(entry);
-        }
-
-        /// <summary>
-        ///   Initialize a new instance of <see cref="CurrencyInfo"/>.
+        /// Initialize a new instance of <see cref="CurrencyInfo" />.
         /// </summary>
         /// <param name="code">The ISO Code.</param>
         /// <param name="isoNumber">The ISO Number.</param>
-        /// <param name="exponent">
-        ///   The exponent, which is the number of decimals available in the currency.
-        /// </param>
+        /// <param name="exponent">The exponent, which is the number of decimals available in the currency.</param>
         /// <param name="fullName">The currency's full name.</param>
-        private CurrencyInfo(
+        /// <param name="isLatest">if set to <see langword="true" /> the currency appears in the latest official ISO 4217 list.</param>
+        public CurrencyInfo(
             [NotNull] string code,
             int isoNumber,
             [CanBeNull] int? exponent,
-            [NotNull] string fullName)
+            [NotNull] string fullName,
+            bool isLatest)
         {
             Code = code;
             ISONumber = isoNumber;
             Exponent = exponent;
             FullName = fullName;
-            Regions = CultureHelper.RegionInfoFromCurrencyISO(code);
-            Cultures = CultureHelper.CultureInfoFromCurrencyISO(code);
+            IsLatest = isLatest;
         }
 
         /// <summary>
-        /// Gets all known <see cref="CurrencyInfo"/>.
+        /// Gets the out of date equivalent of this <see cref="CurrencyInfo"/>.
         /// </summary>
-        /// <value>All.</value>
-        /// <remarks>TODO Add remarks</remarks>
-        [NotNull]
-        [ItemNotNull]
-        [PublicAPI]
-        public static IEnumerable<CurrencyInfo> All
+        /// <returns></returns>
+        public CurrencyInfo GetOutOfDate()
         {
-            get { return _currencyInfos.Values; }
+            return !IsLatest ? this : new CurrencyInfo(Code, ISONumber, Exponent, FullName, false);
         }
 
         /// <summary>
@@ -146,156 +84,35 @@ namespace WebApplications.Utilities
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public string Code { get; private set; }
+        public readonly string Code;
 
         /// <summary>
         ///   Gets the ISO Number.
         /// </summary>
         [PublicAPI]
-        public int ISONumber { get; private set; }
+        public readonly int ISONumber;
 
         /// <summary>
         ///   Gets the exponent, which is the number of decimals available in the currency.
         /// </summary>
         [CanBeNull]
         [PublicAPI]
-        public int? Exponent { get; private set; }
+        public readonly int? Exponent;
 
         /// <summary>
         ///   Gets the currency's full name.
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public string FullName { get; private set; }
+        public readonly string FullName;
 
         /// <summary>
-        /// Creates the currency info.
+        /// Indicates that this currency appears in the latest official ISO 4217 list.
         /// </summary>
-        /// <param name="entry">The entry from the resource file.</param>
-        private static void CreateCurrencyInfo(DictionaryEntry entry)
-        {
-            string currencyCode = entry.Key.ToString();
-            if ((currencyCode.Length != 3) ||
-                (_currencyInfos.ContainsKey(currencyCode)))
-                return;
-
-            string[] details = entry.Value.ToString().Split(',');
-
-            if (details.Length != 3)
-                return;
-
-            int isoNumber = int.Parse(details[0]);
-            int? exponent = ParseExponent(details[1]);
-            string fullName = details[2];
-
-            CurrencyInfo currencyInfo = new CurrencyInfo(currencyCode, isoNumber, exponent, fullName);
-            _currencyInfos.Add(currencyCode, currencyInfo);
-
-            foreach (
-                RegionInfo region in currencyInfo.Regions.Where(region => !_currencyInfoRegions.ContainsKey(region)))
-                _currencyInfoRegions.Add(region, currencyInfo);
-            foreach (
-                CultureInfo culture in
-                    currencyInfo.Cultures.Where(culture => !_currencyInfoCultures.ContainsKey(culture)))
-                _currencyInfoCultures.Add(culture, currencyInfo);
-        }
-
-        /// <summary>
-        /// Parses the exponent.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The parsed exponent.</returns>
-        private static int? ParseExponent([NotNull] string value)
-        {
-            if (value.Length <= 0)
-                return null;
-
-            int e;
-            if (!int.TryParse(value, out e))
-                return null;
-            int? exponent = e;
-            return exponent;
-        }
-
-
-        /// <summary>
-        ///   Retrieves a <see cref="CurrencyInfo"/> with the ISO Code specified.
-        /// </summary>
-        /// <param name="currencyCode">The ISO Code.</param>
-        /// <returns>
-        ///   The <see cref="CurrencyInfo"/> that corresponds to the <paramref name="currencyCode"/> specified (if any);
-        ///   otherwise the default value for the type is returned.
-        /// </returns>
-        /// <remarks>l
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="currencyCode"/> cannot be null.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="currencyCode"/> is <see langword="null"/>.
-        /// </exception>
-        [CanBeNull]
         [PublicAPI]
-        public static CurrencyInfo Get([NotNull] string currencyCode)
-        {
-            Contract.Requires(currencyCode != null, Resources.CurrencyInfo_CurrencyCodeCannotBeNull);
+        public readonly bool IsLatest;
 
-            CurrencyInfo currencyInfo;
-            _currencyInfos.TryGetValue(currencyCode, out currencyInfo);
-            return currencyInfo;
-        }
-
-        /// <summary>
-        ///   Retrieves the <see cref="CurrencyInfo"/> with the <see cref="RegionInfo"/> specified.
-        /// </summary>
-        /// <param name="regionInfo">The region info.</param>
-        /// <returns>
-        ///   The <see cref="CurrencyInfo"/> that corresponds to the <paramref name="regionInfo"/> specified (if any);
-        ///   otherwise the default value for the type is returned.
-        /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="regionInfo"/> cannot be null.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="regionInfo"/> is <see langword="null"/>.
-        /// </exception>
-        [CanBeNull]
-        [PublicAPI]
-        public static CurrencyInfo Get([NotNull] RegionInfo regionInfo)
-        {
-            Contract.Requires(regionInfo != null, Resources.CurrencyInfo_RegionInfoCannotBeNull);
-
-            CurrencyInfo currencyInfo;
-            _currencyInfoRegions.TryGetValue(regionInfo, out currencyInfo);
-            return currencyInfo;
-        }
-
-        /// <summary>
-        ///   Retrieves the <see cref="CurrencyInfo"/> using the <see cref="CultureInfo"/> specified.
-        /// </summary>
-        /// <param name="cultureInfo">The culture info.</param>
-        /// <returns>
-        ///   The <see cref="CurrencyInfo"/> that corresponds to the <paramref name="cultureInfo"/> specified (if any);
-        ///   otherwise the default value for the type is returned.
-        /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="cultureInfo"/> cannot be null.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
-        /// </exception>
-        [CanBeNull]
-        [PublicAPI]
-        public static CurrencyInfo Get([NotNull] CultureInfo cultureInfo)
-        {
-            Contract.Requires(cultureInfo != null, Resources.CurrencyInfo_CultureInfoCannotBeNull);
-
-            CurrencyInfo currencyInfo;
-            _currencyInfoCultures.TryGetValue(cultureInfo, out currencyInfo);
-            return currencyInfo;
-        }
-
+#if !BUILD_TASKS
         /// <summary>
         ///   Returns a <see cref="string"/> that represents this instance.
         /// </summary>
@@ -313,5 +130,6 @@ namespace WebApplications.Utilities
         {
             return string.Format(Resources.CurrencyInfo_ToString, FullName, Code, ISONumber);
         }
+#endif
     }
 }

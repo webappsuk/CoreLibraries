@@ -3890,7 +3890,7 @@ namespace WebApplications.Utilities
         /// An <see cref="IEnumerable{T}"/> that yields a single item.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        private sealed class SingleEnumerable<T> : IList<T>, IList
+        private sealed class SingleEnumerable<T> : IList<T>, IList, IReadOnlyList<T>
         {
             private readonly T _value;
 
@@ -4169,5 +4169,6 @@ namespace WebApplications.Utilities
                 set { throw new NotSupportedException(); }
             }
         }
+
     }
 }

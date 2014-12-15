@@ -31,5 +31,7 @@
     <file src="Commit.ps1" target="tools\Commit.ps1" />
     <file src="Scheduling.targets" target="tools\Utility.targets" />
     <file src="bin\Release\Resources\*.*" target="tools\Resources" />
+    <file src="app.config.transform" target="Content" />
+    <file src="web.config.transform" target="Content" />
   </files>
 </package>

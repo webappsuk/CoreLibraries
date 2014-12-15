@@ -32,13 +32,13 @@ using WebApplications.Utilities.Ranges;
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class FinancialRangeTests
+    public class FinancialRangeTests : UtilitiesTestBase
     {
         [TestMethod]
         public void TestEqualFinancialRangesReturnTrue()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialB = new Financial(CurrencyInfo.Get("GBP"), 10);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
 
             Range<Financial> rangeA = new Range<Financial>(financialA, financialB);
             Range<Financial> rangeB = new Range<Financial>(financialA, financialB);
@@ -49,9 +49,9 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void TestEqualFinancialRangesWithStepReturnTrue()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialB = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialC = new Financial(CurrencyInfo.Get("GBP"), 10);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialC = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
 
             Range<Financial> rangeA = new Range<Financial>(financialA, financialB, financialC);
             Range<Financial> rangeB = new Range<Financial>(financialA, financialB, financialC);
@@ -62,9 +62,9 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void TestNonEqualFinancialRangesReferencesWithEqualValuesReturnsTrue()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialB = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialC = new Financial(CurrencyInfo.Get("GBP"), 10);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialC = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
 
             Range<Financial> rangeA = new Range<Financial>(financialA, financialB);
             Range<Financial> rangeB = new Range<Financial>(financialA, financialC);

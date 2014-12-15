@@ -222,8 +222,8 @@ namespace WebApplications.Utilities
         public static CurrencyInfo CurrencyInfo([NotNull] this RegionInfo regionInfo)
         {
             Contract.Requires(regionInfo != null, Resources.CultureHelper_RegionInfoCannotBeNull);
-
-            return Utilities.CurrencyInfo.Get(regionInfo);
+            
+            return CurrencyInfoProvider.Current.Get(regionInfo.ISOCurrencySymbol);
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(cultureInfo != null, Resources.CultureHelper_CultureInfoCannotBeNull);
 
-            return Utilities.CurrencyInfo.Get(cultureInfo);
+            return CurrencyInfoProvider.Current.Get(cultureInfo);
         }
 
         /// <summary>

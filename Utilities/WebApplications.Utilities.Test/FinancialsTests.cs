@@ -41,7 +41,14 @@ namespace WebApplications.Utilities.Test
     public class FinancialsTests : UtilitiesTestBase
     {
         private readonly decimal _amount = Random.RandomDecimal();
-        private readonly CurrencyInfo _gbp = CurrencyInfo.Get("GBP");
+        private static readonly CurrencyInfo _gbp = CurrencyInfoProvider.Current.Get("GBP");
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            if (_gbp == null)
+                Assert.Inconclusive("The test GBP currency info is null");
+        }
 
         [TestMethod]
         public void TestConstructorSetsCurrencyInfoPropertyToExpectedValue()
@@ -86,8 +93,8 @@ namespace WebApplications.Utilities.Test
         [ExpectedException(typeof (InvalidOperationException))]
         public void TestAddOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
-            Financial financialB = new Financial(CurrencyInfo.Get("USD"), 0);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 0);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("USD"), 0);
             Financial result = financialA + financialB;
         }
 
@@ -109,8 +116,8 @@ namespace WebApplications.Utilities.Test
         [ExpectedException(typeof (InvalidOperationException))]
         public void TestSubtractOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
-            Financial financialB = new Financial(CurrencyInfo.Get("USD"), 0);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 0);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("USD"), 0);
             Financial result = financialA - financialB;
         }
 
@@ -170,8 +177,8 @@ namespace WebApplications.Utilities.Test
         [ExpectedException(typeof (InvalidOperationException))]
         public void TestLessThanOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
-            Financial financialB = new Financial(CurrencyInfo.Get("USD"), 0);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 0);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("USD"), 0);
             bool result = financialA < financialB;
         }
 
@@ -179,8 +186,8 @@ namespace WebApplications.Utilities.Test
         [ExpectedException(typeof (InvalidOperationException))]
         public void TestMoreThanOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
-            Financial financialB = new Financial(CurrencyInfo.Get("USD"), 0);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 0);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("USD"), 0);
             bool result = financialA > financialB;
         }
 
@@ -216,8 +223,8 @@ namespace WebApplications.Utilities.Test
         [ExpectedException(typeof (InvalidOperationException))]
         public void TestLessThanOrEqualToOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
-            Financial financialB = new Financial(CurrencyInfo.Get("USD"), 0);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 0);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("USD"), 0);
             bool result = financialA <= financialB;
         }
 
@@ -225,8 +232,8 @@ namespace WebApplications.Utilities.Test
         [ExpectedException(typeof (InvalidOperationException))]
         public void TestMoreThanOrEqualToOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
-            Financial financialB = new Financial(CurrencyInfo.Get("USD"), 0);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 0);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("USD"), 0);
             bool result = financialA >= financialB;
         }
 
@@ -267,7 +274,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchangeReturnsTheCurrentInstanceIfTheCurrencyParamIsTheSame()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("GBP");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("GBP");
 
             Financial exchangedFinancial = financialA.Exchange(currency);
             Assert.AreSame(financialA, exchangedFinancial);
@@ -277,7 +284,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchangeWithDefaultExchangeRateReturnsEqualAmount()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("USD");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("USD");
 
             Financial exchangedFinancial = financialA.Exchange(currency);
             Assert.AreEqual(financialA.Amount, exchangedFinancial.Amount);
@@ -287,7 +294,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchageWithSpecifiedExchangeRateReturnsExpectedAmount()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("USD");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("USD");
 
             Financial exchangedFinancial = financialA.Exchange(currency, 1.5M);
             Assert.AreEqual(15, exchangedFinancial.Amount);
@@ -297,7 +304,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchangeWithDefaultExchangeRateAndInputChargeReturnsExpectedAmount()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("USD");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("USD");
 
             Financial exchangedFinancial = financialA.Exchange(currency, 1.0M, 20);
             Assert.AreEqual(30, exchangedFinancial.Amount);
@@ -307,7 +314,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchangeWithSpecificExchangeRateAndInputChargeReturnsExpectedAmount()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("USD");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("USD");
 
             Financial exchangedFinancial = financialA.Exchange(currency, 1.25M, 0.75M);
             Assert.AreEqual(13.4375M, exchangedFinancial.Amount);
@@ -317,7 +324,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchangeWithDefaultRateAndInputChargeReturnsTheSameAmount()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("USD");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("USD");
 
             Financial exchangedFinancial = financialA.Exchange(currency);
             Assert.AreEqual(financialA.Amount, exchangedFinancial.Amount);
@@ -327,7 +334,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchangeWithDefaultRateAndOutputChargeReturnsExpectedAmount()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("USD");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("USD");
 
             Financial exchangedFinancial = financialA.Exchange(currency, 1, 0, 8);
             Assert.AreEqual(18, exchangedFinancial.Amount);
@@ -337,7 +344,7 @@ namespace WebApplications.Utilities.Test
         public void TestExchangeWithSpecificRateAndOutputChargeReturnsExpectedResult()
         {
             Financial financialA = new Financial(_gbp, 10);
-            CurrencyInfo currency = CurrencyInfo.Get("USD");
+            CurrencyInfo currency = CurrencyInfoProvider.Current.Get("USD");
 
             Financial exchangedFinancial = financialA.Exchange(currency, 1.25M, 0, 6.5M);
             Assert.AreEqual(19, exchangedFinancial.Amount);
@@ -381,7 +388,7 @@ namespace WebApplications.Utilities.Test
         public void TestToStringFormatsUsingCurrentCultureWhenPossible()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get(CultureInfo.CurrentUICulture);
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get(CultureInfo.CurrentUICulture);
             Financial financial = new Financial(currencyInfo, amount);
             String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "{0:C}", amount);
             Assert.AreEqual(expectedFormat, financial.ToString());
@@ -391,7 +398,7 @@ namespace WebApplications.Utilities.Test
         public void TestToStringFormatsUsingCurrentLanguageWhenPossible()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
             // No Euro in GB, but Ireland has and also at least speaks English (en).
             Financial financial = new Financial(currencyInfo, amount);
@@ -411,7 +418,7 @@ namespace WebApplications.Utilities.Test
         public void TestToStringFormatsUsingCorrectCurrencyWhenCurrencyOfCurrentUICultureDoesNotMatch()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("GBP");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de");
             // No pound in Germany, nor any German speaking countries.
             Financial financial = new Financial(currencyInfo, amount);
@@ -425,7 +432,7 @@ namespace WebApplications.Utilities.Test
         public void TestToStringFormatsUsingCurrentCultureIfCorrectCurrencyIsNotPossible()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("XXX"); // Noone uses this dubiously named currency
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("XXX"); // Noone uses this dubiously named currency
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de");
             Financial financial = new Financial(currencyInfo, amount);
             String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "{0:C}", amount);
@@ -437,7 +444,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithInvalidFormatThrowsFormatException()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("GBP");
             Financial financial = new Financial(currencyInfo, amount);
             string s = String.Format("{0:NOTVALID}", financial);
         }
@@ -447,7 +454,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatProviderAndInvalidFormatThrowsFormatException()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("GBP");
             Financial financial = new Financial(currencyInfo, amount);
             string s = String.Format(CultureInfo.CurrentUICulture, "{0:NOTVALID}", financial);
         }
@@ -456,7 +463,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatIReturnsAmountAndIsoCode()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Financial financial = new Financial(currencyInfo, amount);
             Trace.WriteLine(CultureInfo.CurrentUICulture);
             String expectedFormat = String.Format("{0} {1}", amount, currencyInfo.Code);
@@ -467,7 +474,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatIAndFormatProviderReturnsAmountAndIsoCode()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Financial financial = new Financial(currencyInfo, amount);
             IFormatProvider provider = new CultureInfo("fr-ca").NumberFormat;
             String expectedFormat = String.Format(provider, "{0} {1}", amount, currencyInfo.Code);
@@ -478,7 +485,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithNoFormatUsesFormatI()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Financial financial = new Financial(currencyInfo, amount);
             String expectedFormat = String.Format("{0:I}", financial);
             Assert.AreEqual(expectedFormat, String.Format("{0}", financial));
@@ -488,7 +495,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatCReturnsSameAsToString()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             Financial financial = new Financial(currencyInfo, amount);
             String expectedFormat = financial.ToString();
@@ -499,7 +506,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatCAndCurrentCultureAsProviderReturnsSameAsToString()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             Financial financial = new Financial(currencyInfo, amount);
             IFormatProvider provider = CultureInfo.CurrentUICulture;
@@ -511,7 +518,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatCAndWhenProviderIsNotCultureInfoReturnsSameAsToString()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             Financial financial = new Financial(currencyInfo, amount);
             IFormatProvider provider = NumberFormatInfo.InvariantInfo;
@@ -525,7 +532,7 @@ namespace WebApplications.Utilities.Test
             Decimal amount = Random.RandomDecimal();
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             CultureInfo provider = new CultureInfo("en-GB");
-            CurrencyInfo currencyInfo = CurrencyInfo.Get(provider);
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get(provider);
             Financial financial = new Financial(currencyInfo, amount);
             String expectedFormat = String.Format(provider, "{0:C}", amount);
             Assert.AreEqual(expectedFormat, String.Format(provider, "{0:C}", financial));
@@ -535,7 +542,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatCFormatsUsingCorrectLanguageWhenPossible()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("EUR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-fr");
             // Now if CurrentUICulture is used instead, we get French formatting.
             CultureInfo provider = new CultureInfo("en-GB");
@@ -558,7 +565,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatCFormatsUsingCurrentCurrencyWhenSpecifiedCurrencyDoesNotMatch()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("GBP");
             CultureInfo provider = new CultureInfo("De-de"); // No pound in Germany, nor any German speaking countries.
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             Financial financial = new Financial(currencyInfo, amount);
@@ -573,7 +580,7 @@ namespace WebApplications.Utilities.Test
         public void TestFormatWithFormatCFormatsUsingSpecifiedCultureIfCorrectCurrencyIsNotPossible()
         {
             Decimal amount = Random.RandomDecimal();
-            CurrencyInfo currencyInfo = CurrencyInfo.Get("XXX"); // Noone uses this dubiously named currency
+            CurrencyInfo currencyInfo = CurrencyInfoProvider.Current.Get("XXX"); // Noone uses this dubiously named currency
             CultureInfo provider = new CultureInfo("De-de");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
             Financial financial = new Financial(currencyInfo, amount);
@@ -584,8 +591,8 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestFinancialEqualityComparerReturnsTrueForEqualFinancials()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialB = new Financial(CurrencyInfo.Get("GBP"), 10);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
 
             Assert.IsTrue(financialA == financialB);
         }
@@ -593,8 +600,8 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestFinancialEqualityComparerReturnsFalseForNonEqualFinancialAmounts()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialB = new Financial(CurrencyInfo.Get("GBP"), 11);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 11);
 
             Assert.IsFalse(financialA == financialB);
         }
@@ -602,8 +609,8 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestFinancialEqualityComparerReturnsFalseForNonEqualFinancialCurrencies()
         {
-            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
-            Financial financialB = new Financial(CurrencyInfo.Get("EUR"), 10);
+            Financial financialA = new Financial(CurrencyInfoProvider.Current.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfoProvider.Current.Get("EUR"), 10);
 
             Assert.IsFalse(financialA == financialB);
         }

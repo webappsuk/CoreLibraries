@@ -412,16 +412,29 @@ namespace WebApplications.Utilities.Financials
         /// </returns>
         private string FormatCurrency(CultureInfo culture)
         {
-            if (!_currency.Cultures.Contains(culture))
+            ExtendedCultureInfo[] cultures = CultureInfoProvider.Current.FindByCurrency(_currency).ToArray();
+
+            bool found = false;
+            foreach (ExtendedCultureInfo c in cultures)
             {
-                List<CultureInfo> matchingCultures =
-                    _currency.Cultures.Where(c => c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName)
-                        .ToList();
-                if (matchingCultures.Count > 0)
-                    culture = matchingCultures.First();
-                else if (_currency.Cultures.Any())
-                    culture = _currency.Cultures.First();
+                if (string.Equals(culture.Name, c.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    found = true;
+                    culture = c;
+                    break;
+                }
+
+                if (!found && string.Equals(culture.TwoLetterISOLanguageName, c.TwoLetterISOLanguageName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    found = true;
+                    culture = c;
+                }
             }
+
+            if (!found &&
+                cultures.Length > 0)
+                culture = cultures[0];
+
             return String.Format(culture, "{0:C}", _amount);
         }
 

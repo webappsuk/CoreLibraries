@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Test
@@ -33,6 +34,7 @@ namespace WebApplications.Utilities.Test
     /// <summary>
     /// Utilities Test Base.
     /// </summary>
+    [DeploymentItem("Resource", "Resource")]
     public class UtilitiesTestBase : TestBase
     {
         protected static readonly Random Random = Tester.RandomGenerator;

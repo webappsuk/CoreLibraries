@@ -25,19 +25,28 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Collections.Concurrent;
+using System.Globalization;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace WebApplications.Utilities.Test
+namespace WebApplications.Utilities
 {
-    [TestClass]
-    public class TestCulture : UtilitiesTestBase
+    /// <summary>
+    /// The <see cref="CultureInfoProvider"/> for BCL cultures.
+    /// </summary>
+    public class BclCultureInfoProvider : CultureInfoProvider
     {
-        [TestMethod]
-        public void TestCurrency()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BclCultureInfoProvider"/> class.
+        /// </summary>
+        internal BclCultureInfoProvider()
+            : base(
+                new DateTime(2014, 5, 5),
+                CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Where(c => !ReferenceEquals(c, null))
+                    .Select(c => new ExtendedCultureInfo(c)))
         {
-            Assert.IsTrue(CultureHelper.CultureNames.Contains("de"));
-            CurrencyInfo info = CurrencyInfoProvider.Current.Get("GBP");
         }
     }
 }

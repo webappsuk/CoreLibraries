@@ -28,16 +28,17 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Linq;
 using System.Net;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.BuildTasks
 {
     /// <summary>
     /// Downloads the ISO 4217 Currencies and creates a binary representation.
     /// </summary>
+    [UsedImplicitly]
     public class DownloadCurrencies : Task
     {
         /// <summary>
@@ -46,22 +47,34 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The URL.
         /// </value>
-        public string ISO4271Uri { get; set; }
+        [UsedImplicitly]
+        public string ISO4217Uri { get; set; }
 
         /// <summary>
         /// Gets or sets the output file name.
         /// </summary>
         /// <value>The output file path.</value>
         /// <remarks></remarks>
+        [UsedImplicitly]
         public string OutputFilePath { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to overwite the TZDB if already present.
+        /// Gets or sets a value indicating whether to overwite the currency file if already present.
         /// </summary>
         /// <value>
         /// <see langword="true" /> if overwrite; otherwise, <see langword="false" />.
         /// </value>
+        [UsedImplicitly]
         public bool Overwrite { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to merge the contents when overwriting.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> to merge the contents; otherwise, <see langword="false" />.
+        /// </value>
+        [UsedImplicitly]
+        public bool Merge { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use default credentials.
@@ -69,6 +82,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// <see langword="true" /> to use default credentials; otherwise, <see langword="false" />.
         /// </value>
+        [UsedImplicitly]
         public bool UseDefaultCredentials { get; set; }
 
         /// <summary>
@@ -77,6 +91,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The username.
         /// </value>
+        [UsedImplicitly]
         public string Username { get; set; }
 
         /// <summary>
@@ -85,6 +100,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The password.
         /// </value>
+        [UsedImplicitly]
         public string Password { get; set; }
 
         /// <summary>
@@ -93,6 +109,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The domain.
         /// </value>
+        [UsedImplicitly]
         public string Domain { get; set; }
 
         /// <summary>
@@ -105,31 +122,45 @@ namespace WebApplications.Utilities.BuildTasks
         {
             Contract.Assert(Log != null);
 
-            string path = Path.GetFullPath(OutputFilePath);
-
             // Validate uri.
             Uri uri;
-            if (!Uri.TryCreate(ISO4271Uri, UriKind.Absolute, out uri) ||
+            if (!Uri.TryCreate(ISO4217Uri, UriKind.Absolute, out uri) ||
                 ReferenceEquals(uri, null))
             {
-                Log.LogError("Invalid URL provided - '{0}'.", ISO4271Uri);
+                Log.LogError("Invalid URL provided - '{0}'.", ISO4217Uri);
+                return false;
+
+            }
+
+            if (string.IsNullOrWhiteSpace(OutputFilePath))
+            {
+                Log.LogError("The output path was not specified");
                 return false;
             }
 
+            string path = Path.GetFullPath(OutputFilePath);
             string directoryName = Path.GetDirectoryName(path);
+
             if (string.IsNullOrWhiteSpace(directoryName))
             {
-                Log.LogError("The output directory was not specified");
+                Log.LogError("The output path was not specified");
                 return false;
             }
+
+            bool saveBinary = !string.Equals(Path.GetExtension(path), ".xml", StringComparison.InvariantCultureIgnoreCase);
+            Log.LogMessage(saveBinary ? "Data will be saved in binary." : "Data will be saved in XML.");
 
             try
             {
+                CurrencyInfoProvider existing = null;
+
                 if (!Directory.Exists(directoryName))
                     Directory.CreateDirectory(path);
                 else if (File.Exists(path))
                 {
-                    if (!Overwrite)
+                    if (Merge)
+                        existing = CurrencyInfoProvider.LoadFromFile(path);
+                    else if (!Overwrite)
                     {
                         Log.LogMessage(
                             MessageImportance.Normal,
@@ -139,12 +170,8 @@ namespace WebApplications.Utilities.BuildTasks
                                 uri));
                         return true;
                     }
-
-                    // Delete the existing.
-                    File.Delete(path);
                 }
 
-                Log.LogMessage("Downloading file '{0}' from '{1}'.", path, uri);
                 using (WebClient webClient = new WebClient())
                 {
                     if (UseDefaultCredentials)
@@ -152,11 +179,37 @@ namespace WebApplications.Utilities.BuildTasks
                     else if (!string.IsNullOrWhiteSpace(Username))
                         webClient.Credentials = new NetworkCredential(Username, Password, Domain);
 
-                    webClient.DownloadFile(uri, path);
-                    
-                    // TODO Convert the XML file to binary
+                    Log.LogMessage("Downloading XML from '{0}'.", uri);
+                    string xml = webClient.DownloadString(uri);
+                    Log.LogMessage("Successfully downloaded XML from '{0}'.", uri);
+
+                    ICurrencyInfoProvider downloaded = CurrencyInfoProvider.LoadFromXml(xml);
+                    if (downloaded == null)
+                    {
+                        Log.LogError("Could not parse the XML downloaded from '{0}'.", uri);
+                        return false;
+                    }
+
+                    if (existing != null)
+                    {
+                        Log.LogMessage("Merging downloaded file with the existing file.");
+                        downloaded = downloaded.Merge(existing);
+                    }
+
+                    if (saveBinary)
+                    {
+                        Log.LogMessage("Converting XML to binary and saving to '{0}'.", path);
+                        using (Stream file = File.Create(path))
+                            downloaded.ToBinary(file);
+                        Log.LogMessage("Successfully converted XML and saved to '{0}'.", path);
+                    }
+                    else
+                    {
+                        Log.LogMessage("Saving XML to '{0}'.", path);
+                        File.WriteAllText(path, downloaded.ToXml());
+                        Log.LogMessage("Successfully saved XML to '{0}'.", path);
+                    }
                 }
-                Log.LogMessage("Successfully downloaded file '{0}' from '{1}'.", path, uri);
                 return true;
             }
             catch (Exception e)

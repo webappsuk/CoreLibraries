@@ -31,12 +31,14 @@ using System.IO;
 using System.Net;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.BuildTasks
 {
     /// <summary>
     /// Downloads a file from the internet to a specified location.
     /// </summary>
+    [UsedImplicitly]
     public class DownloadFile : Task
     {
         /// <summary>
@@ -46,6 +48,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// The URL.
         /// </value>
         [Required]
+        [UsedImplicitly]
         public string Uri { get; set; }
 
         /// <summary>
@@ -54,6 +57,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>The output file path.</value>
         /// <remarks></remarks>
         [Required]
+        [UsedImplicitly]
         public string OutputFilePath { get; set; }
 
         /// <summary>
@@ -62,6 +66,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// <see langword="true" /> if overwrite; otherwise, <see langword="false" />.
         /// </value>
+        [UsedImplicitly]
         public bool Overwrite { get; set; }
 
         /// <summary>
@@ -70,6 +75,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// <see langword="true" /> to use default credentials; otherwise, <see langword="false" />.
         /// </value>
+        [UsedImplicitly]
         public bool UseDefaultCredentials { get; set; }
 
         /// <summary>
@@ -78,6 +84,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The username.
         /// </value>
+        [UsedImplicitly]
         public string Username { get; set; }
 
         /// <summary>
@@ -86,6 +93,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The password.
         /// </value>
+        [UsedImplicitly]
         public string Password { get; set; }
 
         /// <summary>
@@ -94,6 +102,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// <value>
         /// The domain.
         /// </value>
+        [UsedImplicitly]
         public string Domain { get; set; }
 
         /// <summary>
