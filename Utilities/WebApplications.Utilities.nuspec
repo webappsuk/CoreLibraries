@@ -12,7 +12,7 @@
     <description>$description$</description>
     <tags>Utility Utilities</tags>
     <references>
-      <group targetFramework="net451">
+      <group targetFramework="net452">
         <reference file="$id$.dll" />
       </group>
     </references>
@@ -25,7 +25,7 @@
     <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
     <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
     <file src="WebApplications.Utilities.BuildTasks.dll" target="tools\WebApplications.Utilities.BuildTasks.dll" />
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net452\CodeContracts" />
     <file src="Publish.ps1" target="tools\Publish.ps1" />
     <file src="Commit.ps1" target="tools\Commit.ps1" />
     <file src="Utility.targets" target="tools\Utility.targets" />
