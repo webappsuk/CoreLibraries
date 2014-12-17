@@ -142,7 +142,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             set
             {
                 if (value <= Duration.Zero) value = Scheduler.DefaultMaximumDuration;
-                else if (value > Scheduling.Schedule.OneStandardDay) value = Scheduling.Schedule.OneStandardDay;
+                else if (value > TimeHelpers.OneStandardDay) value = TimeHelpers.OneStandardDay;
 
                 unchecked
                 {

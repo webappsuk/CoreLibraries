@@ -77,19 +77,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         }
 
         /// <summary>
-        /// Gets or sets the file path for the TimeZone DB.
-        /// </summary>
-        /// <value>The schedules.</value>
-        [ConfigurationProperty("timeZoneDB", DefaultValue = null, IsRequired = false)]
-        [PublicAPI]
-        [CanBeNull]
-        public string TimeZoneDB
-        {
-            get { return GetProperty<string>("timeZoneDB"); }
-            set { SetProperty("timeZoneDB", value); }
-        }
-
-        /// <summary>
         /// Gets or sets the named schedules.
         /// </summary>
         /// <value>The schedules.</value>

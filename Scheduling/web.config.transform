@@ -3,21 +3,13 @@
   <configSections>
     <section name="scheduler" type="WebApplications.Utilities.Scheduling.Configuration.SchedulerConfiguration, WebApplications.Utilities.Scheduling" />
   </configSections>
-  <scheduler timeZoneDB="TimeZoneData\tzdb2014f.nzd">
+  <scheduler>
     <!--
     The following attributes can be added to the scheduler node, all are optional:
         enabled="true"                            If set to false will disable running of schedules items (defaults to 'true')
         defautlMaximumHistory="100"               The default number of history items to store on schedule runs (defaults to '100')
         defaultMaximumDuration="00:10:00"         The default maximum duration given to an action/function to run (defaults to 10 mins)
-        timeZoneDB="TimeZoneData\tzdb2014f.nzd"   The location of the latest time zone DB file.
-        
-    Note that although 'timeZoneDB' is currently optional, the embedded time zones are going to be dropped in a future version of NodaTime, so this
-    will eventualy become a required attribute.  The location of the latest DB file can be found at (provides a URL link to download from):
-      http://nodatime.org/tzdb/latest.txt
-      
-    Further information around can be found at
-      http://nodatime.org
-      
+
     To add any named schedules then you need to add a schedules subnode:
       <schedules>
       </schedules>

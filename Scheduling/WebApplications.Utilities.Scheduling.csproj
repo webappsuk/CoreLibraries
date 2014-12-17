@@ -140,12 +140,6 @@
     <Compile Include="Configuration\DurationValidator.cs" />
     <Compile Include="Configuration\DurationValidatorAttribute.cs" />
     <Compile Include="Configuration\SchedulerConfiguration.cs" />
-    <Compile Include="Ranges\DurationRange.cs" />
-    <Compile Include="Ranges\InstantRange.cs" />
-    <Compile Include="Ranges\LocalDateRange.cs" />
-    <Compile Include="Ranges\LocalDateTimeRange.cs" />
-    <Compile Include="Ranges\LocalTimeRange.cs" />
-    <Compile Include="Ranges\ZonedDateTimeRange.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -184,9 +178,6 @@
     <None Include="Scheduled\Scheduled Interfaces.cd" />
     <None Include="packages.config" />
     <None Include="Schedules\Schedules.cd" />
-    <None Include="TimeZoneData\tzdb2014f.nzd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Web Applications UK - Core.snk" />
   </ItemGroup>
   <ItemGroup>

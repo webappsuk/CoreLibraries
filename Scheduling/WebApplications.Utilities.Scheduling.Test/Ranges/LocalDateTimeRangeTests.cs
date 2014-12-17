@@ -33,7 +33,7 @@ using System.Text.RegularExpressions;
 using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
-using WebApplications.Utilities.Scheduling.Ranges;
+using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Scheduling.Test.Ranges
 {

@@ -52,7 +52,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Instant i = Instant.FromDateTimeOffset(new DateTimeOffset(2011, 1, 1, 0, 0, 0, TimeSpan.Zero));
             OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
-            Assert.AreEqual(Instant.MaxValue, oneOffSchedule.Next(i + Schedule.OneSecond));
+            Assert.AreEqual(Instant.MaxValue, oneOffSchedule.Next(i + TimeHelpers.OneSecond));
         }
 
         [TestMethod]
@@ -60,7 +60,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Instant i = Instant.FromDateTimeOffset(new DateTimeOffset(2011, 1, 1, 0, 0, 0, TimeSpan.Zero));
             OneOffSchedule oneOffSchedule = new OneOffSchedule(i);
-            Assert.AreEqual(i, oneOffSchedule.Next(i - Schedule.OneSecond));
+            Assert.AreEqual(i, oneOffSchedule.Next(i - TimeHelpers.OneSecond));
         }
 
         [TestMethod]

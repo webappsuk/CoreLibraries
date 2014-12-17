@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                     second: Second.Every)
                 );
             Assert.AreEqual(
-                i + Schedule.OneSecond,
+                i + TimeHelpers.OneSecond,
                 (i + Duration.FromTicks(1)).NextValid(
                     hour: Hour.Every,
                     minute: Minute.Every,

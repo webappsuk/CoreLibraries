@@ -27,15 +27,12 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
-using NodaTime.TimeZones;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Scheduling.Configuration;
 using WebApplications.Utilities.Scheduling.Scheduled;
 
@@ -95,35 +92,6 @@ namespace WebApplications.Utilities.Scheduling
             // ReSharper disable once AssignNullToNotNullAttribute
             // If we have a high resolution stopwatch use that for the clock.
             _clock = SystemClock.Instance;
-
-            // Load the time zone database from a file, if specified.
-            string dbPath = schedulerConfiguration.TimeZoneDB;
-            if (!string.IsNullOrWhiteSpace(dbPath))
-            {
-                if (!File.Exists(dbPath))
-                {
-                    throw new ConfigurationErrorsException(
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        string.Format(Resource.Scheduler_Scheduler_TimeZoneDB_Not_Found, dbPath));
-                }
-
-                try
-                {
-                    using (FileStream stream = File.OpenRead(dbPath))
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        _dateTimeZoneProvider = new DateTimeZoneCache(TzdbDateTimeZoneSource.FromStream(stream));
-                }
-                catch (Exception e)
-                {
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new ConfigurationErrorsException(
-                        string.Format(Resource.Scheduler_Scheduler_TimeZoneDB_Failed, dbPath),
-                        e);
-                }
-            }
-
-                // ReSharper disable once AssignNullToNotNullAttribute
-            else _dateTimeZoneProvider = DateTimeZoneProviders.Tzdb;
 
             _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
 
@@ -790,22 +758,6 @@ namespace WebApplications.Utilities.Scheduling
         }
 
         /// <summary>
-        /// Gets or sets the date time zone provider.
-        /// </summary>
-        /// <value>The date time zone provider.</value>
-        [NotNull]
-        [PublicAPI]
-        public static IDateTimeZoneProvider DateTimeZoneProvider
-        {
-            get { return _dateTimeZoneProvider; }
-            set
-            {
-                Contract.Requires(value != null);
-                _dateTimeZoneProvider = value;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the maximum duration of an action.
         /// </summary>
         /// <value>The maximum duration of any action.</value>
@@ -886,9 +838,6 @@ namespace WebApplications.Utilities.Scheduling
 
         [NotNull]
         private static IClock _clock;
-
-        [NotNull]
-        private static IDateTimeZoneProvider _dateTimeZoneProvider;
 
         /// <summary>
         /// Gets the next due date and time (UTC).

@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         {
             Contract.Requires(timeZone != null);
             _name = name;
-            DateTimeZone tz = Scheduler.DateTimeZoneProvider[timeZone];
+            DateTimeZone tz = TimeHelpers.DateTimeZoneProvider[timeZone];
             Instant = tz.AtLeniently(LocalDateTime.FromDateTime(dateTime)).ToInstant();
             _options = options;
         }
