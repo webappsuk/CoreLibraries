@@ -453,7 +453,7 @@ namespace WebApplications.Utilities.Cryptography
         private static byte[] ConvertHexStringToByteArray(string hexString)
         {
             if (hexString == null || hexString.Length%2 != 0)
-                return new byte[0];
+                return Array<byte>.Empty;
 
             byte[] hexAsBytes = new byte[hexString.Length/2];
 
