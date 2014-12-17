@@ -37,7 +37,7 @@ using System.Runtime.Serialization.Formatters.Soap;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Serialization
 {

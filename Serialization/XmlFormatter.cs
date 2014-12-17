@@ -33,7 +33,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Serialization
 {

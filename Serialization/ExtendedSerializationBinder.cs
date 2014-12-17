@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Runtime.Serialization;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Serialization
 {

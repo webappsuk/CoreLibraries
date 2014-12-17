@@ -29,7 +29,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Runtime.Serialization;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Serialization
 {
