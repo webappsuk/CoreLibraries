@@ -25,11 +25,10 @@
     <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
     <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
     <file src="WebApplications.Utilities.BuildTasks.dll" target="tools\WebApplications.Utilities.BuildTasks.dll" />
-    <file src="bin\Release\JetBrains.Annotations.dll" target="tools\JetBrains.Annotations.dll" />
     <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
     <file src="Publish.ps1" target="tools\Publish.ps1" />
     <file src="Commit.ps1" target="tools\Commit.ps1" />
-    <file src="Scheduling.targets" target="tools\Utility.targets" />
+    <file src="Utility.targets" target="tools\Utility.targets" />
     <file src="bin\Release\Resources\*.*" target="tools\Resources" />
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
