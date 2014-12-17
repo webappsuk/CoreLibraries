@@ -28,7 +28,7 @@
 using System.Configuration;
 using System.Linq;
 using System.Text;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Cryptography.Configuration

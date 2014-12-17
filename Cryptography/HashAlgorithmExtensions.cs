@@ -28,7 +28,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Cryptography
 {

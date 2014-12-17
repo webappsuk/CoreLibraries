@@ -28,7 +28,7 @@
 #region Using Namespaces
 using System;
 using System.Runtime.Serialization;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 #endregion
 
