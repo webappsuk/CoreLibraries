@@ -28,7 +28,7 @@
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Configuration;
 

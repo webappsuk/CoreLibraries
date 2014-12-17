@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
 using WebApplications.Testing;

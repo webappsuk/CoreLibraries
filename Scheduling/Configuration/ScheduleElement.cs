@@ -29,7 +29,7 @@ using System;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Scheduling.Configuration

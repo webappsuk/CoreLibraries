@@ -29,7 +29,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Globalization;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 using NodaTime.Text;
 

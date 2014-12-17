@@ -27,7 +27,7 @@
 
 using System;
 using System.Configuration;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling.Configuration

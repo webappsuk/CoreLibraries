@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled

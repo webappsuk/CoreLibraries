@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 
 namespace WebApplications.Utilities.Scheduling

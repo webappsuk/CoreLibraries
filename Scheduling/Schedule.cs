@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Ranges;
 using WebApplications.Utilities.Scheduling.Ranges;
@@ -71,7 +71,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static double TotalMilliseconds(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerMillisecond;
@@ -85,7 +85,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static int Milliseconds(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerMillisecond) % 1000;
@@ -99,7 +99,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static double TotalSeconds(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerSecond;
@@ -113,7 +113,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static int Seconds(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerSecond) % 60;
@@ -127,7 +127,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static double TotalMinutes(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerMinute;
@@ -141,7 +141,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static int Minutes(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerMinute) % 60;
@@ -155,7 +155,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static double TotalHours(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerHour;
@@ -169,7 +169,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static int Hours(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerHour) % 24;
@@ -183,7 +183,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static double TotalStandardDays(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerStandardDay;
@@ -197,7 +197,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static int StandardDays(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerStandardDay);
@@ -211,7 +211,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static double TotalStandardWeeks(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerStandardWeek;
@@ -225,7 +225,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static int StandardWeeks(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerStandardWeek);
@@ -241,7 +241,7 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static IEnumerable<int> Months(this Month month)
         {
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
@@ -266,7 +266,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Month">Month enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Month Months([NotNull] params int[] months)
         {
             Contract.Requires(months != null);
@@ -280,7 +280,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Month">Month enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Month Months([NotNull] this IEnumerable<int> months)
         {
             Contract.Requires(months != null);
@@ -297,7 +297,7 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static IEnumerable<int> Days(this Day day)
         {
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
@@ -322,7 +322,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Day">Day enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Day Days([NotNull] params int[] days)
         {
             Contract.Requires(days != null);
@@ -336,7 +336,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Day">Day enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Day Days([NotNull] this IEnumerable<int> days)
         {
             Contract.Requires(days != null);
@@ -353,7 +353,7 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static IEnumerable<int> Weeks(this Week week)
         {
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
@@ -378,7 +378,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Week">Week enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Week Weeks([NotNull] params int[] weeks)
         {
             Contract.Requires(weeks != null);
@@ -392,7 +392,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Week">Week enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Week Weeks([NotNull] this IEnumerable<int> weeks)
         {
             Contract.Requires(weeks != null);
@@ -409,7 +409,7 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static IEnumerable<IsoDayOfWeek> WeekDays(this WeekDay weekDay)
         {
             Contract.Ensures(Contract.Result<IEnumerable<IsoDayOfWeek>>() != null);
@@ -445,7 +445,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="WeekDay">WeekDay enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static WeekDay WeekDays([NotNull] params IsoDayOfWeek[] daysOfWeek)
         {
             Contract.Requires(daysOfWeek != null);
@@ -459,7 +459,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="WeekDay">WeekDay enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static WeekDay WeekDays([NotNull] this IEnumerable<IsoDayOfWeek> daysOfWeek)
         {
             Contract.Requires(daysOfWeek != null);
@@ -506,7 +506,7 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static IEnumerable<int> Hours(this Hour hour)
         {
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
@@ -531,7 +531,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Hour">Hour enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Hour Hours([NotNull] params int[] hours)
         {
             Contract.Requires(hours != null);
@@ -545,7 +545,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Hour">Hour enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Hour Hours([NotNull] this IEnumerable<int> hours)
         {
             Contract.Requires(hours != null);
@@ -562,7 +562,7 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static IEnumerable<int> Minutes(this Minute minute)
         {
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
@@ -587,7 +587,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Minute">Minute enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Minute Minutes([NotNull] params int[] minutes)
         {
             Contract.Requires(minutes != null);
@@ -601,7 +601,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Minute">Minute enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Minute Minutes([NotNull] this IEnumerable<int> minutes)
         {
             Contract.Requires(minutes != null);
@@ -618,7 +618,7 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static IEnumerable<int> Seconds(this Second second)
         {
             Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
@@ -643,7 +643,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Second">Second enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Second Seconds([NotNull] params int[] seconds)
         {
             Contract.Requires(seconds != null);
@@ -657,7 +657,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>A <see cref="Second">Second enum</see>.</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Second Seconds([NotNull] this IEnumerable<int> seconds)
         {
             Contract.Requires(seconds != null);
@@ -674,7 +674,7 @@ namespace WebApplications.Utilities.Scheduling
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Instant FloorSecond(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerSecond) * NodaConstants.TicksPerSecond);
@@ -688,7 +688,7 @@ namespace WebApplications.Utilities.Scheduling
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Instant CeilingSecond(this Instant instant)
         {
             return new Instant(
@@ -704,7 +704,7 @@ namespace WebApplications.Utilities.Scheduling
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Instant FloorMinute(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerMinute) * NodaConstants.TicksPerMinute);
@@ -718,7 +718,7 @@ namespace WebApplications.Utilities.Scheduling
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Instant CeilingMinute(this Instant instant)
         {
             return new Instant(
@@ -734,7 +734,7 @@ namespace WebApplications.Utilities.Scheduling
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Instant FloorHour(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerHour) * NodaConstants.TicksPerHour);
@@ -748,7 +748,7 @@ namespace WebApplications.Utilities.Scheduling
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Instant CeilingHour(this Instant instant)
         {
             return new Instant(
@@ -788,7 +788,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
         {
             Contract.Requires(period != null);
@@ -805,7 +805,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
         {
             Contract.Requires(period != null);
@@ -822,7 +822,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDate local)
         {
             Contract.Requires(period != null);
@@ -839,7 +839,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDate local)
         {
             Contract.Requires(period != null);
@@ -864,7 +864,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <returns>The next valid date (or <see cref="DateTime.MaxValue" /> if none).</returns>
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [JetBrains.Annotations.Pure]
+        [WebApplications.Utilities.Annotations.Pure]
         public static Instant NextValid(
             this Instant instant,
             Month month = Month.Every,
