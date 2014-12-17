@@ -35,7 +35,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Reflect;
 using WebApplications.Utilities.Threading;

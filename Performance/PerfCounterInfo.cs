@@ -28,7 +28,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Performance
