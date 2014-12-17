@@ -34,6 +34,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Financials;
+using WebApplications.Utilities.Globalization;
 
 namespace WebApplications.Utilities.Test
 {
@@ -404,7 +405,7 @@ namespace WebApplications.Utilities.Test
             Financial financial = new Financial(currencyInfo, amount);
             String currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             List<String> expectedFormats =
-                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(
+                CultureInfoProvider.Current.FindByCurrency(currencyInfo).Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(
                     mc =>
                         String.Format(
                             mc,
@@ -422,7 +423,7 @@ namespace WebApplications.Utilities.Test
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de");
             // No pound in Germany, nor any German speaking countries.
             Financial financial = new Financial(currencyInfo, amount);
-            List<String> expectedFormats = currencyInfo.Cultures.Select(
+            List<String> expectedFormats = CultureInfoProvider.Current.FindByCurrency(currencyInfo).Select(
                 mc =>
                     String.Format(mc, "{0:C}", amount)).ToList();
             CollectionAssert.Contains(expectedFormats, financial.ToString());
@@ -550,7 +551,7 @@ namespace WebApplications.Utilities.Test
             Financial financial = new Financial(currencyInfo, amount);
             String correctLanguage = provider.TwoLetterISOLanguageName;
             List<String> expectedFormats =
-                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == correctLanguage).Select(
+                CultureInfoProvider.Current.FindByCurrency(currencyInfo).Where(c => c.TwoLetterISOLanguageName == correctLanguage).Select(
                     mc =>
                         String.Format(
                             mc,
@@ -569,7 +570,7 @@ namespace WebApplications.Utilities.Test
             CultureInfo provider = new CultureInfo("De-de"); // No pound in Germany, nor any German speaking countries.
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             Financial financial = new Financial(currencyInfo, amount);
-            List<String> expectedFormats = currencyInfo.Cultures.Select(
+            List<String> expectedFormats = CultureInfoProvider.Current.FindByCurrency(currencyInfo).Select(
                 mc =>
                     String.Format(mc, "{0:C}", amount)).ToList();
             String actualFormat = String.Format(provider, "{0:C}", financial);

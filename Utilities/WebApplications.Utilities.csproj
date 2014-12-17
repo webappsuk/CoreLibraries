@@ -150,7 +150,7 @@
     <CodeContractsNecessaryEnsures>True</CodeContractsNecessaryEnsures>
     <CodeContractsSkipAnalysisIfCannotConnectToCache>False</CodeContractsSkipAnalysisIfCannotConnectToCache>
     <DownloadTZDB>True</DownloadTZDB>
-    <DownloadISO4271>True</DownloadISO4271>
+    <DownloadISO4217>True</DownloadISO4217>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -186,7 +186,7 @@
     <Compile Include="Accessor.cs" />
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
-    <Compile Include="BclCultureInfoProvider.cs" />
+    <Compile Include="Globalization\BclCultureInfoProvider.cs" />
     <Compile Include="BigArray.cs" />
     <Compile Include="Caching\CachingDictionaryBase.cs" />
     <Compile Include="Caching\CachingQueue.cs" />
@@ -213,9 +213,9 @@
     <Compile Include="Configuration\UtilityConfiguration.cs" />
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="CSharpExpressionWriter.cs" />
-    <Compile Include="CultureInfoProvider.cs" />
-    <Compile Include="GlobalizationExtensions.cs" />
-    <Compile Include="CurrencyInfoProvider.cs" />
+    <Compile Include="Globalization\CultureInfoProvider.cs" />
+    <Compile Include="Globalization\GlobalizationExtensions.cs" />
+    <Compile Include="Globalization\CurrencyInfoProvider.cs" />
     <Compile Include="CyclicQueue.cs" />
     <Compile Include="DependencyGraph.cs" />
     <Compile Include="Dictionary.cs" />
@@ -226,7 +226,7 @@
       <DependentUpon>ExpressionExtensionOverloads.tt</DependentUpon>
     </Compile>
     <Compile Include="ExpressionExtensions.cs" />
-    <Compile Include="ExtendedCultureInfo.cs" />
+    <Compile Include="Globalization\ExtendedCultureInfo.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="Formatting\Alignment.cs" />
     <Compile Include="Formatting\ColorHelper.cs" />
@@ -259,8 +259,8 @@
     <Compile Include="Formatting\ResolveDelegate.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
-    <Compile Include="ICultureInfoProvider.cs" />
-    <Compile Include="ICurrencyInfoProvider.cs" />
+    <Compile Include="Globalization\ICultureInfoProvider.cs" />
+    <Compile Include="Globalization\ICurrencyInfoProvider.cs" />
     <Compile Include="IReadOnlyLookup.cs" />
     <Compile Include="Array.cs" />
     <Compile Include="ParameterUsageVisitor.cs" />
@@ -353,8 +353,8 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="CultureHelper.cs" />
-    <Compile Include="CurrencyInfo.cs" />
+    <Compile Include="Globalization\CultureHelper.cs" />
+    <Compile Include="Globalization\CurrencyInfo.cs" />
     <Compile Include="Enumerations\TruncateOptions.cs" />
     <Compile Include="ExtendedEnum.cs" />
     <Compile Include="ExtendedEnumGeneric.cs" />
@@ -429,13 +429,18 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="Resources\iso4217.ccy">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="web.config.transform" />
     <None Include="app.config.transform" />
     <None Include="ExpressionExtensionOverloads.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ExpressionExtensionOverloads.cs</LastGenOutput>
     </None>
-    <None Include="Resources\tzdb.nzd" />
+    <None Include="Resources\tzdb.nzd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TupleEnumerable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TupleEnumerable.cs</LastGenOutput>

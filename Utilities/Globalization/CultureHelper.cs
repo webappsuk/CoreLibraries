@@ -36,7 +36,7 @@ using WebApplications.Utilities.Annotations;
 
 #endregion
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Globalization
 {
     /// <summary>
     ///   Helps map cultures, regions and currencies.
@@ -73,7 +73,7 @@ namespace WebApplications.Utilities
         ///   Gets the cultures (both specific and neutral) as well as the currency and
         ///   <see cref="System.Globalization.RegionInfo"/>.
         /// </summary>
-        /// <seealso cref="WebApplications.Utilities.CurrencyInfo"/>
+        /// <seealso cref="Globalization.CurrencyInfo"/>
         static CultureHelper()
         {
             // get the list of cultures. We are not interested in neutral cultures, since
@@ -217,7 +217,7 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="regionInfo"/> is <see langword="null"/>.
         /// </exception>
-        /// <seealso cref="WebApplications.Utilities.CurrencyInfo"/>
+        /// <seealso cref="Globalization.CurrencyInfo"/>
         [CanBeNull]
         public static CurrencyInfo CurrencyInfo([NotNull] this RegionInfo regionInfo)
         {
@@ -227,7 +227,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///   Gets the <see cref="WebApplications.Utilities.CurrencyInfo">currency info</see> for the specified culture (if any).
+        ///   Gets the <see cref="Globalization.CurrencyInfo">currency info</see> for the specified culture (if any).
         /// </summary>
         /// <param name="cultureInfo">The specific culture information.</param>
         /// <returns>
@@ -237,7 +237,7 @@ namespace WebApplications.Utilities
         ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
         ///   <paramref name="cultureInfo"/> cannot be null.
         /// </remarks>
-        /// <seealso cref="WebApplications.Utilities.CurrencyInfo"/>
+        /// <seealso cref="Globalization.CurrencyInfo"/>
         [CanBeNull]
         public static CurrencyInfo CurrencyInfo([NotNull] this CultureInfo cultureInfo)
         {

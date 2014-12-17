@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using WebApplications.Utilities.Annotations;
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Globalization
 {
     /// <summary>
     /// Interface to an object that provides <see cref="CurrencyInfo"/>.

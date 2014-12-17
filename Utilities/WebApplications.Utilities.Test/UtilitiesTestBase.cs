@@ -34,7 +34,7 @@ namespace WebApplications.Utilities.Test
     /// <summary>
     /// Utilities Test Base.
     /// </summary>
-    [DeploymentItem("Resource", "Resource")]
+    [DeploymentItem("Resources\\", "Resources")]
     public class UtilitiesTestBase : TestBase
     {
         protected static readonly Random Random = Tester.RandomGenerator;

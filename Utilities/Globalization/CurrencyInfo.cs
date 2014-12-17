@@ -26,11 +26,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using WebApplications.Utilities.Annotations;
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Globalization
 {
     /// <summary>
     ///   Holds extended information about currencies.

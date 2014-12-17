@@ -32,6 +32,7 @@ using System.Net;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Globalization;
 
 namespace WebApplications.Utilities.BuildTasks
 {

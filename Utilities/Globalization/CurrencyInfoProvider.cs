@@ -35,7 +35,7 @@ using System.Text;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Globalization
 {
     /// <summary>
     /// Provides methods for reading and writing currency information to/from binary and XML files.
@@ -62,12 +62,15 @@ namespace WebApplications.Utilities
             }
 
             /// <summary>
-            /// The date this file was published.
+            /// The date this provider was published.
             /// </summary>
-            public DateTime Published { get { return _published; } }
+            public DateTime Published
+            {
+                get { return _published; }
+            }
 
             /// <summary>
-            /// The currencies in the file.
+            /// The currencies in the provider.
             /// </summary>
             public IEnumerable<CurrencyInfo> All
             {
@@ -90,16 +93,11 @@ namespace WebApplications.Utilities
             /// </summary>
             /// <param name="currencyCode">The ISO Code.</param>
             /// <returns>
-            /// The 
-            /// <see cref="CurrencyInfo" /> that corresponds to the 
-            /// <paramref name="currencyCode" /> specified (if any);
-            ///   otherwise the default value for the type is returned.
+            /// The <see cref="CurrencyInfo" /> that corresponds to the <paramref name="currencyCode" /> specified (if any);
+            /// otherwise the default value for the type is returned.
             /// </returns>
             /// <remarks>
-            /// l
-            ///   There is a 
-            /// <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-            ///   
+            /// There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
             /// <paramref name="currencyCode" /> cannot be null.
             /// </remarks>
             public CurrencyInfo Get(string currencyCode)
@@ -188,6 +186,8 @@ namespace WebApplications.Utilities
             if (string.IsNullOrWhiteSpace(path))
                 return;
 
+            path = Path.GetFullPath(path);
+
             if (!File.Exists(path))
                 throw new FileNotFoundException(
                     // ReSharper disable once AssignNullToNotNullAttribute
@@ -199,7 +199,8 @@ namespace WebApplications.Utilities
 
                 if (currencyInfoProvider == null)
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new InvalidDataException(string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_DataInvalid, path));
+                    throw new InvalidDataException(
+                        string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_DataInvalid, path));
 
                 _current = currencyInfoProvider;
             }
@@ -212,15 +213,20 @@ namespace WebApplications.Utilities
             }
         }
 #endif
+        /// <summary>
+        /// The first four bytes expected in binary currency info files.
+        /// Equivalent to the string '$CCY'.
+        /// </summary>
+        public const int BinaryHeader = 0x59434324;
 
         private readonly DateTime _published;
 
         /// <summary>
-        ///   Stores currency info (by code).
+        /// Stores currency info (by code).
         /// </summary>
         [NotNull]
         private readonly IReadOnlyDictionary<string, CurrencyInfo> _currencyInfos;
-        
+
         /// <summary>
         /// The date this file was published.
         /// </summary>
@@ -237,6 +243,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public IEnumerable<CurrencyInfo> All
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return _currencyInfos.Values; }
         }
 
@@ -256,7 +263,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="published">The date this file was published.</param>
         /// <param name="currencies">The currencies in the file.</param>
-        public CurrencyInfoProvider(DateTime published, [NotNull][ItemNotNull] IEnumerable<CurrencyInfo> currencies)
+        public CurrencyInfoProvider(DateTime published, [NotNull] [ItemNotNull] IEnumerable<CurrencyInfo> currencies)
         {
             _published = published;
             _currencyInfos = currencies.Distinct().ToDictionary(c => c.Code, StringComparer.InvariantCultureIgnoreCase);
@@ -296,15 +303,13 @@ namespace WebApplications.Utilities
                     CultureInfo.InvariantCulture,
                     DateTimeStyles.AssumeUniversal,
                     out published))
-            {
                 published = DateTime.UtcNow;
-            }
 
             XElement ccyTbl = doc.Root.Element("CcyTbl");
             if (ccyTbl == null)
                 return null;
 
-            List<CurrencyInfo> currencies = new List<CurrencyInfo>();
+            Dictionary<string, CurrencyInfo> currencies = new Dictionary<string, CurrencyInfo>();
 
             foreach (XElement entry in ccyTbl.Elements("CcyNtry"))
             {
@@ -312,25 +317,58 @@ namespace WebApplications.Utilities
                 XElement code = entry.Element("Ccy");
                 XElement number = entry.Element("CcyNbr");
                 XElement exponent = entry.Element("CcyMnrUnts");
+                XAttribute isLatest = entry.Attribute("IsLatest");
 
                 int num;
-                int exp = 0;
 
                 if (code == null ||
                     name == null ||
                     number == null ||
-                    !int.TryParse(number.Value, out num) ||
-                    (exponent != null &&
-                    !int.TryParse(exponent.Value, out exp)))
+                    !int.TryParse(number.Value, out num))
                     continue;
 
+                // Ignore funds
+                XAttribute isFundAttr = name.Attribute("IsFund");
+                if (isFundAttr != null &&
+                    string.Equals(isFundAttr.Value, "true", StringComparison.InvariantCultureIgnoreCase))
+                    continue;
+
+                int exp;
+                int? nexp = exponent != null &&
+                            int.TryParse(exponent.Value, out exp)
+                    ? (int?)exp
+                    : null;
+
+                bool latest = isLatest == null ||
+                              string.Equals(isLatest.Value, "true", StringComparison.InvariantCultureIgnoreCase);
+
+                CurrencyInfo existing;
+                if (currencies.TryGetValue(code.Value, out existing))
+                {
+                    Contract.Assert(existing != null);
+
+                    if (latest && !existing.IsLatest)
+                    {
+                        currencies[code.Value] = new CurrencyInfo(code.Value, num, nexp, name.Value, latest);
+                        continue;
+                    }
+
+                    if (existing.ISONumber == num &&
+                        existing.Exponent == nexp &&
+                        existing.FullName == name.Value)
+                        continue;
+
+                    throw new InvalidDataException("Multiple currencies with the same code but different properties.");
+                }
+
                 currencies.Add(
-                    new CurrencyInfo(code.Value, num, exponent == null ? null : (int?)exp, name.Value, true));
+                    code.Value,
+                    new CurrencyInfo(code.Value, num, nexp, name.Value, latest));
             }
 
             return new CurrencyInfoProvider(
                 published,
-                currencies);
+                currencies.Values);
         }
 
         /// <summary>
@@ -346,6 +384,8 @@ namespace WebApplications.Utilities
             using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen))
             {
                 // Read the header info.
+                if (reader.ReadInt32() != BinaryHeader) throw new InvalidDataException("The currency info file was an invalid format.");
+
                 DateTime published = DateTime.SpecifyKind(DateTime.FromBinary(reader.ReadInt64()), DateTimeKind.Utc);
                 int count = reader.ReadInt32();
 
@@ -359,8 +399,9 @@ namespace WebApplications.Utilities
                     string name = reader.ReadString();
                     bool hasExp = reader.ReadBoolean();
                     int? exponent = hasExp ? reader.ReadInt32() : (int?)null;
+                    bool isLatest = reader.ReadBoolean();
 
-                    currencies.Add(new CurrencyInfo(code, number, exponent, name, true));
+                    currencies.Add(new CurrencyInfo(code, number, exponent, name, isLatest));
                 }
                 if (count > 0)
                     throw new InvalidDataException("The currency info file was an invalid format.");
@@ -387,10 +428,6 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public CurrencyInfo Get(string currencyCode)
         {
-#if !BUILD_TASKS
-            Contract.Requires(currencyCode != null, Resources.CurrencyInfo_CurrencyCodeCannotBeNull);
-#endif
-
             CurrencyInfo currencyInfo;
             _currencyInfos.TryGetValue(currencyCode, out currencyInfo);
             return currencyInfo;
@@ -420,14 +457,22 @@ namespace WebApplications.Utilities
         public CurrencyInfo Get(CultureInfo cultureInfo)
         {
             ExtendedCultureInfo eci = cultureInfo as ExtendedCultureInfo;
+            CurrencyInfo currencyInfo;
             if (!ReferenceEquals(eci, null))
-                return Get(eci.RegionInfo);
+            {
+                return eci.RegionInfo != null &&
+                       _currencyInfos.TryGetValue(eci.RegionInfo.ISOCurrencySymbol, out currencyInfo)
+                    ? currencyInfo
+                    : null;
+            }
+
             eci = CultureInfoProvider.Current.Get(cultureInfo);
             if (ReferenceEquals(eci, null)) return null;
 
-            CurrencyInfo currencyInfo;
-            _currencyInfos.TryGetValue(eci.RegionInfo.ISOCurrencySymbol, out currencyInfo);
-            return currencyInfo;
+            return eci.RegionInfo != null &&
+                   _currencyInfos.TryGetValue(eci.RegionInfo.ISOCurrencySymbol, out currencyInfo)
+                ? currencyInfo
+                : null;
         }
 
         /// <summary>
@@ -438,8 +483,10 @@ namespace WebApplications.Utilities
         public CurrencyInfo Get(ExtendedCultureInfo cultureInfo)
         {
             CurrencyInfo currencyInfo;
-            _currencyInfos.TryGetValue(cultureInfo.RegionInfo.ISOCurrencySymbol, out currencyInfo);
-            return currencyInfo;
+            return cultureInfo.RegionInfo != null &&
+                   _currencyInfos.TryGetValue(cultureInfo.RegionInfo.ISOCurrencySymbol, out currencyInfo)
+                ? currencyInfo
+                : null;
         }
     }
 }

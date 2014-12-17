@@ -34,7 +34,7 @@ using System.Text;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Globalization
 {
     /// <summary>
     /// Provides extension methods for <see cref="CurrencyInfo"/>.
@@ -55,6 +55,7 @@ namespace WebApplications.Utilities
         {
             using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen))
             {
+                writer.Write(CurrencyInfoProvider.BinaryHeader);
                 writer.Write(currencyInfoProvider.Published.Ticks);
 
                 int count = currencyInfoProvider.Count;
@@ -69,6 +70,7 @@ namespace WebApplications.Utilities
                     writer.Write(currency.Exponent.HasValue);
                     if (currency.Exponent.HasValue)
                         writer.Write(currency.Exponent.Value);
+                    writer.Write(currency.IsLatest);
                 }
             }
         }
@@ -98,6 +100,8 @@ namespace WebApplications.Utilities
                     new XElement("CcyNbr", currency.ISONumber));
                 if (currency.Exponent.HasValue)
                     ccyNtry.Add(new XElement("CcyMnrUnts", currency.Exponent.Value));
+                if (!currency.IsLatest)
+                    ccyNtry.Add(new XAttribute("IsLatest", "false"));
 
                 ccyTbl.Add(ccyNtry);
             }
@@ -106,7 +110,8 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Merges this file with another file. If the same currency is in both files, the one in the latest published file will be used.
+        /// Merges a provider with another provider. If the same currency is in both, the one in the latest published provider will be used.
+        /// Currencies that only appeared in the oldest provider will be marked as out of date.
         /// </summary>
         /// <param name="first">The first provider.</param>
         /// <param name="second">The second provider.</param>
@@ -120,6 +125,8 @@ namespace WebApplications.Utilities
             ICurrencyInfoProvider newest = first.Published > second.Published ? first : second;
             second = first.Published > second.Published ? second : first;
 
+            bool areSameDate = newest.Published == second.Published;
+
             // Optimise out empty providers
             if (newest.Count < 1)
                 return second.Count < 1 ? newest : second;
@@ -132,7 +139,7 @@ namespace WebApplications.Utilities
 
             foreach (CurrencyInfo currency in second.All)
                 if (!currencies.ContainsKey(currency.Code))
-                    currencies.Add(currency.Code, currency);
+                    currencies.Add(currency.Code, areSameDate ? currency.GetOutOfDate() : currency);
 
             Contract.Assert(currencies.Count > 0);
             return new CurrencyInfoProvider(newest.Published, currencies.Values);

@@ -27,6 +27,7 @@
 
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Utilities.Globalization;
 
 namespace WebApplications.Utilities.Test
 {

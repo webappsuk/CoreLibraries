@@ -26,11 +26,10 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Linq;
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Globalization
 {
     /// <summary>
     /// The <see cref="CultureInfoProvider"/> for BCL cultures.
