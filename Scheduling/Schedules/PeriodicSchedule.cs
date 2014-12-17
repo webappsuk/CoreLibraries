@@ -357,11 +357,11 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 (second == Second.Every))
             {
                 return minimumGap <= Duration.Zero
-                    ? i => i.Ceiling()
+                    ? i => i.CeilingSecond()
                     : (Func<Instant, Instant>)
                         (i =>
                             i < (Instant.MaxValue - minimumGap)
-                                ? (i + minimumGap).Ceiling()
+                                ? (i + minimumGap).CeilingSecond()
                                 : Instant.MaxValue);
             }
 

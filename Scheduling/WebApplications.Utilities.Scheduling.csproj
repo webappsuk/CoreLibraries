@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebApplications.Utilities.Scheduling</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Scheduling</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">./</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -182,7 +182,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="web.config.transform" />
-    <None Include="app.config.transform" />
+    <None Include="app.config.transform">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Scheduled\Scheduled Interfaces.cd" />
     <None Include="packages.config" />
     <None Include="Schedules\Schedules.cd" />

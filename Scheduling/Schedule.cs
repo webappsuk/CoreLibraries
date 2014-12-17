@@ -290,7 +290,7 @@ namespace WebApplications.Utilities.Scheduling
 
         #region Days
         /// <summary>
-        /// Converts a <see cref="Month">Day enum</see> into a enumeration of day integers.
+        /// Converts a <see cref="Day">Day enum</see> into a enumeration of day integers.
         /// </summary>
         /// <param name="day">The day.</param>
         /// <returns>An enumeration of day integers.</returns>
@@ -675,7 +675,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
         [JetBrains.Annotations.Pure]
-        public static Instant Floor(this Instant instant)
+        public static Instant FloorSecond(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerSecond) * NodaConstants.TicksPerSecond);
         }
@@ -689,7 +689,7 @@ namespace WebApplications.Utilities.Scheduling
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
         [JetBrains.Annotations.Pure]
-        public static Instant Ceiling(this Instant instant)
+        public static Instant CeilingSecond(this Instant instant)
         {
             return new Instant(
                 ((instant.Ticks + NodaConstants.TicksPerSecond - 1) / NodaConstants.TicksPerSecond) *
@@ -897,7 +897,7 @@ namespace WebApplications.Utilities.Scheduling
             Contract.Assert(timeZone != null);
 
             // Move to next second.
-            instant = Ceiling(instant);
+            instant = CeilingSecond(instant);
 
             // Every second case.
             if ((month == Month.Every) &&
