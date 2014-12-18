@@ -31,10 +31,9 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Loggers;
-using WebApplications.Utilities.Scheduling;
 
 namespace WebApplications.Utilities.Logging.Configuration
 {

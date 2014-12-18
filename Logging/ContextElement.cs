@@ -31,7 +31,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging

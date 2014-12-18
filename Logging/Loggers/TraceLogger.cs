@@ -26,7 +26,7 @@
 #endregion
 
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging.Loggers

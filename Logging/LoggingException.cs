@@ -32,7 +32,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging

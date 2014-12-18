@@ -28,7 +28,7 @@
 using System;
 using System.ComponentModel;
 using System.Configuration;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 

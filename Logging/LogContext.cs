@@ -37,7 +37,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using ProtoBuf;
 using WebApplications.Utilities.Formatting;
 

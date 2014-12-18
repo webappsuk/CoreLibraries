@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
 using WebApplications.Utilities.Formatting;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Reflect;

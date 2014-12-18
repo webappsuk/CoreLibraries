@@ -37,13 +37,14 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using WebApplications.Testing;
 using WebApplications.Testing.Data;
 using WebApplications.Testing.Data.Exceptions;
+using WebApplications.Utilities.Globalization;
 using WebApplications.Utilities.Logging.Loggers;
 
 namespace WebApplications.Utilities.Logging.Test

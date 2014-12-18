@@ -43,7 +43,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Threading;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using WebApplications.Utilities.Formatting;
