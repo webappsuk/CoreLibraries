@@ -27,7 +27,7 @@
 
 using System.Diagnostics.Contracts;
 using System.IO;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using ProtoBuf;
 
 namespace WebApplications.Utilities.Service.Common.Protocol

@@ -27,7 +27,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using ProtoBuf;
 using WebApplications.Utilities.Logging;
 

@@ -34,7 +34,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Reflect;

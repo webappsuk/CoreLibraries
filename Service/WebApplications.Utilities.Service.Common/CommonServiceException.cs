@@ -27,7 +27,7 @@
 
 using System;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service.Common

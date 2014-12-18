@@ -40,7 +40,7 @@ using System.Security.Principal;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;

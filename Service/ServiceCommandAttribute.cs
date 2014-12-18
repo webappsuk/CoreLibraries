@@ -27,7 +27,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service

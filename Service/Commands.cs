@@ -34,7 +34,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Performance;
 using WebApplications.Utilities.Service.Common.Control;

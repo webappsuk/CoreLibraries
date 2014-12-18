@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Service.Common.Protocol;
