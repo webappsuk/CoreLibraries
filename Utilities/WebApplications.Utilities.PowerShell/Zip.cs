@@ -26,8 +26,9 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using System.IO;
-using Ionic.Zip;
+using System.IO.Compression;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.PowerShell
@@ -64,11 +65,7 @@ namespace WebApplications.Utilities.PowerShell
                 File.Delete(zipFile);
             }
 
-            using (ZipFile z = new ZipFile(zipFile))
-            {
-                z.AddDirectory(directory);
-                z.Save();
-            }
+            ZipFile.CreateFromDirectory(directory, zipFile);
         }
 
         /// <summary>
@@ -76,7 +73,7 @@ namespace WebApplications.Utilities.PowerShell
         /// </summary>
         /// <param name="directory">The directory.</param>
         /// <param name="zipFile">The zip file.</param>
-        /// <param name="force">if set to <see langword="true"/> overwrites zip if present.</param>
+        /// <param name="force">if set to <see langword="true"/> overwrites files in the directory if present.</param>
         [UsedImplicitly]
         public static void Decompress([NotNull] string zipFile, [NotNull] string directory, bool force)
         {
@@ -86,10 +83,24 @@ namespace WebApplications.Utilities.PowerShell
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
-            using (ZipFile z = new ZipFile(zipFile))
-                z.ExtractAll(
-                    directory,
-                    force ? ExtractExistingFileAction.OverwriteSilently : ExtractExistingFileAction.Throw);
+            using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Read))
+            {
+                Contract.Assert(archive != null);
+
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    Contract.Assert(entry != null);
+
+                    //Identifies the destination file name and path
+                    string fileName = Path.Combine(directory, entry.FullName);
+                    string fileDirectory = Path.GetDirectoryName(fileName);
+
+                    if (!Directory.Exists(fileDirectory))
+                        Directory.CreateDirectory(fileDirectory);
+
+                    entry.ExtractToFile(fileName, force);
+                }
+            }
         }
     }
 }
