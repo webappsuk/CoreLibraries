@@ -119,20 +119,6 @@ namespace WebApplications.Utilities.Logging
             },
             LazyThreadSafetyMode.PublicationOnly);
 
-        /// <summary>
-        /// An empty string array.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        private static readonly string[] _emptyStringArray = new string[0];
-
-        /// <summary>
-        /// An empty <see cref="CombGuid"/> array.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        private static readonly Guid[] _emptyGuidArray = new Guid[0];
-
         #region Format Tags
         /// <summary>
         /// The message format tag.

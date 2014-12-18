@@ -1610,7 +1610,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public IEnumerable<Guid> InnerExceptionGuids
         {
-            get { return _innerExceptionGuids ?? _emptyGuidArray; }
+            get { return _innerExceptionGuids ?? Array<Guid>.Empty; }
         }
 
         /// <summary>
@@ -1630,7 +1630,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public IEnumerable<string> Parameters
         {
-            get { return _parameters ?? _emptyStringArray; }
+            get { return _parameters ?? Array<string>.Empty; }
         }
 
         /// <summary>
