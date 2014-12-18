@@ -41,7 +41,6 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
-using NodaTime;
 using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Formatting;
@@ -49,9 +48,6 @@ using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
-using WebApplications.Utilities.Scheduling;
-using WebApplications.Utilities.Scheduling.Scheduled;
-using WebApplications.Utilities.Scheduling.Schedules;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging
@@ -94,8 +90,7 @@ namespace WebApplications.Utilities.Logging
                     {
                         typeof (int).Assembly.GetName().GetPublicKey(),
                         typeof (UtilityExtensions).Assembly.GetName().GetPublicKey(),
-                        typeof (PerformanceCounterExtensions).Assembly.GetName().GetPublicKey(),
-                        typeof (Scheduler).Assembly.GetName().GetPublicKey()
+                        typeof (PerformanceCounterExtensions).Assembly.GetName().GetPublicKey()
                     };
                     // Get the assembly name from the lowest point on the stack that does not have a
                     // 'known' public key.
@@ -419,7 +414,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NonSerialized]
         [NotNull]
-        private static readonly ScheduledAction _tickAction;
+        private static readonly AsyncTimer _tickAction;
 
         /// <summary>
         /// The queue lock.
@@ -436,6 +431,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
         /// </summary>
+        // ReSharper disable once NotNullMemberIsNotInitialized
         static Log()
         {
             // Set logging to all
@@ -450,7 +446,7 @@ namespace WebApplications.Utilities.Logging
                 PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
 
             // Create tick action
-            _tickAction = Scheduler.Add(DoFlush, Schedule.Never);
+            _tickAction = new AsyncTimer((AsyncTimerCallback)DoFlush, dueTime: Timeout.InfiniteTimeSpan);
 
             // Create loggers and add default memory logger.
             _loggers = new Dictionary<ILogger, LoggerInfo>();
@@ -555,23 +551,9 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// The default tick schedule.
+        /// The default tick period.
         /// </summary>
-        [NotNull]
-        private static readonly ISchedule _defaultSchedule = new GapSchedule(
-            Duration.FromTicks(1),
-            ScheduleOptions.AlignSeconds);
-
-        /// <summary>
-        /// Gets the tick schedule.
-        /// </summary>
-        /// <value>The tick schedule.</value>
-        [NotNull]
-        [PublicAPI]
-        public static ISchedule TickSchedule
-        {
-            get { return _tickAction.Schedule; }
-        }
+        private static readonly TimeSpan _defaultPeriod = TimeSpan.FromSeconds(1);
 
         /// <summary>
         ///   Loads the configuration whenever it is changed.
@@ -584,7 +566,7 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         internal static void LoadConfiguration()
         {
-            _tickAction.Enabled = false;
+            _tickAction.Change(dueTime: Timeout.InfiniteTimeSpan);
 
             // Ensure we only run one load at a time.
             lock (_loggers)
@@ -647,14 +629,12 @@ namespace WebApplications.Utilities.Logging
 
                     Add(LoggingLevel.Notification, () => Resources.Log_Configured, ApplicationName, ApplicationGuid);
 
-                    // Get the tick schedule, and re-enabled the tick.
-                    ISchedule schedule;
-                    _tickAction.Schedule = (string.IsNullOrWhiteSpace(configuration.Schedule) ||
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                                            !Scheduler.TryGetSchedule(configuration.Schedule, out schedule))
-                        ? _defaultSchedule
-                        : schedule;
-                    _tickAction.Enabled = true;
+                    // Get the tick period, and re-enabled the tick.
+                    TimeSpan period = configuration.Period < TimeSpan.Zero
+                        ? _defaultPeriod
+                        : configuration.Period;
+
+                    _tickAction.Change(period);
                 }
                 else
                 {
@@ -1109,11 +1089,11 @@ namespace WebApplications.Utilities.Logging
         private static void CleanUp()
         {
             Thread.BeginCriticalRegion();
-            _tickAction.Schedule = Schedule.Never;
             Add(LoggingLevel.Notification, () => Resources.Log_Application_Exiting, ApplicationName, ApplicationGuid);
 
+            _tickAction.Change(dueTime: Timeout.InfiniteTimeSpan);
             _tickAction.ExecuteAsync().Wait();
-            _tickAction.Enabled = false;
+            _tickAction.Dispose();
             ILogger[] loggers = _loggers.Keys.ToArray();
             _loggers.Clear();
             // ReSharper disable once PossibleNullReferenceException

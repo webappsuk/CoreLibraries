@@ -139,9 +139,6 @@
     <Reference Include="WebApplications.Utilities.Performance">
       <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5464.31913\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Scheduling">
-      <HintPath>..\packages\WebApplications.Utilities.Scheduling.5.1.5464.32803\lib\net452\WebApplications.Utilities.Scheduling.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">

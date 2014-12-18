@@ -168,15 +168,14 @@ namespace WebApplications.Utilities.Logging.Configuration
         }
 
         /// <summary>
-        ///   Gets or sets the tick <see cref="ISchedule"/> name.
+        ///   Gets or sets the tick period.
         /// </summary>
-        [ConfigurationProperty("schedule", DefaultValue = null, IsRequired = false)]
+        [ConfigurationProperty("period", DefaultValue = "-00:00:00.001", IsRequired = false)]
         [PublicAPI]
-        [CanBeNull]
-        public string Schedule
+        public TimeSpan Period
         {
-            get { return GetProperty<string>("schedule"); }
-            set { SetProperty("schedule", value); }
+            get { return GetProperty<TimeSpan>("period"); }
+            set { SetProperty("period", value); }
         }
 
         /// <summary>

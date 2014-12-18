@@ -32,10 +32,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
-using NodaTime;
-using WebApplications.Utilities.Scheduling;
-using WebApplications.Utilities.Scheduling.Scheduled;
-using WebApplications.Utilities.Scheduling.Schedules;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -47,10 +44,10 @@ namespace WebApplications.Utilities.Logging.Loggers
     internal sealed class MemoryLogger : LoggerBase
     {
         /// <summary>
-        /// The cleaner subscription.
+        /// The cleaner timer.
         /// </summary>
         [NotNull]
-        private readonly ScheduledAction _cleaner;
+        private readonly AsyncTimer _cleaner;
 
         /// <summary>
         ///   The cache that stores the logs.
@@ -69,12 +66,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         private int _maximumLogEntries;
 
         /// <summary>
-        /// The default tick schedule.
+        /// The default cleanup period
         /// </summary>
-        [NotNull]
-        private static readonly ISchedule _defaultSchedule = new GapSchedule(
-            Duration.FromTicks(1),
-            ScheduleOptions.AlignMinutes);
+        private static readonly TimeSpan _defaultPeriod = TimeSpan.FromMinutes(1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MemoryLogger" /> class.
@@ -85,7 +79,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <para>By default the expiry will be set to 10 minutes.</para></param>
         /// <param name="maximumLogEntries"><para>The maximum number of log entries to store.</para>
         /// <para>By default this is set to 10,000.</para></param>
-        /// <param name="schedule">The schedule.</param>
         /// <param name="validLevels"><para>The valid log levels.</para>
         /// <para>By default this is set allow all <see cref="LoggingLevels">all log levels</see>.</para></param>
         /// <exception cref="LoggingException"><para>
@@ -97,7 +90,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             TimeSpan cacheExpiry = default(TimeSpan),
             int maximumLogEntries = 10000,
-            [CanBeNull] string schedule = null,
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, validLevels)
         {
@@ -105,11 +97,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             _maximumLogEntries = maximumLogEntries;
             _cacheExpiry = cacheExpiry;
 
-            ISchedule s;
-            if (string.IsNullOrWhiteSpace(schedule) ||
-                !Scheduler.TryGetSchedule(schedule, out s)) s = _defaultSchedule;
-
-            _cleaner = Scheduler.Add((ScheduledAction.SchedulableAction)Clean, s);
+            // TODO Configure period?
+            _cleaner = new AsyncTimer(Clean, _defaultPeriod);
         }
 
         /// <summary>
@@ -232,8 +221,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         public override void Dispose()
         {
-            _cleaner.Enabled = false;
-            _cleaner.Schedule = Schedule.Never;
+            _cleaner.Dispose();
             lock (_lock)
                 _queue.Clear();
         }
