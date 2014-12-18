@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlTypes;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
 using WebApplications.Utilities.Database.Exceptions;
 

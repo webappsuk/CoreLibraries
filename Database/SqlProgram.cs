@@ -35,12 +35,11 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Scheduling;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
@@ -146,7 +145,7 @@ namespace WebApplications.Utilities.Database
             public CurrentMapping([NotNull] SqlProgramMapping mapping)
             {
                 Contract.Requires(mapping != null);
-                Loaded = Scheduler.Clock.Now;
+                Loaded = TimeHelpers.Clock.Now;
                 Mapping = mapping;
             }
 
@@ -157,7 +156,7 @@ namespace WebApplications.Utilities.Database
             public CurrentMapping([NotNull] ExceptionDispatchInfo exceptionDispatchInfo)
             {
                 Contract.Requires(exceptionDispatchInfo != null);
-                Loaded = Scheduler.Clock.Now;
+                Loaded = TimeHelpers.Clock.Now;
                 ExceptionDispatchInfo = exceptionDispatchInfo;
             }
         }
@@ -620,7 +619,7 @@ namespace WebApplications.Utilities.Database
             bool throwOnError = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Instant requested = Scheduler.Clock.Now;
+            Instant requested = TimeHelpers.Clock.Now;
 
             using (await _validationLock.LockAsync(cancellationToken).ConfigureAwait(false))
             {

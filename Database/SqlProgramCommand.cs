@@ -32,7 +32,7 @@ using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;

@@ -35,11 +35,10 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using NodaTime;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Scheduling;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -212,14 +211,14 @@ namespace WebApplications.Utilities.Database.Schema
             public CurrentSchema([NotNull] Schema schema)
             {
                 Contract.Requires(schema != null);
-                Loaded = Scheduler.Clock.Now;
+                Loaded = TimeHelpers.Clock.Now;
                 Schema = schema;
             }
 
             public CurrentSchema([NotNull] ExceptionDispatchInfo exceptionDispatchInfo)
             {
                 Contract.Requires(exceptionDispatchInfo != null);
-                Loaded = Scheduler.Clock.Now;
+                Loaded = TimeHelpers.Clock.Now;
                 ExceptionDispatchInfo = exceptionDispatchInfo;
             }
         }
@@ -427,7 +426,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         private async Task<DatabaseSchema> Load(bool forceReload, CancellationToken cancellationToken)
         {
-            Instant requested = Scheduler.Clock.Now;
+            Instant requested = TimeHelpers.Clock.Now;
             using (await _lock.LockAsync(cancellationToken).ConfigureAwait(false))
             {
                 // Check to see if the currently loaded schema is acceptable.

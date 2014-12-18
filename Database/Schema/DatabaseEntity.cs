@@ -32,7 +32,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Reflect;
 
@@ -334,7 +334,7 @@ namespace WebApplications.Utilities.Database.Schema
                             "GetHashCode",
                             null,
                             propertyExpression)
-                        : Expression.Call(propertyExpression, "GetHashCode", Reflection.EmptyTypes),
+                        : Expression.Call(propertyExpression, "GetHashCode", Array<Type>.Empty),
                     typeof (long));
 
             // Wrap with null check if necessary

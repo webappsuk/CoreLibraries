@@ -32,7 +32,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;

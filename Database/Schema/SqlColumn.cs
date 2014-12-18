@@ -29,7 +29,7 @@ using System;
 using System.Data;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
 

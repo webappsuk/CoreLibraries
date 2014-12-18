@@ -27,7 +27,7 @@
 
 using System;
 using System.Configuration;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 

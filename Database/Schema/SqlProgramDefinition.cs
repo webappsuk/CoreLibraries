@@ -31,7 +31,7 @@ using System.Data;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database.Schema

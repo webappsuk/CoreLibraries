@@ -61,11 +61,12 @@ namespace SqlServerTypes
             string path = Path.Combine(nativeBinaryPath, assemblyName);
             IntPtr ptr = LoadLibrary(path);
             if (ptr == IntPtr.Zero)
-                throw new Exception(
-                    string.Format(
-                        "Error loading {0} (ErrorCode: {1})",
-                        assemblyName,
-                        Marshal.GetLastWin32Error()));
+            {
+                throw new Exception(string.Format(
+                    "Error loading {0} (ErrorCode: {1})",
+                    assemblyName,
+                    Marshal.GetLastWin32Error()));
+            }
         }
     }
 }

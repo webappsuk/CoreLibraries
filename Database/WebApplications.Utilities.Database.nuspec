@@ -12,7 +12,7 @@
     <description>$description$</description>
     <tags>Utility Utilities SqlProgram Database</tags>
     <references>
-      <group targetFramework="net451">
+      <group targetFramework="net452">
         <reference file="WebApplications.Utilities.Database.dll" />
       </group>
     </references>
@@ -20,6 +20,6 @@
   <files>
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net451\CodeContracts" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net452\CodeContracts" />
   </files>
 </package>

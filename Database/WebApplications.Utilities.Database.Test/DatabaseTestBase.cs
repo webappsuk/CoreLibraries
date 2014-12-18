@@ -24,7 +24,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Logging;

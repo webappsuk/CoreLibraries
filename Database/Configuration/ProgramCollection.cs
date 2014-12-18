@@ -26,7 +26,7 @@
 #endregion
 
 using System.Configuration;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Database.Configuration

@@ -36,7 +36,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Linq;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
 using WebApplications.Utilities.Database.Exceptions;

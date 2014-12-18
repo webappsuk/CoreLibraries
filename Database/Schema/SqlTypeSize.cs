@@ -27,7 +27,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
 {

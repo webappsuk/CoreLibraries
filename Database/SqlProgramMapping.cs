@@ -27,7 +27,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
 
 namespace WebApplications.Utilities.Database
