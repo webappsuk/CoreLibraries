@@ -126,11 +126,13 @@
     <Reference Include="WebApplications.Testing">
       <HintPath>..\packages\WebApplications.Testing.5.1.5459.27186\lib\net452\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5464.31773\lib\net452\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities, Version=5.1.5465.29581, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5465.29581\lib\net452\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance">
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5464.31913\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5465.29637, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5465.29637\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -157,9 +159,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\webapplications.utilities.5.1.5464.31773\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5464.31773\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5464.31773\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5464.31773\tools\utility.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5464.31913\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5464.31913\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5465.29581\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5465.29581\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5465.29581\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5465.29581\tools\utility.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5465.29637\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5465.29637\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
