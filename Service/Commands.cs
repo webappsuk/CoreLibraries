@@ -400,7 +400,7 @@ namespace WebApplications.Utilities.Service
             CancellationToken token = default (CancellationToken))
         {
             if (args == null)
-                args = new string[0];
+                args = Array<string>.Empty;
 
             Contract.Assert(ServiceName != null);
             if (IsService)
