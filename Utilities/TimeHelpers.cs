@@ -46,6 +46,9 @@ namespace WebApplications.Utilities
         [NotNull]
         private static IDateTimeZoneProvider _dateTimeZoneProvider;
 
+        [NotNull]
+        private static IClock _clock;
+
         /// <summary>
         /// The one tick <see cref="Duration"/>.
         /// </summary>
@@ -90,13 +93,57 @@ namespace WebApplications.Utilities
 
         static TimeHelpers()
         {
-            LoadTzdb();
+            _dateTimeZoneProvider = LoadTzdb();
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _clock = SystemClock.Instance;
         }
 
         /// <summary>
-        /// Loads the time zone database into the <see cref="DateTimeZoneProvider"/>.
+        /// Gets or sets the date time zone provider.
         /// </summary>
-        /// <param name="path">The path of the database file to load, or <see langword="null"/> to use the path in the configuration.</param>
+        /// <value>The date time zone provider.</value>
+        [NotNull]
+        [PublicAPI]
+        public static IDateTimeZoneProvider DateTimeZoneProvider
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<IDateTimeZoneProvider>() != null);
+                return _dateTimeZoneProvider;
+            }
+            set
+            {
+                Contract.Requires(value != null);
+                _dateTimeZoneProvider = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the clock.
+        /// </summary>
+        /// <value>The clock.</value>
+        [NotNull]
+        [PublicAPI]
+        public static IClock Clock
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<IClock>() != null);
+                return _clock;
+            }
+            set
+            {
+                Contract.Requires(value != null);
+                _clock = value;
+            }
+        }
+
+        /// <summary>
+        /// Loads a time zone database.
+        /// </summary>
+        /// <param name="path">The path of the database file to load, or <see langword="null"/> to use the path in the configuration.
+        /// If no path is given in the config, the default NodaTime <see cref="DateTimeZoneProviders.Tzdb"/> will be used.</param>
         /// <returns></returns>
         [PublicAPI]
         [NotNull]
@@ -134,26 +181,7 @@ namespace WebApplications.Utilities
 
             Contract.Assert(provider != null);
 
-            _dateTimeZoneProvider = provider;
-
-            // ReSharper disable once AssignNullToNotNullAttribute
             return provider;
-        }
-
-        /// <summary>
-        /// Gets or sets the date time zone provider.
-        /// </summary>
-        /// <value>The date time zone provider.</value>
-        [NotNull]
-        [PublicAPI]
-        public static IDateTimeZoneProvider DateTimeZoneProvider
-        {
-            get { return _dateTimeZoneProvider; }
-            set
-            {
-                Contract.Requires(value != null);
-                _dateTimeZoneProvider = value;
-            }
         }
 
         #region Duration
@@ -165,7 +193,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static double TotalMilliseconds(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerMillisecond;
@@ -179,7 +207,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static int Milliseconds(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerMillisecond) % 1000;
@@ -193,7 +221,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static double TotalSeconds(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerSecond;
@@ -207,7 +235,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static int Seconds(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerSecond) % 60;
@@ -221,7 +249,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static double TotalMinutes(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerMinute;
@@ -235,7 +263,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static int Minutes(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerMinute) % 60;
@@ -249,7 +277,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static double TotalHours(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerHour;
@@ -263,7 +291,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static int Hours(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerHour) % 24;
@@ -277,7 +305,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static double TotalStandardDays(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerStandardDay;
@@ -291,7 +319,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static int StandardDays(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerStandardDay);
@@ -305,7 +333,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static double TotalStandardWeeks(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerStandardWeek;
@@ -319,7 +347,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static int StandardWeeks(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerStandardWeek);
@@ -335,7 +363,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static Instant FloorSecond(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerSecond) * NodaConstants.TicksPerSecond);
@@ -349,7 +377,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static Instant CeilingSecond(this Instant instant)
         {
             return new Instant(
@@ -365,7 +393,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static Instant FloorMinute(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerMinute) * NodaConstants.TicksPerMinute);
@@ -379,7 +407,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static Instant CeilingMinute(this Instant instant)
         {
             return new Instant(
@@ -395,7 +423,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static Instant FloorHour(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerHour) * NodaConstants.TicksPerHour);
@@ -409,7 +437,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static Instant CeilingHour(this Instant instant)
         {
             return new Instant(
@@ -449,7 +477,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
         {
             Contract.Requires(period != null);
@@ -466,7 +494,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
         {
             Contract.Requires(period != null);
@@ -483,7 +511,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDate local)
         {
             Contract.Requires(period != null);
@@ -500,7 +528,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDate local)
         {
             Contract.Requires(period != null);
