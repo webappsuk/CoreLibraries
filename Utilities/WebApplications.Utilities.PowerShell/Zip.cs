@@ -26,9 +26,11 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.PowerShell
@@ -45,8 +47,10 @@ namespace WebApplications.Utilities.PowerShell
         /// <param name="directory">The directory.</param>
         /// <param name="zipFile">The zip file.</param>
         /// <param name="force">if set to <see langword="true"/> overwrites zip if present.</param>
+        /// <param name="backSlash">if set to <see langword="true"/> file paths will be encoded with a back-slash (\) separator; 
+        /// otherwise they will be encoded with a forward-slash (/).</param>
         [UsedImplicitly]
-        public static void Compress([NotNull] string directory, [NotNull] string zipFile, bool force)
+        public static void Compress([NotNull] string directory, [NotNull] string zipFile, bool force, bool backSlash)
         {
             if (!Directory.Exists(directory))
                 throw new DirectoryNotFoundException(
@@ -65,7 +69,34 @@ namespace WebApplications.Utilities.PowerShell
                 File.Delete(zipFile);
             }
 
-            ZipFile.CreateFromDirectory(directory, zipFile);
+            ZipFile.CreateFromDirectory(directory, zipFile, CompressionLevel.Optimal, false, backSlash ? SlashEncoder.Back : SlashEncoder.Forward);
+        }
+
+        /// <summary>
+        /// A UTF8 Encoder that converts all slashes to a target slash.
+        /// </summary>
+        private class SlashEncoder : UTF8Encoding
+        {
+            public static readonly SlashEncoder Forward = new SlashEncoder("/");
+            public static readonly SlashEncoder Back = new SlashEncoder("\\");
+
+            [NotNull]
+            private readonly string _fromSlash;
+
+            [NotNull]
+            private readonly string _toSlash;
+
+            private SlashEncoder([NotNull] string targetSlash)
+            {
+                _toSlash = targetSlash;
+                _fromSlash = _toSlash == "\\" ? "/" : "\\";
+            }
+
+            public override byte[] GetBytes(string s)
+            {
+                s = s.Replace(_fromSlash, _toSlash);
+                return base.GetBytes(s);
+            }
         }
 
         /// <summary>
@@ -97,6 +128,8 @@ namespace WebApplications.Utilities.PowerShell
 
                     if (!Directory.Exists(fileDirectory))
                         Directory.CreateDirectory(fileDirectory);
+
+                    Trace.WriteLine(fileName);
 
                     entry.ExtractToFile(fileName, force);
                 }
