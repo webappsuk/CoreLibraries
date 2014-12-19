@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Loggers;
@@ -172,10 +173,10 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         [ConfigurationProperty("period", DefaultValue = "-00:00:00.001", IsRequired = false)]
         [PublicAPI]
-        public TimeSpan Period
+        public Duration Period
         {
-            get { return GetProperty<TimeSpan>("period"); }
-            set { SetProperty("period", value); }
+            get { return Duration.FromTimeSpan(GetProperty<TimeSpan>("period")); }
+            set { SetProperty("period", value.ToTimeSpan()); }
         }
 
         /// <summary>

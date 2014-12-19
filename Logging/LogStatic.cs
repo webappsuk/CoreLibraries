@@ -40,6 +40,7 @@ using System.Runtime.ExceptionServices;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Configuration;
@@ -432,7 +433,7 @@ namespace WebApplications.Utilities.Logging
                 PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
 
             // Create tick action
-            _tickAction = new AsyncTimer((AsyncTimerCallback)DoFlush, dueTime: Timeout.InfiniteTimeSpan);
+            _tickAction = new AsyncTimer((AsyncTimerCallback)DoFlush, dueTime: TimeHelpers.InfiniteDuration);
 
             // Create loggers and add default memory logger.
             _loggers = new Dictionary<ILogger, LoggerInfo>();
@@ -539,7 +540,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The default tick period.
         /// </summary>
-        private static readonly TimeSpan _defaultPeriod = TimeSpan.FromSeconds(1);
+        private static readonly Duration _defaultPeriod = Duration.FromSeconds(1);
 
         /// <summary>
         ///   Loads the configuration whenever it is changed.
@@ -552,7 +553,7 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         internal static void LoadConfiguration()
         {
-            _tickAction.Change(dueTime: Timeout.InfiniteTimeSpan);
+            _tickAction.Change(dueTime: TimeHelpers.InfiniteDuration);
 
             // Ensure we only run one load at a time.
             lock (_loggers)
@@ -616,7 +617,7 @@ namespace WebApplications.Utilities.Logging
                     Add(LoggingLevel.Notification, () => Resources.Log_Configured, ApplicationName, ApplicationGuid);
 
                     // Get the tick period, and re-enabled the tick.
-                    TimeSpan period = configuration.Period < TimeSpan.Zero
+                    Duration period = configuration.Period < Duration.Zero
                         ? _defaultPeriod
                         : configuration.Period;
 
@@ -1077,7 +1078,7 @@ namespace WebApplications.Utilities.Logging
             Thread.BeginCriticalRegion();
             Add(LoggingLevel.Notification, () => Resources.Log_Application_Exiting, ApplicationName, ApplicationGuid);
 
-            _tickAction.Change(dueTime: Timeout.InfiniteTimeSpan);
+            _tickAction.Change(dueTime: TimeHelpers.InfiniteDuration);
             _tickAction.ExecuteAsync().Wait();
             _tickAction.Dispose();
             ILogger[] loggers = _loggers.Keys.ToArray();

@@ -31,6 +31,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -68,7 +69,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         /// The default cleanup period
         /// </summary>
-        private static readonly TimeSpan _defaultPeriod = TimeSpan.FromMinutes(1);
+        private static readonly Duration _defaultPeriod = Duration.FromMinutes(1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MemoryLogger" /> class.
