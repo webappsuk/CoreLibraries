@@ -26,10 +26,10 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -56,17 +56,7 @@ namespace WebApplications.Utilities.Threading
         /// The minimum period, prevents the timer thrashing too quickly.
         /// </summary>
         [PublicAPI]
-        public static readonly TimeSpan MinimumPeriod = TimeSpan.FromMilliseconds(MinimumPeriodMs);
-
-        /// <summary>
-        /// Factor to use for converting Stopwatch ticks to miliseconds.
-        /// </summary>
-        private static readonly double _ticksToMs = 1000.0 / Stopwatch.Frequency;
-
-        /// <summary>
-        /// Factor to use for converting miliseconds to Stopwatch ticks.
-        /// </summary>
-        private static readonly double _msToTicks = Stopwatch.Frequency / 1000.0;
+        public static readonly Duration MinimumPeriod = Duration.FromMilliseconds(MinimumPeriodMs);
 
         /// <summary>
         /// Holds together timeout information in an immutable object for thread safety.
@@ -89,15 +79,15 @@ namespace WebApplications.Utilities.Threading
             public readonly int PeriodMs;
 
             /// <summary>
-            /// The time stamp (in <see cref="Stopwatch.Frequency">stopwatch ticks</see>), for when these timeouts were set.
+            /// The time stamp (in <see cref="Duration">duration ticks</see>), for when these timeouts were set.
             /// </summary>
             public readonly long TimeStamp;
 
             /// <summary>
-            /// The time stamp (in <see cref="Stopwatch.Frequency">stopwatch ticks</see>), for <see cref="DueTimeMs"/>.
+            /// The time stamp (in <see cref="Duration">duration ticks</see>), for <see cref="DueTimeMs"/>.
             /// </summary>
             /// <remarks>If <see cref="M:Change"/> was called and the DueTime was not updated, this field will have the 
-            /// same value as in the old TimeOut. Otherwise, this will be equal to the <see cref="TimeStamp"/> + <see cref="DueTimeMs"/> (converted to stopwatch ticks)</remarks>
+            /// same value as in the old TimeOut. Otherwise, this will be equal to the <see cref="TimeStamp"/> + <see cref="DueTimeMs"/> (converted to ticks)</remarks>
             public readonly long DueTimeStamp;
 
             /// <summary>
@@ -108,10 +98,10 @@ namespace WebApplications.Utilities.Threading
             /// <param name="minimumGap">The minimum gap.</param>
             /// <param name="timeStamp">The time stamp.</param>
             /// <param name="dueTimeStamp">The due time stamp.</param>
-            public TimeOuts(TimeSpan period, TimeSpan dueTime, TimeSpan minimumGap, long timeStamp, long? dueTimeStamp = null)
+            public TimeOuts(Duration period, Duration dueTime, Duration minimumGap, long timeStamp, long? dueTimeStamp = null)
             {
                 TimeStamp = timeStamp;
-                if (dueTime < TimeSpan.Zero)
+                if (dueTime < Duration.Zero)
                 {
                     DueTimeMs = -1;
                     MinimumGapMs = -1;
@@ -120,37 +110,37 @@ namespace WebApplications.Utilities.Threading
                 }
                 else
                 {
-                    DueTimeMs = dueTime < TimeSpan.Zero ? -1 : (int)dueTime.TotalMilliseconds;
-                    MinimumGapMs = minimumGap < TimeSpan.Zero ? -1 : (int)minimumGap.TotalMilliseconds;
-                    PeriodMs = period < TimeSpan.Zero
+                    DueTimeMs = dueTime < Duration.Zero ? -1 : (int)dueTime.TotalMilliseconds();
+                    MinimumGapMs = minimumGap < Duration.Zero ? -1 : (int)minimumGap.TotalMilliseconds();
+                    PeriodMs = period < Duration.Zero
                         ? -1
-                        : (period < MinimumPeriod ? MinimumPeriodMs : (int)period.TotalMilliseconds);
-                    DueTimeStamp = dueTimeStamp ?? (long)(TimeStamp + (DueTimeMs * _msToTicks));
+                        : (period < MinimumPeriod ? MinimumPeriodMs : (int)period.TotalMilliseconds());
+                    DueTimeStamp = dueTimeStamp ?? TimeStamp + (DueTimeMs * NodaConstants.TicksPerMillisecond);
                 }
             }
 
             /// <summary>
             /// The due time between the last time the timeouts were changed (see <see cref="TimeStamp"/>) and the start of the task invocation.
             /// </summary>
-            public TimeSpan DueTime
+            public Duration DueTime
             {
-                get { return TimeSpan.FromMilliseconds(DueTimeMs); }
+                get { return Duration.FromMilliseconds(DueTimeMs); }
             }
 
             /// <summary>
             /// The minimum gap  between the start of the task invocation and the end of the previous task invocation.
             /// </summary>
-            public TimeSpan MinimumGap
+            public Duration MinimumGap
             {
-                get { return TimeSpan.FromMilliseconds(MinimumGapMs); }
+                get { return Duration.FromMilliseconds(MinimumGapMs); }
             }
 
             /// <summary>
             /// The minimum gap between the start of the task invocation and the start of the previous task invocation.
             /// </summary>
-            public TimeSpan Period
+            public Duration Period
             {
-                get { return TimeSpan.FromMilliseconds(PeriodMs); }
+                get { return Duration.FromMilliseconds(PeriodMs); }
             }
         }
 
@@ -193,9 +183,9 @@ namespace WebApplications.Utilities.Threading
                     callback();
                     return TaskResult.Completed;
                 },
-                TimeSpan.FromMilliseconds(period),
-                TimeSpan.FromMilliseconds(dueTime),
-                TimeSpan.FromMilliseconds(minimumGap),
+                Duration.FromMilliseconds(period),
+                Duration.FromMilliseconds(dueTime),
+                Duration.FromMilliseconds(minimumGap),
                 pauseToken,
                 errorHandler)
         {
@@ -205,16 +195,16 @@ namespace WebApplications.Utilities.Threading
         /// Initializes a new instance of the <see cref="AsyncTimer" /> class.
         /// </summary>
         /// <param name="callback">The asynchronous method to be executed.</param>
-        /// <param name="period">The minimum gap between the start of the task invocation and the start of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Timeout.InfiniteTimeSpan" />).</param>
-        /// <param name="dueTime">The due time between the last time the timeouts were changed and the start of the task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeSpan.Zero" />).</param>
-        /// <param name="minimumGap">The minimum gap between the start of the task invocation and the end of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeSpan.Zero" />).</param>
+        /// <param name="period">The minimum gap between the start of the task invocation and the start of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeHelpers.InfiniteDuration" />).</param>
+        /// <param name="dueTime">The due time between the last time the timeouts were changed and the start of the task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Duration.Zero" />).</param>
+        /// <param name="minimumGap">The minimum gap between the start of the task invocation and the end of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Duration.Zero" />).</param>
         /// <param name="pauseToken">The pause token for pasuing the timer.</param>
         /// <param name="errorHandler">The optional error handler.</param>
         public AsyncTimer(
             [NotNull] Action callback,
-            TimeSpan? period = null,
-            TimeSpan? dueTime = null,
-            TimeSpan? minimumGap = null,
+            Duration? period = null,
+            Duration? dueTime = null,
+            Duration? minimumGap = null,
             PauseToken pauseToken = default(PauseToken),
             Action<Exception> errorHandler = null)
             : this(
@@ -253,9 +243,9 @@ namespace WebApplications.Utilities.Threading
                     callback(t);
                     return TaskResult.Completed;
                 },
-                TimeSpan.FromMilliseconds(period),
-                TimeSpan.FromMilliseconds(dueTime),
-                TimeSpan.FromMilliseconds(minimumGap),
+                Duration.FromMilliseconds(period),
+                Duration.FromMilliseconds(dueTime),
+                Duration.FromMilliseconds(minimumGap),
                 pauseToken,
                 errorHandler)
         {
@@ -265,16 +255,16 @@ namespace WebApplications.Utilities.Threading
         /// Initializes a new instance of the <see cref="AsyncTimer" /> class.
         /// </summary>
         /// <param name="callback">The asynchronous method to be executed.</param>
-        /// <param name="period">The minimum gap between the start of the task invocation and the start of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Timeout.InfiniteTimeSpan" />).</param>
-        /// <param name="dueTime">The due time between the last time the timeouts were changed and the start of the task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeSpan.Zero" />).</param>
-        /// <param name="minimumGap">The minimum gap between the start of the task invocation and the end of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeSpan.Zero" />).</param>
+        /// <param name="period">The minimum gap between the start of the task invocation and the start of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeHelpers.InfiniteDuration" />).</param>
+        /// <param name="dueTime">The due time between the last time the timeouts were changed and the start of the task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Duration.Zero" />).</param>
+        /// <param name="minimumGap">The minimum gap between the start of the task invocation and the end of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Duration.Zero" />).</param>
         /// <param name="pauseToken">The pause token for pasuing the timer.</param>
         /// <param name="errorHandler">The optional error handler.</param>
         public AsyncTimer(
             [NotNull] Action<CancellationToken> callback,
-            TimeSpan? period = null,
-            TimeSpan? dueTime = null,
-            TimeSpan? minimumGap = null,
+            Duration? period = null,
+            Duration? dueTime = null,
+            Duration? minimumGap = null,
             PauseToken pauseToken = default(PauseToken),
             Action<Exception> errorHandler = null)
             : this(
@@ -308,9 +298,9 @@ namespace WebApplications.Utilities.Threading
             PauseToken pauseToken = default(PauseToken),
             Action<Exception> errorHandler = null)
             : this(callback,
-                   TimeSpan.FromMilliseconds(period),
-                   TimeSpan.FromMilliseconds(dueTime),
-                   TimeSpan.FromMilliseconds(minimumGap),
+                   Duration.FromMilliseconds(period),
+                   Duration.FromMilliseconds(dueTime),
+                   Duration.FromMilliseconds(minimumGap),
                    pauseToken,
                    errorHandler)
         {
@@ -320,27 +310,27 @@ namespace WebApplications.Utilities.Threading
         /// Initializes a new instance of the <see cref="AsyncTimer" /> class.
         /// </summary>
         /// <param name="callback">The asynchronous method to be executed.</param>
-        /// <param name="period">The minimum gap between the start of the task invocation and the start of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Timeout.InfiniteTimeSpan" />).</param>
-        /// <param name="dueTime">The due time between the last time the timeouts were changed and the start of the task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeSpan.Zero" />).</param>
-        /// <param name="minimumGap">The minimum gap between the start of the task invocation and the end of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeSpan.Zero" />).</param>
+        /// <param name="period">The minimum gap between the start of the task invocation and the start of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="TimeHelpers.InfiniteDuration" />).</param>
+        /// <param name="dueTime">The due time between the last time the timeouts were changed and the start of the task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Duration.Zero" />).</param>
+        /// <param name="minimumGap">The minimum gap between the start of the task invocation and the end of the previous task invocation (defautls to <see langword="null" /> which is equivalent to <see cref="Duration.Zero" />).</param>
         /// <param name="pauseToken">The pause token for pasuing the timer.</param>
         /// <param name="errorHandler">The optional error handler.</param>
         public AsyncTimer(
             [NotNull] AsyncTimerCallback callback,
-            TimeSpan? period = null,
-            TimeSpan? dueTime = null,
-            TimeSpan? minimumGap = null,
+            Duration? period = null,
+            Duration? dueTime = null,
+            Duration? minimumGap = null,
             PauseToken pauseToken = default(PauseToken),
             Action<Exception> errorHandler = null)
         {
             Contract.Requires<ArgumentNullException>(callback != null);
-            long timeStamp = Stopwatch.GetTimestamp();
+            long timeStamp = HighPrecisionClock.Instance.NowTicks;
             _callback = callback;
             _pauseToken = pauseToken;
             _timeOuts = new TimeOuts(
-                period ?? Timeout.InfiniteTimeSpan,
-                dueTime ?? TimeSpan.Zero,
-                minimumGap ?? TimeSpan.Zero,
+                period ?? TimeHelpers.InfiniteDuration,
+                dueTime ?? Duration.Zero,
+                minimumGap ?? Duration.Zero,
                 timeStamp);
 
             _cancellationTokenSource = new CancellationTokenSource();
@@ -357,6 +347,7 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
+        // ReSharper disable once FunctionComplexityOverflow
         private async Task TimerTask(CancellationToken cancellationToken)
         {
             long startTicks = long.MinValue;
@@ -408,7 +399,7 @@ namespace WebApplications.Utilities.Threading
                                 if (ReferenceEquals(timeOuts, null)) return;
 
                                 if (timeOuts.DueTimeMs < 0 ||
-                                    (startTicks > -1 && (timeOuts.MinimumGapMs < 0 || timeOuts.PeriodMs < 0)))
+                                    (startTicks > long.MinValue && (timeOuts.MinimumGapMs < 0 || timeOuts.PeriodMs < 0)))
                                 {
                                     // If we have infinite waits then we are effectively awaiting cancellation
                                     // ReSharper disable once PossibleNullReferenceException
@@ -427,19 +418,19 @@ namespace WebApplications.Utilities.Threading
 
                                 int wait;
 
-                                if (startTicks > -1)
+                                if (startTicks > long.MinValue)
                                 {
                                     // Calculate the wait time based on the minimum gap and the period.
-                                    long now = Stopwatch.GetTimestamp();
-                                    int a = timeOuts.PeriodMs - (int)(_ticksToMs * (now - startTicks));
-                                    int b = timeOuts.MinimumGapMs - (int)(_ticksToMs * (now - endTicks));
-                                    int c = (int)(_ticksToMs * (timeOuts.DueTimeStamp - now));
+                                    long now = HighPrecisionClock.Instance.NowTicks;
+                                    int a = timeOuts.PeriodMs - (int)((now - startTicks) / NodaConstants.TicksPerMillisecond);
+                                    int b = timeOuts.MinimumGapMs - (int)((now - endTicks) / NodaConstants.TicksPerMillisecond);
+                                    int c = (int)((timeOuts.DueTimeStamp - now) / NodaConstants.TicksPerMillisecond);
 
                                     wait = Math.Max(a, Math.Max(b, c));
                                 }
                                 else
                                     // Wait the initial due time
-                                    wait = (int)(_ticksToMs * (timeOuts.DueTimeStamp - Stopwatch.GetTimestamp()));
+                                    wait = (int)((timeOuts.DueTimeStamp - HighPrecisionClock.Instance.NowTicks) / NodaConstants.TicksPerMillisecond);
 
                                 // If we don't need to wait run again immediately (after checking values haven't changed).
                                 if (wait < 1) continue;
@@ -477,7 +468,7 @@ namespace WebApplications.Utilities.Threading
                             new TaskCompletionSource<bool>(),
                             null);
 
-                        startTicks = Stopwatch.GetTimestamp();
+                        startTicks = HighPrecisionClock.Instance.NowTicks;
 
                         // ReSharper disable once PossibleNullReferenceException
                         await _callback(cancellationToken).ConfigureAwait(false);
@@ -514,7 +505,7 @@ namespace WebApplications.Utilities.Threading
                     }
                     finally
                     {
-                        endTicks = Stopwatch.GetTimestamp();
+                        endTicks = HighPrecisionClock.Instance.NowTicks;
 
                         // If run immediately was set whilst we were running, we can clear it.
                         Interlocked.Exchange(ref _runImmediate, 0);
@@ -580,28 +571,28 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// Changes the specified due time and period.
         /// </summary>
-        /// <param name="period">The optional minimum gap (in milliseconds) between the start of the task invocation and the start of the previous task invocation; use <see langword="null"/> to leave the value unchaged.</param>
-        /// <param name="dueTime">The optional due time (in milliseconds) between the last time the timeouts were changed and the start of the task invocation; use <see langword="null"/> to leave the value unchaged.</param>
-        /// <param name="minimumGap">The optional minimum gap (in milliseconds) between the start of the task invocation and the end of the previous task invocation; use <see langword="null"/> to leave the value unchaged.</param>
+        /// <param name="period">The optional minimum gap (in milliseconds) between the start of the task invocation and the start of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
+        /// <param name="dueTime">The optional due time (in milliseconds) between the last time the timeouts were changed and the start of the task invocation; use <see langword="null"/> to leave the value unchanged.</param>
+        /// <param name="minimumGap">The optional minimum gap (in milliseconds) between the start of the task invocation and the end of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
         [PublicAPI]
         public void Change(int? period = null, int? dueTime = null, int? minimumGap = null)
         {
             Change(
-                period.HasValue ? TimeSpan.FromMilliseconds(period.Value) : (TimeSpan?)null,
-                dueTime.HasValue ? TimeSpan.FromMilliseconds(dueTime.Value) : (TimeSpan?)null,
-                minimumGap.HasValue ? TimeSpan.FromMilliseconds(minimumGap.Value) : (TimeSpan?)null);
+                period.HasValue ? Duration.FromMilliseconds(period.Value) : (Duration?)null,
+                dueTime.HasValue ? Duration.FromMilliseconds(dueTime.Value) : (Duration?)null,
+                minimumGap.HasValue ? Duration.FromMilliseconds(minimumGap.Value) : (Duration?)null);
         }
 
         /// <summary>
         /// Changes the specified due time and period.
         /// </summary>
-        /// <param name="period">The optional minimum gap between the start of the task invocation and the start of the previous task invocation; use <see langword="null"/> to leave the value unchaged.</param>
-        /// <param name="dueTime">The optional due time between the last time the timeouts were changed and the start of the task invocation; use <see langword="null"/> to leave the value unchaged.</param>
-        /// <param name="minimumGap">The optional minimum gap between the start of the task invocation and the end of the previous task invocation; use <see langword="null"/> to leave the value unchaged.</param>
+        /// <param name="period">The optional minimum gap between the start of the task invocation and the start of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
+        /// <param name="dueTime">The optional due time between the last time the timeouts were changed and the start of the task invocation; use <see langword="null"/> to leave the value unchanged.</param>
+        /// <param name="minimumGap">The optional minimum gap between the start of the task invocation and the end of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
         [PublicAPI]
-        public void Change(TimeSpan? period = null, TimeSpan? dueTime = null, TimeSpan? minimumGap = null)
+        public void Change(Duration? period = null, Duration? dueTime = null, Duration? minimumGap = null)
         {
-            long timeStamp = Stopwatch.GetTimestamp();
+            long timeStamp = HighPrecisionClock.Instance.NowTicks;
             bool dueTimeChanged = !ReferenceEquals(dueTime, null);
             bool minimumGapChanged = !ReferenceEquals(minimumGap, null);
             bool periodChanged = !ReferenceEquals(period, null);
@@ -659,7 +650,7 @@ namespace WebApplications.Utilities.Threading
         /// The due time.
         /// </value>
         [PublicAPI]
-        public TimeSpan DueTime
+        public Duration DueTime
         {
             get
             {
@@ -677,7 +668,7 @@ namespace WebApplications.Utilities.Threading
         /// The minimum gap.
         /// </value>
         [PublicAPI]
-        public TimeSpan MinimumGap
+        public Duration MinimumGap
         {
             get
             {
@@ -695,7 +686,7 @@ namespace WebApplications.Utilities.Threading
         /// The period.
         /// </value>
         [PublicAPI]
-        public TimeSpan Period
+        public Duration Period
         {
             get
             {

@@ -29,6 +29,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using WebApplications.Utilities.Annotations;
 using NodaTime;
 using NodaTime.TimeZones;
@@ -48,6 +49,12 @@ namespace WebApplications.Utilities
 
         [NotNull]
         private static IClock _clock;
+
+        /// <summary>
+        /// A constant used to specify an infinite waiting period, for methods that accept a <see cref="Duration"/> parameter.
+        /// </summary>
+        [PublicAPI]
+        public static readonly Duration InfiniteDuration = Duration.FromMilliseconds(Timeout.Infinite);
 
         /// <summary>
         /// The one tick <see cref="Duration"/>.
