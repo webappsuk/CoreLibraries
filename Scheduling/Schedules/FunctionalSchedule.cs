@@ -98,7 +98,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public override string ToString()
         {
-            return "Next Run at " + Next(Scheduler.Clock.Now);
+            return "Next Run at " + Next(TimeHelpers.Clock.Now);
         }
     }
 }

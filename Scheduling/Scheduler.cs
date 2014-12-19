@@ -89,9 +89,6 @@ namespace WebApplications.Utilities.Scheduling
 
             DefaultMaximumHistory = schedulerConfiguration.DefautlMaximumHistory;
             DefaultMaximumDuration = schedulerConfiguration.DefaultMaximumDuration;
-            // ReSharper disable once AssignNullToNotNullAttribute
-            // If we have a high resolution stopwatch use that for the clock.
-            _clock = SystemClock.Instance;
 
             _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
 
@@ -738,26 +735,6 @@ namespace WebApplications.Utilities.Scheduling
         #endregion
 
         /// <summary>
-        /// Gets or sets the clock.
-        /// </summary>
-        /// <value>The clock.</value>
-        [NotNull]
-        [PublicAPI]
-        public static IClock Clock
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<IClock>() != null);
-                return _clock;
-            }
-            set
-            {
-                Contract.Requires(value != null);
-                _clock = value;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the maximum duration of an action.
         /// </summary>
         /// <value>The maximum duration of any action.</value>
@@ -836,9 +813,6 @@ namespace WebApplications.Utilities.Scheduling
         private static Duration _defaultMaximumDuration;
         private static int _enabled;
 
-        [NotNull]
-        private static IClock _clock;
-
         /// <summary>
         /// Gets the next due date and time (UTC).
         /// </summary>
@@ -891,7 +865,7 @@ namespace WebApplications.Utilities.Scheduling
 
                         long andt = action.NextDueTicks;
 
-                        if (andt < Clock.Now.Ticks)
+                        if (andt < TimeHelpers.Clock.Now.Ticks)
                             // Due now so kick of an execution (shouldn't block).
                             action.ExecuteAsync();
                         else if (andt < ndt)
@@ -926,7 +900,7 @@ namespace WebApplications.Utilities.Scheduling
                     Interlocked.Exchange(ref _nextDueTicks, ndt);
                     Interlocked.Exchange(ref _nextScheduledAction, nextScheduledAction);
 
-                    long now = Clock.Now.Ticks;
+                    long now = TimeHelpers.Clock.Now.Ticks;
 
                     // If we're due in the future calculate how long to wait.
                     if (ndt > now)
@@ -950,7 +924,7 @@ namespace WebApplications.Utilities.Scheduling
                             while (wt > 0)
                             {
                                 s.SpinOnce();
-                                wt = ndt - Clock.Now.Ticks;
+                                wt = ndt - TimeHelpers.Clock.Now.Ticks;
                             }
                         }
                     }

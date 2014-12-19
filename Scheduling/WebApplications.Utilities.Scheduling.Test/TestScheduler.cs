@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void TestAddActionRuns()
         {
             bool ran = false;
-            Instant due = Scheduler.Clock.Now + Duration.FromMilliseconds(100);
+            Instant due = TimeHelpers.Clock.Now + Duration.FromMilliseconds(100);
             ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
 
             Assert.IsNotNull(action);
@@ -67,7 +67,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void TestAddActionInPastDoesntRun()
         {
             bool ran = false;
-            Instant due = Scheduler.Clock.Now - Duration.FromMilliseconds(1);
+            Instant due = TimeHelpers.Clock.Now - Duration.FromMilliseconds(1);
             ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
 
             Assert.IsNotNull(action);
@@ -84,7 +84,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void TestAddActionDisabledDoesntRun()
         {
             bool ran = false;
-            Instant due = Scheduler.Clock.Now - Duration.FromMilliseconds(1);
+            Instant due = TimeHelpers.Clock.Now - Duration.FromMilliseconds(1);
             ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
             Assert.IsNotNull(action);
 
@@ -103,7 +103,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void TestAddActionCancel()
         {
             bool ran = false;
-            Instant due = Scheduler.Clock.Now + Duration.FromMilliseconds(100);
+            Instant due = TimeHelpers.Clock.Now + Duration.FromMilliseconds(100);
             Duration duration = Duration.FromMilliseconds(10);
             ScheduledAction action = Scheduler.Add(
                 () =>

@@ -166,7 +166,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         {
             // Start stopwatch, and mark time the request was made.
             Stopwatch stopwatch = Stopwatch.StartNew();
-            Instant started = Scheduler.Clock.Now;
+            Instant started = TimeHelpers.Clock.Now;
 
             // Combine cancellation token with Timeout to ensure no action runs beyond the Scheduler's limit.
             using (ITokenSource tokenSource = cancellationToken.WithTimeout(MaximumDurationMs))
@@ -178,7 +178,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     // ReSharper disable once AssignNullToNotNullAttribute
                     return new ScheduledFunctionResult<T>(
                         NextDue,
-                        Scheduler.Clock.Now,
+                        TimeHelpers.Clock.Now,
                         Duration.Zero,
                         null,
                         true,
@@ -198,7 +198,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         // ReSharper disable once AssignNullToNotNullAttribute
                         return new ScheduledFunctionResult<T>(
                             NextDue,
-                            Scheduler.Clock.Now,
+                            TimeHelpers.Clock.Now,
                             Duration.Zero,
                             null,
                             true,
@@ -253,7 +253,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     Interlocked.Increment(ref ExecutionCountInternal);
 
                     // Mark execution finished
-                    LastExecutionFinished = Scheduler.Clock.Now;
+                    LastExecutionFinished = TimeHelpers.Clock.Now;
 
                     // Enqueue history item.
                     HistoryQueue.Enqueue(result);

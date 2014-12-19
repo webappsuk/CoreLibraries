@@ -321,7 +321,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 try
                 {
                     long ndt = Interlocked.Read(ref NextDueTicksInternal);
-                    Instant now = Scheduler.Clock.Now;
+                    Instant now = TimeHelpers.Clock.Now;
                     long nt = now.Ticks;
 
                     // If next due is in future, ask schedule when we're next due.
@@ -334,12 +334,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                             Instant lef = LastExecutionFinished;
                             last = lef > Instant.MinValue
                                 ? lef
-                                : Scheduler.Clock.Now;
+                                : TimeHelpers.Clock.Now;
                         }
                         else
                             last = due > Instant.MinValue
                                 ? due
-                                : Scheduler.Clock.Now;
+                                : TimeHelpers.Clock.Now;
 
                         ndt = Schedule.Next(last).Ticks;
 

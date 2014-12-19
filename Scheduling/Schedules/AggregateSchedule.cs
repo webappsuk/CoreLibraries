@@ -284,7 +284,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             return string.Format(
                 "Aggregate Schedule ({0} schedules), next Run at {1}",
                 _schedules.Length,
-                Next(Scheduler.Clock.Now));
+                Next(TimeHelpers.Clock.Now));
         }
     }
 }

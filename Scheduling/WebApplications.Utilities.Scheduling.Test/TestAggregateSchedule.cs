@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             string name = Tester.RandomGenerator.RandomString();
             AggregateSchedule aggregateSchedule = new AggregateSchedule(name);
             Assert.AreEqual(name, aggregateSchedule.Name);
-            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(Scheduler.Clock.Now));
+            Assert.AreEqual(Instant.MaxValue, aggregateSchedule.Next(TimeHelpers.Clock.Now));
             Assert.AreEqual(0, aggregateSchedule.Count());
         }
 

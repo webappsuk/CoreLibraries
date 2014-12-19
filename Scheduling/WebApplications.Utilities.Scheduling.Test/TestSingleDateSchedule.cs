@@ -66,7 +66,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         [TestMethod]
         public void Never()
         {
-            Assert.AreEqual(Instant.MaxValue, Schedule.Never.Next(Scheduler.Clock.Now));
+            Assert.AreEqual(Instant.MaxValue, Schedule.Never.Next(TimeHelpers.Clock.Now));
         }
     }
 }
