@@ -126,9 +126,9 @@
       <HintPath>..\packages\WebApplications.Testing.5.1.5459.27186\lib\net452\WebApplications.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=5.1.5467.21005, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.1.5467.22213, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5467.21005\lib\net452\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5467.22213\lib\net452\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -159,8 +159,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5467.21005\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.21005\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5467.21005\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.21005\tools\utility.targets')" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5467.22213\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.22213\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5467.22213\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.22213\tools\utility.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
