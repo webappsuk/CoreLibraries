@@ -98,7 +98,7 @@ namespace WebApplications.Utilities
                 {
                     long time;
                     GetSystemTimePreciseAsFileTime(out time);
-                    return new Instant(time);
+                    return TimeHelpers.FileTimeEpoch.PlusTicks(time);
                 }
 
                 if (Stopwatch.IsHighResolution)
@@ -120,7 +120,7 @@ namespace WebApplications.Utilities
                 {
                     long time;
                     GetSystemTimePreciseAsFileTime(out time);
-                    return time;
+                    return TimeHelpers.FileTimeEpoch.Ticks + time;
                 }
 
                 if (Stopwatch.IsHighResolution)

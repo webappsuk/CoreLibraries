@@ -98,12 +98,28 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static readonly Duration OneStandardWeek = Duration.FromStandardWeeks(1);
 
+        /// <summary>
+        /// The file time epoch, 12:00 A.M. January 1, 1601.
+        /// </summary>
+        public static readonly Instant FileTimeEpoch = Instant.FromUtc(1601, 1, 1, 0, 0);
+
         static TimeHelpers()
         {
             _dateTimeZoneProvider = LoadTzdb();
 
             // ReSharper disable once AssignNullToNotNullAttribute
             _clock = SystemClock.Instance;
+        }
+
+        /// <summary>
+        /// Gets an <see cref="Instant"/> from file time ticks.
+        /// </summary>
+        /// <param name="fileTimeTicks">The number of 100-nanosecond intervals that have elapsed since <see cref="FileTimeEpoch"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Instant InstantFromFileTimeUtc(long fileTimeTicks)
+        {
+            return FileTimeEpoch.PlusTicks(fileTimeTicks);
         }
 
         /// <summary>
