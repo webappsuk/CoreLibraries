@@ -622,7 +622,7 @@ namespace WebApplications.Utilities.Logging
                         ? _defaultPeriod
                         : configPeriod;
 
-                    _tickAction.Change(period);
+                    _tickAction.Change(period, Duration.Zero);
                 }
                 else
                 {
