@@ -137,17 +137,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebApplications.Testing.5.1.5459.27186\lib\net452\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=5.1.5467.22213, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.1.5467.24276, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5467.22213\lib\net452\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5467.24276\lib\net452\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5467.22388, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5467.24471, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5467.22388\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5467.24471\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5467.22287, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5467.24353, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5467.22287\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5467.24353\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -233,9 +233,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\webapplications.utilities.5.1.5467.22213\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.22213\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5467.22213\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.22213\tools\utility.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5467.22287\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5467.22287\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5467.24276\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.24276\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5467.24276\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5467.24276\tools\utility.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5467.24353\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5467.24353\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
