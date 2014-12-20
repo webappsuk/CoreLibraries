@@ -617,9 +617,10 @@ namespace WebApplications.Utilities.Logging
                     Add(LoggingLevel.Notification, () => Resources.Log_Configured, ApplicationName, ApplicationGuid);
 
                     // Get the tick period, and re-enabled the tick.
-                    Duration period = configuration.Period < Duration.Zero
+                    Duration configPeriod = Duration.FromTimeSpan(configuration.Period);
+                    Duration period = configPeriod < Duration.Zero
                         ? _defaultPeriod
-                        : configuration.Period;
+                        : configPeriod;
 
                     _tickAction.Change(period);
                 }

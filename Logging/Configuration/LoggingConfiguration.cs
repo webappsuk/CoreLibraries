@@ -173,10 +173,10 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         [ConfigurationProperty("period", DefaultValue = "-00:00:00.001", IsRequired = false)]
         [PublicAPI]
-        public Duration Period
+        public TimeSpan Period
         {
-            get { return Duration.FromTimeSpan(GetProperty<TimeSpan>("period")); }
-            set { SetProperty("period", value.ToTimeSpan()); }
+            get { return GetProperty<TimeSpan>("period"); }
+            set { SetProperty("period", value); }
         }
 
         /// <summary>
