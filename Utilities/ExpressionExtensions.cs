@@ -33,6 +33,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Reflect;
 
@@ -620,12 +621,8 @@ namespace WebApplications.Utilities
             public override Expression Visit(Expression node)
             {
                 if (ReferenceEquals(node, TargetExpression))
-                {
                     Found = true;
-                    return null;
-                }
-                if (Found || ReferenceEquals(node, null))
-                    return null;
+                
                 return base.Visit(node);
             }
 
