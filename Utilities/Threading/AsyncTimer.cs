@@ -101,22 +101,14 @@ namespace WebApplications.Utilities.Threading
             public TimeOuts(Duration period, Duration dueTime, Duration minimumGap, long timeStamp, long? dueTimeStamp = null)
             {
                 TimeStamp = timeStamp;
-                if (dueTime < Duration.Zero)
-                {
-                    DueTimeMs = -1;
-                    MinimumGapMs = -1;
-                    PeriodMs = -1;
-                    DueTimeStamp = long.MaxValue;
-                }
-                else
-                {
-                    DueTimeMs = dueTime < Duration.Zero ? -1 : (int)dueTime.TotalMilliseconds();
-                    MinimumGapMs = minimumGap < Duration.Zero ? -1 : (int)minimumGap.TotalMilliseconds();
-                    PeriodMs = period < Duration.Zero
-                        ? -1
-                        : (period < MinimumPeriod ? MinimumPeriodMs : (int)period.TotalMilliseconds());
-                    DueTimeStamp = dueTimeStamp ?? TimeStamp + (DueTimeMs * NodaConstants.TicksPerMillisecond);
-                }
+                DueTimeMs = dueTime < Duration.Zero ? -1 : (int)dueTime.TotalMilliseconds();
+                MinimumGapMs = minimumGap < Duration.Zero ? -1 : (int)minimumGap.TotalMilliseconds();
+                PeriodMs = period < Duration.Zero
+                    ? -1
+                    : (period < MinimumPeriod ? MinimumPeriodMs : (int)period.TotalMilliseconds());
+                DueTimeStamp = dueTime < Duration.Zero
+                    ? long.MaxValue
+                    : (dueTimeStamp ?? TimeStamp + (DueTimeMs * NodaConstants.TicksPerMillisecond));
             }
 
             /// <summary>
