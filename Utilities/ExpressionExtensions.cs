@@ -634,11 +634,10 @@ namespace WebApplications.Utilities
             /// <returns></returns>
             protected override Expression VisitLambda<T>(Expression<T> node)
             {
-                // ReSharper disable AssignNullToNotNullAttribute
-                return SkipLambdaSignatures
-                    ? Visit(node.Body)
-                    : base.VisitLambda(node);
-                // ReSharper restore AssignNullToNotNullAttribute
+                if (!SkipLambdaSignatures) 
+                    return base.VisitLambda(node);
+                Visit(node.Body);
+                return node;
             }
 
             /// <summary>
