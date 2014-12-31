@@ -39,6 +39,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -3380,7 +3381,7 @@ namespace WebApplications.Utilities
 
             IList<T> list = enumerable as IList<T> ?? enumerable.ToArray();
             return list.Count > 0
-                    // ReSharper disable once PossibleNullReferenceException
+                // ReSharper disable once PossibleNullReferenceException
                 ? list[ThreadLocal.Random.Next(list.Count)]
                 : default(T);
         }
@@ -3542,6 +3543,65 @@ namespace WebApplications.Utilities
                 if (!ReferenceEquals(tException, null))
                     yield return tException;
             }
+        }
+
+        /// <summary>
+        /// Unwraps the specified exception if possible.
+        /// </summary>
+        /// <remarks>
+        /// The exception can be unwraped if it is an <see cref="AggregateException"/> with a single inner exception, 
+        /// or a <see cref="TargetInvocationException"/>.
+        /// </remarks>
+        /// <param name="exception">The exception.</param>
+        [ContractAnnotation("exception:null=>null;exception:notnull=>notnull")]
+        public static Exception Unwrap([CanBeNull] this Exception exception)
+        {
+            if (exception == null)
+                return null;
+
+            while (true)
+            {
+                Contract.Assert(exception != null);
+
+                AggregateException aggregate = exception as AggregateException;
+                if (aggregate != null)
+                {
+                    Contract.Assert(aggregate.InnerExceptions != null);
+                    if (aggregate.InnerExceptions.Count < 2)
+                    {
+                        exception = aggregate.InnerException;
+                        continue;
+                    }
+                    break;
+                }
+
+                TargetInvocationException target = exception as TargetInvocationException;
+                if (target != null)
+                {
+                    if (!ReferenceEquals(target.InnerException, null))
+                    {
+                        exception = target.InnerException;
+                        continue;
+                    }
+                    break;
+                }
+            }
+
+            return exception;
+        }
+
+        /// <summary>
+        /// Re-throws the exception with the original stack trace.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        [PublicAPI]
+        [ContractAnnotation("=>halt")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ReThrow([NotNull] this Exception exception)
+        {
+            ExceptionDispatchInfo.Capture(exception).Throw();
+            // Just in case
+            throw exception;
         }
 
         /// <summary>

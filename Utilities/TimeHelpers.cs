@@ -50,6 +50,12 @@ namespace WebApplications.Utilities
         [NotNull]
         private static IClock _clock;
 
+        //Comes from: TimeSpan.FromMilliseconds(int.MaxValue + 1L).Ticks - 1
+        /// <summary>
+        /// The number of ticks in <see cref="int.MaxValue"/> + 1 milliseconds, minus 1.
+        /// </summary>
+        internal const long TicksForMaxMilliseconds = 21474836479999;
+
         /// <summary>
         /// A constant used to specify an infinite waiting period, for methods that accept a <see cref="Duration"/> parameter.
         /// </summary>

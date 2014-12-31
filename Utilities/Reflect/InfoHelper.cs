@@ -61,7 +61,7 @@ namespace WebApplications.Utilities.Reflect
         internal static readonly FieldInfo RefOrOutFieldInfo;
 
         /// <summary>
-        /// The <see cref="FieldInfo"/> for <see cref="RefOrOut"/>.
+        /// The <see cref="FieldInfo"/> for <see cref="Parameter"/>.
         /// </summary>
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
@@ -69,13 +69,8 @@ namespace WebApplications.Utilities.Reflect
 
         static InfoHelper()
         {
-            FieldInfo info = InfoHelper.GetFieldInfo(() => RefOrOut);
-            Contract.Assert(info != null);
-            RefOrOutFieldInfo = info;
-
-            info = InfoHelper.GetFieldInfo(() => Parameter);
-            Contract.Assert(info != null);
-            ParameterFieldInfo = info;
+            RefOrOutFieldInfo = InfoHelper.GetFieldInfo(() => RefOrOut, true);
+            ParameterFieldInfo = InfoHelper.GetFieldInfo(() => Parameter, true);
         }
     }
 
@@ -90,19 +85,22 @@ namespace WebApplications.Utilities.Reflect
         /// Gets the method information.
         /// </summary>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
-        /// <remarks>Usage:
-        /// <code>InfoHelper.GetMethodInfo(() => TypeOrInstance.Method(parameters));</code>
+        /// <remarks>
+        /// Usage:
+        /// <code>InfoHelper.GetMethodInfo(() =&gt; TypeOrInstance.Method(parameters));</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static MethodInfo GetMethodInfo([NotNull] Expression<Action> exp)
+        public static MethodInfo GetMethodInfo([NotNull] Expression<Action> exp, bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MethodCallExpression body = exp.Body as MethodCallExpression;
-            return body != null
-                ? body.Method
-                : null;
+            if (body != null) return body.Method;
+            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -110,19 +108,23 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetMethodInfo&lt;Type&gt;(i => i.Method(parameters));</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static MethodInfo GetMethodInfo<TInstance>([NotNull] Expression<Action<TInstance>> exp)
+        public static MethodInfo GetMethodInfo<TInstance>(
+            [NotNull] Expression<Action<TInstance>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MethodCallExpression body = exp.Body as MethodCallExpression;
-            return body != null
-                ? body.Method
-                : null;
+            if (body != null) return body.Method;
+            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -131,45 +133,50 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>instance.GetMethodInfo(i => i.Method(parameters));</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
         public static MethodInfo GetMethodInfo<TInstance>(
             this TInstance instance,
-            [NotNull] Expression<Action<TInstance>> exp)
+            [NotNull] Expression<Action<TInstance>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
 
             MethodCallExpression body = exp.Body as MethodCallExpression;
-            return body != null
-                ? body.Method
-                : null;
+            if (body != null) return body.Method;
+            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
+            return null;
         }
 
         /// <summary>
         /// Gets the method information.
         /// </summary>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetMethodInfo(() => TypeOrInstance.Method(parameters));</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static MethodInfo GetMethodInfo([NotNull] Expression<Func<object>> exp)
+        public static MethodInfo GetMethodInfo([NotNull] Expression<Func<object>> exp, bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression) exp.Body).Operand
+                ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
 
             MethodCallExpression expression = body as MethodCallExpression;
-            return expression != null
-                ? expression.Method
-                : null;
+            if (expression != null) return expression.Method;
+            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -177,23 +184,27 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetMethodInfo&lt;Type&gt;(i => i.Method(parameters));</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static MethodInfo GetMethodInfo<TInstance>([NotNull] Expression<Func<TInstance, object>> exp)
+        public static MethodInfo GetMethodInfo<TInstance>(
+            [NotNull] Expression<Func<TInstance, object>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression) exp.Body).Operand
+                ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
 
             MethodCallExpression expression = body as MethodCallExpression;
-            return expression != null
-                ? expression.Method
-                : null;
+            if (expression != null) return expression.Method;
+            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -202,68 +213,80 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>instance.GetMethodInfo(i => i.Method(parameters));</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
         public static MethodInfo GetMethodInfo<TInstance>(
             this TInstance instance,
-            [NotNull] Expression<Func<TInstance, object>> exp)
+            [NotNull] Expression<Func<TInstance, object>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression) exp.Body).Operand
+                ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
 
             MethodCallExpression expression = body as MethodCallExpression;
-            return expression != null
-                ? expression.Method
-                : null;
+            if (expression != null) return expression.Method;
+            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
+            return null;
         }
 
         /// <summary>
         /// Gets the constructor information.
         /// </summary>
+        /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the constructor was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetConstructorInfo(() => new Type(parameter));</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static ConstructorInfo GetConstructorInfo([NotNull] Expression<Action> exp)
+        public static ConstructorInfo GetConstructorInfo<TInstance>(
+            [NotNull] Expression<Func<TInstance>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             NewExpression body = exp.Body as NewExpression;
-            return body != null
-                ? body.Constructor
-                : null;
+            if (body != null) return body.Constructor;
+            if (throwIfNotFound) throw new ArgumentException("ConstructorInfo not found in expression");
+            return null;
         }
 
         /// <summary>
         /// Gets the property information.
         /// </summary>
-        /// <typeparam name="TInstance"></typeparam>
+        /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetPropertyInfo&lt;Type&gt;(i => i.Property);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static PropertyInfo GetPropertyInfo<TInstance>([NotNull] Expression<Func<TInstance, object>> exp)
+        public static PropertyInfo GetPropertyInfo<TInstance>(
+            [NotNull] Expression<Func<TInstance, object>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression) exp.Body).Operand
+                ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
 
             MemberExpression expression = body as MemberExpression;
-            return expression != null
-                ? expression.Member as PropertyInfo
-                : null;
+            if (expression != null) return expression.Member as PropertyInfo;
+            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -271,19 +294,23 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetPropertyInfo(() => TypeOrInstance.Property);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static PropertyInfo GetPropertyInfo<TResult>([NotNull] Expression<Func<TResult>> exp)
+        public static PropertyInfo GetPropertyInfo<TResult>(
+            [NotNull] Expression<Func<TResult>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MemberExpression body = exp.Body as MemberExpression;
-            return body != null
-                ? body.Member as PropertyInfo
-                : null;
+            if (body != null) return body.Member as PropertyInfo;
+            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -292,20 +319,23 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetPropertyInfo&lt;Type,PropertyType&gt;(i => i.Property);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
         public static PropertyInfo GetPropertyInfo<TInstance, TResult>(
-            [NotNull] Expression<Func<TInstance, TResult>> exp)
+            [NotNull] Expression<Func<TInstance, TResult>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MemberExpression body = exp.Body as MemberExpression;
-            return body != null
-                ? body.Member as PropertyInfo
-                : null;
+            if (body != null) return body.Member as PropertyInfo;
+            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -315,21 +345,24 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>instance.GetPropertyInfo(i => i.Property);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
         public static PropertyInfo GetPropertyInfo<TInstance, TResult>(
             this TInstance instance,
-            [NotNull] Expression<Func<TInstance, TResult>> exp)
+            [NotNull] Expression<Func<TInstance, TResult>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MemberExpression body = exp.Body as MemberExpression;
-            return body != null
-                ? body.Member as PropertyInfo
-                : null;
+            if (body != null) return body.Member as PropertyInfo;
+            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -337,23 +370,27 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetFieldInfo&lt;Type&gt;(i => i.Field);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static FieldInfo GetFieldInfo<TInstance>([NotNull] Expression<Func<TInstance, object>> exp)
+        public static FieldInfo GetFieldInfo<TInstance>(
+            [NotNull] Expression<Func<TInstance, object>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             Expression memExp = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression) exp.Body).Operand
+                ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
 
             MemberExpression expression = memExp as MemberExpression;
-            return expression != null
-                ? expression.Member as FieldInfo
-                : null;
+            if (expression != null) return expression.Member as FieldInfo;
+            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -361,19 +398,23 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetFieldInfo(() => TypeOrInstance.Field);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static FieldInfo GetFieldInfo<TResult>([NotNull] Expression<Func<TResult>> exp)
+        public static FieldInfo GetFieldInfo<TResult>(
+            [NotNull] Expression<Func<TResult>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MemberExpression body = exp.Body as MemberExpression;
-            return body != null
-                ? body.Member as FieldInfo
-                : null;
+            if (body != null) return body.Member as FieldInfo;
+            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -382,19 +423,23 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetFieldInfo&lt;Type,FieldType&gt;(i => i.Field);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static FieldInfo GetFieldInfo<TInstance, TResult>([NotNull] Expression<Func<TInstance, TResult>> exp)
+        public static FieldInfo GetFieldInfo<TInstance, TResult>(
+            [NotNull] Expression<Func<TInstance, TResult>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MemberExpression body = exp.Body as MemberExpression;
-            return body != null
-                ? body.Member as FieldInfo
-                : null;
+            if (body != null) return body.Member as FieldInfo;
+            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -404,21 +449,24 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>instance.GetFieldInfo(i => i.Field);</code>
         /// </remarks>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
         public static FieldInfo GetFieldInfo<TInstance, TResult>(
             this TInstance instance,
-            [NotNull] Expression<Func<TInstance, TResult>> exp)
+            [NotNull] Expression<Func<TInstance, TResult>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MemberExpression body = exp.Body as MemberExpression;
-            return body != null
-                ? body.Member as FieldInfo
-                : null;
+            if (body != null) return body.Member as FieldInfo;
+            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -426,6 +474,8 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="TParam">The type of the parameter.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the parameter was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetParameterInfo&lt;ParameterType&gt;(p => TypeOrInstance.Method(..., p, ...));</code>
@@ -434,17 +484,23 @@ namespace WebApplications.Utilities.Reflect
         /// If both <c>p</c> and <see cref="InfoHelper{T}.Parameter"/> are used, then the parameter <c>p</c> is passed to will be used.
         /// </remarks>
         /// <exception cref="System.ArgumentException">Multiple parameters specified</exception>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
-        public static ParameterInfo GetParameterInfo<TParam>([NotNull] Expression<Action<TParam>> exp)
+        public static ParameterInfo GetParameterInfo<TParam>(
+            [NotNull] Expression<Action<TParam>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MethodCallExpression body = exp.Body as MethodCallExpression;
-            if (body == null)
-                return null;
+            if (body != null)
+            {
+                // ReSharper disable once AssignNullToNotNullAttribute
+                ParameterInfo parameterInfo = GetParameterInfo<TParam>(body, exp.Parameters[0]);
+                if (parameterInfo != null) return parameterInfo;
+            }
 
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return GetParameterInfo<TParam>(body, exp.Parameters[0]);
+            if (throwIfNotFound) throw new ArgumentException("ParameterInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -453,6 +509,8 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
         /// <typeparam name="TParam">The type of the parameter.</typeparam>
         /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the parameter was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetParameterInfo&lt;Type,ParameterType&gt;(p => TypeOrInstance.Method(..., p, ...));</code>
@@ -461,18 +519,23 @@ namespace WebApplications.Utilities.Reflect
         /// If both <c>p</c> and <see cref="InfoHelper{T}.Parameter"/> are used, then the parameter <c>p</c> is passed to will be used.
         /// </remarks>
         /// <exception cref="System.ArgumentException">Multiple parameters specified</exception>
-        [CanBeNull]
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
         [PublicAPI]
         public static ParameterInfo GetParameterInfo<TInstance, TParam>(
-            [NotNull] Expression<Action<TInstance, TParam>> exp)
+            [NotNull] Expression<Action<TInstance, TParam>> exp,
+            bool throwIfNotFound = false)
         {
             Contract.Requires(exp != null);
             MethodCallExpression body = exp.Body as MethodCallExpression;
-            if (body == null)
-                return null;
+            if (body != null)
+            {
+                // ReSharper disable once AssignNullToNotNullAttribute
+                ParameterInfo parameterInfo = GetParameterInfo<TParam>(body, exp.Parameters[1]);
+                if (parameterInfo != null) return parameterInfo;
+            }
 
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return GetParameterInfo<TParam>(body, exp.Parameters[1]);
+            if (throwIfNotFound) throw new ArgumentException("ParameterInfo not found in expression");
+            return null;
         }
 
         /// <summary>
@@ -492,6 +555,8 @@ namespace WebApplications.Utilities.Reflect
             int index = 0;
             bool fromParam = false;
             bool fromTemp = false;
+            bool multipleTemp = false;
+            bool multipleRefOut = false;
 
             for (int i = 0; i < body.Arguments.Count; i++)
             {
@@ -505,27 +570,37 @@ namespace WebApplications.Utilities.Reflect
                     paramArg = arg;
                     index = i;
                     fromParam = true;
+                    multipleTemp = false;
                 }
                 else if (!fromParam &&
                          arg is MemberExpression)
                 {
-                    MemberExpression field = (MemberExpression) arg;
+                    MemberExpression field = (MemberExpression)arg;
 
                     if (field.Member == InfoHelper<TParam>.ParameterFieldInfo)
                     {
+                        if (paramArg != null && fromTemp)
+                            multipleTemp = true;
+
                         paramArg = arg;
                         index = i;
                         fromTemp = true;
+                        multipleRefOut = false;
                     }
                     else if (!fromTemp &&
-                        field.Member == InfoHelper<TParam>.RefOrOutFieldInfo)
+                             field.Member == InfoHelper<TParam>.RefOrOutFieldInfo)
                     {
+                        if (paramArg != null)
+                            multipleRefOut = true;
+
                         paramArg = arg;
                         index = i;
                     }
-
                 }
             }
+
+            if (multipleTemp || multipleRefOut)
+                throw new ArgumentException("Multiple parameters specified");
 
             return paramArg == null
                 ? null

@@ -432,4 +432,7 @@
   <data name="CultureInfoProvider_CultureNameCannotBeNull" xml:space="preserve">
     <value>Parameter 'cultureCode' can not be null</value>
   </data>
+  <data name="CancelableTask_CancelableTask_NullTask" xml:space="preserve">
+    <value>The action returned a null Task</value>
+  </data>
 </root>

@@ -88,6 +88,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The action returned a null Task.
+        /// </summary>
+        internal static string CancelableTask_CancelableTask_NullTask {
+            get {
+                return ResourceManager.GetString("CancelableTask_CancelableTask_NullTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The date time supplied to a CombGuid cannot be before &apos;{0}&apos; UTC..
         /// </summary>
         internal static string CombGuid_InvalidDateTime_TooEarly {

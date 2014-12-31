@@ -21,6 +21,7 @@ namespace WebApplications.Utilities
         /// The default comparer.
         /// </summary>
         [PublicAPI]
+        [NotNull]
         public static ReferenceComparer<T> Default = new ReferenceComparer<T>();
 
         /// <summary>
