@@ -1139,6 +1139,54 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Creates a cancelable token source that will be cancelled when either of the given tokens has been cancelled.
+        /// </summary>
+        /// <param name="token1">The first token.</param>
+        /// <param name="token2">The second token.</param>
+        /// <returns>A token source that will be cancelled when either of the given tokens have been cancelled.</returns>
+        [PublicAPI]
+        [NotNull]
+        public static ICancelableTokenSource CreateCancelableLinked(this CancellationToken token1, CancellationToken token2)
+        {
+            if (!token1.CanBeCanceled)
+                return !token2.CanBeCanceled
+                    ? (ICancelableTokenSource)new CancelableTokenSource()
+                    : new WrappedTokenSource(token2);
+
+            if (!token2.CanBeCanceled)
+                return new WrappedTokenSource(token1);
+
+            return new WrappedTokenSource(token1, token2);
+        }
+
+        /// <summary>
+        /// Creates a cancelable token source that will be cancelled when any of the given tokens have been cancelled.
+        /// </summary>
+        /// <param name="token">The first token.</param>
+        /// <param name="tokens">The any remaining tokens.</param>
+        /// <returns>A token source that will be cancelled when any of the given tokens have been cancelled.</returns>
+        [PublicAPI]
+        [NotNull]
+        public static ICancelableTokenSource CreateCancelableLinked(
+            this CancellationToken token,
+            [CanBeNull] params CancellationToken[] tokens)
+        {
+            if (tokens == null ||
+                tokens.Length < 1)
+                return (token.CanBeCanceled
+                    ? new WrappedTokenSource(token)
+                    : (ICancelableTokenSource)new CancelableTokenSource());
+
+            CancellationToken[] canBeCancelled = tokens.Union(new[] { token }).Where(t => t.CanBeCanceled).ToArray();
+            if (canBeCancelled.Length < 1)
+                return new CancelableTokenSource();
+
+            return canBeCancelled.Length < 2
+                ? new WrappedTokenSource(canBeCancelled[0])
+                : new WrappedTokenSource(canBeCancelled);
+        }
+
+        /// <summary>
         /// Gets an <see cref="ICancelableTokenSource"/> for a <see cref="CancellationToken"/>.
         /// </summary>
         /// <param name="token">The token.</param>

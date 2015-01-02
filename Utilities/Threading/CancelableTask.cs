@@ -30,7 +30,6 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -501,9 +500,6 @@ namespace WebApplications.Utilities.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires<ArgumentOutOfRangeException>(timeout.Ticks <= TimeHelpers.TicksForMaxMilliseconds);
-            Contract.Requires<ArgumentOutOfRangeException>(timeout.Ticks >= -NodaConstants.TicksPerMillisecond);
-
             return _task.Wait((int)timeout.TotalMilliseconds, cancellationToken);
         }
 
@@ -967,9 +963,6 @@ namespace WebApplications.Utilities.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires<ArgumentOutOfRangeException>(timeout.Ticks <= TimeHelpers.TicksForMaxMilliseconds);
-            Contract.Requires<ArgumentOutOfRangeException>(timeout.Ticks >= -NodaConstants.TicksPerMillisecond);
-
             return _task.Wait((int)timeout.TotalMilliseconds, cancellationToken);
         }
 
