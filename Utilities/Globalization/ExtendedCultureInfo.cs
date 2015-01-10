@@ -66,7 +66,7 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="cultureInfo">The culture information.</param>
         internal ExtendedCultureInfo([NotNull] CultureInfo cultureInfo)
-            : base(cultureInfo.LCID, cultureInfo.UseUserOverride)
+            : base(cultureInfo.Name, cultureInfo.UseUserOverride)
         {
             // Neutral cultures do not have a region
             if (!cultureInfo.IsNeutralCulture)

@@ -41,6 +41,102 @@ namespace WebApplications.Utilities.Threading
     public class CancelableTask : ICancelableTask
     {
         /// <summary>
+        /// The completed result.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask Completed = new CancelableTask(TaskResult.Completed, null);
+
+        /// <summary>
+        /// A cancelable task that returns a <see langword="true"/>.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask<bool> True = new CancelableTask<bool>(TaskResult.True, null);
+
+        /// <summary>
+        /// A cancelable task that returns a <see langword="false"/>.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask<bool> False = new CancelableTask<bool>(TaskResult.False, null);
+
+        /// <summary>
+        /// A cancelable task that returns a <c>0</c>.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask<int> Zero = new CancelableTask<int>(TaskResult.Zero, null);
+
+        /// <summary>
+        /// A cancelable task that returns <see cref="System.Int32.MinValue"/>.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask<int> MinInt = new CancelableTask<int>(TaskResult.MinInt, null);
+
+        /// <summary>
+        /// A cancelable task that returns <see cref="System.Int32.MaxValue"/>.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask<int> MaxInt = new CancelableTask<int>(TaskResult.MaxInt, null);
+
+        /// <summary>
+        /// The cancelled task.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask Cancelled = new CancelableTask(TaskResult.Cancelled, null);
+
+        /// <summary>
+        /// Creates a <see cref="CancelableTask{TResult}" /> that's completed successfully with the specified result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
+        /// <param name="result">The result to store into the completed task.</param>
+        /// <returns>
+        /// The successfully completed task.
+        /// </returns>
+        [PublicAPI]
+        [NotNull]
+        public static CancelableTask<TResult> FromResult<TResult>(TResult result)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return new CancelableTask<TResult>(Task.FromResult(result), new CancelableTokenSource());
+        }
+
+        /// <summary>
+        /// Creates a <see cref="CancelableTask" /> that's completed exceptionally with the specified exception.
+        /// </summary>
+        /// <param name="exception">The exception with which to complete the task.</param>
+        /// <returns>
+        /// The faulted task.
+        /// </returns>
+        [PublicAPI]
+        [NotNull]
+        public static CancelableTask FromException(Exception exception)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return new CancelableTask(TaskResult.FromException(exception), null);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Task{TResult}" /> that's completed exceptionally with the specified exception.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
+        /// <param name="exception">The exception with which to complete the task.</param>
+        /// <returns>
+        /// The faulted task.
+        /// </returns>
+        [PublicAPI]
+        [NotNull]
+        public static CancelableTask<TResult> FromException<TResult>(Exception exception)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return new CancelableTask<TResult>(TaskResult<TResult>.FromException(exception), new CancelableTokenSource());
+        }
+
+        /// <summary>
         /// The task
         /// </summary>
         [NotNull]
@@ -181,7 +277,7 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="task">The task.</param>
         /// <param name="cts">The cancelable token source.</param>
-        internal CancelableTask([NotNull] Task task, [NotNull] ICancelableTokenSource cts)
+        internal CancelableTask([NotNull] Task task, [CanBeNull] ICancelableTokenSource cts)
         {
             _task = task;
             _cts = cts;
@@ -537,6 +633,51 @@ namespace WebApplications.Utilities.Threading
     public class CancelableTask<TResult> : ICancelableTask
     {
         /// <summary>
+        /// A cancelable task that returns the <see langword="default"/> value for the type <typeparamref name="TResult"/>.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask<TResult> Default = new CancelableTask<TResult>(TaskResult<TResult>.Default, null);
+
+        /// <summary>
+        /// The cancelled task.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly CancelableTask<TResult> Cancelled = new CancelableTask<TResult>(TaskResult<TResult>.Cancelled, null);
+
+        /// <summary>
+        /// Creates a <see cref="CancelableTask{TResult}" /> that's completed successfully with the specified result.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
+        /// <param name="result">The result to store into the completed task.</param>
+        /// <returns>
+        /// The successfully completed task.
+        /// </returns>
+        [PublicAPI]
+        [NotNull]
+        public static CancelableTask<TResult> FromResult(TResult result)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return new CancelableTask<TResult>(System.Threading.Tasks.Task.FromResult(result), new CancelableTokenSource());
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Task{TResult}" /> that's completed exceptionally with the specified exception.
+        /// </summary>
+        /// <param name="exception">The exception with which to complete the task.</param>
+        /// <returns>
+        /// The faulted task.
+        /// </returns>
+        [PublicAPI]
+        [NotNull]
+        public static CancelableTask<TResult> FromException(Exception exception)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return new CancelableTask<TResult>(TaskResult<TResult>.FromException(exception), new CancelableTokenSource());
+        }
+
+        /// <summary>
         /// The task
         /// </summary>
         [NotNull]
@@ -639,7 +780,7 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="task">The task.</param>
         /// <param name="cts">The cancelable token source.</param>
-        internal CancelableTask([NotNull] Task<TResult> task, [NotNull] ICancelableTokenSource cts)
+        internal CancelableTask([NotNull] Task<TResult> task, [CanBeNull] ICancelableTokenSource cts)
         {
             _task = task;
             _cts = cts;
