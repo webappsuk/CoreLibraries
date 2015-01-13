@@ -163,7 +163,7 @@ namespace WebApplications.Utilities.Service.Client
                         {
                             services = NamedPipeClient.GetServices().ToArray();
                             if (Console.KeyAvailable)
-                                break;
+                                return;
                             // ReSharper disable once PossibleNullReferenceException
                             await Task.Delay(500, token).ConfigureAwait(false);
                             token.ThrowIfCancellationRequested();
