@@ -186,7 +186,9 @@ namespace WebApplications.Utilities.Globalization
             if (string.IsNullOrWhiteSpace(path))
                 return;
 
-            path = Path.GetFullPath(path);
+            path = Path.IsPathRooted(path)
+                ? path
+                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
 
             if (!File.Exists(path))
                 throw new FileNotFoundException(

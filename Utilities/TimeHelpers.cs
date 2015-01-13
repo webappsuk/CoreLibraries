@@ -184,6 +184,10 @@ namespace WebApplications.Utilities
             string dbPath = path ?? UtilityConfiguration.Active.TimeZoneDB;
             if (!string.IsNullOrWhiteSpace(dbPath))
             {
+                dbPath = Path.IsPathRooted(dbPath)
+                    ? dbPath
+                    : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dbPath);
+
                 if (!File.Exists(dbPath))
                     throw new FileNotFoundException(
                         // ReSharper disable once AssignNullToNotNullAttribute
