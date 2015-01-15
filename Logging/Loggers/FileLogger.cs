@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -38,7 +37,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Logging.Interfaces;
 using AsyncLock = WebApplications.Utilities.Threading.AsyncLock;
 
 namespace WebApplications.Utilities.Logging.Loggers
@@ -553,8 +551,11 @@ namespace WebApplications.Utilities.Logging.Loggers
                             try
                             {
                                 logFile = new LogFile(
-                                    File.Create(
+                                    new FileStream(
                                         fileName,
+                                        FileMode.Create,
+                                        FileAccess.ReadWrite,
+                                        FileShare.Read,
                                         (int) Buffer,
                                         FileOptions.Asynchronous | FileOptions.SequentialScan),
                                     fileName,
