@@ -3567,7 +3567,7 @@ namespace WebApplications.Utilities
                 if (aggregate != null)
                 {
                     Contract.Assert(aggregate.InnerExceptions != null);
-                    if (aggregate.InnerExceptions.Count < 2)
+                    if (aggregate.InnerExceptions.Count == 1)
                     {
                         exception = aggregate.InnerException;
                         continue;
@@ -3585,6 +3585,8 @@ namespace WebApplications.Utilities
                     }
                     break;
                 }
+
+                break;
             }
 
             return exception;
