@@ -193,6 +193,7 @@ namespace WebApplications.Utilities
         public bool Equals(HashedByteArray other)
         {
             if (ReferenceEquals(other, null)) return false;
+            if (ReferenceEquals(other, this)) return true;
 
             if ((_hash != other._hash) ||
                 (_data.LongLength != other._data.LongLength))
@@ -258,6 +259,7 @@ namespace WebApplications.Utilities
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(obj, null)) return false;
+            if (ReferenceEquals(obj, this)) return true;
             HashedByteArray other = obj as HashedByteArray;
             if (!ReferenceEquals(other, null))
                 return (_hash == other._hash) &&
