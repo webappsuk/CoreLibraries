@@ -780,6 +780,80 @@ namespace WebApplications.Utilities
             return stringBuilder.ToString();
         }
 
+        [NotNull]
+        [ItemNotNull]
+        private static readonly string[] _hexLower = Enumerable.Range(0, 255).Select(i => i.ToString("x2")).ToArray();
+
+        [NotNull]
+        [ItemNotNull]
+        private static readonly string[] _hexUpper = Enumerable.Range(0, 255).Select(i => i.ToString("X2")).ToArray();
+
+        /// <summary>
+        /// Converts a byte to lower case hex.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        [NotNull]
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToHexLower(this byte value)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return _hexLower[value];
+        }
+
+        /// <summary>
+        /// Converts an array of bytes to lower case hex.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        [NotNull]
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToHexLower(this byte[] value)
+        {
+            Contract.Requires(value != null);
+            char[] chars = new char[value.Length << 1];
+            for (int i = 0, j = 0; i < value.Length; i++)
+            {
+                string h = _hexLower[value[i]];
+                chars[j++] = h[0];
+                chars[j++] = h[1];
+            }
+            return new string(chars);
+        }
+
+        /// <summary>
+        /// Converts a byte to upper case hex.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        [NotNull]
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToHexUpper(this byte value)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return _hexUpper[value];
+        }
+
+        /// <summary>
+        /// Converts an array of bytes to upper case hex.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        [NotNull]
+        [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToHexUpper([NotNull] this byte[] value)
+        {
+            Contract.Requires(value != null);
+            char[] chars = new char[value.Length << 1];
+            for (int i = 0, j = 0; i < value.Length; i++)
+            {
+                string h = _hexUpper[value[i]];
+                chars[j++] = h[0];
+                chars[j++] = h[1];
+            }
+            return new string(chars);
+        }
+
         /// <summary>
         ///   Takes a <see cref="string"/> of <see cref="int">integer</see> ids and calls a function to retrieve an
         ///   enumeration of <see cref="object"/>s.
@@ -4232,5 +4306,147 @@ namespace WebApplications.Utilities
             }
         }
 
+
+        /// <summary>
+        /// Gets a generic version of the <see cref="IEqualityComparer" />.
+        /// </summary>
+        /// <typeparam name="T">The type of object to compare.</typeparam>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns>If the <paramref name="comparer"/> is already generic, then it is just returned; otherwise it is wrapped in a generic comparer.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static IEqualityComparer<T> ToGenericComparer<T>([NotNull] this IEqualityComparer comparer)
+        {
+            Contract.Requires(comparer != null, "Parameter_Null");
+            return comparer as IEqualityComparer<T> ?? new WrappedEqualityComparer<T>(comparer);
+        }
+
+        /// <summary>
+        /// Gets a generic version of the <see cref="IComparer"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of object to compare.</typeparam>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns>If the <paramref name="comparer"/> is already generic, then it is just returned; otherwise it is wrapped in a generic comparer.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static IComparer<T> ToGenericComparer<T>([NotNull] this IComparer comparer)
+        {
+            Contract.Requires(comparer != null, "Parameter_Null");
+            return comparer as IComparer<T> ?? new WrappedComparer<T>(comparer);
+        }
+
+        /// <summary>
+        /// A generic wrapper around a non-generic <see cref="IEqualityComparer"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of object to compare.</typeparam>
+        private sealed class WrappedEqualityComparer<T> : IEqualityComparer<T>, IEqualityComparer
+        {
+            [NotNull]
+            private readonly IEqualityComparer _comparer;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="WrappedEqualityComparer{T}"/> class.
+            /// </summary>
+            /// <param name="comparer">The comparer.</param>
+            public WrappedEqualityComparer([NotNull] IEqualityComparer comparer)
+            {
+                _comparer = comparer;
+            }
+
+            /// <summary>
+            /// Determines whether the specified objects are equal.
+            /// </summary>
+            /// <param name="x">The first object of type <typeparamref name="T" /> to compare.</param>
+            /// <param name="y">The second object of type <typeparamref name="T" /> to compare.</param>
+            /// <returns>
+            /// true if the specified objects are equal; otherwise, false.
+            /// </returns>
+            public bool Equals(T x, T y)
+            {
+                return _comparer.Equals(x, y);
+            }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <param name="obj">The object.</param>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            public int GetHashCode(T obj)
+            {
+                return _comparer.GetHashCode(obj);
+            }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+            /// </summary>
+            /// <param name="x">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <param name="y">The y.</param>
+            /// <returns>
+            ///   <see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.
+            /// </returns>
+            bool IEqualityComparer.Equals(object x, object y)
+            {
+                return _comparer.Equals(x, y);
+            }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <param name="obj">The object.</param>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            int IEqualityComparer.GetHashCode(object obj)
+            {
+                return _comparer.GetHashCode(obj);
+            }
+        }
+
+        /// <summary>
+        /// A generic wrapper around a non-generic <see cref="IComparer"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of object to compare.</typeparam>
+        private sealed class WrappedComparer<T> : IComparer<T>, IComparer
+        {
+            [NotNull]
+            private readonly IComparer _comparer;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="WrappedComparer{T}"/> class.
+            /// </summary>
+            /// <param name="comparer">The comparer.</param>
+            public WrappedComparer([NotNull] IComparer comparer)
+            {
+                _comparer = comparer;
+            }
+
+            /// <summary>
+            /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            /// </summary>
+            /// <param name="x">The first object to compare.</param>
+            /// <param name="y">The second object to compare.</param>
+            /// <returns>
+            /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
+            /// </returns>
+            public int Compare(T x, T y)
+            {
+                return _comparer.Compare(x, y);
+            }
+
+            /// <summary>
+            /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            /// </summary>
+            /// <param name="x">The first object to compare.</param>
+            /// <param name="y">The second object to compare.</param>
+            /// <returns>
+            /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero <paramref name="x" /> is less than <paramref name="y" />. Zero <paramref name="x" /> equals <paramref name="y" />. Greater than zero <paramref name="x" /> is greater than <paramref name="y" />.
+            /// </returns>
+            public int Compare(object x, object y)
+            {
+                return _comparer.Compare(x, y);
+            }
+        }
     }
 }

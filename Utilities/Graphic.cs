@@ -28,6 +28,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -90,6 +91,8 @@ namespace WebApplications.Utilities
         /// Gets the image as a Base 64 encoded string.
         /// </summary>
         /// <value>The encoded.</value>
+        [NotNull]
+        [PublicAPI]
         public string Encoded
         {
             get { return Data.Encoded; }
@@ -156,6 +159,48 @@ namespace WebApplications.Utilities
             // screen.  Often we're just pushing the bytes around.
             MemoryStream ms = new MemoryStream(Data);
             return Image.FromStream(ms);
+        }
+
+        /// <summary>
+        /// Gets the data URL for the graphic.
+        /// </summary>
+        /// <returns></returns>
+        [CanBeNull]
+        public string ToDataUrl()
+        {
+            StringBuilder builder = new StringBuilder("data:", Encoded.Length + 30);
+            switch (Format)
+            {
+                case GraphicFormat.Bmp:
+                    builder.Append("image/bmp");
+                    break;
+                case GraphicFormat.Emf:
+                    builder.Append("image/x-emf");
+                    break;
+                case GraphicFormat.Wmf:
+                    builder.Append("image/x-wmf");
+                    break;
+                case GraphicFormat.Gif:
+                    builder.Append("image/gif");
+                    break;
+                case GraphicFormat.Jpeg:
+                    builder.Append("image/jpeg");
+                    break;
+                case GraphicFormat.Png:
+                    builder.Append("image/png");
+                    break;
+                case GraphicFormat.Tiff:
+                    builder.Append("image/tiff");
+                    break;
+                case GraphicFormat.Icon:
+                    builder.Append("image/x-icon");
+                    break;
+                default:
+                    return null;
+            }
+            builder.Append(";base64,").Append(Encoded);
+
+            return builder.ToString();
         }
 
         /// <summary>
