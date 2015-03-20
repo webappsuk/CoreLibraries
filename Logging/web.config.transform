@@ -5,13 +5,14 @@
   </configSections>
   <logging logCacheExpiry="00:00:00">
     <!--
-    The following arributes are allowed on the logging element (defaults shown):
+    The following attributes are allowed on the logging element (defaults shown):
            enabled="true"
            applicationName=""
            applicationGuid=(random GUID)
            validLevels="All"
            logCacheExpiry="00:10:00"
            logCacheMaximumEntries="10000"
+           generateStackTrace="false"
 
     The logging system uses an internal MemoryCache to hold recent logs for quick retrieval.
     

@@ -83,7 +83,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(LoggingLevel.Error, format, parameters).Add();
+            Log = new Log(this, LoggingLevel.Error, format, parameters).Add();
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -245,7 +245,7 @@ namespace WebApplications.Utilities.Logging
         public LoggingException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(LoggingLevel.Error, resource, parameters).Add();
+            Log = new Log(this, LoggingLevel.Error, resource, parameters).Add();
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -390,7 +390,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(culture, LoggingLevel.Error, format, parameters).Add();
+            Log = new Log(culture, this, LoggingLevel.Error, format, parameters).Add();
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -572,7 +572,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(culture, LoggingLevel.Error, resource, parameters).Add();
+            Log = new Log(culture, this, LoggingLevel.Error, resource, parameters).Add();
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -728,7 +728,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
+            Log = new Log(this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -886,7 +886,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(culture, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
+            Log = new Log(culture, this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.

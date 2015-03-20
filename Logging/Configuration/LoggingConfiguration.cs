@@ -180,6 +180,20 @@ namespace WebApplications.Utilities.Logging.Configuration
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to generate a stack trace in logs without an exception.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> if the stack trace will be generated; otherwise, <see langword="false" />.
+        /// </value>
+        [ConfigurationProperty("generateStackTrace", DefaultValue = false, IsRequired = false)]
+        [PublicAPI]
+        public bool GenerateStackTrace
+        {
+            get { return GetProperty<bool>("generateStackTrace"); }
+            set { SetProperty("generateStackTrace", value); }
+        }
+
+        /// <summary>
         ///   Gets all of the <see cref="LoggersCollection">loggers</see>.
         /// </summary>
         [ConfigurationProperty("loggers", IsRequired = false, IsDefaultCollection = false)]

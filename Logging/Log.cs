@@ -49,6 +49,7 @@ using WebApplications.Utilities.Annotations;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Logging.Configuration;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -439,9 +440,8 @@ namespace WebApplications.Utilities.Logging
                         }).ToArray();
 
             // If there was a message and no stack trace was added for an exception, get the current stack trace
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (hasMessage && _stackTrace == null)
-                // Not that the first two stack frames are either Log.Add, or new Log() followed by new Log().
+            if (hasMessage && ReferenceEquals(_stackTrace, null) && LoggingConfiguration.Active.GenerateStackTrace)
+                // Note that the first two stack frames are either Log.Add, or new Log() followed by new Log().
                 _stackTrace = FormatStackTrace(new StackTrace(2, true));
 
             // Increment performance counter.
