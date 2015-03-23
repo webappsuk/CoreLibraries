@@ -1577,6 +1577,8 @@ namespace WebApplications.Utilities
                     return true;
                 if (isGenericDef && sourceType.IsGenericType && sourceType.GetGenericTypeDefinition() == baseType)
                     return true;
+                if (baseType.IsSealed)
+                    return false;
                 sourceType = sourceType.BaseType;
             } while (sourceType != null);
             return false;
@@ -1592,10 +1594,13 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         public static bool DescendsFrom<TBase>([NotNull] this Type sourceType)
         {
+            Type baseType = typeof(TBase);
             do
             {
-                if (sourceType == typeof(TBase))
+                if (sourceType == baseType)
                     return true;
+                if (baseType.IsSealed)
+                    return false;
                 sourceType = sourceType.BaseType;
             } while (sourceType != null);
             return false;
