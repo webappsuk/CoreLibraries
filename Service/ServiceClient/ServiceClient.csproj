@@ -117,25 +117,26 @@
     <AssemblyOriginatorKeyFile>Web Applications UK - Core.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NodaTime">
-      <HintPath>..\packages\NodaTime.1.3.0\lib\net35-Client\NodaTime.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NodaTime.1.3.1\lib\net35-Client\NodaTime.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="WebApplications.Utilities, Version=5.1.5519.33534, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="System.Xml" />
+    <Reference Include="WebApplications.Utilities, Version=5.1.5560.18170, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5519.33534\lib\net452\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5560.18170\lib\net452\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5557.31508, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5560.19022, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5557.31508\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5560.19022\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5519.33595, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5560.18403, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5519.33595\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5560.18403\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -195,9 +196,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\webapplications.utilities.5.1.5519.33534\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5519.33534\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5519.33534\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5519.33534\tools\utility.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5519.33595\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5519.33595\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5560.18170\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5560.18170\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5560.18170\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5560.18170\tools\utility.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5560.18403\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5560.18403\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
