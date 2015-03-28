@@ -46,14 +46,16 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <summary>
         /// The assembly resolver.
         /// </summary>
+        [NotNull]
         public static readonly DefaultAssemblyResolver AssemblyResolver;
 
+        [NotNull]
         public static readonly ReaderParameters ReaderParameters;
 
         static Scan()
         {
             AssemblyResolver = new DefaultAssemblyResolver();
-            ReaderParameters = new ReaderParameters() {AssemblyResolver = AssemblyResolver};
+            ReaderParameters = new ReaderParameters() { AssemblyResolver = AssemblyResolver };
         }
 
         /// <summary>
@@ -73,141 +75,135 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             // Check we have access to the performance counters.
             PerformanceCounterCategory.Exists("TestAccess", machineName);
 
-            fullPath = Path.GetFullPath(fullPath.Trim());
-            string[] parts = fullPath.Split('/', '\\');
-            if (parts.Length < 1)
-            {
-                Logger.Add(Level.Error, "The '{0}' path was invalid.", fullPath);
-                return;
-            }
-
-            // Handle trailing path seperators.
-            if (string.IsNullOrWhiteSpace(parts.Last()))
-                Array.Resize(ref parts, parts.Length - 1);
-
-            string path = String.Join("\\", parts.Take(parts.Length - 1));
-            if (!Directory.Exists(path))
-            {
-                Logger.Add(Level.Error, "The '{0}' directory could not be found.", fullPath);
-                return;
-            }
-            string end = parts.Last();
-            string directory = Directory.GetDirectories(path, end).SingleOrDefault();
             string[] files;
-            if (directory != null) files = Directory.GetFiles(directory);
-            else
+            string directory;
+            try
             {
-                directory = path;
-                if (!Directory.Exists(directory))
+                fullPath = Path.GetFullPath(fullPath.Trim());
+                if (File.Exists(fullPath))
                 {
-                    Logger.Add(Level.Error, "The '{0}' directory could not be found.", directory);
+                    directory = Path.GetDirectoryName(fullPath);
+                    files = new[] {fullPath};
+                }
+                else if (Directory.Exists(fullPath))
+                {
+                    directory = fullPath;
+                    files = Directory.GetFiles(fullPath)
+                        .Where(
+                            f =>
+                            {
+                                string ext = Path.GetExtension(f).ToLower();
+                                return (ext == ".dll" || ext == ".exe");
+                            }).ToArray();
+                }
+                else
+                {
+                    Logger.Add(Level.Error, "The '{0}' path is neither a file or directory.", fullPath);
                     return;
                 }
-                files = Directory.GetFiles(path, end);
             }
+            catch (Exception e)
+            {
+                Logger.Add(Level.Error, "The '{0}' path was invalid. {1}", fullPath, e.Message);
+                return;
+            }
+
             Contract.Assert(files != null);
             Contract.Assert(directory != null);
 
-            AssemblyResolver.AddSearchDirectory(directory);
-
-            files = files.Where(
-                f =>
-                {
-                    string ext = Path.GetExtension(f).ToLower();
-                    return (ext == ".dll" || ext == ".exe");
-                }).ToArray();
-
-            if (files.Any())
+            if (!files.Any())
             {
-                foreach (string file in files)
-                    Load(file);
-
-                int succeeded = 0;
-                int failed = 0;
-                foreach (PerfCategory performanceInformation in PerfCategory.All)
-                    switch (mode)
-                    {
-                        case ScanMode.Add:
-                            bool added = performanceInformation.Create(machineName);
-                            Logger.Add(
-                                added ? Level.Normal : Level.Error,
-                                "Adding '{0}' {1}",
-                                performanceInformation,
-                                added ? "succeeded" : "failed");
-                            if (added)
-                                succeeded++;
-                            else
-                                failed++;
-                            break;
-                        case ScanMode.Delete:
-                            bool deleted = performanceInformation.Delete(machineName);
-                            Logger.Add(
-                                deleted ? Level.Normal : Level.Error,
-                                "Deleting '{0}' {1}",
-                                performanceInformation,
-                                deleted ? "succeeded" : "failed");
-                            if (deleted)
-                                succeeded++;
-                            else
-                                failed++;
-                            break;
-                        default:
-                            // Treat everything else as list.
-                            bool exists = performanceInformation.Exists;
-                            Logger.Add(
-                                exists ? Level.Normal : Level.Error,
-                                "'{0}' {1}",
-                                performanceInformation,
-                                exists ? "exists" : "is missing");
-                            if (exists)
-                                succeeded++;
-                            else
-                                failed++;
-                            break;
-                    }
-
-                if (succeeded + failed > 0)
-                {
-                    string operation;
-                    switch (mode)
-                    {
-                        case ScanMode.Add:
-                            operation = "Added";
-                            break;
-                        case ScanMode.Delete:
-                            operation = "Deleted";
-                            break;
-                        default:
-                            operation = "Found";
-                            break;
-                    }
-                    Logger.Add(
-                        Level.High,
-                        "{0} '{1}' performance counters.{2}",
-                        operation,
-                        succeeded,
-                        failed > 0 ? string.Format(" {0} failures.", failed) : string.Empty);
-
-                    if (executeAgain &&
-                        Environment.Is64BitOperatingSystem)
-                    {
-                        bool bit64 = Environment.Is64BitProcess;
-                        Logger.Add(
-                            Level.High,
-                            "Running PerfSetup in {0} bit process on 64 bit operating system, will run again in {1} bit mode to ensure counters are added to both environments!",
-                            bit64 ? 64 : 32,
-                            bit64 ? 32 : 64);
-                        ExecuteAgain(mode, fullPath, machineName, !bit64);
-                    }
-                }
-                else
-                    Logger.Add(Level.High, "No valid performance counters found.");
-            }
-            else
                 Logger.Add(
                     Level.Warning,
                     "The '{0}' path did not match any executables or dlls, so no performance counters added.",
                     fullPath);
+                return;
+            }
+
+            AssemblyResolver.AddSearchDirectory(directory);
+            foreach (string file in files)
+                Load(file);
+
+            int succeeded = 0;
+            int failed = 0;
+            foreach (PerfCategory performanceInformation in PerfCategory.All)
+                switch (mode)
+                {
+                    case ScanMode.Add:
+                        bool added = performanceInformation.Create(machineName);
+                        Logger.Add(
+                            added ? Level.Normal : Level.Error,
+                            "Adding '{0}' {1}",
+                            performanceInformation,
+                            added ? "succeeded" : "failed");
+                        if (added)
+                            succeeded++;
+                        else
+                            failed++;
+                        break;
+                    case ScanMode.Delete:
+                        bool deleted = performanceInformation.Delete(machineName);
+                        Logger.Add(
+                            deleted ? Level.Normal : Level.Error,
+                            "Deleting '{0}' {1}",
+                            performanceInformation,
+                            deleted ? "succeeded" : "failed");
+                        if (deleted)
+                            succeeded++;
+                        else
+                            failed++;
+                        break;
+                    default:
+                        // Treat everything else as list.
+                        bool exists = performanceInformation.Exists;
+                        Logger.Add(
+                            exists ? Level.Normal : Level.Error,
+                            "'{0}' {1}",
+                            performanceInformation,
+                            exists ? "exists" : "is missing");
+                        if (exists)
+                            succeeded++;
+                        else
+                            failed++;
+                        break;
+                }
+
+            if (succeeded + failed > 0)
+            {
+                string operation;
+                switch (mode)
+                {
+                    case ScanMode.Add:
+                        operation = "Added";
+                        break;
+                    case ScanMode.Delete:
+                        operation = "Deleted";
+                        break;
+                    default:
+                        operation = "Found";
+                        break;
+                }
+                Logger.Add(
+                    Level.High,
+                    "{0} '{1}' performance counters.{2}",
+                    operation,
+                    succeeded,
+                    failed > 0 ? string.Format(" {0} failures.", failed) : string.Empty);
+
+                if (executeAgain &&
+                    Environment.Is64BitOperatingSystem)
+                {
+                    bool bit64 = Environment.Is64BitProcess;
+                    Logger.Add(
+                        Level.High,
+                        "Running PerfSetup in {0} bit process on 64 bit operating system, will run again in {1} bit mode to ensure counters are added to both environments!",
+                        bit64 ? 64 : 32,
+                        bit64 ? 32 : 64);
+                    ExecuteAgain(mode, fullPath, machineName, !bit64);
+                }
+            }
+            else
+                Logger.Add(Level.High, "No valid performance counters found.");
         }
 
         /// <summary>

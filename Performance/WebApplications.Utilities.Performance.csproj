@@ -131,6 +131,7 @@
     <Compile Include="PerfCategory.cs" />
     <Compile Include="PerfCounterInfo.cs" />
     <Compile Include="PerformanceCounterExtensions.cs" />
+    <Compile Include="CriticalPerfTimer.cs" />
     <Compile Include="PerfTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -138,6 +139,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RegionTimer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -65,6 +66,10 @@ namespace WebApplications.Utilities.Performance.Test
             Trace.WriteLine(t.ToString("{short}"));
             Trace.WriteLine(t.ToString(PerfCategory.ShortFormat));
             Trace.WriteLine(t.Rate);
+        }
+
+        public void TestAccessors()
+        {
         }
 
         [TestMethod]

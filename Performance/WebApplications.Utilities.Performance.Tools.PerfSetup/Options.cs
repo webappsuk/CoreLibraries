@@ -59,7 +59,7 @@ List - Lists performance counters.")]
         public string Mode { get; set; }
 
         [CommandLineParameter(Name = "path", ParameterIndex = 2, Required = true,
-            Description = "Specifies the file or files to scan, you can use wildcards or folders.")]
+            Description = "Specifies the path or file to scan.")]
         public string Path { get; set; }
     }
 }
