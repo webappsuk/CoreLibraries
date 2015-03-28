@@ -713,7 +713,7 @@ namespace WebApplications.Utilities.Service
                 RequestAdditionalTime(5000);
             try
             {
-                using (PerfTimer.Timer region = PerfTimerStart.Region())
+                using (RegionTimer region = PerfTimerStart.Region())
                 {
                     Log.Add(
                         LoggingLevel.Information,
@@ -812,7 +812,7 @@ namespace WebApplications.Utilities.Service
                 RequestAdditionalTime(5000);
             try
             {
-                using (PerfTimer.Timer region = PerfTimerStop.Region())
+                using (RegionTimer region = PerfTimerStop.Region())
                 {
                     Log.Add(
                         LoggingLevel.Information,
@@ -1037,7 +1037,7 @@ namespace WebApplications.Utilities.Service
                     () => ServiceResources.Inf_ServiceRunner_CustomCommand_Running,
                     command,
                     ServiceName);
-                using (PerfTimer.Timer region = PerfTimerCustomCommand.Region())
+                using (RegionTimer region = PerfTimerCustomCommand.Region())
                 {
                     DoCustomCommand(command);
 
