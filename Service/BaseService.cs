@@ -792,7 +792,7 @@ namespace WebApplications.Utilities.Service
                         LoggingLevel.Information,
                         () => ServiceResources.Inf_ServiceRunner_Start_Started,
                         ServiceName,
-                        region.Elapsed.TotalMilliseconds);
+                        region.Elapsed.TotalMilliseconds());
                 }
             }
             catch (Exception e)
@@ -859,7 +859,7 @@ namespace WebApplications.Utilities.Service
                         LoggingLevel.Information,
                         () => ServiceResources.Inf_ServiceRunner_Stop_Stopped,
                         ServiceName,
-                        region.Elapsed.TotalMilliseconds);
+                        region.Elapsed.TotalMilliseconds());
                 }
             }
             catch (Exception e)
@@ -1046,7 +1046,7 @@ namespace WebApplications.Utilities.Service
                         () => ServiceResources.Inf_ServiceRunner_CustomCommand_Complete,
                         command,
                         ServiceName,
-                        region.Elapsed.TotalMilliseconds);
+                        region.Elapsed.TotalMilliseconds());
                 }
             }
             catch (Exception e)
