@@ -127,6 +127,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Timers.cs" />
+    <Compile Include="Counter.cs" />
     <Compile Include="PerfCounter.cs" />
     <Compile Include="PerfCategory.cs" />
     <Compile Include="PerfCounterInfo.cs" />

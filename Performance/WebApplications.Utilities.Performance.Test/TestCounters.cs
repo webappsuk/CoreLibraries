@@ -65,7 +65,7 @@ namespace WebApplications.Utilities.Performance.Test
 
             Trace.WriteLine(t.ToString("{short}"));
             Trace.WriteLine(t.ToString(PerfCategory.ShortFormat));
-            Trace.WriteLine(t.Rate);
+            Trace.WriteLine(t.Timers.Rate);
         }
 
         public void TestAccessors()

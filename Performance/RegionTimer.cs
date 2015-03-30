@@ -1,6 +1,33 @@
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
-using System.Diagnostics;
 using System.Threading;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Performance
@@ -17,76 +44,53 @@ namespace WebApplications.Utilities.Performance
     public class RegionTimer : IDisposable
     {
         /// <summary>
-        /// The <see cref="DateTime"/> ticks per millisecond.
-        /// </summary>
-        [PublicAPI]
-        public const long TicksPerMillisecond = 10000;
-
-        /// <summary>
-        /// The <see cref="DateTime"/> ticks per second.
-        /// </summary>
-        [PublicAPI]
-        public const long TicksPerSecond = TicksPerMillisecond * 1000;
-
-        /// <summary>
         /// Delegate to call on disposal.
         /// </summary>
         [CanBeNull]
         private RegionTimerDisposedDelegate _onDisposed;
 
         /// <summary>
-        /// The duration after which the timer has passed a warning level.
+        /// The duration after which the timer has passed a warning level, or <see langword="null"/>.
         /// </summary>
         [PublicAPI]
-        public readonly TimeSpan WarningDuration;
+        public readonly Duration? WarningDuration;
 
         /// <summary>
-        /// The duration after which the timer has passed a critical level.
+        /// The duration after which the timer has passed a critical level, or <see langword="null"/>.
         /// </summary>
         [PublicAPI]
-        public readonly TimeSpan CriticalDuration;
-
-        private readonly long _start;
-        private long _stop;
-
-        private static readonly double _tickFrequency;
+        public readonly Duration? CriticalDuration;
 
         /// <summary>
-        /// Initializes static members of the <see cref="RegionTimer"/> class.
+        /// When the timer started.
         /// </summary>
-        static RegionTimer()
+        [PublicAPI]
+        public readonly Instant Started;
+
+        private Instant? _stopped;
+
+        /// <summary>
+        /// When the timer stopped, if stopped; otherwise <see langword="nulL" />.
+        /// </summary>
+        /// <value>When the timer stopped.</value>
+        public Instant? Stopped
         {
-            _tickFrequency = !Stopwatch.IsHighResolution ? 1.0 : ((double)TicksPerSecond) / Stopwatch.Frequency;
+            get { return _stopped; }
         }
 
         /// <summary>
-        /// Gets a <see cref="TimeSpan"/> from ticks.
+        /// How long the timer was running for, or how long since it started if <see cref="IsRunning">the timer is
+        /// still running</see>.
         /// </summary>
-        /// <returns>System.Int64.</returns>
-        private static long GetDateTimeTicks(long ticks)
-        {
-            if (!Stopwatch.IsHighResolution)
-                return ticks;
-
-            // convert high resolution perf counter to DateTime ticks
-            double dticks = ticks;
-            dticks *= _tickFrequency;
-            return unchecked((long)dticks);
-        }
-
-        /// <summary>
-        /// Gets the raw elapsed CPU ticks.
-        /// </summary>
-        /// <value>The raw elapsed CPU ticks.</value>
-        /// <remarks>This will be different from <see cref="TimeSpan.Ticks">Elapsed.Ticks</see>.</remarks>
+        /// <value>The elapsed time.</value>
         [PublicAPI]
-        public long ElapsedTicks
+        public Duration Elapsed
         {
             get
             {
-                long stop = Interlocked.Read(ref _stop);
-                if (stop == 0) stop = Stopwatch.GetTimestamp();
-                return stop - _start;
+                Instant? stop = _stopped;
+                if (!stop.HasValue) stop = HighPrecisionClock.Instance.Now;
+                return stop.Value - Started;
             }
         }
 
@@ -97,31 +101,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public bool IsRunning
         {
-            get
-            {
-                long stop = Interlocked.Read(ref _stop);
-                return stop == 0;
-            }
-        }
-
-        /// <summary>
-        /// Gets the elapsed <see cref="TimeSpan"/>.
-        /// </summary>
-        /// <value>The elapsed <see cref="TimeSpan"/>.</value>
-        [PublicAPI]
-        public TimeSpan Elapsed
-        {
-            get { return new TimeSpan(GetDateTimeTicks(ElapsedTicks)); }
-        }
-
-        /// <summary>
-        /// Gets the elapsed milliseconds.
-        /// </summary>
-        /// <value>The elapsed milliseconds.</value>
-        [PublicAPI]
-        public long ElapsedMilliseconds
-        {
-            get { return GetDateTimeTicks(ElapsedTicks) / TicksPerMillisecond; }
+            get { return !_stopped.HasValue; }
         }
 
         /// <summary>
@@ -131,7 +111,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public bool Warning
         {
-            get { return Elapsed > WarningDuration; }
+            get { return WarningDuration.HasValue && Elapsed > WarningDuration.Value; }
         }
 
         /// <summary>
@@ -141,7 +121,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public bool Critical
         {
-            get { return Elapsed > CriticalDuration; }
+            get { return CriticalDuration.HasValue && Elapsed > CriticalDuration.Value; }
         }
 
         /// <summary>
@@ -152,20 +132,11 @@ namespace WebApplications.Utilities.Performance
         /// <param name="criticalDuration">Duration of the critical.</param>
         public RegionTimer(
             [CanBeNull] RegionTimerDisposedDelegate onDisposed = null,
-            TimeSpan warningDuration = default(TimeSpan),
-            TimeSpan criticalDuration = default(TimeSpan))
+            Duration? warningDuration = null,
+            Duration? criticalDuration = null)
         {
-            _start = Stopwatch.GetTimestamp();
+            Started = HighPrecisionClock.Instance.Now;
             _onDisposed = onDisposed;
-
-            if (warningDuration == default(TimeSpan))
-                warningDuration = TimeSpan.MaxValue;
-            if (criticalDuration == default(TimeSpan))
-                criticalDuration = TimeSpan.MaxValue;
-
-            if (warningDuration > criticalDuration)
-                criticalDuration = warningDuration;
-
             WarningDuration = warningDuration;
             CriticalDuration = criticalDuration;
         }
@@ -179,11 +150,12 @@ namespace WebApplications.Utilities.Performance
         /// </remarks>
         public void Dispose()
         {
-            Interlocked.CompareExchange(ref _stop, Stopwatch.GetTimestamp(), 0);
-
+            Instant stop = HighPrecisionClock.Instance.Now;
             var onDisposed = Interlocked.Exchange(ref _onDisposed, null);
-            if (!ReferenceEquals(onDisposed, null))
-                onDisposed(this);
+            if (ReferenceEquals(onDisposed, null)) return;
+
+            _stopped = stop;
+            onDisposed(this);
         }
     }
 }

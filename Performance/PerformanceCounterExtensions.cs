@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Performance
@@ -26,21 +27,21 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <param name="oldSample">The old sample.</param>
         /// <param name="newSample">The new sample.</param>
-        /// <returns>TimeSpan.</returns>
+        /// <returns>Duration.</returns>
         [PublicAPI]
-        public static TimeSpan GetElapsedTime(CounterSample oldSample, CounterSample newSample)
+        public static Duration GetElapsedTime(CounterSample oldSample, CounterSample newSample)
         {
             // No data [start time = 0] so return 0 
             if (newSample.RawValue == 0)
-                return TimeSpan.Zero;
+                return Duration.Zero;
 
             float eFreq = (ulong)oldSample.CounterFrequency;
             ulong o = (ulong)oldSample.CounterTimeStamp;
             ulong n = (ulong)newSample.CounterTimeStamp;
             return o >= n ||
                    eFreq <= 0.0f
-                ? TimeSpan.Zero
-                : TimeSpan.FromSeconds((n - o) / eFreq);
+                ? Duration.Zero
+                : Duration.FromSeconds((n - o) / eFreq);
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace WebApplications.Utilities.Performance
                     CounterSample sample = node.Value;
                     if (lastSample.TimeStamp == 0)
                     {
-                        if (GetElapsedTime(sample, nextSample) >= TimeSpan.FromSeconds(1))
+                        if (GetElapsedTime(sample, nextSample) >= Duration.FromSeconds(1))
                             lastSample = sample;
                     }
                     else

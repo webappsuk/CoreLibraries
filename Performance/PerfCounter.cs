@@ -63,31 +63,20 @@ namespace WebApplications.Utilities.Performance
             : base(categoryName, _counterData)
         {
             Contract.Requires(categoryName != null);
+            Counter = new Counter();
             // ReSharper disable PossibleNullReferenceException
-            AddInfo("Count", "Total operations executed since the start of the process.", () => this.OperationCount);
-            AddInfo("Rate", "The number of operations per second.", () => this.Rate);
+            AddInfo("Count", "Total operations executed since the start of the process.", () => Counter.Count);
+            AddInfo("Rate", "The number of operations per second.", () => Counter.Rate);
+            AddInfo("Samples", "The number of samples.", () => Counter.SamplesCount);
             // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
-        /// Gets the current operation count.
+        /// The counter.
         /// </summary>
-        /// <value>The count.</value>
         [PublicAPI]
-        public long OperationCount
-        {
-            get { return IsValid ? Counters[0].RawValue : 0; }
-        }
-
-        /// <summary>
-        /// Gets the operations per second.
-        /// </summary>
-        /// <value>The count.</value>
-        [PublicAPI]
-        public float Rate
-        {
-            get { return IsValid ? Counters[1].SafeNextValue() : float.NaN; }
-        }
+        [NotNull]
+        public readonly Counter Counter;
 
         /// <summary>
         ///   Increments the operation counters.
@@ -95,53 +84,13 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public void Increment()
         {
+            Counter.Increment();
+
             if (!IsValid)
                 return;
 
             Counters[0].Increment();
             Counters[1].Increment();
-        }
-
-        /// <summary>
-        ///   Increments the operation counters.
-        /// </summary>
-        [PublicAPI]
-        public void IncrementBy(long value)
-        {
-            if (!IsValid ||
-                (value == 0))
-                return;
-
-            Counters[0].IncrementBy(value);
-            Counters[1].IncrementBy(value);
-        }
-
-        /// <summary>
-        ///   Decrements the operation counters.
-        /// </summary>
-        [PublicAPI]
-        public void Decrement()
-        {
-            if (!IsValid)
-                return;
-
-            Counters[0].Decrement();
-            Counters[1].Decrement();
-        }
-
-        /// <summary>
-        ///   Decrements the operation counters.
-        /// </summary>
-        [PublicAPI]
-        public void DecrementBy(long value)
-        {
-            if (!IsValid ||
-                (value == 0))
-                return;
-
-            long decrement = -value;
-            Counters[0].IncrementBy(decrement);
-            Counters[1].IncrementBy(decrement);
         }
     }
 }

@@ -126,7 +126,7 @@ namespace WebApplications.Utilities.Performance
             }
         }
 
-        private bool _initialized = false;
+        private bool _initialized;
 
         /// <summary>
         /// The info dictionary, holds info by name.

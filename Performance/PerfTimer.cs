@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Performance
@@ -70,15 +70,27 @@ namespace WebApplications.Utilities.Performance
             : base(categoryName, _counterData)
         {
             Contract.Requires(categoryName != null);
+            Timers = new Timers();
             // ReSharper disable PossibleNullReferenceException
-            AddInfo("Count", "Total operations executed since the start of the process.", () => this.OperationCount);
-            AddInfo("Rate", "The number of operations per second.", () => this.Rate);
+            AddInfo("Count", "Total operations executed since the start of the process.", () => Timers.Count);
+            AddInfo("Rate", "The number of operations per second.", () => Timers.Rate);
+            AddInfo("Total Duration", "The total duration.", () => Timers.TotalDuration);
+            AddInfo("Average Duration", "The average duration of each operation.", () => Timers.AverageDuration);
+            AddInfo("Samples", "The number of samples.", () => Timers.SamplesCount);
+            AddInfo("Samples Total", "The total duration of the samples.", () => Timers.TotalSampleDuration);
             AddInfo(
-                "Average Duration",
-                "The average duration of each operation.",
-                () => this.AverageDuration);
+                "Samples Average",
+                "The average duration of each operation in the samples.",
+                () => Timers.AverageSampleDuration);
             // ReSharper restore PossibleNullReferenceException
         }
+
+        /// <summary>
+        /// The timers collection.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly Timers Timers;
 
         /// <summary>
         /// <para>
@@ -96,62 +108,15 @@ namespace WebApplications.Utilities.Performance
         }
 
         /// <summary>
-        /// Gets the current operation count.
-        /// </summary>
-        /// <value>The count.</value>
-        [PublicAPI]
-        public long OperationCount
-        {
-            get { return IsValid ? Counters[0].RawValue : 0; }
-        }
-
-        /// <summary>
-        /// Gets the operations per second.
-        /// </summary>
-        /// <value>The count.</value>
-        [PublicAPI]
-        public float Rate
-        {
-            get { return IsValid ? Counters[1].SafeNextValue() : float.NaN; }
-        }
-
-        /// <summary>
-        /// Gets the operations per second.
-        /// </summary>
-        /// <value>The count.</value>
-        [PublicAPI]
-        public TimeSpan AverageDuration
-        {
-            get { return IsValid ? TimeSpan.FromSeconds(Counters[2].SafeNextValue()) : TimeSpan.Zero; }
-        }
-
-        /// <summary>
         /// Increments the counters.
         /// </summary>
         /// <param name="regionTimer">The region timer.</param>
         private void IncrementBy([NotNull] RegionTimer regionTimer)
         {
-            if (!IsValid ||
-                (regionTimer.ElapsedTicks < 1))
-                return;
+            Timers.Increment(regionTimer);
 
-            Counters[0].Increment();
-            Counters[1].Increment();
-
-            // Get the duration in CPU ticks rather than DateTime ticks.
-            Counters[2].IncrementBy(regionTimer.ElapsedTicks);
-            Counters[3].Increment();
-        }
-
-        /// <summary>
-        ///   Increments the counters.
-        /// </summary>
-        /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
-        [PublicAPI]
-        public void IncrementBy(TimeSpan duration)
-        {
-            if (!IsValid ||
-                (duration <= TimeSpan.Zero))
+            Duration duration = regionTimer.Elapsed;
+            if (!IsValid)
                 return;
 
             Counters[0].Increment();
@@ -160,25 +125,6 @@ namespace WebApplications.Utilities.Performance
             // Get the duration in CPU ticks rather than DateTime ticks.
             Counters[2].IncrementBy((duration.Ticks * Stopwatch.Frequency) / 10000000);
             Counters[3].Increment();
-        }
-
-        /// <summary>
-        ///   Increments the counters.
-        /// </summary>
-        /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
-        [PublicAPI]
-        public void DecrementBy(TimeSpan duration)
-        {
-            if (!IsValid ||
-                (duration <= TimeSpan.Zero))
-                return;
-
-            Counters[0].Decrement();
-            Counters[1].Decrement();
-
-            // Get the duration in CPU ticks rather than DateTime ticks.
-            Counters[2].IncrementBy(((-duration).Ticks * Stopwatch.Frequency) / 10000000);
-            Counters[3].Decrement();
         }
     }
 }
