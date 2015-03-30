@@ -29,6 +29,7 @@ using System;
 using System.Threading;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Performance.Configuration;
 
 namespace WebApplications.Utilities.Performance
 {
@@ -53,13 +54,13 @@ namespace WebApplications.Utilities.Performance
         /// The duration after which the timer has passed a warning level, or <see langword="null"/>.
         /// </summary>
         [PublicAPI]
-        public readonly Duration? WarningDuration;
+        public readonly Duration WarningDuration;
 
         /// <summary>
         /// The duration after which the timer has passed a critical level, or <see langword="null"/>.
         /// </summary>
         [PublicAPI]
-        public readonly Duration? CriticalDuration;
+        public readonly Duration CriticalDuration;
 
         /// <summary>
         /// When the timer started.
@@ -73,6 +74,7 @@ namespace WebApplications.Utilities.Performance
         /// When the timer stopped, if stopped; otherwise <see langword="nulL" />.
         /// </summary>
         /// <value>When the timer stopped.</value>
+        [PublicAPI]
         public Instant? Stopped
         {
             get { return _stopped; }
@@ -111,7 +113,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public bool Warning
         {
-            get { return WarningDuration.HasValue && Elapsed > WarningDuration.Value; }
+            get { return Elapsed > WarningDuration; }
         }
 
         /// <summary>
@@ -121,7 +123,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public bool Critical
         {
-            get { return CriticalDuration.HasValue && Elapsed > CriticalDuration.Value; }
+            get { return Elapsed > CriticalDuration; }
         }
 
         /// <summary>
@@ -137,8 +139,8 @@ namespace WebApplications.Utilities.Performance
         {
             Started = HighPrecisionClock.Instance.Now;
             _onDisposed = onDisposed;
-            WarningDuration = warningDuration;
-            CriticalDuration = criticalDuration;
+            WarningDuration = warningDuration ?? PerformanceConfiguration.DefaultWarningDuration;
+            CriticalDuration = criticalDuration ?? PerformanceConfiguration.DefaultCriticalDuration;
         }
 
         /// <summary>

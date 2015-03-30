@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Performance.Configuration;
 
 namespace WebApplications.Utilities.Performance
 {
@@ -53,11 +54,15 @@ namespace WebApplications.Utilities.Performance
         private readonly LinkedList<Instant> _samples;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Counter"/> class.
+        /// Initializes a new instance of the <see cref="Counter" /> class.
         /// </summary>
-        public Counter(int maximumSamples = 10)
+        /// <param name="maximumSamples">The maximum samples (defaults to <see cref="PerformanceConfiguration.DefaultMaximumSamples"/>.</param>
+        public Counter(int maximumSamples = int.MaxValue)
         {
+            if (maximumSamples == int.MaxValue) maximumSamples = PerformanceConfiguration.DefaultMaximumSamples;
+            if (maximumSamples < 2) maximumSamples = 2;
             MaximumSamples = maximumSamples;
+
             _samples = new LinkedList<Instant>();
         }
 

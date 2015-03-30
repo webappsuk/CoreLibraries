@@ -37,6 +37,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Performance.Configuration;
 using WebApplications.Utilities.Reflect;
 using WebApplications.Utilities.Threading;
 
@@ -161,7 +162,8 @@ namespace WebApplications.Utilities.Performance
             {
                 if (_initialized) return;
 
-                if (_counterCreationData.Length < 1)
+                if (!PerformanceConfiguration.IsEnabled ||
+                    _counterCreationData.Length < 1)
                 {
                     _initialized = true;
                     return;

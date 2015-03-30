@@ -29,6 +29,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Performance.Configuration;
 
 namespace WebApplications.Utilities.Performance
 {
@@ -113,6 +114,9 @@ namespace WebApplications.Utilities.Performance
         /// <param name="regionTimer">The region timer.</param>
         private void IncrementBy([NotNull] RegionTimer regionTimer)
         {
+            if (!PerformanceConfiguration.IsEnabled)
+                return;
+
             Timers.Increment(regionTimer);
 
             Duration duration = regionTimer.Elapsed;

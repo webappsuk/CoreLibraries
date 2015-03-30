@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Performance
             return o >= n ||
                    eFreq <= 0.0f
                 ? Duration.Zero
-                : Duration.FromSeconds((n - o) / eFreq);
+                : Duration.FromSeconds((long) ((n - o) / eFreq));
         }
 
         /// <summary>

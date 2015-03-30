@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Performance.Configuration;
 
 namespace WebApplications.Utilities.Performance
 {
@@ -58,9 +59,13 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// Initializes a new instance of the <see cref="Counter"/> class.
         /// </summary>
+        /// <param name="maximumSamples">The maximum samples (defaults to <see cref="PerformanceConfiguration.DefaultMaximumSamples"/>.</param>
         public Timers(int maximumSamples = 10)
         {
+            if (maximumSamples == int.MaxValue) maximumSamples = PerformanceConfiguration.DefaultMaximumSamples;
+            if (maximumSamples < 2) maximumSamples = 2;
             MaximumSamples = maximumSamples;
+
             _samples = new LinkedList<RegionTimer>();
         }
 
@@ -121,7 +126,14 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public Duration AverageDuration
         {
-            get { return _totalDuration / _count; }
+            get
+            {
+                lock (_samples)
+                {
+                    long count = _count;
+                    return count > 0 ? _totalDuration / count : Duration.Zero;
+                }
+            }
         }
 
         /// <summary>
@@ -157,7 +169,15 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public Duration TotalSampleDuration
         {
-            get { return Duration.FromTicks(this.Sum(t => t.Elapsed.Ticks)); }
+            get
+            {
+                RegionTimer[] samples;
+                lock (_samples)
+                    samples = _samples.ToArray();
+                return samples.Length > 0
+                    ? Duration.FromTicks(samples.Sum(t => t.Elapsed.Ticks))
+                    : Duration.Zero;
+            }
         }
 
         /// <summary>
@@ -168,7 +188,15 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public Duration AverageSampleDuration
         {
-            get { return Duration.FromTicks((long)this.Average(t => t.Elapsed.Ticks)); }
+            get
+            {
+                RegionTimer[] samples;
+                lock (_samples)
+                    samples = _samples.ToArray();
+                return samples.Length > 0
+                    ? Duration.FromTicks((long) samples.Average(t => t.Elapsed.Ticks))
+                    : Duration.Zero;
+            }
         }
 
         /// <summary>
@@ -201,7 +229,7 @@ namespace WebApplications.Utilities.Performance
             RegionTimer[] copy;
             lock (_samples)
                 copy = _samples.ToArray();
-            return ((IEnumerable<RegionTimer>)copy).GetEnumerator();
+            return ((IEnumerable<RegionTimer>) copy).GetEnumerator();
         }
 
         /// <summary>
