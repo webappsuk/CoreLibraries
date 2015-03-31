@@ -54,6 +54,15 @@ using WebApplications.Utilities.Threading;
 namespace WebApplications.Utilities
 {
     /// <summary>
+    /// Represents the method that compares two objects of the same type for equality.
+    /// </summary>
+    /// <typeparam name="T">The type of the objects to compare.</typeparam>
+    /// <param name="x">The first object to compare.</param>
+    /// <param name="y">The second object to compare.</param>
+    /// <returns><see langword="true"/> if the specified objects are equal; otherwise, <see langword="false"/>.</returns>
+    public delegate bool EqualityComparison<in T>(T x, T y);
+
+    /// <summary>
     ///   Useful extension methods
     /// </summary>
     [PublicAPI]
@@ -4306,6 +4315,145 @@ namespace WebApplications.Utilities
             }
         }
 
+        /// <summary>
+        /// Gets the first index of the <paramref name="value"/> in the <paramref name="source"/> enumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the enumerable.</typeparam>
+        /// <param name="source">The source enumerable.</param>
+        /// <param name="value">The value to find the index of.</param>
+        /// <param name="comparer">The comparer to use, or <see langword="null"/> to use the default comparer for the type.</param>
+        /// <returns>The index of the value if found; otherwise -1.</returns>
+        /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
+        [System.Diagnostics.Contracts.Pure]
+        [Annotations.Pure]
+        [PublicAPI]
+        public static int IndexOf<T>(
+            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [CanBeNull] T value,
+            [CanBeNull] IEqualityComparer<T> comparer = null)
+        {
+            Contract.Requires(source != null);
+
+            if (comparer == null) comparer = EqualityComparer<T>.Default;
+
+            int index = 0;
+
+            foreach (T item in source)
+            {
+                if (comparer.Equals(item, value))
+                    return index;
+                index++;
+                if (index < 0)
+                    throw new ArgumentException("The length of the enumerable exceeded Int32.MaxValue");
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets the first index of the <paramref name="value" /> in the <paramref name="source" /> enumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the enumerable.</typeparam>
+        /// <param name="source">The source enumerable.</param>
+        /// <param name="value">The value to find the index of.</param>
+        /// <param name="equals">The equality comparison method to use.</param>
+        /// <returns>The index of the value if found; otherwise -1.</returns>
+        /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
+        [System.Diagnostics.Contracts.Pure]
+        [Annotations.Pure]
+        [PublicAPI]
+        public static int IndexOf<T>(
+            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [CanBeNull] T value,
+            [NotNull][InstantHandle] EqualityComparison<T> @equals)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(@equals != null);
+
+            int index = 0;
+
+            foreach (T item in source)
+            {
+                if (@equals(item, value))
+                    return index;
+                index++;
+                if (index < 0)
+                    throw new ArgumentException("The length of the enumerable exceeded Int32.MaxValue");
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets the last index of the <paramref name="value"/> in the <paramref name="source"/> enumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the enumerable.</typeparam>
+        /// <param name="source">The source enumerable.</param>
+        /// <param name="value">The value to find the index of.</param>
+        /// <param name="comparer">The comparer to use, or <see langword="null"/> to use the default comparer for the type.</param>
+        /// <returns>The last index of the value if found; otherwise -1.</returns>
+        /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
+        [System.Diagnostics.Contracts.Pure]
+        [Annotations.Pure]
+        [PublicAPI]
+        public static int LastIndexOf<T>(
+            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [CanBeNull] T value,
+            [CanBeNull] IEqualityComparer<T> comparer = null)
+        {
+            Contract.Requires(source != null);
+
+            if (comparer == null) comparer = EqualityComparer<T>.Default;
+
+            int result = -1;
+            int index = 0;
+
+            foreach (T item in source)
+            {
+                if (comparer.Equals(item, value))
+                    result = index;
+                index++;
+                if (index < 0)
+                    throw new ArgumentException("The length of the enumerable exceeded Int32.MaxValue");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the last index of the <paramref name="value" /> in the <paramref name="source" /> enumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the enumerable.</typeparam>
+        /// <param name="source">The source enumerable.</param>
+        /// <param name="value">The value to find the index of.</param>
+        /// <param name="equals">The equality comparison method to use.</param>
+        /// <returns>The last index of the value if found; otherwise -1.</returns>
+        /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
+        [System.Diagnostics.Contracts.Pure]
+        [Annotations.Pure]
+        [PublicAPI]
+        public static int LastIndexOf<T>(
+            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [CanBeNull] T value,
+            [NotNull][InstantHandle] EqualityComparison<T> @equals)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(@equals != null);
+
+            int result = -1;
+            int index = 0;
+
+            foreach (T item in source)
+            {
+                if (@equals(item, value))
+                    result = index;
+                index++;
+                if (index < 0)
+                    throw new ArgumentException("The length of the enumerable exceeded Int32.MaxValue");
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Gets a generic version of the <see cref="IEqualityComparer" />.
