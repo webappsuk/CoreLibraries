@@ -1621,10 +1621,26 @@ namespace WebApplications.Utilities
             Contract.Requires(interfaceType != null);
             Contract.Requires(interfaceType.IsInterface);
 
-            return type == interfaceType || ExtendedType.Get(type).Implements(interfaceType) ||
-                   (interfaceType.IsGenericTypeDefinition &&
-                    ExtendedType.Get(type)
-                        .Interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType));
+            if (type == interfaceType ||
+                ExtendedType.Get(type).Implements(interfaceType))
+                return true;
+
+            if (!interfaceType.IsGenericTypeDefinition)
+                return false;
+
+            if (type.IsGenericType &&
+                type.GetGenericTypeDefinition() == interfaceType)
+                return true;
+
+            foreach (Type @interface in ExtendedType.Get(type).Interfaces)
+            {
+                Contract.Assert(@interface != null);
+                if (@interface.IsGenericType &&
+                    @interface.GetGenericTypeDefinition() == interfaceType)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
