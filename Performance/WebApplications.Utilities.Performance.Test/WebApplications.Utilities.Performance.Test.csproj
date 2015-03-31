@@ -119,9 +119,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities, Version=5.1.5560.18170, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.1.5568.27347, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5560.18170\lib\net452\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5568.27347\lib\net452\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -182,8 +182,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\webapplications.utilities.5.1.5560.18170\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5560.18170\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5560.18170\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5560.18170\tools\utility.targets')" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5568.27347\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5568.27347\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5568.27347\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5568.27347\tools\utility.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
