@@ -1,7 +1,7 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 //     * Redistributions of source code must retain the above copyright
@@ -12,7 +12,7 @@
 //     * Neither the name of Web Applications UK Ltd nor the
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -37,7 +37,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
-using AsyncLock = WebApplications.Utilities.Threading.AsyncLock;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -102,7 +102,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             new FormatBuilder(
                 "{" + Log.FormatTagApplicationName + "}-{" + Log.FormatTagTimeStamp + ":yyMMddHHmmssffff}",
                 true);
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FileLogger" /> class.
         /// </summary>
@@ -529,7 +529,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                                 {
                                     // ReSharper disable PossibleNullReferenceException
                                     switch (chunk.Tag.ToLower())
-                                    // ReSharper restore PossibleNullReferenceException
+                                        // ReSharper restore PossibleNullReferenceException
                                     {
                                         case Log.FormatTagApplicationName:
                                             return new Resolution(Log.ApplicationName);
@@ -562,8 +562,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                                     Format,
                                     log.TimeStamp);
 
-                                // ReSharper disable once AssignNullToNotNullAttribute
                                 dedupe = -1;
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 TraceTextWriter.Default.WriteLine(Resources.FileLogger_Started_File, fileName, Buffer.ToMemorySize());
                                 break;
                             }
@@ -573,9 +573,9 @@ namespace WebApplications.Utilities.Logging.Loggers
                             }
                         } while (dedupe < 99);
                         if (dedupe > 0)
-                            throw new LoggingException(()=>Resources.FileLogger_File_Creation_Retry_Failed);
+                            throw new LoggingException(() => Resources.FileLogger_File_Creation_Retry_Failed);
 
-                        Interlocked.CompareExchange(ref _logFile, logFile, null);
+                        _logFile = logFile;
                     }
                 }
                 await logFile.Write(log, token).ConfigureAwait(false);
@@ -664,7 +664,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <param name="fileName">Name of the file.</param>
             /// <param name="format">The format.</param>
             /// <param name="start">The start.</param>
-            public LogFile([NotNull]FileStream fileStream, [NotNull] string fileName, [NotNull] FormatBuilder format, DateTime start)
+            public LogFile([NotNull] FileStream fileStream, [NotNull] string fileName, [NotNull] FormatBuilder format, DateTime start)
             {
                 Contract.Requires(fileName != null);
                 Contract.Requires(format != null);
