@@ -130,9 +130,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\WebApplications.Utilities.5.1.5568.27347\lib\net452\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5568.27836, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.Logging.5.1.5568.27836\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5610.17887, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <HintPath>packages\WebApplications.Utilities.Logging.5.1.5610.17887\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5568.27405, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
