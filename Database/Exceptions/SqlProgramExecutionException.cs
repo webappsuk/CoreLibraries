@@ -72,7 +72,8 @@ namespace WebApplications.Utilities.Database.Exceptions
                     .Set(_prefixReservation, ProgramNameContextKey, sqlProgram.Name),
                 innerException,
                 () => Resources.SqlProgramExecutionException_ErrorOccurredDuringExecution,
-                sqlProgram.Name)
+                sqlProgram.Name,
+                innerException.Message)
         {
             Contract.Requires(sqlProgram != null);
             Contract.Requires(innerException != null);
