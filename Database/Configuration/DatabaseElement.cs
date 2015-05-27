@@ -240,7 +240,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 checkOrder.Value,
                 defaultCommandTimeout,
                 (TypeConstraintMode) constraintMode,
-                cancellationToken);
+                cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

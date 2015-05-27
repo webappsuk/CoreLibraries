@@ -186,7 +186,7 @@ namespace WebApplications.Utilities.Database
                     Guid guid = Guid.Empty;
                     // ReSharper disable PossibleNullReferenceException
                     foreach (DatabaseSchema schema in await
-                        Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, false, t))))
+                        Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, false, t))).ConfigureAwait(false))
                         // ReSharper restore PossibleNullReferenceException
                     {
                         Contract.Assert(schema != null);

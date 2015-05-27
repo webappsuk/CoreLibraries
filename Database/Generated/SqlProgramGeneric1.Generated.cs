@@ -889,7 +889,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
             LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
 
-            return await SqlProgram<T1>.Create(connection, name, p1Name, ignoreValidationErrors.Value, checkOrder.Value, defaultCommandTimeout, (TypeConstraintMode) constraintMode, cancellationToken);
+            return await SqlProgram<T1>.Create(connection, name, p1Name, ignoreValidationErrors.Value, checkOrder.Value, defaultCommandTimeout, (TypeConstraintMode) constraintMode, cancellationToken).ConfigureAwait(false);
         }
     }
     #endregion

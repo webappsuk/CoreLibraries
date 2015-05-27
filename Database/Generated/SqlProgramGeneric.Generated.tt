@@ -950,7 +950,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
             LoadBalancedConnection connection = await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
 
-            return await SqlProgram<<#= Strings.TypeParams#>>.Create(connection, name, <#= Strings.ConstructorNames2#>, ignoreValidationErrors.Value, checkOrder.Value, defaultCommandTimeout, (TypeConstraintMode) constraintMode, cancellationToken);
+            return await SqlProgram<<#= Strings.TypeParams#>>.Create(connection, name, <#= Strings.ConstructorNames2#>, ignoreValidationErrors.Value, checkOrder.Value, defaultCommandTimeout, (TypeConstraintMode) constraintMode, cancellationToken).ConfigureAwait(false);
         }
     }
     #endregion
