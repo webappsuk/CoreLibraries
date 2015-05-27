@@ -221,7 +221,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     {
                         // Execute function (ensuring cancellation).
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        T r = await _function(due, tokenSource.Token).WithCancellation(tokenSource.Token);
+                        T r = await _function(due, tokenSource.Token)
+                            .WithCancellation(tokenSource.Token)
+                            .ConfigureAwait(false);
                         stopwatch.Stop();
 
                         result = new ScheduledFunctionResult<T>(
