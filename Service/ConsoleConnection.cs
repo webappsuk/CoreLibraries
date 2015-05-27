@@ -447,7 +447,7 @@ namespace WebApplications.Utilities.Service
                         WritePrompt(service);
                         try
                         {
-                            string commandLine = await Console.In.ReadLineAsync();
+                            string commandLine = await Console.In.ReadLineAsync().ConfigureAwait(false);
                             if (!string.IsNullOrWhiteSpace(commandLine))
                             {
                                 bool completed = false;
