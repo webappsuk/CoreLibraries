@@ -35,6 +35,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\IO\PeekableStream.cs">
+      <Link>PeekableStream.cs</Link>
+    </Compile>
     <Compile Include="DownloadCurrencies.cs" />
     <Compile Include="DownloadTZDB.cs" />
     <Compile Include="DownloadFile.cs" />

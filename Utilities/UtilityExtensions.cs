@@ -193,6 +193,12 @@ namespace WebApplications.Utilities
         private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
 
         /// <summary>
+        /// The URI for the current AppDomains <see cref="AppDomain.BaseDirectory"/>.
+        /// </summary>
+        [NotNull]
+        public static readonly Uri AppDomainBaseUri = new Uri(AppDomain.CurrentDomain.BaseDirectory);
+
+        /// <summary>
         ///   Gets the ordinal representation of an <see cref="int">integer</see> ('1st', '2nd', etc.) as a <see cref="string"/>.
         /// </summary>
         /// <param name="number">The number to add the suffix to.</param>
@@ -403,7 +409,7 @@ namespace WebApplications.Utilities
             byte group = 0;
             while (number >= 1)
             {
-                groups.Push((int)(number % 1000), group++);
+                groups.Push((int)(number % 1000), @group++);
                 number = number / 1000;
             }
 
@@ -411,7 +417,7 @@ namespace WebApplications.Utilities
             while (groups.Count > 0)
             {
                 int numberToProcess;
-                groups.Pop(out numberToProcess, out group);
+                groups.Pop(out numberToProcess, out @group);
 
                 if (numberToProcess < 1) continue;
 
@@ -433,7 +439,7 @@ namespace WebApplications.Utilities
                 if (tens > 0)
                 {
                     if (hundreds > 0 ||
-                        group < firstGroup)
+                        @group < firstGroup)
                         writer.Write(" And");
 
                     if (!start)
@@ -458,10 +464,10 @@ namespace WebApplications.Utilities
                     }
                 }
 
-                if (group > 0)
+                if (@group > 0)
                 {
                     writer.Write(' ');
-                    writer.Write(_groupMapping[group]);
+                    writer.Write(_groupMapping[@group]);
                 }
             }
         }
@@ -1379,7 +1385,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string Unescape([CanBeNull] this string str)
         {
-            if (string.IsNullOrEmpty(str)) return str ?? string.Empty;
+            if (String.IsNullOrEmpty(str)) return str ?? String.Empty;
             StringBuilder builder = new StringBuilder(str.Length);
             builder.AddUnescaped(str);
             return builder.ToString();
@@ -1394,7 +1400,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string Escape([CanBeNull] this string str)
         {
-            if (string.IsNullOrEmpty(str)) return str ?? string.Empty;
+            if (String.IsNullOrEmpty(str)) return str ?? String.Empty;
             StringBuilder builder = new StringBuilder(str.Length + 10);
             builder.AddEscaped(str);
             return builder.ToString();
@@ -1409,7 +1415,7 @@ namespace WebApplications.Utilities
         public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             Contract.Requires(builder != null);
-            if (string.IsNullOrEmpty(str)) return;
+            if (String.IsNullOrEmpty(str)) return;
             int i = 0;
             bool escaped = false;
             while (i < str.Length)
@@ -1461,7 +1467,7 @@ namespace WebApplications.Utilities
                         }
                         string d4 = str.Substring(i, i + 4);
                         int n4;
-                        if (!int.TryParse(d4, NumberStyles.HexNumber, null, out n4))
+                        if (!Int32.TryParse(d4, NumberStyles.HexNumber, null, out n4))
                         {
                             builder.Append(c);
                             continue;
@@ -1477,7 +1483,7 @@ namespace WebApplications.Utilities
                         }
                         string d8 = str.Substring(i, i + 8);
                         int n8;
-                        if (!int.TryParse(d8, NumberStyles.HexNumber, null, out n8))
+                        if (!Int32.TryParse(d8, NumberStyles.HexNumber, null, out n8))
                         {
                             builder.Append(c);
                             continue;
@@ -1502,7 +1508,7 @@ namespace WebApplications.Utilities
                         }
                         int nx;
                         if ((dx.Length < 1) ||
-                            !int.TryParse(dx.ToString(), NumberStyles.HexNumber, null, out nx))
+                            !Int32.TryParse(dx.ToString(), NumberStyles.HexNumber, null, out nx))
                         {
                             builder.Append(c);
                             continue;
@@ -1528,7 +1534,7 @@ namespace WebApplications.Utilities
         public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             Contract.Requires(builder != null);
-            if (string.IsNullOrEmpty(str)) return;
+            if (String.IsNullOrEmpty(str)) return;
             int i = 0;
             while (i < str.Length)
             {
@@ -1728,7 +1734,7 @@ namespace WebApplications.Utilities
             Contract.Requires(elements != null);
             Contract.Requires(separator != null);
 
-            return string.Join(separator, elements);
+            return String.Join(separator, elements);
         }
 
         /// <summary>
@@ -1841,7 +1847,7 @@ namespace WebApplications.Utilities
         public static string LowerCaseFirstLetter([NotNull] this string input)
         {
             Contract.Requires(input != null);
-            return char.ToLower(input[0]) + input.Substring(1);
+            return Char.ToLower(input[0]) + input.Substring(1);
         }
 
         /// <summary>
@@ -3061,7 +3067,7 @@ namespace WebApplications.Utilities
                 unit++;
                 maxDecimalPlaces = Math.Min(decimalPlaces, maxDecimalPlaces + 3);
             }
-            return string.Format(
+            return String.Format(
                 "{0:N" + maxDecimalPlaces + "}{1}",
                 amount,
                 longUnits

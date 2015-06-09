@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,33 +28,35 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
 using NodaTime.TimeZones;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities
 {
-    // TODO Better name?
     /// <summary>
     /// Helper methods for working with NodaTime objects.
     /// </summary>
     [PublicAPI]
     public static class TimeHelpers
     {
+        /// <summary>
+        /// The current date time zone provider.
+        /// </summary>
         [NotNull]
         private static IDateTimeZoneProvider _dateTimeZoneProvider;
 
+        /// <summary>
+        /// Whether <see cref="_dateTimeZoneProvider"/> was loaded from the config.
+        /// </summary>
+        private static bool _isFromConfig;
+
         [NotNull]
         private static IClock _clock;
-
-        //Comes from: TimeSpan.FromMilliseconds(int.MaxValue + 1L).Ticks - 1
-        /// <summary>
-        /// The number of ticks in <see cref="int.MaxValue"/> + 1 milliseconds, minus 1.
-        /// </summary>
-        internal const long TicksForMaxMilliseconds = 21474836479999;
 
         /// <summary>
         /// A constant used to specify an infinite waiting period, for methods that accept a <see cref="Duration"/> parameter.
@@ -111,6 +113,8 @@ namespace WebApplications.Utilities
 
         static TimeHelpers()
         {
+            UtilityConfiguration.Changed += OnUtilityConfigurationChanged;
+
             _dateTimeZoneProvider = LoadTzdb();
 
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -118,10 +122,28 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Called when the utility configuration changes. If the <see cref="UtilityConfiguration.TimeZoneDB"/> property changes, the database will be reloaded.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="UtilityConfiguration.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
+        private static void OnUtilityConfigurationChanged(
+            [NotNull] object sender,
+            [NotNull] ConfigurationSection<UtilityConfiguration>.ConfigurationChangedEventArgs e)
+        {
+            if (_isFromConfig &&
+                !string.Equals(
+                    e.NewConfiguration.TimeZoneDB,
+                    e.OldConfiguration.TimeZoneDB,
+                    StringComparison.InvariantCulture))
+                SetDateTimeZoneProvider();
+        }
+
+        /// <summary>
         /// Gets an <see cref="Instant"/> from file time ticks.
         /// </summary>
         /// <param name="fileTimeTicks">The number of 100-nanosecond intervals that have elapsed since <see cref="FileTimeEpoch"/>.</param>
         /// <returns></returns>
+        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Instant InstantFromFileTimeUtc(long fileTimeTicks)
         {
@@ -145,6 +167,7 @@ namespace WebApplications.Utilities
             {
                 Contract.Requires(value != null);
                 _dateTimeZoneProvider = value;
+                _isFromConfig = false;
             }
         }
 
@@ -169,6 +192,19 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Sets the <see cref="DateTimeZoneProvider"/> to the time zone database given.
+        /// </summary>
+        /// <param name="path">The path of the database file to load, or <see langword="null"/> to use the path in the configuration.
+        /// If no path is given in the config, the default NodaTime <see cref="DateTimeZoneProviders.Tzdb"/> will be used.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public static void SetDateTimeZoneProvider(string path = null)
+        {
+            _dateTimeZoneProvider = LoadTzdb(path);
+            _isFromConfig = path == null;
+        }
+
+        /// <summary>
         /// Loads a time zone database.
         /// </summary>
         /// <param name="path">The path of the database file to load, or <see langword="null"/> to use the path in the configuration.
@@ -181,30 +217,53 @@ namespace WebApplications.Utilities
             IDateTimeZoneProvider provider;
 
             // Load the time zone database from a file, if specified.
-            string dbPath = path ?? UtilityConfiguration.Active.TimeZoneDB;
-            if (!string.IsNullOrWhiteSpace(dbPath))
+            path = path ?? UtilityConfiguration.Active.TimeZoneDB;
+            if (!string.IsNullOrWhiteSpace(path))
             {
-                dbPath = Path.IsPathRooted(dbPath)
-                    ? dbPath
-                    : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dbPath);
+                Uri uri = new Uri(path, UriKind.RelativeOrAbsolute);
+                if (!uri.IsAbsoluteUri)
+                    uri = new Uri(UtilityExtensions.AppDomainBaseUri, uri);
 
-                if (!File.Exists(dbPath))
-                    throw new FileNotFoundException(
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        string.Format(Resources.TimeHelper_TimeHelper_TimeZoneDB_Not_Found, dbPath));
-
-                try
+                // If the URI is a file, load it from the file system, otherwise download it
+                if (uri.IsFile)
                 {
-                    using (FileStream stream = File.OpenRead(dbPath))
+                    path = uri.LocalPath;
+                    if (!File.Exists(path))
+                        throw new FileNotFoundException(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            string.Format(Resources.TimeHelper_TimeHelper_TimeZoneDB_Not_Found, path));
+
+                    try
+                    {
+                        using (FileStream stream = File.OpenRead(path))
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            provider = new DateTimeZoneCache(TzdbDateTimeZoneSource.FromStream(stream));
+                    }
+                    catch (Exception e)
+                    {
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        provider = new DateTimeZoneCache(TzdbDateTimeZoneSource.FromStream(stream));
+                        throw new FileLoadException(
+                            string.Format(Resources.TimeHelper_TimeHelper_TimeZoneDB_Failed, path),
+                            e);
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new FileLoadException(
-                        string.Format(Resources.TimeHelper_TimeHelper_TimeZoneDB_Failed, dbPath),
-                        e);
+                    path = uri.AbsoluteUri;
+                    try
+                    {
+                        WebRequest request = WebRequest.Create(uri);
+                        using (WebResponse response = request.GetResponse())
+                        using (Stream stream = response.GetResponseStream())
+                            provider = new DateTimeZoneCache(TzdbDateTimeZoneSource.FromStream(stream));
+                    }
+                    catch (Exception e)
+                    {
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        throw new FileLoadException(
+                            string.Format(Resources.TimeHelper_TimeHelper_TimeZoneDB_Failed, path),
+                            e);
+                    }
                 }
             }
             // ReSharper disable once AssignNullToNotNullAttribute

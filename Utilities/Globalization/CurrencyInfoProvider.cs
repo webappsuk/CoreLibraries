@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,11 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.IO;
+#if !BUILD_TASKS
+using System.Net;
+using WebApplications.Utilities.Configuration;
+#endif
 
 namespace WebApplications.Utilities.Globalization
 {
@@ -156,6 +161,11 @@ namespace WebApplications.Utilities.Globalization
         private static ICurrencyInfoProvider _current;
 
         /// <summary>
+        /// Whether <see cref="_current"/> was loaded from the config.
+        /// </summary>
+        private static bool _isFromConfig;
+
+        /// <summary>
         /// Gets or sets the current global <see cref="CurrencyInfoProvider">provider</see>.
         /// </summary>
         /// <value>
@@ -170,6 +180,7 @@ namespace WebApplications.Utilities.Globalization
             {
                 Contract.Requires<ArgumentNullException>(value != null);
                 _current = value;
+                _isFromConfig = false;
             }
         }
 
@@ -181,40 +192,108 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="System.IO.FileLoadException">An exception was thrown while loading the currency information from the ISO 4217 file.</exception>
         static CurrencyInfoProvider()
         {
+            UtilityConfiguration.Changed += OnUtilityConfigurationChanged;
+
             _current = Empty = new EmptyCurrencyInfoProvider(DateTime.MinValue);
-            string path = Configuration.UtilityConfiguration.Active.ISO4217;
+
+            SetCurrentProvider();
+        }
+
+        /// <summary>
+        /// Called when the utility configuration changes. If the <see cref="Configuration.UtilityConfiguration.ISO4217"/> property changes, the data_stream will be reloaded.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="Configuration.UtilityConfiguration.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
+        private static void OnUtilityConfigurationChanged(
+            [NotNull] object sender,
+            [NotNull] ConfigurationSection<UtilityConfiguration>.ConfigurationChangedEventArgs e)
+        {
+            if (_isFromConfig &&
+                !string.Equals(
+                    e.NewConfiguration.ISO4217,
+                    e.OldConfiguration.ISO4217,
+                    StringComparison.InvariantCulture))
+                SetCurrentProvider();
+        }
+
+        /// <summary>
+        /// Sets the current provider.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        public static void SetCurrentProvider(string path = null)
+        {
+            _current = LoadCurrencies(path);
+            _isFromConfig = path == null;
+        }
+
+        /// <summary>
+        /// Loads the currency info provider from the path given.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
+        /// <exception cref="System.IO.FileNotFoundException">The ISO 4217 file specified was not found.</exception>
+        /// <exception cref="System.IO.FileLoadException">An exception was thrown while loading the currency information from the ISO 4217 file.</exception>
+        /// <exception cref="System.IO.InvalidDataException">The data in the ISO 4217 file was invalid.</exception>
+        [NotNull]
+        public static ICurrencyInfoProvider LoadCurrencies(string path = null)
+        {
+            path = path ?? UtilityConfiguration.Active.ISO4217;
             if (string.IsNullOrWhiteSpace(path))
-                return;
+                return Empty;
 
-            path = Path.IsPathRooted(path)
-                ? path
-                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+            Uri uri = new Uri(path, UriKind.RelativeOrAbsolute);
+            if (!uri.IsAbsoluteUri)
+                uri = new Uri(UtilityExtensions.AppDomainBaseUri, uri);
 
-            if (!File.Exists(path))
-                throw new FileNotFoundException(
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_FileNotFound, path));
+            ICurrencyInfoProvider provider;
 
-            try
+            if (uri.IsFile)
             {
-                CurrencyInfoProvider currencyInfoProvider = LoadFromFile(path);
+                path = uri.LocalPath;
+                if (!File.Exists(path))
+                    throw new FileNotFoundException(
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_FileNotFound, path));
 
-                if (currencyInfoProvider == null)
+                try
+                {
+                    provider = LoadFromFile(path);
+                }
+                catch (Exception e)
+                {
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new InvalidDataException(
-                        string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_DataInvalid, path));
-
-                _current = currencyInfoProvider;
+                    throw new FileLoadException(
+                        string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_LoadError, path),
+                        e);
+                }
             }
-            catch (Exception e)
+            else
             {
+                path = uri.AbsoluteUri;
+                try
+                {
+                    WebRequest request = WebRequest.Create(uri);
+                    using (WebResponse response = request.GetResponse())
+                    using (Stream stream = response.GetResponseStream())
+                        provider = Load(stream);
+                }
+                catch (Exception e)
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    throw new FileLoadException(
+                        string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_LoadError, path),
+                        e);
+                }}
+
+            if (provider == null)
                 // ReSharper disable once AssignNullToNotNullAttribute
-                throw new FileLoadException(
-                    string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_LoadError, path),
-                    e);
-            }
+                throw new InvalidDataException(
+                    string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_DataInvalid, path));
+
+            return provider;
         }
 #endif
+
         /// <summary>
         /// The first four bytes expected in binary currency info files.
         /// Equivalent to the string '$CCY'.
@@ -273,17 +352,36 @@ namespace WebApplications.Utilities.Globalization
 
         /// <summary>
         /// Loads the provider from a file. If the path ends in the extension .xml the provider will be loaded from XML; 
-        /// otherwise it will be loaded from binary.
+        /// otherwise the contents of the file will be used to determine the format.
         /// </summary>
         /// <param name="path">The path to the file.</param>
         /// <returns></returns>
+        [CanBeNull]
         public static CurrencyInfoProvider LoadFromFile([NotNull] string path)
         {
             if (string.Equals(Path.GetExtension(path), ".xml", StringComparison.InvariantCultureIgnoreCase))
                 return LoadFromXml(File.ReadAllText(path));
 
             using (FileStream file = File.OpenRead(path))
-                return LoadFromBinary(file);
+                return Load(file);
+        }
+
+        /// <summary>
+        /// Loads the currencies from the given stream, determining the format of the data based on the contents of the stream.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="leaveOpen">if set to <see langword="true" /> the <paramref name="stream"/> will be left open.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        public static CurrencyInfoProvider Load([NotNull] Stream stream, bool leaveOpen = false)
+        {
+            PeekableStream peekable = stream as PeekableStream ?? new PeekableStream(stream);
+
+            if (peekable.PeekByte() == '$')
+                return LoadFromBinary(peekable, leaveOpen);
+
+            using (StreamReader reader = new StreamReader(peekable, Encoding.UTF8, false, 1024, leaveOpen))
+                return LoadFromXml(reader);
         }
 
         /// <summary>
@@ -294,7 +392,20 @@ namespace WebApplications.Utilities.Globalization
         [CanBeNull]
         public static CurrencyInfoProvider LoadFromXml([NotNull] string xml)
         {
-            XDocument doc = XDocument.Parse(xml);
+            using (StringReader reader = new StringReader(xml))
+                return LoadFromXml(reader);
+        }
+
+        /// <summary>
+        /// Loads the currencies from XML.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        public static CurrencyInfoProvider LoadFromXml([NotNull] TextReader reader)
+        {
+            string xml = reader.ReadToEnd();
+            XDocument doc = XDocument.Parse(xml); //.Load(reader);
 
             DateTime published;
 
@@ -386,7 +497,8 @@ namespace WebApplications.Utilities.Globalization
             using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen))
             {
                 // Read the header info.
-                if (reader.ReadInt32() != BinaryHeader) throw new InvalidDataException("The currency info file was an invalid format.");
+                if (reader.ReadInt32() != BinaryHeader)
+                    throw new InvalidDataException("The currency info file was an invalid format.");
 
                 DateTime published = DateTime.SpecifyKind(DateTime.FromBinary(reader.ReadInt64()), DateTimeKind.Utc);
                 int count = reader.ReadInt32();
@@ -461,12 +573,10 @@ namespace WebApplications.Utilities.Globalization
             ExtendedCultureInfo eci = cultureInfo as ExtendedCultureInfo;
             CurrencyInfo currencyInfo;
             if (!ReferenceEquals(eci, null))
-            {
                 return eci.RegionInfo != null &&
                        _currencyInfos.TryGetValue(eci.RegionInfo.ISOCurrencySymbol, out currencyInfo)
                     ? currencyInfo
                     : null;
-            }
 
             eci = CultureInfoProvider.Current.Get(cultureInfo);
             if (ReferenceEquals(eci, null)) return null;

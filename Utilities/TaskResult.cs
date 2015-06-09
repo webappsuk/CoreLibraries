@@ -68,6 +68,20 @@ namespace WebApplications.Utilities
         public static readonly Task<int> Zero;
 
         /// <summary>
+        /// A task that returns a <c>-1</c>
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly Task<int> MinusOne;
+
+        /// <summary>
+        /// A task that returns a <c>1</c>
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly Task<int> One;
+
+        /// <summary>
         /// A task that returns <see cref="System.Int32.MinValue"/>
         /// </summary>
         [NotNull]
@@ -104,6 +118,8 @@ namespace WebApplications.Utilities
             Completed = True;
             False = Task.FromResult(false);
             Zero = Task.FromResult(0);
+            One = Task.FromResult(1);
+            MinusOne = Task.FromResult(-1);
             MinInt = Task.FromResult(int.MinValue);
             MaxInt = Task.FromResult(int.MaxValue);
             Cancelled = TaskResult<object>.Cancelled;

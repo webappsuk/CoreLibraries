@@ -262,6 +262,7 @@
     <Compile Include="Globalization\ICultureInfoProvider.cs" />
     <Compile Include="Globalization\ICurrencyInfoProvider.cs" />
     <Compile Include="HighPrecisionClock.cs" />
+    <Compile Include="IO\PeekableStream.cs" />
     <Compile Include="IReadOnlyLookup.cs" />
     <Compile Include="Array.cs" />
     <Compile Include="ParameterUsageVisitor.cs" />
