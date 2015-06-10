@@ -127,6 +127,32 @@ namespace WebApplications.Utilities.Configuration
         private static T _active;
 
         /// <summary>
+        /// Initializes the <see cref="ConfigurationSection{T}"/> class.
+        /// </summary>
+        static ConfigurationSection()
+        {
+            ConfigurationFileWatcher.Changed += OnConfigurationFileChanged;
+        }
+
+        /// <summary>
+        /// Called when the configuration file changes.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private static void OnConfigurationFileChanged(object sender, EventArgs e)
+        {
+            ConfigurationManager.RefreshSection(SectionName);
+            T oldConfiguration = _active;
+            _active = GetConfiguration();
+            _active.SetReadOnly();
+
+            ConfigurationChangedEventHandler onChanged = Changed;
+            if ((oldConfiguration != null) &&
+                (onChanged != null))
+                onChanged(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
+        }
+
+        /// <summary>
         ///   Gets the name of the configuration section.
         /// </summary>
         /// <remarks>

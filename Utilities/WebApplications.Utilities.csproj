@@ -186,6 +186,7 @@
     <Compile Include="Accessor.cs" />
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
+    <Compile Include="Configuration\ConfigurationFileWatcher.cs" />
     <Compile Include="Globalization\BclCultureInfoProvider.cs" />
     <Compile Include="BigArray.cs" />
     <Compile Include="Caching\CachingDictionaryBase.cs" />

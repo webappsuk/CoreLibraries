@@ -115,7 +115,7 @@ namespace WebApplications.Utilities
         {
             UtilityConfiguration.Changed += OnUtilityConfigurationChanged;
 
-            _dateTimeZoneProvider = LoadTzdb();
+            SetDateTimeZoneProvider();
 
             // ReSharper disable once AssignNullToNotNullAttribute
             _clock = SystemClock.Instance;
