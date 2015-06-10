@@ -111,6 +111,10 @@ namespace WebApplications.Utilities
         /// </summary>
         public static readonly Instant FileTimeEpoch = Instant.FromUtc(1601, 1, 1, 0, 0);
 
+        /// <summary>
+        /// Initializes the <see cref="TimeHelpers"/> class.
+        /// </summary>
+        // ReSharper disable once NotNullMemberIsNotInitialized - _dateTimeZoneProvider is set by SetDateTimeZoneProvider
         static TimeHelpers()
         {
             UtilityConfiguration.Changed += OnUtilityConfigurationChanged;
@@ -252,10 +256,12 @@ namespace WebApplications.Utilities
                     path = uri.AbsoluteUri;
                     try
                     {
+                        // ReSharper disable AssignNullToNotNullAttribute
                         WebRequest request = WebRequest.Create(uri);
                         using (WebResponse response = request.GetResponse())
                         using (Stream stream = response.GetResponseStream())
                             provider = new DateTimeZoneCache(TzdbDateTimeZoneSource.FromStream(stream));
+                        // ReSharper restore AssignNullToNotNullAttribute
                     }
                     catch (Exception e)
                     {
