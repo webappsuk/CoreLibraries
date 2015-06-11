@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System.Diagnostics.Contracts;
-using System.IO;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -49,7 +48,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true"/> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true"/>  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        public FuncResolvable([NotNull]ResolveDelegate resolver, bool isCaseSensitive = false, bool resolveOuterTags = true, bool resolveControls = false)
+        public FuncResolvable(
+            [NotNull] ResolveDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
             : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
             Contract.Requires(resolver != null);

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -181,13 +182,7 @@ namespace WebApplications.Utilities
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly char[] DefaultSplitChars = new[] { ' ', ',', '\t', '\r', '\n', '|' };
-
-        [NotNull]
-        private static readonly Regex _htmlRegex = new Regex(
-            @"<[^<>]*>",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase |
-            RegexOptions.Multiline);
+        public static readonly char[] DefaultSplitChars = { ' ', ',', '\t', '\r', '\n', '|' };
 
         [NotNull]
         private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
@@ -512,13 +507,15 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _equalityFunctions.GetOrAdd(
                 type,
                 t =>
                 {
                     ParameterInfo[] plist;
-                    int pCount = 0;
+                    int pCount;
                     // Grab the most relevant equals method
+                    // ReSharper disable PossibleNullReferenceException
                     MethodInfo equalsMethod =
                         (t.GetMethods(
                             BindingFlags.FlattenHierarchy | BindingFlags.Public |
@@ -533,6 +530,8 @@ namespace WebApplications.Utilities
                                             plist[1].ParameterType.IsAssignableFrom(t)
                                           : (pCount == 1))))
                             .First();
+                    // ReSharper restore PossibleNullReferenceException
+                    Debug.Assert(equalsMethod != null);
 
                     return equalsMethod.Func<object, object, bool>(false);
                 });
@@ -593,6 +592,7 @@ namespace WebApplications.Utilities
 
                 if (counters.TryGetValue(element, out t))
                 {
+                    Debug.Assert(t != null);
                     t.Increment();
                     continue;
                 }
@@ -619,6 +619,7 @@ namespace WebApplications.Utilities
                 //  If we have an element that was not present in the first enumerable, enumerables are not equal
                 if (!counters.TryGetValue(element, out t))
                     return false;
+                Debug.Assert(t != null);
 
                 t.Decrement();
                 if (t.Count < 0)
@@ -627,7 +628,8 @@ namespace WebApplications.Utilities
 
             // If any of the counters are not zero then we had unequal counts.
             return (nullCounter == null || nullCounter.Count == 0) &&
-                   !counters.Values.Any(counter => counter.Count != 0);
+                   // ReSharper disable once PossibleNullReferenceException
+                   counters.Values.All(counter => counter.Count == 0);
         }
 
         /// <summary>
@@ -658,6 +660,7 @@ namespace WebApplications.Utilities
             IReadOnlyCollection<T> enumA = enumerableA.Enumerate();
             IReadOnlyCollection<T> enumB = enumerableB.Enumerate();
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return enumA.Count == enumB.Count && enumA.All(i => enumB.Contains(i, comparer));
         }
 
@@ -830,6 +833,7 @@ namespace WebApplications.Utilities
             for (int i = 0, j = 0; i < value.Length; i++)
             {
                 string h = _hexLower[value[i]];
+                Debug.Assert(h != null);
                 chars[j++] = h[0];
                 chars[j++] = h[1];
             }
@@ -863,6 +867,7 @@ namespace WebApplications.Utilities
             for (int i = 0, j = 0; i < value.Length; i++)
             {
                 string h = _hexUpper[value[i]];
+                Debug.Assert(h != null);
                 chars[j++] = h[0];
                 chars[j++] = h[1];
             }
@@ -904,6 +909,7 @@ namespace WebApplications.Utilities
                         return Int32.TryParse(s, out id) ? (int?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
+                    // ReSharper disable once PossibleInvalidOperationException
                     .Select(id => getObject(id.Value));
 
             if (!typeof(T).IsValueType)
@@ -953,6 +959,7 @@ namespace WebApplications.Utilities
                         return Int16.TryParse(s, out id) ? (Int16?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
+                    // ReSharper disable once PossibleInvalidOperationException
                     .Select(id => getObject(id.Value));
             if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
@@ -1001,6 +1008,7 @@ namespace WebApplications.Utilities
                         return Int64.TryParse(s, out id) ? (Int64?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
+                    // ReSharper disable once PossibleInvalidOperationException
                     .Select(id => getObject(id.Value));
             if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
@@ -1127,6 +1135,7 @@ namespace WebApplications.Utilities
                     if (stream == null)
                         throw new InvalidOperationException(
                             String.Format(
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.Extensions_EmbeddedXml_CouldntLoadEmbeddedResource,
                                 filename,
                                 assembly));
@@ -1137,6 +1146,7 @@ namespace WebApplications.Utilities
             {
                 throw new InvalidOperationException(
                     String.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Extensions_EmbeddedXml_Exception,
                         filename,
                         assembly,
@@ -1185,6 +1195,7 @@ namespace WebApplications.Utilities
                     if (stream == null)
                         throw new InvalidOperationException(
                             String.Format(
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.Extensions_EmbeddedXml_CouldntLoadEmbeddedResource,
                                 filename,
                                 assembly));
@@ -1201,6 +1212,7 @@ namespace WebApplications.Utilities
             {
                 throw new InvalidOperationException(
                     String.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Extensions_EmbeddedXml_Exception,
                         filename,
                         assembly,
@@ -1305,12 +1317,15 @@ namespace WebApplications.Utilities
             Contract.Requires<ArgumentOutOfRangeException>(
                 (options & TruncateOptions.IncludeEllipsis) != TruncateOptions.IncludeEllipsis ||
                 maxLength > (ellipsisString != null && ellipsisLength < 0 ? ellipsisString.Length : ellipsisLength));
+            if (ellipsisLength < 0 &&
+                ellipsisString == null) throw new ArgumentNullException("ellipsisString");
 
             if (String.IsNullOrEmpty(valueToTruncate) ||
                 valueToTruncate.Length <= maxLength)
                 return valueToTruncate ?? String.Empty;
 
             if (ellipsisLength < 0)
+                // ReSharper disable once PossibleNullReferenceException
                 ellipsisLength = ellipsisString.Length;
 
             bool includeEllipsis = (options & TruncateOptions.IncludeEllipsis) == TruncateOptions.IncludeEllipsis;
@@ -1689,7 +1704,7 @@ namespace WebApplications.Utilities
             int[] orderedIndices = indices
                 .Where(i => i < length && i > -1)
                 .OrderBy(i => i)
-                .Concat(new[] { length })
+                .Concat(length)
                 .ToArray();
 
             // If there is only one index we return the original
@@ -1883,6 +1898,7 @@ namespace WebApplications.Utilities
                 // We need to add Scope for v6 addresses.
                 int offset = bytes.Length;
                 Array.Resize(ref bytes, offset + 4);
+                Debug.Assert(bytes != null);
 
                 // Note that scope is actually a uint not a long, but uint isn't CLS compliant so the framework
                 // uses a long - we don't need to waste the extra 4 bytes though.
@@ -1915,6 +1931,7 @@ namespace WebApplications.Utilities
                 l -= 4;
                 long scope = BitConverter.ToUInt32(bytes, l);
                 Array.Resize(ref bytes, l);
+                Debug.Assert(bytes != null);
 
                 return new IPAddress(bytes, scope);
             }
@@ -2503,8 +2520,11 @@ namespace WebApplications.Utilities
             where T : IComparable<T>
         {
             Contract.Requires(source != null);
-            Contract.Requires(source.Any());
             Contract.Requires(comparer != null);
+
+            source = source.Enumerate();
+            if (!source.Any())
+                throw new ArgumentException(Resources.UtilityExtensions_SourceEmpty, "source");
 
             T value = default(T);
             if (ReferenceEquals(value, null))
@@ -2544,8 +2564,11 @@ namespace WebApplications.Utilities
             where T : IComparable<T>
         {
             Contract.Requires(source != null);
-            Contract.Requires(source.Any());
             Contract.Requires(comparer != null);
+
+            source = source.Enumerate();
+            if (!source.Any())
+                throw new ArgumentException(Resources.UtilityExtensions_SourceEmpty, "source");
 
             T value = default(T);
             if (ReferenceEquals(value, null))
@@ -2758,8 +2781,11 @@ namespace WebApplications.Utilities
         /// <param name="first">The first sequence to concatenate.</param>
         /// <param name="second">The second sequence to concatenate.</param>
         /// <returns></returns>
-        [NotNull, MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IEnumerable<TSource> Concat<TSource>([NotNull] this IEnumerable<TSource> first, [NotNull] params TSource[] second)
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<TSource> Concat<TSource>(
+            [NotNull] this IEnumerable<TSource> first,
+            [NotNull] params TSource[] second)
         {
             Contract.Requires(first != null);
             Contract.Requires(second != null);
@@ -2767,12 +2793,13 @@ namespace WebApplications.Utilities
         }
 
         [NotNull]
-        private static IEnumerable<TSource> ConcatIterator<TSource>([NotNull] IEnumerable<TSource> first, [NotNull] IEnumerable<TSource> second)
+        private static IEnumerable<TSource> ConcatIterator<TSource>(
+            [NotNull] IEnumerable<TSource> first,
+            [NotNull] IEnumerable<TSource> second)
         {
             foreach (TSource element in first) yield return element;
             foreach (TSource element in second) yield return element;
         }
-
         #endregion
 
         #region HasAtLeast/HasExact
@@ -2796,6 +2823,7 @@ namespace WebApplications.Utilities
             if (collection2 != null)
                 return collection2.Count >= count;
 
+            // ReSharper disable once UnusedVariable
             foreach (TSource item in source)
             {
                 count--;
@@ -2824,10 +2852,12 @@ namespace WebApplications.Utilities
             Contract.Requires(predicate != null);
 
             ICollection<TSource> collection1 = source as ICollection<TSource>;
-            if (collection1 != null && collection1.Count < count)
+            if (collection1 != null &&
+                collection1.Count < count)
                 return false;
             ICollection collection2 = source as ICollection;
-            if (collection2 != null && collection2.Count < count)
+            if (collection2 != null &&
+                collection2.Count < count)
                 return false;
 
             foreach (TSource item in source)
@@ -2848,6 +2878,7 @@ namespace WebApplications.Utilities
         /// <param name="count">The exact number of elements the <paramref cref="source"/> needs.</param>
         /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
         [PublicAPI]
+        [Annotations.Pure]
         public static bool HasExact<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
             Contract.Requires(source != null);
@@ -2860,6 +2891,7 @@ namespace WebApplications.Utilities
             if (collection2 != null)
                 return collection2.Count == count;
 
+            // ReSharper disable once UnusedVariable
             foreach (TSource item in source)
             {
                 count--;
@@ -2887,10 +2919,12 @@ namespace WebApplications.Utilities
             Contract.Requires(count > 0);
 
             ICollection<TSource> collection1 = source as ICollection<TSource>;
-            if (collection1 != null && collection1.Count < count)
+            if (collection1 != null &&
+                collection1.Count < count)
                 return false;
             ICollection collection2 = source as ICollection;
-            if (collection2 != null && collection2.Count < count)
+            if (collection2 != null &&
+                collection2.Count < count)
                 return false;
 
             foreach (TSource item in source)
@@ -3067,8 +3101,10 @@ namespace WebApplications.Utilities
                 unit++;
                 maxDecimalPlaces = Math.Min(decimalPlaces, maxDecimalPlaces + 3);
             }
+
+            string format = "{0:N" + maxDecimalPlaces + "}{1}";
             return String.Format(
-                "{0:N" + maxDecimalPlaces + "}{1}",
+                format,
                 amount,
                 longUnits
                     ? _memoryUnitsLong[unit]
@@ -3268,7 +3304,7 @@ namespace WebApplications.Utilities
         [NotNull]
         [UsedImplicitly]
         public static IEnumerable<T> TopologicalSortEdges<T>(
-            [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
+            [NotNull] [InstantHandle] [ItemNotNull] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] IEnumerable<KeyValuePair<T, T>> edges)
         {
             // Create lookup dictionaries from edges
@@ -3286,23 +3322,31 @@ namespace WebApplications.Utilities
             // Now add edges
             foreach (KeyValuePair<T, T> kvp in edges)
             {
+                Debug.Assert(kvp.Key != null);
+                Debug.Assert(kvp.Value != null);
+
                 List<T> l;
                 if ((dependencies.TryGetValue(kvp.Value, out l)) &&
+                    // ReSharper disable once PossibleNullReferenceException
                     (!l.Contains(kvp.Key)))
                     l.Add(kvp.Key);
 
                 if ((dependants.TryGetValue(kvp.Key, out l)) &&
+                    // ReSharper disable once PossibleNullReferenceException
                     (!l.Contains(kvp.Value)))
                     l.Add(kvp.Value);
             }
 
             // Create a queue from all elements that don't have any dependencies.
+            // ReSharper disable once PossibleNullReferenceException
             Queue<T> outputQueue = new Queue<T>(dependencies.Where(kvp => kvp.Value.Count < 1).Select(kvp => kvp.Key));
 
             // Process the output queue
             while (outputQueue.Count > 0)
             {
                 T t = outputQueue.Dequeue();
+                Debug.Assert(t != null);
+
                 yield return t;
 
                 // Get dependants of the yielded element and remove the reverse reference from their depenencies
@@ -3379,7 +3423,10 @@ namespace WebApplications.Utilities
                         .Replace("{Build}", version.Build.ToString("D"))
                         .Replace("{Revision}", version.Revision.ToString("D")),
                     out result))
+            {
+                Debug.Assert(result != null);
                 return result;
+            }
 
             // Create a semantic version from the assembly version directly.
             return new SemanticVersion(version);
@@ -3403,6 +3450,7 @@ namespace WebApplications.Utilities
             [CanBeNull] [InstantHandle] IEnumerable values = null)
         {
             Contract.Requires(elementType != null);
+            // ReSharper disable once AssignNullToNotNullAttribute, PossibleNullReferenceException
             return _hashCollectionCreators.GetOrAdd(
                 elementType,
                 t =>
@@ -3582,7 +3630,9 @@ namespace WebApplications.Utilities
         /// <remarks>Unwraps <see cref="TargetInvocationException"/> and <see cref="AggregateException"/> automatically.</remarks>
         [NotNull]
         [PublicAPI]
-        public static IEnumerable<TException> Flatten<TException>([CanBeNull] this Exception exception, [NotNull] Func<Exception, TException> convert)
+        public static IEnumerable<TException> Flatten<TException>(
+            [CanBeNull] this Exception exception,
+            [NotNull] Func<Exception, TException> convert)
             where TException : Exception
         {
             Contract.Requires(convert != null);
@@ -3666,14 +3716,11 @@ namespace WebApplications.Utilities
 
                 TargetInvocationException target = exception as TargetInvocationException;
                 if (target != null)
-                {
                     if (!ReferenceEquals(target.InnerException, null))
                     {
                         exception = target.InnerException;
                         continue;
                     }
-                    break;
-                }
 
                 break;
             }
@@ -3690,6 +3737,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ReThrow([NotNull] this Exception exception)
         {
+            // ReSharper disable once PossibleNullReferenceException
             ExceptionDispatchInfo.Capture(exception).Throw();
             // Just in case
             throw exception;
@@ -3816,6 +3864,7 @@ namespace WebApplications.Utilities
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Tuple{T1, T2}"/> containing all possible pairs of the elements in the two enumerables.</returns>
         /// <remarks>The order of the elements of the enumerables will be maintained.</remarks>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<Tuple<T1, T2>> Cross<T1, T2>(
             [NotNull] this IEnumerable<T1> enumerable1,
             [NotNull] IEnumerable<T2> enumerable2)
@@ -3941,7 +3990,6 @@ namespace WebApplications.Utilities
             {
                 bool yielding = false;
                 while (e.MoveNext())
-                {
                     if (yielding)
                     {
                         if (--takeCount < 0) break;
@@ -3956,7 +4004,6 @@ namespace WebApplications.Utilities
                             yield return e.Current;
                         }
                     }
-                }
             }
         }
 
@@ -4010,14 +4057,10 @@ namespace WebApplications.Utilities
                     }
 
                     if (includeFirst)
-                    {
                         queue.Enqueue(e.Current);
-                    }
 
                     foreach (T item in queue)
-                    {
                         yield return item;
-                    }
 
                     break;
                 }
@@ -4334,7 +4377,7 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         [PublicAPI]
         public static int IndexOf<T>(
-            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
             [CanBeNull] IEqualityComparer<T> comparer = null)
         {
@@ -4369,9 +4412,9 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         [PublicAPI]
         public static int IndexOf<T>(
-            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
-            [NotNull][InstantHandle] EqualityComparison<T> @equals)
+            [NotNull] [InstantHandle] EqualityComparison<T> @equals)
         {
             Contract.Requires(source != null);
             Contract.Requires(@equals != null);
@@ -4403,7 +4446,7 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         [PublicAPI]
         public static int LastIndexOf<T>(
-            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
             [CanBeNull] IEqualityComparer<T> comparer = null)
         {
@@ -4439,9 +4482,9 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         [PublicAPI]
         public static int LastIndexOf<T>(
-            [NotNull][InstantHandle] this IEnumerable<T> source,
+            [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
-            [NotNull][InstantHandle] EqualityComparison<T> @equals)
+            [NotNull] [InstantHandle] EqualityComparison<T> @equals)
         {
             Contract.Requires(source != null);
             Contract.Requires(@equals != null);

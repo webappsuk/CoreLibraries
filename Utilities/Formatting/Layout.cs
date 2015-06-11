@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -251,11 +251,10 @@ namespace WebApplications.Utilities.Formatting
                 }
                 if (tabSize.IsAssigned)
                     if (tabSize.Value < 1) tabSize = 1;
-                    else if (tabSize.Value > width.Value) tabSize = (byte) width.Value;
+                    else if (tabSize.Value > width.Value) tabSize = (byte)width.Value;
 
                 // Only support tabstop on left/non alignments
                 if (alignment.IsAssigned)
-                {
                     switch (alignment.Value)
                     {
                         case Formatting.Alignment.Centre:
@@ -280,7 +279,6 @@ namespace WebApplications.Utilities.Formatting
                                     .ToArray();
                             break;
                     }
-                }
             }
 
             Width = width;
@@ -473,7 +471,7 @@ namespace WebApplications.Utilities.Formatting
                 return false;
             }
 
-            string[] parts = input.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = input.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             layout = Empty;
             if (parts.Length < 1)
                 return true;
@@ -536,7 +534,7 @@ namespace WebApplications.Utilities.Formatting
                         bool ok = true;
                         tabStops = new Optional<IEnumerable<int>>(
                             s
-                                .Split(new[] {'|'}, StringSplitOptions.RemoveEmptyEntries)
+                                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(
                                     tp =>
                                     {
@@ -616,12 +614,12 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
-        public override bool Equals([CanBeNull]object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((Layout) obj);
+            return Equals((Layout)obj);
         }
 
         /// <summary>
@@ -659,7 +657,7 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder sb = new StringBuilder();
             switch (format.ToLowerInvariant())
             {
-                    // Creates a string for indicating the positions of margins and tab stops
+                // Creates a string for indicating the positions of margins and tab stops
                 case "l":
                     Layout layout = this;
                     bool partial = !layout.IsFull;
@@ -694,7 +692,7 @@ namespace WebApplications.Utilities.Formatting
                                    layout.TabStops.Value.Contains(i)
                                     ? 'L'
                                     : (i % 10 == 0
-                                        ? (char) ('0' + (i % 100 == 0
+                                        ? (char)('0' + (i % 100 == 0
                                             ? (i / 100)
                                             : (i / 10)) % 10)
                                         : (partial
@@ -703,7 +701,7 @@ namespace WebApplications.Utilities.Formatting
                     }
                     return new string(cArr);
 
-                    // Creates a compact string that can be easily parsed back into a layout
+                // Creates a compact string that can be easily parsed back into a layout
                 case "f":
                     if (Width.IsAssigned)
                         sb.Append('w').Append(Width.Value).Append(';');
@@ -740,7 +738,7 @@ namespace WebApplications.Utilities.Formatting
                         sb.Remove(sb.Length - 1, 1);
                     break;
 
-                    // Creates a nice, human readable string
+                // Creates a nice, human readable string
                 default:
                     if (Width.IsAssigned)
                         sb.Append("Width = ").Append(Width.Value).Append(", ");

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -40,7 +39,8 @@ namespace WebApplications.Utilities
     /// <remarks>
     /// This is used for setting optional properties.
     /// </remarks>
-    public struct Optional<T> : IOptional<T>,
+    public struct Optional<T> :
+        IOptional<T>,
         IEquatable<Optional<T>>,
         IEquatable<T>,
         IComparable<Optional<T>>,
@@ -207,8 +207,8 @@ namespace WebApplications.Utilities
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return (obj is Optional<T> && Equals((Optional<T>) obj)) ||
-                   (obj is T && Equals((T) obj));
+            return (obj is Optional<T> && Equals((Optional<T>)obj)) ||
+                   (obj is T && Equals((T)obj));
         }
 
         /// <summary>

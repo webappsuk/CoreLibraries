@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ namespace WebApplications.Utilities.Reflect
         /// The extended type.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly ExtendedType ExtendedType;
 
         /// <summary>
@@ -70,6 +71,8 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <value>The field type.</value>
         /// <remarks></remarks>
+        [PublicAPI]
+        [NotNull]
         public Type ReturnType
         {
             get { return Info.FieldType; }
@@ -96,7 +99,8 @@ namespace WebApplications.Utilities.Reflect
         {
             return fieldInfo == null
                 ? null
-                : ((ExtendedType) fieldInfo.DeclaringType).GetField(fieldInfo);
+                // ReSharper disable once PossibleNullReferenceException
+                : ((ExtendedType)fieldInfo.DeclaringType).GetField(fieldInfo);
         }
 
         /// <summary>
@@ -113,7 +117,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type fieldType = Info.FieldType;
-            Type returnType = typeof (TValue);
+            Type returnType = typeof(TValue);
 
             // Check the return type can be assigned from the member type
             if ((returnType != fieldType) &&
@@ -152,8 +156,8 @@ namespace WebApplications.Utilities.Reflect
 
             Type fieldType = Info.FieldType;
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof (T);
-            Type returnType = typeof (TValue);
+            Type parameterType = typeof(T);
+            Type returnType = typeof(TValue);
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(parameterType, "target");
@@ -199,7 +203,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type fieldType = Info.FieldType;
-            Type valueType = typeof (TValue);
+            Type valueType = typeof(TValue);
 
             // Get a field access expression
             Expression expression = Expression.Field(null, Info);
@@ -245,9 +249,9 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof (T);
+            Type parameterType = typeof(T);
             Type fieldType = Info.FieldType;
-            Type valueType = typeof (TValue);
+            Type valueType = typeof(TValue);
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(

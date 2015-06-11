@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,6 @@ namespace WebApplications.Utilities.Globalization
         {
             // Neutral cultures do not have a region
             if (!cultureInfo.IsNeutralCulture)
-            {
                 try
                 {
                     RegionInfo = new RegionInfo(cultureInfo.Name);
@@ -79,7 +78,6 @@ namespace WebApplications.Utilities.Globalization
                 {
                     // There is no region for the culture
                 }
-            }
         }
     }
 }

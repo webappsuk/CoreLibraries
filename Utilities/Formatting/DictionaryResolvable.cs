@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -163,7 +163,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
         bool ICollection<KeyValuePair<string, TValue>>.Contains(KeyValuePair<string, TValue> item)
         {
-            return ((ICollection<KeyValuePair<string, TValue>>) _values).Contains(item);
+            return ((ICollection<KeyValuePair<string, TValue>>)_values).Contains(item);
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         void ICollection<KeyValuePair<string, TValue>>.CopyTo(KeyValuePair<string, TValue>[] array, int arrayIndex)
         {
-            ((ICollection<KeyValuePair<string, TValue>>) _values).CopyTo(array, arrayIndex);
+            ((ICollection<KeyValuePair<string, TValue>>)_values).CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         bool ICollection<KeyValuePair<string, TValue>>.Remove(KeyValuePair<string, TValue> item)
         {
-            return ((ICollection<KeyValuePair<string, TValue>>) _values).Remove(item);
+            return ((ICollection<KeyValuePair<string, TValue>>)_values).Remove(item);
         }
 
         /// <summary>

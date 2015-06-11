@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@ namespace WebApplications.Utilities.Reflect
         /// The extended type.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly ExtendedType ExtendedType;
 
         /// <summary>
@@ -86,6 +87,7 @@ namespace WebApplications.Utilities.Reflect
         ///   Gets the add method.
         /// </summary>
         [CanBeNull]
+        [PublicAPI]
         public MethodInfo AddMethod
         {
             get { return _addMethod.Value; }
@@ -95,6 +97,7 @@ namespace WebApplications.Utilities.Reflect
         ///   Gets the remove method.
         /// </summary>
         [CanBeNull]
+        [PublicAPI]
         public MethodInfo RemoveMethod
         {
             get { return _removeMethod.Value; }
@@ -121,7 +124,8 @@ namespace WebApplications.Utilities.Reflect
         {
             return eventInfo == null
                 ? null
-                : ((ExtendedType) eventInfo.DeclaringType).GetEvent(eventInfo);
+                // ReSharper disable once PossibleNullReferenceException
+                : ((ExtendedType)eventInfo.DeclaringType).GetEvent(eventInfo);
         }
     }
 }

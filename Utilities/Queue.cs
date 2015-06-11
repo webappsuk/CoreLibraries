@@ -9,8 +9,8 @@
 
 
 
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 2 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -69,7 +69,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2>> collection) : base(collection)
         {
         }
 
@@ -171,7 +171,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 3 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -194,7 +194,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3>> collection) : base(collection)
         {
         }
 
@@ -312,7 +312,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 4 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -336,7 +336,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4>> collection) : base(collection)
         {
         }
 
@@ -470,7 +470,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 5 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -495,7 +495,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5>> collection) : base(collection)
         {
         }
 
@@ -645,7 +645,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 6 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -671,7 +671,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6>> collection) : base(collection)
         {
         }
 
@@ -837,7 +837,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 7 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -864,7 +864,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7>> collection) : base(collection)
         {
         }
 
@@ -1046,7 +1046,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 8 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -1074,7 +1074,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>> collection) : base(collection)
         {
         }
 
@@ -1134,7 +1134,9 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1168,7 +1170,9 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1215,7 +1219,9 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -1263,7 +1269,9 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -1272,7 +1280,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 9 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -1301,7 +1309,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>> collection) : base(collection)
         {
         }
 
@@ -1365,8 +1373,10 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1402,8 +1412,10 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1453,8 +1465,10 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -1505,8 +1519,10 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -1515,7 +1531,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 10 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -1545,7 +1561,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>> collection) : base(collection)
         {
         }
 
@@ -1613,9 +1629,11 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1653,9 +1671,11 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1708,9 +1728,11 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -1764,9 +1786,11 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -1775,7 +1799,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 11 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -1806,7 +1830,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>> collection) : base(collection)
         {
         }
 
@@ -1878,10 +1902,12 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1921,10 +1947,12 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -1980,10 +2008,12 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -2040,10 +2070,12 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -2052,7 +2084,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 12 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -2084,7 +2116,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>> collection) : base(collection)
         {
         }
 
@@ -2160,11 +2192,13 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -2206,11 +2240,13 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -2269,11 +2305,13 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -2333,11 +2371,13 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -2346,7 +2386,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 13 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -2379,7 +2419,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>> collection) : base(collection)
         {
         }
 
@@ -2459,12 +2499,14 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -2508,12 +2550,14 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -2575,12 +2619,14 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -2643,12 +2689,14 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -2657,7 +2705,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 14 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -2691,7 +2739,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>> collection) : base(collection)
         {
         }
 
@@ -2775,6 +2823,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -2782,6 +2831,7 @@ namespace WebApplications.Utilities
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -2827,6 +2877,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -2834,6 +2885,7 @@ namespace WebApplications.Utilities
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -2898,6 +2950,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -2905,6 +2958,7 @@ namespace WebApplications.Utilities
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -2970,6 +3024,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -2977,6 +3032,7 @@ namespace WebApplications.Utilities
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -2985,7 +3041,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 15 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -3020,7 +3076,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>> collection) : base(collection)
         {
         }
 
@@ -3108,6 +3164,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3116,6 +3173,7 @@ namespace WebApplications.Utilities
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -3163,6 +3221,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3171,6 +3230,7 @@ namespace WebApplications.Utilities
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -3238,6 +3298,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3246,6 +3307,7 @@ namespace WebApplications.Utilities
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -3314,6 +3376,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3322,6 +3385,7 @@ namespace WebApplications.Utilities
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -3330,7 +3394,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 16 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -3366,7 +3430,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>> collection) : base(collection)
         {
         }
 
@@ -3458,6 +3522,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3467,6 +3532,7 @@ namespace WebApplications.Utilities
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -3516,6 +3582,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3525,6 +3592,7 @@ namespace WebApplications.Utilities
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -3595,6 +3663,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3604,6 +3673,7 @@ namespace WebApplications.Utilities
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -3675,6 +3745,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3684,6 +3755,7 @@ namespace WebApplications.Utilities
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -3692,7 +3764,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 17 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -3729,7 +3801,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>> collection) : base(collection)
         {
         }
 
@@ -3825,6 +3897,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3835,6 +3908,7 @@ namespace WebApplications.Utilities
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -3886,6 +3960,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3896,6 +3971,7 @@ namespace WebApplications.Utilities
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -3969,6 +4045,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -3979,6 +4056,7 @@ namespace WebApplications.Utilities
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -4053,6 +4131,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4063,6 +4142,7 @@ namespace WebApplications.Utilities
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -4071,7 +4151,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 18 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -4109,7 +4189,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>> collection) : base(collection)
         {
         }
 
@@ -4209,6 +4289,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4220,6 +4301,7 @@ namespace WebApplications.Utilities
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -4273,6 +4355,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4284,6 +4367,7 @@ namespace WebApplications.Utilities
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -4360,6 +4444,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4371,6 +4456,7 @@ namespace WebApplications.Utilities
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -4448,6 +4534,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4459,6 +4546,7 @@ namespace WebApplications.Utilities
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -4467,7 +4555,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 19 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -4506,7 +4594,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>> collection) : base(collection)
         {
         }
 
@@ -4610,6 +4698,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4622,6 +4711,7 @@ namespace WebApplications.Utilities
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -4677,6 +4767,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4689,6 +4780,7 @@ namespace WebApplications.Utilities
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -4768,6 +4860,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4780,6 +4873,7 @@ namespace WebApplications.Utilities
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -4860,6 +4954,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -4872,6 +4967,7 @@ namespace WebApplications.Utilities
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -4880,7 +4976,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 20 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -4920,7 +5016,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>> collection) : base(collection)
         {
         }
 
@@ -5028,6 +5124,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5041,6 +5138,7 @@ namespace WebApplications.Utilities
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -5098,6 +5196,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5111,6 +5210,7 @@ namespace WebApplications.Utilities
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -5193,6 +5293,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5206,6 +5307,7 @@ namespace WebApplications.Utilities
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -5289,6 +5391,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5302,6 +5405,7 @@ namespace WebApplications.Utilities
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -5310,7 +5414,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 21 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -5351,7 +5455,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>> collection) : base(collection)
         {
         }
 
@@ -5463,6 +5567,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5477,6 +5582,7 @@ namespace WebApplications.Utilities
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -5536,6 +5642,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5550,6 +5657,7 @@ namespace WebApplications.Utilities
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -5635,6 +5743,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5649,6 +5758,7 @@ namespace WebApplications.Utilities
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -5735,6 +5845,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5749,6 +5860,7 @@ namespace WebApplications.Utilities
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -5757,7 +5869,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 22 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -5799,7 +5911,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>> collection) : base(collection)
         {
         }
 
@@ -5915,6 +6027,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -5930,6 +6043,7 @@ namespace WebApplications.Utilities
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -5991,6 +6105,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6006,6 +6121,7 @@ namespace WebApplications.Utilities
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -6094,6 +6210,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6109,6 +6226,7 @@ namespace WebApplications.Utilities
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -6198,6 +6316,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6213,6 +6332,7 @@ namespace WebApplications.Utilities
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -6221,7 +6341,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 23 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -6264,7 +6384,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>> collection) : base(collection)
         {
         }
 
@@ -6384,6 +6504,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6400,6 +6521,7 @@ namespace WebApplications.Utilities
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -6463,6 +6585,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6479,6 +6602,7 @@ namespace WebApplications.Utilities
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -6570,6 +6694,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6586,6 +6711,7 @@ namespace WebApplications.Utilities
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -6678,6 +6804,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6694,6 +6821,7 @@ namespace WebApplications.Utilities
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -6702,7 +6830,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 24 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -6746,7 +6874,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>> collection) : base(collection)
         {
         }
 
@@ -6870,6 +6998,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6887,6 +7016,7 @@ namespace WebApplications.Utilities
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -6952,6 +7082,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -6969,6 +7100,7 @@ namespace WebApplications.Utilities
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -7063,6 +7195,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -7080,6 +7213,7 @@ namespace WebApplications.Utilities
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -7175,6 +7309,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -7192,6 +7327,7 @@ namespace WebApplications.Utilities
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -7200,7 +7336,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 25 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -7245,7 +7381,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>> collection) : base(collection)
         {
         }
 
@@ -7373,6 +7509,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -7391,6 +7528,7 @@ namespace WebApplications.Utilities
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -7458,6 +7596,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -7476,6 +7615,7 @@ namespace WebApplications.Utilities
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -7573,6 +7713,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -7591,6 +7732,7 @@ namespace WebApplications.Utilities
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -7689,6 +7831,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -7707,6 +7850,7 @@ namespace WebApplications.Utilities
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -7715,7 +7859,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 26 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -7761,7 +7905,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>> collection) : base(collection)
         {
         }
 
@@ -7893,6 +8037,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -7912,6 +8057,7 @@ namespace WebApplications.Utilities
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -7981,6 +8127,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -8000,6 +8147,7 @@ namespace WebApplications.Utilities
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -8100,6 +8248,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -8119,6 +8268,7 @@ namespace WebApplications.Utilities
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -8220,6 +8370,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -8239,6 +8390,7 @@ namespace WebApplications.Utilities
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -8247,7 +8399,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 27 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -8294,7 +8446,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>> collection) : base(collection)
         {
         }
 
@@ -8430,6 +8582,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -8450,6 +8603,7 @@ namespace WebApplications.Utilities
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -8521,6 +8675,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -8541,6 +8696,7 @@ namespace WebApplications.Utilities
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -8644,6 +8800,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -8664,6 +8821,7 @@ namespace WebApplications.Utilities
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -8768,6 +8926,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -8788,6 +8947,7 @@ namespace WebApplications.Utilities
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -8796,7 +8956,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 28 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -8844,7 +9004,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>> collection) : base(collection)
         {
         }
 
@@ -8984,6 +9144,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9005,6 +9166,7 @@ namespace WebApplications.Utilities
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -9078,6 +9240,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9099,6 +9262,7 @@ namespace WebApplications.Utilities
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -9205,6 +9369,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9226,6 +9391,7 @@ namespace WebApplications.Utilities
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -9333,6 +9499,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9354,6 +9521,7 @@ namespace WebApplications.Utilities
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -9362,7 +9530,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 29 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -9411,7 +9579,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>> collection) : base(collection)
         {
         }
 
@@ -9555,6 +9723,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9577,6 +9746,7 @@ namespace WebApplications.Utilities
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -9652,6 +9822,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9674,6 +9845,7 @@ namespace WebApplications.Utilities
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -9783,6 +9955,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9805,6 +9978,7 @@ namespace WebApplications.Utilities
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -9915,6 +10089,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -9937,6 +10112,7 @@ namespace WebApplications.Utilities
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -9945,7 +10121,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 30 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -9995,7 +10171,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>> collection) : base(collection)
         {
         }
 
@@ -10143,6 +10319,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -10166,6 +10343,7 @@ namespace WebApplications.Utilities
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -10243,6 +10421,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -10266,6 +10445,7 @@ namespace WebApplications.Utilities
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -10378,6 +10558,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -10401,6 +10582,7 @@ namespace WebApplications.Utilities
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -10514,6 +10696,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -10537,6 +10720,7 @@ namespace WebApplications.Utilities
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -10545,7 +10729,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 31 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -10596,7 +10780,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>> collection) : base(collection)
         {
         }
 
@@ -10748,6 +10932,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -10772,6 +10957,7 @@ namespace WebApplications.Utilities
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -10851,6 +11037,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -10875,6 +11062,7 @@ namespace WebApplications.Utilities
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -10990,6 +11178,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -11014,6 +11203,7 @@ namespace WebApplications.Utilities
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -11130,6 +11320,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -11154,6 +11345,7 @@ namespace WebApplications.Utilities
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -11162,7 +11354,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 32 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -11214,7 +11406,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>> collection) : base(collection)
         {
         }
 
@@ -11370,6 +11562,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -11395,6 +11588,7 @@ namespace WebApplications.Utilities
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -11476,6 +11670,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -11501,6 +11696,7 @@ namespace WebApplications.Utilities
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -11619,6 +11815,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -11644,6 +11841,7 @@ namespace WebApplications.Utilities
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -11763,6 +11961,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -11788,6 +11987,7 @@ namespace WebApplications.Utilities
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -11796,7 +11996,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 33 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32, T33&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -11849,7 +12049,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>> collection) : base(collection)
         {
         }
 
@@ -12009,6 +12209,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -12035,6 +12236,7 @@ namespace WebApplications.Utilities
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -12118,6 +12320,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -12144,6 +12347,7 @@ namespace WebApplications.Utilities
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -12265,6 +12469,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -12291,6 +12496,7 @@ namespace WebApplications.Utilities
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -12413,6 +12619,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -12439,6 +12646,7 @@ namespace WebApplications.Utilities
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -12447,7 +12655,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 34 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32, T33, T34&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -12501,7 +12709,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>> collection) : base(collection)
         {
         }
 
@@ -12665,6 +12873,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -12692,6 +12901,7 @@ namespace WebApplications.Utilities
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -12777,6 +12987,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -12804,6 +13015,7 @@ namespace WebApplications.Utilities
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -12928,6 +13140,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -12955,6 +13168,7 @@ namespace WebApplications.Utilities
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -13080,6 +13294,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -13107,6 +13322,7 @@ namespace WebApplications.Utilities
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }
@@ -13115,7 +13331,7 @@ namespace WebApplications.Utilities
 
     #region Queue with 35 items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
+    /// A queue of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32, T33, T34, T35&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -13170,7 +13386,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Queue(IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>> collection) : base(collection)
+        public Queue([NotNull] IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>> collection) : base(collection)
         {
         }
 
@@ -13338,6 +13554,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -13366,6 +13583,7 @@ namespace WebApplications.Utilities
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
             item35 = tuple.Rest.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -13453,6 +13671,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -13481,6 +13700,7 @@ namespace WebApplications.Utilities
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
             item35 = tuple.Rest.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
         }
         
         /// <summary>
@@ -13608,6 +13828,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -13636,6 +13857,7 @@ namespace WebApplications.Utilities
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
             item35 = tuple.Rest.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
         
@@ -13764,6 +13986,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
             item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
@@ -13792,6 +14015,7 @@ namespace WebApplications.Utilities
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
             item35 = tuple.Rest.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
     }

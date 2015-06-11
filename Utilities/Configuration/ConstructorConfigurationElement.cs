@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -47,12 +48,14 @@ namespace WebApplications.Utilities.Configuration
         /// <value>The type of the object to construct.</value>
         /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         [ConfigurationProperty("type", IsRequired = true)]
-        [TypeConverter(typeof (TypeNameConverter))]
+        [TypeConverter(typeof(TypeNameConverter))]
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual Type Type
         {
-            get { return (Type) this["type"]; }
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return (Type)this["type"]; }
             set { this["type"] = value; }
         }
 
@@ -65,15 +68,17 @@ namespace WebApplications.Utilities.Configuration
         /// </value>
         /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         [ConfigurationProperty("parameters", IsRequired = false, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof (ParameterCollection),
+        [ConfigurationCollection(typeof(ParameterCollection),
             AddItemName = "add",
             ClearItemsName = "clear",
             RemoveItemName = "remove")]
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual ParameterCollection Parameters
         {
-            get { return (ParameterCollection) this["parameters"]; }
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return (ParameterCollection)this["parameters"]; }
             set { this["parameters"] = value; }
         }
 
@@ -86,10 +91,11 @@ namespace WebApplications.Utilities.Configuration
         ///   Instead you should use <see cref="GetConstructor{T}"/> where possible and store the resultant
         ///   <see cref="Func{TResult}"/>, which can then be called repeatedly to create new instances.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public T GetInstance<T>()
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return GetConstructor<T>()();
         }
 
@@ -111,21 +117,25 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>-or-</para>
         ///   <para>The configuration system cannot assign the created type to the return type.</para>
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public Func<T> GetConstructor<T>()
         {
             Type instanceType = Type;
 
             // Build dictionary of parameters from property.
-            Dictionary<string, PInfo> parameters = (from ConfigurationProperty property in Properties
-                select
-                    new PInfo(property, this[property])).ToDictionary(
-                        info => info.Name);
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            Dictionary<string, PInfo> parameters = Properties
+                .Cast<ConfigurationProperty>()
+                .Select(property => new PInfo(property, this[property]))
+                .ToDictionary(info => info.Name);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
 
             // Overwrite with elements in parameters collection.
             foreach (ParameterElement element in Parameters)
             {
+                Debug.Assert(element != null);
+
                 PInfo info = new PInfo(element);
                 PInfo i;
                 if (!parameters.TryGetValue(info.Name, out i))
@@ -136,10 +146,11 @@ namespace WebApplications.Utilities.Configuration
 
             // Count required and optional parameters.
             int required = 0;
-            int optional = 0;
             foreach (PInfo info in parameters.Values)
+            {
+                Debug.Assert(info != null);
                 if (info.IsRequired) required++;
-                else optional++;
+            }
 
             // Find the best matching constructor
             int requiredScore = -1;
@@ -153,6 +164,8 @@ namespace WebApplications.Utilities.Configuration
                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
                         BindingFlags.CreateInstance))
             {
+                Debug.Assert(c != null);
+
                 // Get parameters;
                 ParameterInfo[] pis = c.GetParameters();
 
@@ -164,6 +177,8 @@ namespace WebApplications.Utilities.Configuration
                 int os = 0;
                 foreach (ParameterInfo pi in pis)
                 {
+                    Debug.Assert(pi != null);
+
                     // We can ignore retvals.
                     if (pi.IsRetval)
                         continue;
@@ -194,6 +209,7 @@ namespace WebApplications.Utilities.Configuration
                         }
                         continue;
                     }
+                    Debug.Assert(info != null);
 
                     if (info.IsRequired)
                     {
@@ -237,22 +253,28 @@ namespace WebApplications.Utilities.Configuration
             if (isAmbiguous)
                 throw new InvalidOperationException(
                     string.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ConstructorConfigurationElement_GetConstructor_ConstructorIsAmbiguous,
                         Type));
 
             if (constructor == null)
                 throw new InvalidOperationException(
                     string.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ConstructorConfigurationElement_GetConstructor_CannotFindConstructor,
                         Type));
 
             List<Expression> arguments = new List<Expression>();
             foreach (ParameterInfo p in parameterInfos)
             {
+                Debug.Assert(p != null);
+
                 object value = null;
                 PInfo info;
                 bool useDefault = true;
+                // ReSharper disable once AssignNullToNotNullAttribute
                 if (parameters.TryGetValue(p.Name, out info) &&
+                    // ReSharper disable once PossibleNullReferenceException
                     ((info.Type == null) ||
                      (p.ParameterType.IsAssignableFrom(info.Type))))
                 {
@@ -271,12 +293,13 @@ namespace WebApplications.Utilities.Configuration
             Expression create = Expression.New(constructor, arguments);
 
             // Check to see if we are being asked to cast.
-            Type returnType = typeof (T);
+            Type returnType = typeof(T);
             if (returnType != instanceType)
             {
                 if (!returnType.IsAssignableFrom(instanceType))
                     throw new InvalidOperationException(
                         string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.ConstructorConfigurationElement_GetConstructor_CreatedTypeNotAssignable,
                             instanceType,
                             returnType));
@@ -284,7 +307,7 @@ namespace WebApplications.Utilities.Configuration
             }
 
             // Compile the lambda and return
-            return (Func<T>) Expression.Lambda(create).Compile();
+            return (Func<T>)Expression.Lambda(create).Compile();
         }
 
         #region Nested type: PInfo
@@ -296,12 +319,13 @@ namespace WebApplications.Utilities.Configuration
             /// <summary>
             ///   A <see cref="bool"/> value which indicates whether the parameter is required in the constructor.
             /// </summary>
-            public bool IsRequired;
+            public readonly bool IsRequired;
 
             /// <summary>
             ///   The name of the parameter.
             /// </summary>
-            public string Name;
+            [NotNull]
+            public readonly string Name;
 
             /// <summary>
             ///   Gets or sets the type converter.
@@ -337,7 +361,7 @@ namespace WebApplications.Utilities.Configuration
                     Type = element.Type;
                     return;
                 }
-                _converter = (TypeConverter) Activator.CreateInstance(convertorType, true);
+                _converter = (TypeConverter)Activator.CreateInstance(convertorType, true);
                 if (element.Type != null)
                     Type = element.Type;
             }
@@ -390,14 +414,16 @@ namespace WebApplications.Utilities.Configuration
                         if (_converter == null)
                             throw new InvalidOperationException(
                                 string.Format(
+                                    // ReSharper disable once AssignNullToNotNullAttribute
                                     Resources.PInfo_TypeProperty_CannotCreateDefaultTypeConverter,
                                     Name,
                                     _type));
                     }
 
-                    if (!_converter.CanConvertFrom(typeof (string)))
+                    if (!_converter.CanConvertFrom(typeof(string)))
                         throw new InvalidOperationException(
                             string.Format(
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PInfo_TypeProperty_ConverterCannotConvertFromString,
                                 _converter.GetType(),
                                 Name));
@@ -415,6 +441,7 @@ namespace WebApplications.Utilities.Configuration
                         {
                             throw new InvalidOperationException(
                                 string.Format(
+                                    // ReSharper disable once AssignNullToNotNullAttribute
                                     Resources.PInfo_TypeProperty_CannotConvertValueStrToDestinationType,
                                     _valueStr,
                                     Name,
@@ -428,6 +455,7 @@ namespace WebApplications.Utilities.Configuration
                             if (!_type.IsAssignableFrom(valueType))
                                 throw new InvalidOperationException(
                                     string.Format(
+                                        // ReSharper disable once AssignNullToNotNullAttribute
                                         Resources.PInfo_TypeProperty_TypeNotAssignableFromConvertedType,
                                         _converter.GetType(),
                                         valueType,
@@ -437,6 +465,7 @@ namespace WebApplications.Utilities.Configuration
                         else if (!_type.IsClass)
                             throw new InvalidOperationException(
                                 string.Format(
+                                    // ReSharper disable once AssignNullToNotNullAttribute
                                     Resources.PInfo_TypeProperty_ConveterReturnedNullForNonNullableType,
                                     _converter.GetType(),
                                     Name,
@@ -463,11 +492,12 @@ namespace WebApplications.Utilities.Configuration
                     if (!ValueSet)
                         throw new InvalidOperationException(
                             string.Format(
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PInfo_ValueProperty_NoValueSet,
                                 Name));
                     return _value;
                 }
-                set
+                private set
                 {
                     _value = value;
                     _valueStr = value == null ? null : _value.ToString();

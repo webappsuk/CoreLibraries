@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -35,6 +36,7 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TElement">The element type.</typeparam>
+    [PublicAPI]
     public interface IOrderedLookup<TKey, TElement> : ILookup<TKey, TElement>
     {
         /// <summary>
@@ -44,6 +46,8 @@ namespace WebApplications.Utilities
         /// The <see cref="T:System.Collections.Generic.IEnumerable`1"/> sequence of values indexed by the specified key.
         /// </returns>
         /// <param name="key">The key of the desired sequence of values.</param>
+        [PublicAPI]
+        [NotNull]
         IEnumerable<TElement> this[int key] { get; }
     }
 }

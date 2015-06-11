@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading.Tasks;
@@ -42,7 +43,8 @@ namespace WebApplications.Utilities.Configuration
         private static readonly FileSystemWatcher _configWatcher;
 
         [NotNull]
-        private static readonly AsyncDebouncedAction _onChangedAction = new AsyncDebouncedAction(ConfigFileChangedHandler);
+        private static readonly AsyncDebouncedAction _onChangedAction =
+            new AsyncDebouncedAction(ConfigFileChangedHandler);
 
         /// <summary>
         /// Occurs when the configuration file changes on disk.
@@ -59,6 +61,9 @@ namespace WebApplications.Utilities.Configuration
 
             string dir = Path.GetDirectoryName(configPath);
             string file = Path.GetFileName(configPath);
+
+            Debug.Assert(dir != null);
+            Debug.Assert(file != null);
 
             _configWatcher = new FileSystemWatcher(dir, file);
             _configWatcher.Changed += OnConfigFileChanged;

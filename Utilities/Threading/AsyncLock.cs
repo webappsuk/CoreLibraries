@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,8 @@ namespace WebApplications.Utilities.Threading
         public AsyncLock()
         {
             _semaphore = new AsyncSemaphore();
-            _releaser = Task.FromResult((IDisposable) new Releaser(this));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _releaser = Task.FromResult((IDisposable)new Releaser(this));
         }
 
         /// <summary>
@@ -65,10 +66,11 @@ namespace WebApplications.Utilities.Threading
         public Task<IDisposable> LockAsync(CancellationToken token = default(CancellationToken))
         {
             Task wait = _semaphore.WaitAsync(token);
+            // ReSharper disable once AssignNullToNotNullAttribute
             return wait.IsCompleted
                 ? _releaser
                 : wait.ContinueWith(
-                    (_, state) => (IDisposable) new Releaser((AsyncLock) state),
+                    (_, state) => (IDisposable)new Releaser((AsyncLock)state),
                     this,
                     token,
                     TaskContinuationOptions.ExecuteSynchronously,

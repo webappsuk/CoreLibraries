@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,9 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -42,7 +44,7 @@ namespace WebApplications.Utilities
         private KeyValuePair<TKey, List<TElement>> _keyValuePair;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Grouping" /> class.
+        /// Initializes a new instance of the <see cref="Grouping{TKey,TElement}" /> class.
         /// </summary>
         /// <param name="keyValuePair">The key value pair.</param>
         public Grouping(KeyValuePair<TKey, List<TElement>> keyValuePair)
@@ -51,9 +53,11 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Grouping" /> class.
+        /// Initializes a new instance of the <see cref="Grouping{TKey,TElement}" /> class.
         /// </summary>
-        /// <param name="keyValuePair">The key value pair.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The values.</param>
+        [PublicAPI]
         public Grouping(TKey key, List<TElement> value)
         {
             _keyValuePair = new KeyValuePair<TKey, List<TElement>>(key, value);
@@ -76,6 +80,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public IEnumerator<TElement> GetEnumerator()
         {
+            Debug.Assert(_keyValuePair.Value != null);
             return _keyValuePair.Value.GetEnumerator();
         }
 

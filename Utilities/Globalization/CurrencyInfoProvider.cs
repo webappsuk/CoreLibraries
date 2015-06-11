@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -38,6 +39,7 @@ using WebApplications.Utilities.IO;
 #if !BUILD_TASKS
 using System.Net;
 using WebApplications.Utilities.Configuration;
+
 #endif
 
 namespace WebApplications.Utilities.Globalization
@@ -220,6 +222,7 @@ namespace WebApplications.Utilities.Globalization
         /// Sets the current provider.
         /// </summary>
         /// <param name="path">The path.</param>
+        [PublicAPI]
         public static void SetCurrentProvider(string path = null)
         {
             _current = LoadCurrencies(path);
@@ -235,6 +238,7 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="System.IO.FileLoadException">An exception was thrown while loading the currency information from the ISO 4217 file.</exception>
         /// <exception cref="System.IO.InvalidDataException">The data in the ISO 4217 file was invalid.</exception>
         [NotNull]
+        [PublicAPI]
         public static ICurrencyInfoProvider LoadCurrencies(string path = null)
         {
             path = path ?? UtilityConfiguration.Active.ISO4217;
@@ -275,7 +279,10 @@ namespace WebApplications.Utilities.Globalization
                     WebRequest request = WebRequest.Create(uri);
                     using (WebResponse response = request.GetResponse())
                     using (Stream stream = response.GetResponseStream())
+                    {
+                        Debug.Assert(stream != null);
                         provider = Load(stream);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -283,7 +290,8 @@ namespace WebApplications.Utilities.Globalization
                     throw new FileLoadException(
                         string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_LoadError, path),
                         e);
-                }}
+                }
+            }
 
             if (provider == null)
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -347,6 +355,7 @@ namespace WebApplications.Utilities.Globalization
         public CurrencyInfoProvider(DateTime published, [NotNull] [ItemNotNull] IEnumerable<CurrencyInfo> currencies)
         {
             _published = published;
+            // ReSharper disable once PossibleNullReferenceException
             _currencyInfos = currencies.Distinct().ToDictionary(c => c.Code, StringComparer.InvariantCultureIgnoreCase);
         }
 
@@ -373,6 +382,7 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="leaveOpen">if set to <see langword="true" /> the <paramref name="stream"/> will be left open.</param>
         /// <returns></returns>
         [CanBeNull]
+        [PublicAPI]
         public static CurrencyInfoProvider Load([NotNull] Stream stream, bool leaveOpen = false)
         {
             PeekableStream peekable = stream as PeekableStream ?? new PeekableStream(stream);
@@ -402,6 +412,7 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="reader">The reader.</param>
         /// <returns></returns>
         [CanBeNull]
+        [PublicAPI]
         public static CurrencyInfoProvider LoadFromXml([NotNull] TextReader reader)
         {
             string xml = reader.ReadToEnd();
@@ -409,6 +420,7 @@ namespace WebApplications.Utilities.Globalization
 
             DateTime published;
 
+            // ReSharper disable once PossibleNullReferenceException
             XAttribute pubAttr = doc.Root.Attribute("Pblshd");
             if (pubAttr == null ||
                 !DateTime.TryParse(

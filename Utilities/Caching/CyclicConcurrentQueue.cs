@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -51,11 +51,12 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         /// The maximum capacity which can be created.
         /// </summary>
-        public const long MaxCapacity = int.MaxValue * (long) 4096;
+        public const long MaxCapacity = int.MaxValue * (long)4096;
 
         /// <summary>
         /// The maximum capacity of the queue.  As items are queued beyond the capacity, items are dequeued automatically.
         /// </summary>
+        [PublicAPI]
         public readonly long Capacity;
 
         /// <summary>
@@ -72,6 +73,7 @@ namespace WebApplications.Utilities.Caching
         /// Underlying array of chunks.
         /// </summary>
         [NotNull]
+        [ItemNotNull]
         private readonly Chunk[] _chunks;
 
         /// <summary>
@@ -146,6 +148,8 @@ namespace WebApplications.Utilities.Caching
             long index = 0;
             foreach (T item in collection)
             {
+                Debug.Assert(_chunks[chunkNum] != null);
+
                 _chunks[chunkNum].Array[index] = item;
                 index = (index + 1) % _chunkSize;
                 if (index == 0)
@@ -169,6 +173,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         /// true if the <see cref="CyclicConcurrentQueue{T}"/> is empty; otherwise, false.
         /// </returns>
+        [PublicAPI]
         public bool IsEmpty
         {
             get { return _head == _tail; }
@@ -220,7 +225,7 @@ namespace WebApplications.Utilities.Caching
                 if (count > int.MaxValue)
                     throw new InvalidOperationException(
                         String.Format("Count '{0}' is too big to be expressed as an interger.", count));
-                return (int) count;
+                return (int)count;
             }
         }
 
@@ -249,6 +254,7 @@ namespace WebApplications.Utilities.Caching
                     // Grab the Chunk's spinlock.
                     Chunk chunk = _chunks[slChunkNum];
                     bool taken = false;
+                    Debug.Assert(chunk != null);
                     chunk.SpinLock.Enter(ref taken);
 
                     // If the tail has moved on, catch up.
@@ -275,7 +281,7 @@ namespace WebApplications.Utilities.Caching
                         if (count < length) length = count;
 
                         Array.Copy(chunk.Array, start, array, indexLong, length);
-                        indexLong += (int) length;
+                        indexLong += (int)length;
                         tail += length;
                     }
 
@@ -308,7 +314,7 @@ namespace WebApplications.Utilities.Caching
         [NotNull]
         public T[] ToArray()
         {
-            return ((IEnumerable<T>) this).ToArray();
+            return ((IEnumerable<T>)this).ToArray();
         }
 
         /// <inheritdoc/>
@@ -317,7 +323,7 @@ namespace WebApplications.Utilities.Caching
             if (array == null)
                 throw new ArgumentNullException("array");
 
-            ((ICollection) this).CopyTo(array, index);
+            ((ICollection)this).CopyTo(array, index);
         }
 
         /// <inheritdoc/>
@@ -340,6 +346,7 @@ namespace WebApplications.Utilities.Caching
                     // Grab the Chunk's spinlock.
                     Chunk chunk = _chunks[slChunkNum];
                     bool taken = false;
+                    Debug.Assert(chunk != null);
                     chunk.SpinLock.Enter(ref taken);
 
                     // If the tail has moved on, catch up.
@@ -399,6 +406,7 @@ namespace WebApplications.Utilities.Caching
                 // Grab the head Chunk's spinlock.
                 Chunk chunk = _chunks[slChunkNum];
                 bool taken = false;
+                Debug.Assert(chunk != null);
                 chunk.SpinLock.Enter(ref taken);
 
                 long head = _head;
@@ -463,6 +471,7 @@ namespace WebApplications.Utilities.Caching
                 // Grab the tail Chunk's spinlock.
                 Chunk chunk = _chunks[slChunkNum];
                 bool taken = false;
+                Debug.Assert(chunk != null);
                 chunk.SpinLock.Enter(ref taken);
 
                 long tail = _tail;
@@ -485,7 +494,7 @@ namespace WebApplications.Utilities.Caching
                         _tail++;
                     }
                     else
-                        // Need to loop to grab new spinlock.
+                    // Need to loop to grab new spinlock.
                         found = -1;
                 }
 
@@ -520,6 +529,7 @@ namespace WebApplications.Utilities.Caching
                 // Grab the tail Chunk's spinlock.
                 Chunk chunk = _chunks[slChunkNum];
                 bool taken = false;
+                Debug.Assert(chunk != null);
                 chunk.SpinLock.Enter(ref taken);
 
                 long tail = _tail;
@@ -540,7 +550,7 @@ namespace WebApplications.Utilities.Caching
                         result = chunk.Array[elementNumberInChunk];
                     }
                     else
-                        // Need to loop to grab new spinlock.
+                    // Need to loop to grab new spinlock.
                         found = -1;
                 }
 

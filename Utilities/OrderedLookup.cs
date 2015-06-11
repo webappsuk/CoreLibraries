@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -37,7 +39,7 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TElement">The element type.</typeparam>
-    public class OrderedLookup<TKey, TElement> : IOrderedLookup<TKey, TElement>
+    public class OrderedLookup<TKey, TElement> : IOrderedLookup<TKey, TElement>, IReadOnlyLookup<TKey, TElement>
     {
         /// <summary>
         /// The underlying keys mapped to the list index.
@@ -71,7 +73,7 @@ namespace WebApplications.Utilities
         public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
         {
             return _values
-                .Select(kvp => (IGrouping<TKey, TElement>) new Grouping<TKey, TElement>(kvp))
+                .Select(kvp => (IGrouping<TKey, TElement>)new Grouping<TKey, TElement>(kvp))
                 .GetEnumerator();
         }
 
@@ -109,6 +111,7 @@ namespace WebApplications.Utilities
         /// Gets the values count.
         /// </summary>
         /// <value>The values count.</value>
+        [PublicAPI]
         public int ValuesCount
         {
             get { return _valuesCount; }
@@ -119,10 +122,11 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>IEnumerable{.</returns>
-        public IEnumerable<TElement> this[TKey key]
+        public IEnumerable<TElement> this[[NotNull] TKey key]
         {
             get
             {
+                if (key == null) throw new ArgumentNullException("key");
                 int index;
                 // ReSharper disable once AssignNullToNotNullAttribute
                 return _keys.TryGetValue(key, out index)
@@ -140,6 +144,7 @@ namespace WebApplications.Utilities
         {
             get
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return key < _values.Count
                     ? _values[key].Value
                     : Enumerable.Empty<TElement>();
@@ -151,12 +156,18 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="element">The element.</param>
-        public void Add(TKey key, TElement element)
+        [PublicAPI]
+        public void Add([NotNull] TKey key, TElement element)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             int index;
             List<TElement> list;
             if (_keys.TryGetValue(key, out index))
+            {
                 list = _values[index].Value;
+                Debug.Assert(list != null);
+            }
             else
             {
                 list = new List<TElement>();
@@ -171,20 +182,11 @@ namespace WebApplications.Utilities
         /// Adds the specified key value pair.
         /// </summary>
         /// <param name="keyValuePair">The key value pair.</param>
+        [PublicAPI]
         public void Add(KeyValuePair<TKey, TElement> keyValuePair)
         {
-            int index;
-            List<TElement> list;
-            if (_keys.TryGetValue(keyValuePair.Key, out index))
-                list = _values[index].Value;
-            else
-            {
-                list = new List<TElement>();
-                _keys.Add(keyValuePair.Key, _values.Count);
-                _values.Add(new KeyValuePair<TKey, List<TElement>>(keyValuePair.Key, list));
-            }
-            _valuesCount++;
-            list.Add(keyValuePair.Value);
+            // ReSharper disable once AssignNullToNotNullAttribute - Let the other overload throw
+            Add(keyValuePair.Key, keyValuePair.Value);
         }
 
         /// <summary>
@@ -192,12 +194,18 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="elements">The elements.</param>
-        public void AddRange(TKey key, [NotNull] IEnumerable<TElement> elements)
+        [PublicAPI]
+        public void AddRange([NotNull] TKey key, [NotNull] IEnumerable<TElement> elements)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             int index;
             List<TElement> list;
             if (_keys.TryGetValue(key, out index))
+            {
                 list = _values[index].Value;
+                Debug.Assert(list != null);
+            }
             else
             {
                 list = new List<TElement>();
@@ -212,10 +220,31 @@ namespace WebApplications.Utilities
         /// Adds the specified values.
         /// </summary>
         /// <param name="elements">The elements.</param>
-        public void AddRange(IEnumerable<KeyValuePair<TKey, TElement>> elements)
+        [PublicAPI]
+        public void AddRange([NotNull] IEnumerable<KeyValuePair<TKey, TElement>> elements)
         {
+            if (elements == null) throw new ArgumentNullException("elements");
+
             foreach (KeyValuePair<TKey, TElement> kvp in elements)
                 Add(kvp);
+        }
+
+        /// <summary>
+        /// Attempts to get the values with the given key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="values">The values.</param>
+        /// <returns><see langword="true" /> if the key was found, <see langword="false" /> otherwise.</returns>
+        public bool TryGetValues(TKey key, out IEnumerable<TElement> values)
+        {
+            int index;
+            if (_keys.TryGetValue(key, out index))
+            {
+                values = _values[index].Value;
+                return true;
+            }
+            values = Enumerable.Empty<TElement>();
+            return false;
         }
     }
 }

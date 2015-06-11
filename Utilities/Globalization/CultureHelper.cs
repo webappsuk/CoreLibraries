@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 #region Using Namespaces
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace WebApplications.Utilities.Globalization
         ///   The invariant culture LCID.
         /// </summary>
         /// <seealso cref="System.Globalization.CultureInfo.InvariantCulture"/>
-        [UsedImplicitly]
+        [PublicAPI]
         public static readonly int InvariantLCID;
 
         /// <summary>
@@ -90,6 +91,8 @@ namespace WebApplications.Utilities.Globalization
 
             foreach (CultureInfo ci in cultures)
             {
+                Debug.Assert(ci != null);
+
                 // Create a RegionInfo from culture id. 
                 // RegionInfo holds the currency ISO code
                 RegionInfo ri = ci.RegionInfo();
@@ -114,6 +117,7 @@ namespace WebApplications.Utilities.Globalization
             foreach (CultureInfo ci in
                 CultureInfo.GetCultures(CultureTypes.NeutralCultures)
                     .Distinct()
+                    // ReSharper disable once PossibleNullReferenceException
                     .Where(ci => !_cultureNames.ContainsKey(ci.Name)))
                 _cultureNames.Add(ci.Name, ci);
         }
@@ -124,7 +128,7 @@ namespace WebApplications.Utilities.Globalization
         /// <remarks>
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public static IEnumerable<string> CultureNames
         {
@@ -137,7 +141,7 @@ namespace WebApplications.Utilities.Globalization
         /// <remarks>
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public static IEnumerable<string> RegionNames
         {
@@ -150,7 +154,7 @@ namespace WebApplications.Utilities.Globalization
         /// <remarks>
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public static IEnumerable<string> CurrencyNames
         {
@@ -162,8 +166,10 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
-        public static CultureInfo GetCultureInfo(string name)
+        [PublicAPI]
+        public static CultureInfo GetCultureInfo([NotNull] string name)
         {
+            if (name == null) throw new ArgumentNullException("name");
             CultureInfo cultureInfo;
             return _cultureNames.TryGetValue(name, out cultureInfo) ? cultureInfo : null;
         }
@@ -173,8 +179,10 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
-        public static RegionInfo GetRegionInfo(string name)
+        [PublicAPI]
+        public static RegionInfo GetRegionInfo([NotNull] string name)
         {
+            if (name == null) throw new ArgumentNullException("name");
             RegionInfo regionInfo;
             return _regionNames.TryGetValue(name, out regionInfo) ? regionInfo : null;
         }
@@ -196,6 +204,7 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
         /// </exception>
         [NotNull]
+        [PublicAPI]
         public static RegionInfo RegionInfo([NotNull] this CultureInfo cultureInfo)
         {
             Contract.Requires(cultureInfo != null, Resources.CultureHelper_CultureInfoCannotBeNull);
@@ -219,10 +228,11 @@ namespace WebApplications.Utilities.Globalization
         /// </exception>
         /// <seealso cref="Globalization.CurrencyInfo"/>
         [CanBeNull]
+        [PublicAPI]
         public static CurrencyInfo CurrencyInfo([NotNull] this RegionInfo regionInfo)
         {
             Contract.Requires(regionInfo != null, Resources.CultureHelper_RegionInfoCannotBeNull);
-            
+
             return CurrencyInfoProvider.Current.Get(regionInfo.ISOCurrencySymbol);
         }
 
@@ -239,6 +249,7 @@ namespace WebApplications.Utilities.Globalization
         /// </remarks>
         /// <seealso cref="Globalization.CurrencyInfo"/>
         [CanBeNull]
+        [PublicAPI]
         public static CurrencyInfo CurrencyInfo([NotNull] this CultureInfo cultureInfo)
         {
             Contract.Requires(cultureInfo != null, Resources.CultureHelper_CultureInfoCannotBeNull);
@@ -258,14 +269,17 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="isoCode"/> cannot be null.
         /// </remarks>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<CultureInfo> CultureInfoFromCurrencyISO([NotNull] string isoCode)
         {
             Contract.Requires(isoCode != null, Resources.CultureHelper_RegionInfoCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<CultureInfo>(0);
-            return _currencyCultureInfo.ContainsKey(isoCode)
-                ? new List<CultureInfo>(_currencyCultureInfo[isoCode].Keys.Distinct())
+            Dictionary<CultureInfo, RegionInfo> dict;
+            return _currencyCultureInfo.TryGetValue(isoCode, out dict)
+                // ReSharper disable once PossibleNullReferenceException
+                ? new List<CultureInfo>(dict.Keys.Distinct())
                 : Enumerable.Empty<CultureInfo>();
         }
 
@@ -281,14 +295,17 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="isoCode"/> cannot be null.
         /// </remarks>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<RegionInfo> RegionInfoFromCurrencyISO([NotNull] string isoCode)
         {
             Contract.Requires(isoCode != null, Resources.CultureHelper_IsoCodeCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<RegionInfo>(0);
-            return _currencyCultureInfo.ContainsKey(isoCode)
-                ? new List<RegionInfo>(_currencyCultureInfo[isoCode].Values.Distinct())
+            Dictionary<CultureInfo, RegionInfo> dict;
+            return _currencyCultureInfo.TryGetValue(isoCode, out dict)
+                // ReSharper disable once PossibleNullReferenceException
+                ? new List<RegionInfo>(dict.Values.Distinct())
                 : Enumerable.Empty<RegionInfo>();
         }
 
@@ -310,6 +327,7 @@ namespace WebApplications.Utilities.Globalization
         /// <seealso cref="CultureInfo"/>
         /// <seealso cref="System.Globalization.RegionInfo"/>
         [NotNull]
+        [PublicAPI]
         public static string FormatCurrency(
             decimal amount,
             [NotNull] string currencyISO,
@@ -365,6 +383,7 @@ namespace WebApplications.Utilities.Globalization
         ///   A formatted <see cref="string"/> in the correct currency format.
         /// </returns>
         [NotNull]
+        [PublicAPI]
         public static string FormatCurrency(decimal amount, [CanBeNull] CultureInfo cultureInfo = null)
         {
             cultureInfo = cultureInfo ?? Thread.CurrentThread.CurrentUICulture;
@@ -386,6 +405,7 @@ namespace WebApplications.Utilities.Globalization
         /// <seealso cref="CultureInfo"/>
         /// <seealso cref="System.Globalization.RegionInfo.DisplayName"/>
         [CanBeNull]
+        [PublicAPI]
         public static RegionInfo FindRegionFromName([NotNull] string name)
         {
             Contract.Requires(name != null, Resources.CultureHelper_NameCannotBeNull);
@@ -403,7 +423,9 @@ namespace WebApplications.Utilities.Globalization
             return culture.TwoLetterISOLanguageName.Equals("en")
                 ? null
                 : _regionNames.Values.FirstOrDefault(
+                    // ReSharper disable PossibleNullReferenceException
                     info => (info.DisplayName.Equals(name)) || (info.NativeName.Equals(name)));
+            // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
@@ -418,6 +440,7 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="name"/> cannot be null.
         /// </remarks>
         [CanBeNull]
+        [PublicAPI]
         public static RegionInfo FindRegion([NotNull] string name)
         {
             Contract.Requires(name != null, Resources.CultureHelper_NameCannotBeNull);
@@ -449,6 +472,7 @@ namespace WebApplications.Utilities.Globalization
         ///   The invariant culture is culture-insensitive, it is useful for when culture-specific presentation isn't required/needed.
         /// </remarks>
         /// <seealso cref="System.Globalization.CultureInfo.InvariantCulture"/>
+        [PublicAPI]
         public static bool IsInvariant(this CultureInfo cultureInfo)
         {
             return cultureInfo != null && cultureInfo.LCID == InvariantLCID;

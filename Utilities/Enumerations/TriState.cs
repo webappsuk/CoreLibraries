@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -171,6 +171,7 @@ namespace WebApplications.Utilities.Enumerations
                 default:
                     Style style;
                     if (!Enum.TryParse(format, true, out style))
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         throw new FormatException(String.Format(Resources.TriState_ToString_FormatException, format));
                     return ToString(style);
             }

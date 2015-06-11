@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime;
 using System.Runtime.Caching;
@@ -57,11 +58,13 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   The cache.
         /// </summary>
+        [NotNull]
         private readonly MemoryCache _cache;
 
         /// <summary>
         ///   The keys cache.
         /// </summary>
+        [NotNull]
         private readonly ConcurrentDictionary<TKey, string> _keys;
 
         #region Constructors
@@ -73,6 +76,7 @@ namespace WebApplications.Utilities.Caching
         public CachingDictionary(string cacheName = null)
         {
             _keys = new ConcurrentDictionary<TKey, string>();
+            // ReSharper disable once AssignNullToNotNullAttribute
             _cache = string.IsNullOrWhiteSpace(cacheName) ? MemoryCache.Default : new MemoryCache(cacheName);
         }
 
@@ -86,6 +90,7 @@ namespace WebApplications.Utilities.Caching
         public CachingDictionary(int concurrencyLevel, int capacity, string cacheName = null)
         {
             _keys = new ConcurrentDictionary<TKey, string>(concurrencyLevel, capacity);
+            // ReSharper disable once AssignNullToNotNullAttribute
             _cache = string.IsNullOrWhiteSpace(cacheName) ? MemoryCache.Default : new MemoryCache(cacheName);
         }
 
@@ -97,7 +102,10 @@ namespace WebApplications.Utilities.Caching
         [UsedImplicitly]
         public CachingDictionary([NotNull] IEqualityComparer<TKey> comparer, string cacheName = null)
         {
+            if (comparer == null) throw new ArgumentNullException("comparer");
+
             _keys = new ConcurrentDictionary<TKey, string>(comparer);
+            // ReSharper disable once AssignNullToNotNullAttribute
             _cache = string.IsNullOrWhiteSpace(cacheName) ? MemoryCache.Default : new MemoryCache(cacheName);
         }
 
@@ -109,9 +117,13 @@ namespace WebApplications.Utilities.Caching
         [UsedImplicitly]
         public CachingDictionary([NotNull] IEnumerable<KeyValuePair<TKey, TValue>> collection, string cacheName = null)
         {
+            if (collection == null) throw new ArgumentNullException("collection");
+
             _keys = new ConcurrentDictionary<TKey, string>();
             foreach (KeyValuePair<TKey, TValue> kvp in collection)
+                // ReSharper disable once AssignNullToNotNullAttribute - Let AddOrUpdate throw
                 AddOrUpdate(kvp.Key, kvp.Value);
+            // ReSharper disable once AssignNullToNotNullAttribute
             _cache = string.IsNullOrWhiteSpace(cacheName) ? MemoryCache.Default : new MemoryCache(cacheName);
         }
 
@@ -127,9 +139,14 @@ namespace WebApplications.Utilities.Caching
             [NotNull] IEqualityComparer<TKey> comparer,
             string cacheName = null)
         {
+            if (collection == null) throw new ArgumentNullException("collection");
+            if (comparer == null) throw new ArgumentNullException("comparer");
+
             _keys = new ConcurrentDictionary<TKey, string>(comparer);
             foreach (KeyValuePair<TKey, TValue> kvp in collection)
+                // ReSharper disable once AssignNullToNotNullAttribute - Let AddOrUpdate throw
                 AddOrUpdate(kvp.Key, kvp.Value);
+            // ReSharper disable once AssignNullToNotNullAttribute
             _cache = string.IsNullOrWhiteSpace(cacheName) ? MemoryCache.Default : new MemoryCache(cacheName);
         }
 
@@ -147,7 +164,10 @@ namespace WebApplications.Utilities.Caching
             [NotNull] IEqualityComparer<TKey> comparer,
             string cacheName = null)
         {
+            if (comparer == null) throw new ArgumentNullException("comparer");
+
             _keys = new ConcurrentDictionary<TKey, string>(concurrencyLevel, capacity, comparer);
+            // ReSharper disable once AssignNullToNotNullAttribute
             _cache = string.IsNullOrWhiteSpace(cacheName) ? MemoryCache.Default : new MemoryCache(cacheName);
         }
         #endregion
@@ -156,13 +176,13 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         void IDictionary.Add(object key, object value)
         {
-            AddOrUpdate((TKey) key, (TValue) value);
+            AddOrUpdate((TKey)key, (TValue)value);
         }
 
         /// <inheritdoc />
         bool IDictionary.Contains(object key)
         {
-            return ContainsKey((TKey) key);
+            return ContainsKey((TKey)key);
         }
 
         /// <inheritdoc />
@@ -175,7 +195,7 @@ namespace WebApplications.Utilities.Caching
         void IDictionary.Remove(object key)
         {
             TValue value;
-            if (!TryRemove((TKey) key, out value))
+            if (!TryRemove((TKey)key, out value))
                 throw new KeyNotFoundException();
         }
 
@@ -201,27 +221,21 @@ namespace WebApplications.Utilities.Caching
         ICollection IDictionary.Keys
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return (ICollection) Keys;
-            }
+            get { return (ICollection)Keys; }
         }
 
         /// <inheritdoc />
         ICollection IDictionary.Values
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return (ICollection) Values;
-            }
+            get { return (ICollection)Values; }
         }
 
         /// <inheritdoc />
         object IDictionary.this[object key]
         {
-            get { return this[(TKey) key]; }
-            set { this[(TKey) key] = (TValue) value; }
+            get { return this[(TKey)key]; }
+            set { this[(TKey)key] = (TValue)value; }
         }
 
         /// <inheritdoc />
@@ -239,14 +253,18 @@ namespace WebApplications.Utilities.Caching
 
         #region IDictionary<TKey,TValue> Members
         /// <inheritdoc />
-        public override bool ContainsKey(TKey key)
+        public override bool ContainsKey([NotNull] TKey key)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             return _keys.ContainsKey(key);
         }
 
         /// <inheritdoc />
         public override bool TryGetValue(TKey key, out TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             string guid;
             if (!_keys.TryGetValue(key, out guid))
             {
@@ -262,7 +280,7 @@ namespace WebApplications.Utilities.Caching
                 value = default(TValue);
                 return false;
             }
-            value = ((Wrapper) result).Value;
+            value = ((Wrapper)result).Value;
             return true;
         }
 
@@ -283,6 +301,8 @@ namespace WebApplications.Utilities.Caching
             // Only yield values that are found.
             foreach (KeyValuePair<TKey, string> kvp in _keys)
             {
+                Debug.Assert(kvp.Value != null);
+
                 object result = _cache.Get(kvp.Value);
                 // If we don't find the key, then add this to the dead keys list.
                 if (result == null)
@@ -291,30 +311,35 @@ namespace WebApplications.Utilities.Caching
                     continue;
                 }
 
-                yield return new KeyValuePair<TKey, TValue>(kvp.Key, ((Wrapper) result).Value);
+                yield return new KeyValuePair<TKey, TValue>(kvp.Key, ((Wrapper)result).Value);
             }
 
             // Clean up any dead keys found during enumeration
             foreach (TKey key in deadKeys)
             {
                 string guid;
+                Debug.Assert(key != null);
                 _keys.TryRemove(key, out guid);
             }
         }
 
         /// <inheritdoc />
-        public TValue this[TKey key]
+        public TValue this[[NotNull] TKey key]
         {
             get
             {
+                if (key == null) throw new ArgumentNullException("key");
+
                 string guid;
                 if (!_keys.TryGetValue(key, out guid))
                     throw new KeyNotFoundException();
 
+                Debug.Assert(guid != null);
+
                 object result = _cache.Get(guid);
                 if (result == null)
                     throw new KeyNotFoundException();
-                return ((Wrapper) result).Value;
+                return ((Wrapper)result).Value;
             }
             set { AddOrUpdate(key, value); }
         }
@@ -329,20 +354,14 @@ namespace WebApplications.Utilities.Caching
         public ICollection<TKey> Keys
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return this.Select(kvp => kvp.Key).ToList();
-            }
+            get { return this.Select(kvp => kvp.Key).ToList(); }
         }
 
         /// <inheritdoc />
         public ICollection<TValue> Values
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return this.Select(kvp => kvp.Value).ToList();
-            }
+            get { return this.Select(kvp => kvp.Value).ToList(); }
         }
 
         /// <inheritdoc />
@@ -352,14 +371,16 @@ namespace WebApplications.Utilities.Caching
         }
 
         /// <inheritdoc />
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        void IDictionary<TKey, TValue>.Add([NotNull] TKey key, TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
             AddOrUpdate(key, value);
         }
 
         /// <inheritdoc />
-        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        bool IDictionary<TKey, TValue>.Remove([NotNull] TKey key)
         {
+            if (key == null) throw new ArgumentNullException("key");
             TValue value;
             return TryRemove(key, out value);
         }
@@ -367,6 +388,7 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> keyValuePair)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute - Let AddOrUpdate throw
             AddOrUpdate(keyValuePair.Key, keyValuePair.Value);
         }
 
@@ -374,14 +396,17 @@ namespace WebApplications.Utilities.Caching
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> keyValuePair)
         {
             TValue value;
-            return TryGetValue(keyValuePair.Key, out value) && Equals(value, keyValuePair.Value);
+            return keyValuePair.Key != null &&
+                   TryGetValue(keyValuePair.Key, out value) &&
+                   Equals(value, keyValuePair.Value);
         }
 
         /// <inheritdoc />
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> keyValuePair)
         {
             TValue value;
-            if (TryRemove(keyValuePair.Key, out value))
+            if (keyValuePair.Key != null &&
+                TryRemove(keyValuePair.Key, out value))
             {
                 if (Equals(value, keyValuePair.Value))
                     return true;
@@ -408,11 +433,13 @@ namespace WebApplications.Utilities.Caching
 
         /// <inheritdoc />
         public override bool TryAdd(
-            TKey key,
+            [NotNull] TKey key,
             TValue value,
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             string guid = Guid.NewGuid().ToString();
             if (!_keys.TryAdd(key, guid))
                 return false;
@@ -433,16 +460,19 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         public override bool TryRemove(TKey key, out TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             string guid;
             if (_keys.TryRemove(key, out guid))
             {
+                Debug.Assert(guid != null);
                 object result = _cache.Remove(guid);
                 if (result == null)
                 {
                     value = default(TValue);
                     return false;
                 }
-                value = ((Wrapper) result).Value;
+                value = ((Wrapper)result).Value;
                 return true;
             }
             value = default(TValue);
@@ -456,8 +486,11 @@ namespace WebApplications.Utilities.Caching
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             // Get or add a key
             string guid = _keys.GetOrAdd(key, k => Guid.NewGuid().ToString());
+            Debug.Assert(guid != null);
 
             if (slidingExpiration > _maxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
@@ -469,9 +502,8 @@ namespace WebApplications.Utilities.Caching
                     AbsoluteExpiration = absoluteExpiration,
                     SlidingExpiration = slidingExpiration,
                     RemovedCallback = a => _keys.TryRemove(key, out guid)
-                },
-                null);
-            return result == null ? value : ((Wrapper) result).Value;
+                });
+            return result == null ? value : ((Wrapper)result).Value;
         }
 
         /// <inheritdoc />
@@ -481,8 +513,11 @@ namespace WebApplications.Utilities.Caching
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             // Get or add a key
             string guid = _keys.GetOrAdd(key, k => Guid.NewGuid().ToString());
+            Debug.Assert(guid != null);
 
             if (slidingExpiration > _maxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
@@ -494,8 +529,7 @@ namespace WebApplications.Utilities.Caching
                     AbsoluteExpiration = absoluteExpiration,
                     SlidingExpiration = slidingExpiration,
                     RemovedCallback = a => _keys.TryRemove(key, out guid)
-                },
-                null);
+                });
             return value;
         }
 

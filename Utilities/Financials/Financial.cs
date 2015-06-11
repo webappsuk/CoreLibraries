@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
@@ -113,7 +114,7 @@ namespace WebApplications.Utilities.Financials
                     try
                     {
                         // Ensure that the format provider passed in contains culture information 
-                        culture = (CultureInfo) provider;
+                        culture = (CultureInfo)provider;
                     }
                     catch (InvalidCastException)
                     {
@@ -161,12 +162,16 @@ namespace WebApplications.Utilities.Financials
         /// <returns><see cref="Financial"/> object with an amount of the specified financials summed.</returns>
         public static Financial Sum([NotNull] IEnumerable<Financial> financials)
         {
+            if (financials == null) throw new ArgumentNullException("financials");
+
             Financial[] financialsArray = financials.ToArray();
 
             if (!financialsArray.Any())
                 throw new InvalidOperationException(Resources.Financial_Sum_EmptyEnumeration);
 
+            // ReSharper disable once PossibleNullReferenceException
             decimal summedAmounts = financialsArray.Sum(f => f._amount);
+            // ReSharper disable once PossibleNullReferenceException
             return new Financial(financialsArray.First()._currency, summedAmounts);
         }
 
@@ -175,15 +180,19 @@ namespace WebApplications.Utilities.Financials
         /// </summary>
         /// <param name="financials">The financials.</param>
         /// <returns><see cref="Financial"/> object with an amount of the specified financials averaged.</returns>
-        public static Financial Average(IEnumerable<Financial> financials)
+        public static Financial Average([ItemNotNull] [NotNull] IEnumerable<Financial> financials)
         {
+            if (financials == null) throw new ArgumentNullException("financials");
+
             Financial[] financialsArray = financials.ToArray();
 
             if (!financialsArray.Any())
                 throw new InvalidOperationException(Resources.Financial_Sum_EmptyEnumeration);
 
+            // ReSharper disable PossibleNullReferenceException
             decimal averageAmount = financialsArray.Average(f => f._amount);
             return new Financial(financialsArray.First()._currency, averageAmount);
+            // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
@@ -198,6 +207,9 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator +([NotNull] Financial a, [NotNull] Financial b)
         {
+            if (a == null) throw new ArgumentNullException("a");
+            if (b == null) throw new ArgumentNullException("b");
+
             ValidateCurrenciesMatch(a._currency, b._currency, "Addition");
             return new Financial(a._currency, a._amount + b._amount);
         }
@@ -411,13 +423,16 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// A <see cref="System.String"/> that represents this instance.
         /// </returns>
-        private string FormatCurrency(CultureInfo culture)
+        [NotNull]
+        private string FormatCurrency([NotNull] CultureInfo culture)
         {
             ExtendedCultureInfo[] cultures = CultureInfoProvider.Current.FindByCurrency(_currency).ToArray();
 
             bool found = false;
             foreach (ExtendedCultureInfo c in cultures)
             {
+                Debug.Assert(c != null);
+
                 if (string.Equals(culture.Name, c.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     found = true;
@@ -425,7 +440,11 @@ namespace WebApplications.Utilities.Financials
                     break;
                 }
 
-                if (!found && string.Equals(culture.TwoLetterISOLanguageName, c.TwoLetterISOLanguageName, StringComparison.InvariantCultureIgnoreCase))
+                if (!found &&
+                    string.Equals(
+                        culture.TwoLetterISOLanguageName,
+                        c.TwoLetterISOLanguageName,
+                        StringComparison.InvariantCultureIgnoreCase))
                 {
                     found = true;
                     culture = c;
@@ -450,6 +469,7 @@ namespace WebApplications.Utilities.Financials
             if (a != b)
                 throw new InvalidOperationException(
                     string.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Financial_Currencies_Do_Not_Match,
                         a,
                         b,

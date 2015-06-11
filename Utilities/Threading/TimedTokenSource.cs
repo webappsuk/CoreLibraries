@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -120,7 +120,7 @@ namespace WebApplications.Utilities.Threading
 
             _timeoutSource = new CancellationTokenSource(milliseconds);
             _source = CancellationTokenSource.CreateLinkedTokenSource(
-                tokens.Union(new[] {_timeoutSource.Token}).ToArray());
+                tokens.Union(new[] { _timeoutSource.Token }).ToArray());
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace WebApplications.Utilities.Threading
 
             _timeoutSource = new CancellationTokenSource(timeout);
             _source = CancellationTokenSource.CreateLinkedTokenSource(
-                tokens.Union(new[] {_timeoutSource.Token}).ToArray());
+                tokens.Union(new[] { _timeoutSource.Token }).ToArray());
         }
 
         /// <summary>

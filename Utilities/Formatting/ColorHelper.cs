@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,9 +45,12 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         private static readonly IReadOnlyDictionary<string, Color> _builtInNamedColors =
-            typeof (Color).GetProperties()
-                .Where(p => p.PropertyType == typeof (Color))
-                .ToDictionary(p => p.Name, p => (Color) p.GetValue(null), StringComparer.InvariantCultureIgnoreCase);
+            typeof(Color).GetProperties()
+                // ReSharper disable PossibleNullReferenceException
+                .Where(p => p.PropertyType == typeof(Color))
+                .ToDictionary(p => p.Name, p => (Color)p.GetValue(null), StringComparer.InvariantCultureIgnoreCase);
+
+        // ReSharper restore PossibleNullReferenceException
 
         /// <summary>
         /// The colors by name.
@@ -69,6 +72,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static IEnumerable<string> KnownNames
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return _namedColors.Keys.Union(_builtInNamedColors.Keys).Distinct(); }
         }
 

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -149,7 +149,7 @@ namespace WebApplications.Utilities.Formatting
         {
             // Explicitly pick up a potentially methodimpl'ed Dispose
             if (disposing)
-                Context.Invoke(((IDisposable) _writer).Dispose);
+                Context.Invoke(((IDisposable)_writer).Dispose);
         }
 
         /// <summary>
@@ -507,6 +507,7 @@ namespace WebApplications.Utilities.Formatting
         [ComVisible(false)]
         public override Task WriteAsync(char value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
                 () =>
                 {
@@ -523,6 +524,7 @@ namespace WebApplications.Utilities.Formatting
         [ComVisible(false)]
         public override Task WriteAsync(String value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
                 () =>
                 {
@@ -541,6 +543,7 @@ namespace WebApplications.Utilities.Formatting
         [ComVisible(false)]
         public override Task WriteAsync(char[] buffer, int index, int count)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
                 () =>
                 {
@@ -557,6 +560,7 @@ namespace WebApplications.Utilities.Formatting
         [ComVisible(false)]
         public override Task WriteLineAsync(char value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
                 () =>
                 {
@@ -573,6 +577,7 @@ namespace WebApplications.Utilities.Formatting
         [ComVisible(false)]
         public override Task WriteLineAsync(String value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
                 () =>
                 {
@@ -591,6 +596,7 @@ namespace WebApplications.Utilities.Formatting
         [ComVisible(false)]
         public override Task WriteLineAsync(char[] buffer, int index, int count)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
                 () =>
                 {
@@ -606,6 +612,7 @@ namespace WebApplications.Utilities.Formatting
         [ComVisible(false)]
         public override Task FlushAsync()
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
                 () =>
                 {

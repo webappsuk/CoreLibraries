@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -51,10 +51,11 @@ namespace WebApplications.Utilities.Configuration
         ///   <paramref name="key"/> is read-only or locked.
         /// </exception>
         [CanBeNull]
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue this[[NotNull] TKey key]
         {
-            get { return (TValue) BaseGet(key); }
+            get { return (TValue)BaseGet(key); }
             set
             {
                 BaseRemove(key);
@@ -64,6 +65,7 @@ namespace WebApplications.Utilities.Configuration
                     if (!key.Equals(elementKey))
                         throw new InvalidOperationException(
                             String.Format(
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.ConfigurationElementCollection_SetElement_KeyMismatch,
                                 key,
                                 elementKey));
@@ -80,10 +82,11 @@ namespace WebApplications.Utilities.Configuration
         ///   <paramref name="index"/> is read-only or locked.
         /// </exception>
         [CanBeNull]
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue this[int index]
         {
-            get { return (TValue) BaseGet(index); }
+            get { return (TValue)BaseGet(index); }
             set
             {
                 BaseRemove(index);
@@ -103,14 +106,14 @@ namespace WebApplications.Utilities.Configuration
         {
             IEnumerator enumerator = base.GetEnumerator();
             while (enumerator.MoveNext())
-                yield return (TValue) enumerator.Current;
+                yield return (TValue)enumerator.Current;
         }
 
         /// <summary>
         ///   Adds the specified value to the collection.
         /// </summary>
         /// <param name="value">This is the element to add to the collection.</param>
-        [UsedImplicitly]
+        [PublicAPI]
         public virtual void Add([NotNull] TValue value)
         {
             BaseAdd(value);
@@ -136,7 +139,7 @@ namespace WebApplications.Utilities.Configuration
         /// </exception>
         public void CopyTo(TValue[] array, int arrayIndex)
         {
-            ((ICollection) this).CopyTo(array, arrayIndex);
+            ((ICollection)this).CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -180,7 +183,7 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>-or-</para>
         ///   <para>A collection item has been locked in a higher-level configuration.</para>  
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public virtual void Clear()
         {
             BaseClear();
@@ -193,8 +196,9 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>
         ///   Returns <see langword="true"/> if <paramref name="item"/> is found in the collection; otherwise returns <see langword="false"/>.
         /// </returns>
-        public bool Contains(TValue item)
+        public bool Contains([NotNull] TValue item)
         {
+            if (item == null) throw new ArgumentNullException("item");
             return BaseGet(GetElementKey(item)) != null;
         }
         #endregion
@@ -205,10 +209,10 @@ namespace WebApplications.Utilities.Configuration
         /// <typeparam name="T">The property type.</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <returns>The specified property, attribute or child element.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         protected T GetProperty<T>(string propertyName)
         {
-            return (T) base[propertyName];
+            return (T)base[propertyName];
         }
 
         /// <summary>
@@ -217,7 +221,7 @@ namespace WebApplications.Utilities.Configuration
         /// <typeparam name="T">The property type.</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value to set the property.</param>
-        [UsedImplicitly]
+        [PublicAPI]
         protected void SetProperty<T>(string propertyName, T value)
         {
             base[propertyName] = value;
@@ -243,7 +247,7 @@ namespace WebApplications.Utilities.Configuration
         /// </returns>
         protected override sealed object GetElementKey(System.Configuration.ConfigurationElement element)
         {
-            return GetElementKey((TValue) element);
+            return GetElementKey((TValue)element);
         }
 
         /// <summary>
@@ -265,7 +269,8 @@ namespace WebApplications.Utilities.Configuration
         ///    or the element cannot be removed because the collection type is not
         ///   <see cref="System.Configuration.ConfigurationElementCollectionType">AddRemoveClearMap</see>
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void Remove([NotNull] TKey key)
         {
             BaseRemove(key);
@@ -280,7 +285,8 @@ namespace WebApplications.Utilities.Configuration
         ///    or the element cannot be removed because the collection type is not
         ///   <see cref="System.Configuration.ConfigurationElementCollectionType">AddRemoveClearMap</see>
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void Remove([NotNull] TValue value)
         {
             BaseRemove(GetElementKey(value));
@@ -299,7 +305,8 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>-or-</para>
         ///   <para>The element has been locked at a higher level.</para>
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void RemoveAt(int index)
         {
             BaseRemoveAt(index);
@@ -318,10 +325,11 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>There is no element at the specified <paramref name="index"/>.</para>
         /// </exception>
         [CanBeNull]
-        [UsedImplicitly]
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TKey GetKey(int index)
         {
-            return (TKey) BaseGetKey(index);
+            return (TKey)BaseGetKey(index);
         }
     }
 }

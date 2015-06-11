@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -189,7 +189,7 @@ namespace WebApplications.Utilities
         public static TEnum ToEnum<TEnum>(this ulong value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
-            return ExtendedEnum<TEnum>.GetValue((long) value, includeImplicit);
+            return ExtendedEnum<TEnum>.GetValue((long)value, includeImplicit);
         }
 
         /// <summary>
@@ -400,13 +400,15 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///   Gets the <see cref="long"/> value equivalent of an enum
+        /// Gets the <see cref="long" /> value equivalent of an enum
         /// </summary>
         /// <typeparam name="TEnum">The enum type.</typeparam>
-        /// <param name="value">  this is set to <see langword="false"/>.</para>
-        /// </param>
+        /// <param name="value">The enum value.</param>
+        /// <param name="vLong">The long value.</param>
+        /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
+        /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>
-        ///   Returns <see langword="true"/> if the <paramref name="value"/> was found; otherwise returns <see langword="false"/>.
+        /// Returns <see langword="true" /> if the <paramref name="value" /> was found; otherwise returns <see langword="false" />.
         /// </returns>
         [UsedImplicitly]
         public static bool TryGetLong<TEnum>(this TEnum value, out long vLong, bool includeImplicit = false)

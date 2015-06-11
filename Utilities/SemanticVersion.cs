@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -56,12 +57,13 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The dot delimiter for splitting pre-release parts
         /// </summary>
-        private static readonly char[] _dotDelimiter = {'.'};
+        private static readonly char[] _dotDelimiter = { '.' };
 
         /// <summary>
         /// Version zero
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly SemanticVersion Zero = new SemanticVersion(0, 0, 0, null, null, false);
 
         /// <summary>
@@ -120,9 +122,6 @@ namespace WebApplications.Utilities
             _string = new Lazy<string>(
                 () =>
                 {
-                    Contract.Assert(!preRelease.IsAssigned || preRelease.Value != null);
-                    Contract.Assert(!build.IsAssigned || build.Value != null);
-
                     if (!isPartial)
                         return string.Format(
                             CultureInfo.InvariantCulture,
@@ -130,8 +129,8 @@ namespace WebApplications.Utilities
                             major.Value.ToString("D"),
                             minor.Value.ToString("D"),
                             patch.Value.ToString("D"),
-                            preRelease.Value.Length > 0 ? "-" + preRelease.Value : string.Empty,
-                            build.Value.Length > 0 ? "+" + build.Value : string.Empty);
+                            string.IsNullOrEmpty(preRelease.Value) ? string.Empty : "-" + preRelease.Value,
+                            string.IsNullOrEmpty(build.Value) ? string.Empty : "+" + build.Value);
 
                     StringBuilder s = new StringBuilder();
                     if (major.IsAssigned)
@@ -169,6 +168,7 @@ namespace WebApplications.Utilities
 
                     if (preRelease.IsAssigned)
                     {
+                        Debug.Assert(preRelease.Value != null);
                         s.Append('-');
                         if (preRelease.Value.Length > 0)
                             s.Append(preRelease.Value);
@@ -183,6 +183,7 @@ namespace WebApplications.Utilities
                     s.Append('+');
                     if (build.IsAssigned)
                     {
+                        Debug.Assert(build.Value != null);
                         if (build.Value.Length > 0)
                             s.Append(build.Value);
                     }
@@ -230,21 +231,33 @@ namespace WebApplications.Utilities
                 !major.IsAssigned)
         {
             if (major.Value < 0)
-                throw new ArgumentOutOfRangeException("major", major, "The major version number can not be negative.");
+                throw new ArgumentOutOfRangeException(
+                    "major",
+                    major,
+                    Resources.SemanticVersion_SemanticVersion_MajorNegative);
             if (minor.Value < 0)
-                throw new ArgumentOutOfRangeException("minor", minor, "The minor version number can not be negative.");
+                throw new ArgumentOutOfRangeException(
+                    "minor",
+                    minor,
+                    Resources.SemanticVersion_SemanticVersion_MinorNegative);
             if (patch.Value < 0)
-                throw new ArgumentOutOfRangeException("patch", patch, "The patch version number can not be negative.");
+                throw new ArgumentOutOfRangeException(
+                    "patch",
+                    patch,
+                    Resources.SemanticVersion_SemanticVersion_PatchNegative);
             Contract.EndContractBlock();
             if ((preRelease.Value != null) &&
                 (!IsValidPart(preRelease.Value)))
                 throw new ArgumentOutOfRangeException(
                     "preRelease",
                     preRelease,
-                    "The pre-release string contains invalid characters.");
+                    Resources.SemanticVersion_SemanticVersion_PreReleaseInvalid);
             if ((build != null) &&
                 (!IsValidPart(build.Value)))
-                throw new ArgumentOutOfRangeException("build", build, "The build string contains invalid characters");
+                throw new ArgumentOutOfRangeException(
+                    "build",
+                    build,
+                    Resources.SemanticVersion_SemanticVersion_BuildInvalid);
         }
 
         /// <summary>
@@ -316,6 +329,7 @@ namespace WebApplications.Utilities
         /// The value of this property is a non-negative integer for the major
         /// version number.
         /// </value>
+        [PublicAPI]
         public readonly Optional<int> Major;
 
         /// <summary>
@@ -325,6 +339,7 @@ namespace WebApplications.Utilities
         /// The value of this property is a non-negative integer for the minor
         /// version number.
         /// </value>
+        [PublicAPI]
         public readonly Optional<int> Minor;
 
         /// <summary>
@@ -334,6 +349,7 @@ namespace WebApplications.Utilities
         /// The value of this property is a non-negative integer for the patch
         /// version number.
         /// </value>
+        [PublicAPI]
         public readonly Optional<int> Patch;
 
         /// <summary>
@@ -343,6 +359,7 @@ namespace WebApplications.Utilities
         /// The value of this property is a string containing the pre-release
         /// identifier.
         /// </value>
+        [PublicAPI]
         public readonly Optional<string> PreRelease;
 
         /// <summary>
@@ -352,6 +369,7 @@ namespace WebApplications.Utilities
         /// The value of this property is a string containing the build
         /// identifier for the version number.
         /// </value>
+        [PublicAPI]
         public readonly Optional<string> Build;
 
         /// <summary>
@@ -780,6 +798,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public override string ToString()
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _string.Value;
         }
 
@@ -885,6 +904,7 @@ namespace WebApplications.Utilities
         /// <param name="version">The semantic version number to be parsed.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">version;The specified semantic version string was not valid.</exception>
         [CanBeNull]
+        [PublicAPI]
         public static SemanticVersion Parse([CanBeNull] string version)
         {
             if (version == null) return null;
@@ -893,7 +913,7 @@ namespace WebApplications.Utilities
                 throw new ArgumentOutOfRangeException(
                     "version",
                     version,
-                    "The specified semantic version string was not valid.");
+                    Resources.SemanticVersion_Parse_Invalid);
             return semanticVersion;
         }
 
@@ -933,11 +953,11 @@ namespace WebApplications.Utilities
                 else
                     switch (p)
                     {
-                            // Major
+                        // Major
                         case 0:
-                            // Minor
+                        // Minor
                         case 1:
-                            // Patch
+                        // Patch
                         case 2:
                             // The first three parts expect integers.
                             switch (c)

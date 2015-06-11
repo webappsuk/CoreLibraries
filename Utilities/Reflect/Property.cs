@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@ namespace WebApplications.Utilities.Reflect
         /// The extended type.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly ExtendedType ExtendedType;
 
         /// <summary>
@@ -104,7 +105,9 @@ namespace WebApplications.Utilities.Reflect
 
                     // Evaluate MSIL to resolve underlying field that is accessed.
                     byte[] getter = methodBody.GetILAsByteArray();
-                    byte ldfld = (byte) (info.GetGetMethod().IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld).Value;
+                    // ReSharper disable once PossibleNullReferenceException
+                    byte ldfld = (byte)(info.GetGetMethod().IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld).Value;
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     byte[] fieldToken = getter.SkipWhile(b => b != ldfld).Skip(1).Take(4).ToArray();
                     if (fieldToken.Length != 4)
                         return null;
@@ -116,6 +119,7 @@ namespace WebApplications.Utilities.Reflect
                         Type[] typeArguments = ExtendedType.GenericArguments.Select(g => g.Type).ToArray();
                         if (typeArguments.Length < 1)
                             typeArguments = null;
+                        // ReSharper disable once PossibleNullReferenceException
                         field = info.DeclaringType.Module.ResolveField(
                             BitConverter.ToInt32(fieldToken, 0),
                             typeArguments,
@@ -128,7 +132,7 @@ namespace WebApplications.Utilities.Reflect
 
                     // Compilers don't strictly have to add this attribute, so could relax this check, but this ensures
                     // that we are indeed looking at an automatic property.
-                    return field != null && field.IsDefined(typeof (CompilerGeneratedAttribute), false)
+                    return field != null && field.IsDefined(typeof(CompilerGeneratedAttribute), false)
                         ? field
                         : null;
                 },
@@ -205,7 +209,8 @@ namespace WebApplications.Utilities.Reflect
         {
             return propertyInfo == null
                 ? null
-                : ((ExtendedType) propertyInfo.DeclaringType).GetProperty(propertyInfo);
+                // ReSharper disable once PossibleNullReferenceException
+                : ((ExtendedType)propertyInfo.DeclaringType).GetProperty(propertyInfo);
         }
 
         /// <summary>
@@ -228,7 +233,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type propertyType = Info.PropertyType;
-            Type returnType = typeof (TValue);
+            Type returnType = typeof(TValue);
 
             // Check the return type can be assigned from the member type
             if ((returnType != propertyType) &&
@@ -273,8 +278,8 @@ namespace WebApplications.Utilities.Reflect
 
             Type propertyType = Info.PropertyType;
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof (T);
-            Type returnType = typeof (TValue);
+            Type parameterType = typeof(T);
+            Type returnType = typeof(TValue);
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(parameterType, "target");
@@ -322,7 +327,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type propertyType = Info.PropertyType;
-            Type valueType = typeof (TValue);
+            Type valueType = typeof(TValue);
 
             // Get a field access expression
             Expression expression = Expression.Property(null, Info);
@@ -371,9 +376,9 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof (T);
+            Type parameterType = typeof(T);
             Type propertyType = Info.PropertyType;
-            Type valueType = typeof (TValue);
+            Type valueType = typeof(TValue);
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(

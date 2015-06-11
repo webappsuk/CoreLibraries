@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Reflect;
 
@@ -49,30 +49,32 @@ namespace WebApplications.Utilities
         /// </summary>
         [NotNull]
         private static readonly MethodInfo _enumeratorMoveNextMethod =
-            InfoHelper.GetMethodInfo<IEnumerator>(e => e.MoveNext());
+            InfoHelper.GetMethodInfo<IEnumerator>(e => e.MoveNext(), true);
 
         /// <summary>
         /// The <see cref="IDisposable.Dispose"/> method.
         /// </summary>
         [NotNull]
         private static readonly MethodInfo _disposeMethod =
-            InfoHelper.GetMethodInfo<IDisposable>(d => d.Dispose());
+            InfoHelper.GetMethodInfo<IDisposable>(d => d.Dispose(), true);
 
         /// <summary>
         /// Gets the debug view of an expression.
         /// </summary>
         [NotNull]
-        private static readonly Func<Expression, string> _expressionDebugView = typeof(Expression).GetProperty(
-            "DebugView",
-            BindingFlags.NonPublic | BindingFlags.Instance)
-            .GetGetMethod(true)
-            .Func<Expression, string>();
+        private static readonly Func<Expression, string> _expressionDebugView =
+            // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+            typeof(Expression).GetProperty("DebugView", BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetGetMethod(true)
+                .Func<Expression, string>();
+
+        // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
 
         /// <summary>
         /// Takes an input source enumerable expression (must be of type 
         /// <see cref="IEnumerable{T}" />) and creates a foreach loop,
         /// where the body is generated using the 
-        /// <see cref="getBody" /> function.
+        /// <paramref name="getBody"/> function.
         /// </summary>
         /// <param name="sourceEnumerable">The source enumerable.</param>
         /// <param name="getBody">The get body function, where the input parameter is the current item in the loop.</param>
@@ -86,7 +88,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
-            [NotNull][InstantHandle] Func<Expression, Expression> getBody,
+            [NotNull] [InstantHandle] Func<Expression, Expression> getBody,
             [CanBeNull] LabelTarget @break = null,
             [CanBeNull] LabelTarget @continue = null)
         {
@@ -99,7 +101,7 @@ namespace WebApplications.Utilities
         /// Takes an input source enumerable expression (must be of type 
         /// <see cref="IEnumerable{T}" />) and creates a foreach loop,
         /// where the body is generated using the 
-        /// <see cref="getBody" /> function.
+        /// <paramref name="getBody" /> function.
         /// </summary>
         /// <param name="sourceEnumerable">The source enumerable.</param>
         /// <param name="getBody">The get body function, where the input parameter is the current item in the loop.</param>
@@ -113,7 +115,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
-            [NotNull][InstantHandle] Func<Expression, IEnumerable<Expression>> getBody,
+            [NotNull] [InstantHandle] Func<Expression, IEnumerable<Expression>> getBody,
             [CanBeNull] LabelTarget @break = null,
             [CanBeNull] LabelTarget @continue = null)
         {
@@ -138,38 +140,42 @@ namespace WebApplications.Utilities
                 enumeratorDisposable = true;
             }
             else
-            {
-                // TODO Translate?
-                throw new ArgumentException("The source enumerable is not of an enumerable type", "sourceEnumerable");
-            }
+                throw new ArgumentException(
+                    Resources.ExpressionExtensions_ForEach_SourceNotEnumerable,
+                    "sourceEnumerable");
+
+            Debug.Assert(elementType != null);
 
             MethodInfo getEnumeratorMethod = enumerableType.GetMethod(
                 "GetEnumerator",
                 BindingFlags.Public | BindingFlags.Instance);
+            Debug.Assert(getEnumeratorMethod != null);
+
             PropertyInfo currentProperty = enumeratorType.GetProperty("Current", elementType);
+            Debug.Assert(currentProperty != null);
 
             ParameterExpression enumerator = Expression.Variable(enumeratorType, "enumerator");
             if (@break == null)
                 @break = Expression.Label();
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             Expression[] expressions = getBody(Expression.Property(enumerator, currentProperty)).ToArray();
             if (expressions.Length < 1) return Expression.Empty();
 
             Expression loopExpression = Expression.Loop(
                 Expression.IfThenElse(
                     Expression.Call(enumerator, _enumeratorMoveNextMethod),
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     expressions.Length > 1 ? Expression.Block(expressions) : expressions.First(),
                     Expression.Break(@break)),
                 @break,
                 @continue);
 
             if (enumeratorDisposable)
-            {
                 loopExpression =
                     Expression.TryFinally(
                         loopExpression,
                         Expression.Call(enumerator, _disposeMethod));
-            }
 
             return Expression.Block(
                 new[] { enumerator },
@@ -213,6 +219,7 @@ namespace WebApplications.Utilities
                 return e.Length > 0
                     ? (Expression)Expression.Block(locals, e)
                     : Expression.Empty();
+            // ReSharper disable once AssignNullToNotNullAttribute
             return e.Length > 1
                 ? Expression.Block(e)
                 : (e.Length > 0
@@ -265,7 +272,10 @@ namespace WebApplications.Utilities
         /// variables.
         /// </summary>
         /// <param name="expression">The expression.</param>
-        /// <returns>IEnumerable{Expression}.</returns>
+        /// <param name="variables">The variables.</param>
+        /// <returns>
+        /// IEnumerable{Expression}.
+        /// </returns>
         [NotNull]
         [PublicAPI]
         public static IEnumerable<Expression> UnBlockify(
@@ -330,7 +340,9 @@ namespace WebApplications.Utilities
             BlockExpression b = block as BlockExpression;
             return b == null
                 ? Expression.Block(variables, block)
+                // ReSharper disable AssignNullToNotNullAttribute
                 : Expression.Block(b.Variables.Concat(v), b.Expressions);
+            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>
@@ -373,6 +385,7 @@ namespace WebApplications.Utilities
             BlockExpression b = block as BlockExpression;
             return b == null
                 ? Expression.Block(new[] { block }.Concat(expressions))
+                // ReSharper disable once AssignNullToNotNullAttribute
                 : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
         }
 
@@ -399,13 +412,14 @@ namespace WebApplications.Utilities
             if (expression.Parameters.Count != delegateParameters.Length)
                 throw new ArgumentOutOfRangeException(
                     "expression",
-                    "The expression does not have the same number of parameters as the delegate.");
+                    Resources.ExpressionExtensions_GetDelegateExpression_ParameterCountMismatch);
 
             ParameterExpression[] parameters = new ParameterExpression[delegateParameters.Length];
 
             for (int i = 0; i < delegateParameters.Length; i++)
             {
                 ParameterInfo pi = delegateParameters[i];
+                Debug.Assert(pi != null);
 
                 parameters[i] = Expression.Parameter(pi.ParameterType, pi.Name);
             }
@@ -470,15 +484,13 @@ namespace WebApplications.Utilities
                 int pcount = _lambda.Parameters.Count;
 
                 if (pcount != parameters.Length)
-                {
                     throw new ArgumentOutOfRangeException(
                         "parameters",
                         String.Format(
                             "The number of parameter replacement expressions '{0}' does not match the number of parameters in the lambda expression '{1}'.",
-                        // TODO Translate?
+                            // TODO Translate?
                             parameters.Length,
                             pcount));
-                }
 
                 Dictionary<ParameterExpression, Expression> replacements =
                     new Dictionary<ParameterExpression, Expression>(pcount);
@@ -571,7 +583,8 @@ namespace WebApplications.Utilities
         public static bool Contains(this Expression expression, Expression subExpression)
         {
             if (ReferenceEquals(expression, subExpression)) return true;
-            if (ReferenceEquals(expression, null) || ReferenceEquals(subExpression, null)) return false;
+            if (ReferenceEquals(expression, null) ||
+                ReferenceEquals(subExpression, null)) return false;
             return FinderExpressionVisitor.Contains(expression, subExpression, false);
         }
 
@@ -587,7 +600,8 @@ namespace WebApplications.Utilities
         public static bool Uses(this LambdaExpression expression, Expression subExpression)
         {
             if (ReferenceEquals(expression, subExpression)) return true;
-            if (ReferenceEquals(expression, null) || ReferenceEquals(subExpression, null)) return false;
+            if (ReferenceEquals(expression, null) ||
+                ReferenceEquals(subExpression, null)) return false;
             return FinderExpressionVisitor.Contains(expression, subExpression, true);
         }
 
@@ -596,9 +610,9 @@ namespace WebApplications.Utilities
         /// </summary>
         private class FinderExpressionVisitor : ExpressionVisitor
         {
-            public readonly Expression TargetExpression;
-            public readonly bool SkipLambdaSignatures;
-            public bool Found { get; private set; }
+            private readonly Expression _targetExpression;
+            private readonly bool _skipLambdaSignatures;
+            private bool _found;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="FinderExpressionVisitor" /> class.
@@ -607,8 +621,8 @@ namespace WebApplications.Utilities
             /// <param name="skipLambdaSignatures">if set to <see langword="true" /> skip lambda signatures.</param>
             private FinderExpressionVisitor(Expression targetExpression, bool skipLambdaSignatures)
             {
-                TargetExpression = targetExpression;
-                SkipLambdaSignatures = skipLambdaSignatures;
+                _targetExpression = targetExpression;
+                _skipLambdaSignatures = skipLambdaSignatures;
             }
 
             /// <summary>
@@ -620,9 +634,9 @@ namespace WebApplications.Utilities
             /// </returns>
             public override Expression Visit(Expression node)
             {
-                if (ReferenceEquals(node, TargetExpression))
-                    Found = true;
-                
+                if (ReferenceEquals(node, _targetExpression))
+                    _found = true;
+
                 return base.Visit(node);
             }
 
@@ -634,7 +648,7 @@ namespace WebApplications.Utilities
             /// <returns></returns>
             protected override Expression VisitLambda<T>(Expression<T> node)
             {
-                if (!SkipLambdaSignatures) 
+                if (!_skipLambdaSignatures)
                     return base.VisitLambda(node);
                 Visit(node.Body);
                 return node;
@@ -653,7 +667,7 @@ namespace WebApplications.Utilities
                     ReferenceEquals(subExpression, null)) return false;
                 FinderExpressionVisitor fev = new FinderExpressionVisitor(subExpression, skipLambdaSignatures);
                 fev.Visit(expression);
-                return fev.Found;
+                return fev._found;
             }
         }
     }

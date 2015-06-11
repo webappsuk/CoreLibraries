@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -36,11 +37,14 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="T">The type to compare.</typeparam>
     /// <seealso cref="T:System.Collections.Generic.IComparer`1"/>
+    [PublicAPI]
     public class ComparerBuilder<T> : EqualityBuilder<T>, IComparer<T>
     {
         /// <summary>
         ///   The function used to provide comparisons.
         /// </summary>
+        [NotNull]
+        [PublicAPI]
         public readonly Func<T, T, int> CompareFunction;
 
         /// <summary>
@@ -56,11 +60,12 @@ namespace WebApplications.Utilities
         ///   <para>By default <see cref="System.Object.GetHashCode"/> will be used.</para>
         /// </param>
         public ComparerBuilder(
-            Func<T, T, int> comparer,
+            [NotNull] Func<T, T, int> comparer,
             Func<T, T, bool> equalityComparer = null,
             Func<T, int> hashCodeGenerator = null)
             : base(equalityComparer ?? ((a, b) => comparer(a, b) == 0), hashCodeGenerator)
         {
+            if (comparer == null) throw new ArgumentNullException("comparer");
             CompareFunction = comparer;
         }
 

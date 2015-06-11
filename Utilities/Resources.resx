@@ -435,4 +435,37 @@
   <data name="CancelableTask_CancelableTask_NullTask" xml:space="preserve">
     <value>The action returned a null Task</value>
   </data>
+  <data name="ExpressionExtensions_ForEach_SourceNotEnumerable" xml:space="preserve">
+    <value>The source enumerable is not of an enumerable type</value>
+  </data>
+  <data name="ExpressionExtensions_GetDelegateExpression_ParameterCountMismatch" xml:space="preserve">
+    <value>The expression does not have the same number of parameters as the delegate.</value>
+  </data>
+  <data name="Reflection_ExpressionFunc_FunctionReturnedNull" xml:space="preserve">
+    <value>Function returned null</value>
+  </data>
+  <data name="UtilityExtensions_SourceEmpty" xml:space="preserve">
+    <value>The source must not be empty</value>
+  </data>
+  <data name="SemanticVersion_SemanticVersion_MajorNegative" xml:space="preserve">
+    <value>The major version number can not be negative.</value>
+  </data>
+  <data name="SemanticVersion_SemanticVersion_MinorNegative" xml:space="preserve">
+    <value>The minor version number can not be negative.</value>
+  </data>
+  <data name="SemanticVersion_SemanticVersion_PatchNegative" xml:space="preserve">
+    <value>The patch version number can not be negative.</value>
+  </data>
+  <data name="SemanticVersion_SemanticVersion_PreReleaseInvalid" xml:space="preserve">
+    <value>The pre-release string contains invalid characters.</value>
+  </data>
+  <data name="SemanticVersion_SemanticVersion_BuildInvalid" xml:space="preserve">
+    <value>The build string contains invalid characters</value>
+  </data>
+  <data name="SemanticVersion_Parse_Invalid" xml:space="preserve">
+    <value>The specified semantic version string was not valid.</value>
+  </data>
+  <data name="Impersonator_Impersonator_InvalidUsername" xml:space="preserve">
+    <value>Invalid username.</value>
+  </data>
 </root>

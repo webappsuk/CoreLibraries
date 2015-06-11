@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -117,7 +117,7 @@ namespace WebApplications.Utilities.Threading
         /// </remarks>
         [NotNull]
         [PublicAPI]
-        public async Task Run(CancellationToken token = default (CancellationToken))
+        public async Task Run(CancellationToken token = default(CancellationToken))
         {
             // Record when the request was made.
             long requested = DateTime.UtcNow.Ticks;
@@ -132,6 +132,7 @@ namespace WebApplications.Utilities.Threading
                     return;
 
                 // Await on a task.
+                // ReSharper disable once PossibleNullReferenceException - Let it throw
                 await _action(token).ConfigureAwait(false);
 
                 // If we're cancelled we don't update our next run as we were unsuccessful.

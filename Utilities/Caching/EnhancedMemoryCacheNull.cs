@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Runtime.Caching;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Caching
 {
@@ -50,11 +51,10 @@ namespace WebApplications.Utilities.Caching
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public class EnhancedMemoryCacheNull<TKey, TValue> : CachingDictionaryBase<TKey, TValue>
     {
-        private static readonly TimeSpan _maxSlidingExpiration = TimeSpan.FromDays(365);
-
         /// <summary>
         ///   We implement the enhanced memory cache using the default memory cache.
         /// </summary>
+        [NotNull]
         private readonly MemoryCache _cache;
 
         private readonly string _cacheName;
@@ -71,6 +71,7 @@ namespace WebApplications.Utilities.Caching
         {
             if (string.IsNullOrWhiteSpace(cacheName))
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 _cache = MemoryCache.Default;
                 _cacheName = null;
             }
@@ -112,15 +113,16 @@ namespace WebApplications.Utilities.Caching
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
-            if (slidingExpiration > _maxSlidingExpiration)
+            if (key == null) throw new ArgumentNullException("key");
+
+            if (slidingExpiration > EnhancedMemoryCache.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
             Wrapper wrapper = new Wrapper(value);
             object result = _cache.AddOrGetExisting(
                 _instanceGuid + key,
                 wrapper,
-                new CacheItemPolicy {AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration},
-                null);
-            return result == null ? value : ((Wrapper) result).Value;
+                new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration });
+            return result == null ? value : ((Wrapper)result).Value;
         }
 
         /// <summary>
@@ -142,14 +144,15 @@ namespace WebApplications.Utilities.Caching
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
-            if (slidingExpiration > _maxSlidingExpiration)
+            if (key == null) throw new ArgumentNullException("key");
+
+            if (slidingExpiration > EnhancedMemoryCache.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
             Wrapper wrapper = new Wrapper(value);
             _cache.Set(
                 _instanceGuid + key,
                 wrapper,
-                new CacheItemPolicy {AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration},
-                null);
+                new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration });
             return value;
         }
 
@@ -164,13 +167,15 @@ namespace WebApplications.Utilities.Caching
         /// </returns>
         public override bool TryGetValue(TKey key, out TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             object result = _cache.Get(_instanceGuid + key);
             if (result == null)
             {
                 value = default(TValue);
                 return false;
             }
-            value = ((Wrapper) result).Value;
+            value = ((Wrapper)result).Value;
             return true;
         }
 
@@ -185,13 +190,15 @@ namespace WebApplications.Utilities.Caching
         /// </returns>
         public override bool TryRemove(TKey key, out TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             object result = _cache.Remove(_instanceGuid + key);
             if (result == null)
             {
                 value = default(TValue);
                 return false;
             }
-            value = ((Wrapper) result).Value;
+            value = ((Wrapper)result).Value;
             return true;
         }
 
@@ -211,13 +218,15 @@ namespace WebApplications.Utilities.Caching
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
-            if (slidingExpiration > _maxSlidingExpiration)
+            if (key == null) throw new ArgumentNullException("key");
+
+            if (slidingExpiration > EnhancedMemoryCache.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
             Wrapper wrapper = new Wrapper(value);
             return _cache.Add(
                 _instanceGuid + key,
                 wrapper,
-                new CacheItemPolicy {AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration});
+                new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration });
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -177,7 +177,9 @@ namespace WebApplications.Utilities
 
         private struct Enumerator : IEnumerator<T>
         {
-            private CyclicQueue<T> _q;
+            [NotNull]
+            private readonly CyclicQueue<T> _q;
+
             private int _index; // -1 = not started, -2 = ended/disposed
             private readonly int _version;
             private T _currentElement;

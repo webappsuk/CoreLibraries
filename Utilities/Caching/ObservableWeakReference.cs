@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -72,8 +72,8 @@ namespace WebApplications.Utilities.Caching
         /// </summary>
         static ObservableWeakReference()
         {
-            ObservableFinalize = typeof (IObservableFinalize).IsAssignableFrom(typeof (T));
-            Disposable = typeof (IDisposable).IsAssignableFrom(typeof (T));
+            ObservableFinalize = typeof(IObservableFinalize).IsAssignableFrom(typeof(T));
+            Disposable = typeof(IDisposable).IsAssignableFrom(typeof(T));
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace WebApplications.Utilities.Caching
                 T target;
                 if (!TryGetTarget(out target)) return;
 
-                ((IObservableFinalize) target).Finalized += value;
+                ((IObservableFinalize)target).Finalized += value;
 
                 _handlers.Add(value);
             }
@@ -122,7 +122,7 @@ namespace WebApplications.Utilities.Caching
                 T target;
 
                 if ((TryGetTarget(out target)))
-                    ((IObservableFinalize) target).Finalized -= value;
+                    ((IObservableFinalize)target).Finalized -= value;
             }
         }
 

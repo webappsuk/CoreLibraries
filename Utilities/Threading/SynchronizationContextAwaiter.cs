@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -53,13 +53,15 @@ namespace WebApplications.Utilities.Threading
         {
             Contract.Requires(context != null);
             _context = context;
-            _executor = a => ((Action) a)();
+            // ReSharper disable once PossibleNullReferenceException
+            _executor = a => ((Action)a)();
         }
 
         /// <summary>
         /// Gets a value indicating whether this instance is completed.
         /// </summary>
         /// <value><see langword="true" /> if this instance is completed; otherwise, <see langword="false" />.</value>
+        [UsedImplicitly]
         public bool IsCompleted
         {
             get { return false; }

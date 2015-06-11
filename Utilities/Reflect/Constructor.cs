@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -79,18 +79,28 @@ namespace WebApplications.Utilities.Reflect
         ///   The parameters.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<ParameterInfo> Parameters
         {
-            get { return _parameters.Value; }
+            get
+            {
+                Debug.Assert(_parameters.Value != null);
+                return _parameters.Value;
+            }
         }
 
         /// <summary>
         /// Gets the parameters count.
         /// </summary>
         /// <remarks></remarks>
+        [PublicAPI]
         public int ParametersCount
         {
-            get { return _parameters.Value.Length; }
+            get
+            {
+                Debug.Assert(_parameters.Value != null);
+                return _parameters.Value.Length;
+            }
         }
 
         #region ISignature Members
@@ -118,6 +128,7 @@ namespace WebApplications.Utilities.Reflect
             get
             {
                 Contract.Assert(_parameters.Value != null);
+                // ReSharper disable once PossibleNullReferenceException
                 return _parameters.Value.Select(p => p.ParameterType);
             }
         }
@@ -158,7 +169,8 @@ namespace WebApplications.Utilities.Reflect
         {
             return constructorInfo == null
                 ? null
-                : ((ExtendedType) constructorInfo.DeclaringType).GetConstructor(constructorInfo);
+                // ReSharper disable once PossibleNullReferenceException
+                : ((ExtendedType)constructorInfo.DeclaringType).GetConstructor(constructorInfo);
         }
 
         /// <summary>
@@ -170,6 +182,7 @@ namespace WebApplications.Utilities.Reflect
         /// <para>The closure arrays are ordered and contain the same number of elements as their corresponding
         /// generic arguments.  Where elements are <see langword="null"/> a closure is not required.</para></remarks>
         [CanBeNull]
+        [PublicAPI]
         public Constructor Close([NotNull] Type[] typeClosures)
         {
             // Check input arrays are valid.
@@ -177,7 +190,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             // If we haven't got any type closures, we can return this constructor.
-            if (!typeClosures.Any(t => t != null))
+            if (typeClosures.All(t => t == null))
                 return this;
 
             // Close type
@@ -241,28 +254,35 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             int tCount = funcTypes.Count();
+
             // Create array for required func types - statics take an instance as the first parameter
             Type[] signatureTypes = new Type[tCount - 1];
             int a = 0;
+
+            ParameterInfo[] parameters = _parameters.Value;
+            Debug.Assert(parameters != null);
+
             // Now add parameter types.
-            int pCount = _parameters.Value.Length;
+            int pCount = parameters.Length;
             for (; a < tCount - 1; a++)
             {
                 // Check if we run out of parameters.
                 if (a >= pCount)
                     return null;
 
+                Debug.Assert(parameters[a] != null);
                 // Funcs don't support output, pointer, or by reference parameters
-                if (_parameters.Value[a].IsOut ||
-                    _parameters.Value[a].ParameterType.IsByRef ||
-                    _parameters.Value[a].ParameterType.IsPointer)
+                if (parameters[a].IsOut ||
+                    parameters[a].ParameterType.IsByRef ||
+                    parameters[a].ParameterType.IsPointer)
                     return null;
-                signatureTypes[a] = _parameters.Value[a].ParameterType;
+                signatureTypes[a] = parameters[a].ParameterType;
             }
 
             // Any remaining parameters must be optional.
+            // ReSharper disable once PossibleNullReferenceException
             if ((a < pCount) &&
-                (!_parameters.Value[a].IsOptional))
+                (!parameters[a].IsOptional))
                 return null;
 
             // Create expressions
@@ -273,6 +293,9 @@ namespace WebApplications.Utilities.Reflect
                 Type funcType = funcTypes[i];
                 Type signatureType = signatureTypes[i];
 
+                Debug.Assert(funcType != null);
+                Debug.Assert(signatureType != null);
+
                 // Create parameter
                 parameterExpressions[i] = Expression.Parameter(funcType);
                 if (funcType != signatureType)
@@ -282,7 +305,7 @@ namespace WebApplications.Utilities.Reflect
                         return null;
                 }
                 else
-                    // No conversion necessary.
+                // No conversion necessary.
                     pExpressions[i] = parameterExpressions[i];
             }
 
@@ -292,6 +315,7 @@ namespace WebApplications.Utilities.Reflect
 
             // Check if we need to do a cast to the func result type
             if (funcTypes[tCount - 1] != ExtendedType.Type &&
+                // ReSharper disable once AssignNullToNotNullAttribute
                 !expression.TryConvert(funcTypes[tCount - 1], out expression))
                 return null;
 

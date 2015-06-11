@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,9 @@ namespace WebApplications.Utilities
     /// </remarks>
     [Serializable]
     [ComVisible(false)]
-    [DebuggerDisplay("ThreadSafetyMode={Mode}, IsValueCreated={IsValueCreated}, IsValueFaulted={IsValueFaulted}, Value={ValueForDebugDisplay}")]
+    [DebuggerDisplay(
+        "ThreadSafetyMode={Mode}, IsValueCreated={IsValueCreated}, IsValueFaulted={IsValueFaulted}, Value={ValueForDebugDisplay}"
+        )]
     public class ResettableLazy<T>
     {
         #region Inner classes
@@ -110,7 +112,8 @@ namespace WebApplications.Utilities
         {
             if (_ctorFunc == null)
                 // TODO Translate
-                throw new ArgumentException("The lazily-initialized type does not have a public, parameterless constructor.");
+                throw new ArgumentException(
+                    "The lazily-initialized type does not have a public, parameterless constructor.");
             return _ctorFunc;
         }
 
@@ -180,7 +183,9 @@ namespace WebApplications.Utilities
         /// <param name="isThreadSafe">true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.</param>
         /// <param name="createOnToString">if set to <see langword="true" /> the value will be created when <see cref="ToString"/> is called.</param>
         public ResettableLazy(bool isThreadSafe, bool createOnToString = false)
-            : this(GetCtorFunc(), isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None,
+            : this(
+                GetCtorFunc(),
+                isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None,
                 createOnToString)
         {
         }
@@ -357,10 +362,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public bool IsValueCreated
         {
-            get
-            {
-                return _boxed is Boxed;
-            }
+            get { return _boxed is Boxed; }
         }
 
         /// <summary>Gets the lazily initialized value of the current <see cref="ResettableLazy{T}"/>.</summary>
@@ -425,16 +427,12 @@ namespace WebApplications.Utilities
                 boxed = CreateValue();
                 if (boxed == null ||
                     Interlocked.CompareExchange(ref _boxed, boxed, null) != null)
-                {
                     // If CreateValue returns null, it means another thread successfully invoked the value factory
                     // and stored the result, so we should just take what was stored.  If CreateValue returns non-null
                     // but we lose the ---- to store the single value, again we should just take what was stored.
                     boxed = (Boxed)_boxed;
-                }
                 else
-                {
                     _initialized = true;
-                }
             }
             else
             {
@@ -480,21 +478,16 @@ namespace WebApplications.Utilities
             {
                 // check for recursion
                 if (mode != LazyThreadSafetyMode.PublicationOnly && _initialized)
-                {
                     // TODO Translate
-                    throw new InvalidOperationException("ValueFactory attempted to access the Value property of this instance.");
-                }
+                    throw new InvalidOperationException(
+                        "ValueFactory attempted to access the Value property of this instance.");
 
                 Func<T> factory = _valueFactory;
                 if (mode != LazyThreadSafetyMode.PublicationOnly)
-                {
                     _initialized = true;
-                }
                 else if (_initialized)
-                {
                     // Another thread beat us to successfully invoke the factory.
                     return null;
-                }
                 boxed = new Boxed(factory());
             }
             catch (Exception ex)

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime;
 using WebApplications.Utilities.Annotations;
@@ -44,7 +45,7 @@ namespace WebApplications.Utilities.Caching
     /// </summary>
     /// <typeparam name="TKey">The type of the keys.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class WeakConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
         where TValue : class
     {
@@ -77,7 +78,7 @@ namespace WebApplications.Utilities.Caching
         public WeakConcurrentDictionary(
             int concurrencyLevel = 0,
             int capacity = 0,
-            [NotNull] IEqualityComparer<TKey> comparer = null,
+            [CanBeNull] IEqualityComparer<TKey> comparer = null,
             TriState allowResurrection = default(TriState))
             : this(null, concurrencyLevel, capacity, comparer, allowResurrection)
         {
@@ -125,7 +126,7 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance is empty.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool IsEmpty
         {
             get
@@ -146,13 +147,13 @@ namespace WebApplications.Utilities.Caching
             TValue obj;
             try
             {
-                obj = (TValue) value;
+                obj = (TValue)value;
             }
             catch (InvalidCastException ex)
             {
                 throw new ArgumentException(Resources.WeakConcurrentDictionary_Add_ValueTypeIncorrect, ex);
             }
-            Add((TKey) key, obj);
+            Add((TKey)key, obj);
         }
 
         /// <inheritdoc />
@@ -161,7 +162,7 @@ namespace WebApplications.Utilities.Caching
             if (key == null)
                 throw new ArgumentNullException("key");
             if (key is TKey)
-                return ContainsKey((TKey) key);
+                return ContainsKey((TKey)key);
             return false;
         }
 
@@ -179,14 +180,14 @@ namespace WebApplications.Utilities.Caching
             if (!(key is TKey))
                 return;
             TValue obj;
-            TryRemove((TKey) key, out obj);
+            TryRemove((TKey)key, out obj);
         }
 
         /// <inheritdoc />
         object IDictionary.this[object key]
         {
-            get { return this[(TKey) key]; }
-            set { this[(TKey) key] = (TValue) value; }
+            get { return this[(TKey)key]; }
+            set { this[(TKey)key] = (TValue)value; }
         }
 
         /// <inheritdoc />
@@ -226,20 +227,14 @@ namespace WebApplications.Utilities.Caching
         ICollection IDictionary.Keys
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return (ICollection) Keys;
-            }
+            get { return (ICollection)Keys; }
         }
 
         /// <inheritdoc />
         ICollection IDictionary.Values
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return (ICollection) Values;
-            }
+            get { return (ICollection)Values; }
         }
 
         /// <inheritdoc />
@@ -259,12 +254,15 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         public bool ContainsKey(TKey key)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute - Let Contains throw
             return _dictionary.ContainsKey(key);
         }
 
         /// <inheritdoc />
         public bool TryGetValue(TKey key, out TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             WeakReference<TValue> weakReference;
             bool found = _dictionary.TryGetValue(key, out weakReference);
             if (found)
@@ -316,16 +314,21 @@ namespace WebApplications.Utilities.Caching
         }
 
         /// <inheritdoc />
-        public TValue this[TKey key]
+        public TValue this[[NotNull] TKey key]
         {
             get
             {
+                if (key == null) throw new ArgumentNullException("key");
                 TValue value;
                 if (!TryGetValue(key, out value))
                     throw new KeyNotFoundException();
                 return value;
             }
-            set { AddOrUpdate(key, value, (k, v) => value); }
+            set
+            {
+                if (key == null) throw new ArgumentNullException("key");
+                AddOrUpdate(key, value, (k, v) => value);
+            }
         }
 
         /// <inheritdoc />
@@ -348,10 +351,7 @@ namespace WebApplications.Utilities.Caching
         public ICollection<TKey> Keys
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return (ICollection<TKey>) this.Select(kvp => kvp.Key);
-            }
+            get { return (ICollection<TKey>)this.Select(kvp => kvp.Key); }
         }
 
 
@@ -359,10 +359,7 @@ namespace WebApplications.Utilities.Caching
         public ICollection<TValue> Values
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get
-            {
-                return (ICollection<TValue>) this.Select(kvp => kvp.Value);
-            }
+            get { return (ICollection<TValue>)this.Select(kvp => kvp.Value); }
         }
 
         /// <inheritdoc />
@@ -374,6 +371,7 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         public void Add(TKey key, TValue value)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute - Let TryAdd throw
             if (!TryAdd(key, value))
                 throw new ArgumentException(Resources.WeakConcurrentDictionary_Add_KeyAlreadyExists);
         }
@@ -382,26 +380,24 @@ namespace WebApplications.Utilities.Caching
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
             TValue obj;
+            // ReSharper disable once AssignNullToNotNullAttribute - Let TryRemove throw
             return TryRemove(key, out obj);
         }
 
         /// <inheritdoc />
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> keyValuePair)
         {
-            // ReSharper disable RedundantCast
-            if ((object) keyValuePair.Key == null)
+            if (ReferenceEquals(keyValuePair.Key, null))
                 throw new ArgumentNullException("keyValuePair", Resources.WeakConcurrentDictionary_KeyIsNull);
-            // ReSharper restore RedundantCast
             Add(keyValuePair.Key, keyValuePair.Value);
         }
 
         /// <inheritdoc />
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> keyValuePair)
         {
-            // ReSharper disable RedundantCast
-            if ((object) keyValuePair.Key == null)
+            if (ReferenceEquals(keyValuePair.Key, null))
                 throw new ArgumentNullException("keyValuePair", Resources.WeakConcurrentDictionary_KeyIsNull);
-            // ReSharper restore RedundantCast
+
             TValue x;
             return TryGetValue(keyValuePair.Key, out x) &&
                    EqualityComparer<TValue>.Default.Equals(x, keyValuePair.Value);
@@ -410,10 +406,8 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> keyValuePair)
         {
-            // ReSharper disable RedundantCast
-            if ((object) keyValuePair.Key == null)
+            if (ReferenceEquals(keyValuePair.Key, null))
                 throw new ArgumentNullException("keyValuePair", Resources.WeakConcurrentDictionary_KeyIsNull);
-            // ReSharper restore RedundantCast
 
             TValue obj;
             return TryRemove(keyValuePair.Key, out obj) &&
@@ -501,7 +495,7 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool TryAdd([NotNull] TKey key, TValue value)
         {
             return _dictionary.TryAdd(key, Wrap(key, value));
@@ -518,12 +512,14 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool TryRemove([NotNull] TKey key, out TValue value)
         {
             WeakReference<TValue> weakReference;
             if (_dictionary.TryRemove(key, out weakReference))
             {
+                Debug.Assert(weakReference != null);
+
                 bool found = weakReference.TryGetTarget(out value);
                 UnregisterFinalize(weakReference);
                 return found;
@@ -541,7 +537,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the value was updated; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool TryUpdate([NotNull] TKey key, TValue newValue, TValue comparisonValue)
         {
             WeakReference<TValue> newWeakReference = Wrap(key, newValue, false);
@@ -557,10 +553,10 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Copies the dictionary entries to an <see cref="Array"/>.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
-            return ((IEnumerable<KeyValuePair<TKey, TValue>>) this).ToArray();
+            return ((IEnumerable<KeyValuePair<TKey, TValue>>)this).ToArray();
         }
 
         /// <summary>
@@ -571,7 +567,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public TValue GetOrAdd([NotNull] TKey key, [NotNull] Func<TKey, TValue> valueFactory)
         {
             WeakReference<TValue> weakReference = _dictionary.GetOrAdd(key, k => Wrap(key, valueFactory(k)));
@@ -593,7 +589,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public TValue GetOrAdd([NotNull] TKey key, TValue value)
         {
             return GetOrAdd(key, k => value);
@@ -608,7 +604,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public TValue AddOrUpdate(
             [NotNull] TKey key,
             [NotNull] Func<TKey, TValue> addValueFactory,
@@ -634,6 +630,7 @@ namespace WebApplications.Utilities.Caching
 
                         return Wrap(key, addValueFactory(k));
                     });
+            Debug.Assert(weakReference != null);
 
             // Now retrieve the new value
             TValue newValue;
@@ -650,7 +647,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public TValue AddOrUpdate(
             [NotNull] TKey key,
             TValue addValue,

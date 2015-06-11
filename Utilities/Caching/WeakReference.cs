@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,14 @@ namespace WebApplications.Utilities.Caching
     ///   A type safe weak reference.
     /// </summary>
     /// <typeparam name="T">The type of the referenced element.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class WeakReference<T>
         where T : class
     {
         /// <summary>
         ///   The underlying weak reference.
         /// </summary>
+        [NotNull]
         private readonly WeakReference _weakReference;
 
         /// <summary>
@@ -56,6 +57,8 @@ namespace WebApplications.Utilities.Caching
         /// </remarks>
         public WeakReference([NotNull] T target, bool trackResurrection = false)
         {
+            if (target == null) throw new ArgumentNullException("target");
+
             _weakReference = new WeakReference(target, trackResurrection);
         }
 
@@ -63,7 +66,7 @@ namespace WebApplications.Utilities.Caching
         ///   Returns a <see cref="bool"/> indicating whether or not we're tracking objects until they're collected
         ///   (<see langword="true"/>) or just until they're finalized (<see langword="false"/>).
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool TrackResurrection
         {
             get { return _weakReference.TrackResurrection; }
@@ -75,7 +78,7 @@ namespace WebApplications.Utilities.Caching
         /// <remarks>
         ///   If this is <see langword="true"/> then the instance has not yet been garbage collected, meaning it's still accessible.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool IsAlive
         {
             get { return _weakReference.IsAlive; }
@@ -84,10 +87,10 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Gets or sets the target, which is the underlying object being referenced.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public T Target
         {
-            get { return (T) _weakReference.Target; }
+            get { return (T)_weakReference.Target; }
             set { _weakReference.Target = value; }
         }
 
@@ -99,16 +102,18 @@ namespace WebApplications.Utilities.Caching
         ///   Returns <see langword="true"/> if the reference is still alive meaning the target object can be retrieved;
         ///   otherwise returns <see langword="false"/>.
         /// </returns>
+        [PublicAPI]
+        [ContractAnnotation("=>true,target:notnull; =>false,target:null")]
         public bool TryGetTarget(out T target)
         {
             if (_weakReference.IsAlive)
             {
                 object targetObj = _weakReference.Target;
                 if (targetObj != null)
-                    target = (T) targetObj;
+                    target = (T)targetObj;
                 else
                     target = default(T);
-                return true;
+                return targetObj != null;
             }
             target = default(T);
             return false;

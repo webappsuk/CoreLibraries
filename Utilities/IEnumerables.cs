@@ -9,8 +9,8 @@
 
  
  
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,8 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities
 {
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -54,9 +53,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -66,9 +64,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -79,9 +76,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -93,9 +89,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -108,9 +103,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -124,9 +118,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -141,9 +134,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -159,9 +151,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -178,9 +169,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -198,9 +188,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -219,9 +208,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -241,9 +229,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -264,9 +251,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -288,9 +274,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -313,9 +298,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -339,9 +323,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -366,9 +349,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -394,9 +376,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -423,9 +404,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -453,9 +433,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -484,9 +463,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -516,9 +494,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -549,9 +526,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -583,9 +559,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -618,9 +593,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -654,9 +628,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -691,9 +664,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -729,9 +701,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -768,9 +739,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -808,9 +778,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -849,9 +818,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32, T33&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -891,9 +859,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32, T33, T34&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -934,9 +901,8 @@ namespace WebApplications.Utilities
     {
     }
 
-
     /// <summary>
-    /// An IEnumerable of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
+    /// An IEnumerable of <c>Tuple&lt;T1, T2, T3, T4, T5, T6, T7, Tuple&lt;T8, T9, T10, T11, T12, T13, T14, Tuple&lt;T15, T16, T17, T18, T19, T20, T21, Tuple&lt;T22, T23, T24, T25, T26, T27, T28, Tuple&lt;T29, T30, T31, T32, T33, T34, T35&gt;&gt;&gt;&gt;&gt;</c>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>

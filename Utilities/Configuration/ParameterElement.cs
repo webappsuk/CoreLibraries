@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,8 @@ namespace WebApplications.Utilities.Configuration
         [PublicAPI]
         public string Name
         {
-            get { return (string) this["name"]; }
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return (string)this["name"]; }
             set { this["name"] = value; }
         }
 
@@ -63,7 +64,7 @@ namespace WebApplications.Utilities.Configuration
         [PublicAPI]
         public string Value
         {
-            get { return (string) this["value"]; }
+            get { return (string)this["value"]; }
             set { this["value"] = value; }
         }
 
@@ -77,7 +78,8 @@ namespace WebApplications.Utilities.Configuration
         [PublicAPI]
         public bool IsRequired
         {
-            get { return (bool) this["required"]; }
+            // ReSharper disable once PossibleNullReferenceException
+            get { return (bool)this["required"]; }
             set { this["required"] = value; }
         }
 
@@ -88,12 +90,12 @@ namespace WebApplications.Utilities.Configuration
         ///   The configuration property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("type", IsRequired = false)]
-        [TypeConverter(typeof (TypeNameConverter))]
+        [TypeConverter(typeof(TypeNameConverter))]
         [CanBeNull]
         [PublicAPI]
         public Type Type
         {
-            get { return (Type) this["type"]; }
+            get { return (Type)this["type"]; }
             set { this["type"] = value; }
         }
 
@@ -105,13 +107,13 @@ namespace WebApplications.Utilities.Configuration
         ///   The configuration property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("typeConverter", IsRequired = false)]
-        [TypeConverter(typeof (TypeNameConverter))]
-        [SubclassTypeValidator(typeof (TypeConverter))]
+        [TypeConverter(typeof(TypeNameConverter))]
+        [SubclassTypeValidator(typeof(TypeConverter))]
         [CanBeNull]
         [PublicAPI]
         public Type TypeConverter
         {
-            get { return (Type) this["typeConverter"]; }
+            get { return (Type)this["typeConverter"]; }
             set { this["typeConverter"] = value; }
         }
     }

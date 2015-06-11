@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,6 @@ namespace WebApplications.Utilities.Threading
     public class AsyncSemaphore
     {
         [NotNull]
-        private static readonly Task _completed = Task.FromResult(true);
-
-        [NotNull]
         private readonly Queue<TaskCompletionSource<bool>> _waiters = new Queue<TaskCompletionSource<bool>>();
 
         private int _currentCount;
@@ -79,7 +76,7 @@ namespace WebApplications.Utilities.Threading
                 if (_currentCount < _maxCount)
                 {
                     ++_currentCount;
-                    return _completed;
+                    return TaskResult.Completed;
                 }
 
                 TaskCompletionSource<bool> waiter = new TaskCompletionSource<bool>();
@@ -106,12 +103,14 @@ namespace WebApplications.Utilities.Threading
                 toRelease = null;
                 lock (_waiters)
                 {
-                    if (_currentCount <= _maxCount && _waiters.Count > 0)
+                    if (_currentCount <= _maxCount &&
+                        _waiters.Count > 0)
                         toRelease = _waiters.Dequeue();
                     else
                         --_currentCount;
                 }
-            } while (toRelease != null && !toRelease.TrySetResult(true));
+            } while (toRelease != null &&
+                     !toRelease.TrySetResult(true));
         }
     }
 }

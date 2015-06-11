@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
         [StringFormatMethod("format")]
-        void WriteTo([NotNull]TextWriter writer, [CanBeNull]string format);
+        void WriteTo([NotNull] TextWriter writer, [CanBeNull] string format);
     }
 }

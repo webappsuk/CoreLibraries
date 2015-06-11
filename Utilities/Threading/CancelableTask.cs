@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -121,7 +121,7 @@ namespace WebApplications.Utilities.Threading
         }
 
         /// <summary>
-        /// Creates a <see cref="Task{TResult}" /> that's completed exceptionally with the specified exception.
+        /// Creates a <see cref="T:Task{TResult}" /> that's completed exceptionally with the specified exception.
         /// </summary>
         /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
         /// <param name="exception">The exception with which to complete the task.</param>
@@ -133,7 +133,9 @@ namespace WebApplications.Utilities.Threading
         public static CancelableTask<TResult> FromException<TResult>(Exception exception)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            return new CancelableTask<TResult>(TaskResult<TResult>.FromException(exception), new CancelableTokenSource());
+            return new CancelableTask<TResult>(
+                TaskResult<TResult>.FromException(exception),
+                new CancelableTokenSource());
         }
 
         /// <summary>
@@ -222,7 +224,7 @@ namespace WebApplications.Utilities.Threading
         [NotNull]
         public static CancelableTask Run(
             [NotNull] Action<CancellationToken> action,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             return new CancelableTask(action, token, TaskCreationOptions.None, true);
         }
@@ -237,7 +239,7 @@ namespace WebApplications.Utilities.Threading
         [NotNull]
         public static CancelableTask Run(
             [NotNull] Func<CancellationToken, Task> action,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             return new CancelableTask(action, token, TaskCreationOptions.None, true);
         }
@@ -252,7 +254,7 @@ namespace WebApplications.Utilities.Threading
         [NotNull]
         public static CancelableTask<TResult> Run<TResult>(
             [NotNull] Func<CancellationToken, TResult> function,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             return new CancelableTask<TResult>(function, token, TaskCreationOptions.None, true);
         }
@@ -267,7 +269,7 @@ namespace WebApplications.Utilities.Threading
         [NotNull]
         public static CancelableTask<TResult> Run<TResult>(
             [NotNull] Func<CancellationToken, Task<TResult>> function,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             return new CancelableTask<TResult>(function, token, TaskCreationOptions.None, true);
         }
@@ -367,7 +369,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="creationOptions">The <see cref="TaskCreationOptions"/> used to customize the task's behavior.</param>
         public CancelableTask(
             [NotNull] Action<CancellationToken> action,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskCreationOptions creationOptions = TaskCreationOptions.None)
             : this(action, token, creationOptions, false)
         {
@@ -382,7 +384,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="creationOptions">The <see cref="TaskCreationOptions"/> used to customize the task's behavior.</param>
         public CancelableTask(
             [NotNull] Func<CancellationToken, Task> action,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskCreationOptions creationOptions = TaskCreationOptions.None)
             : this(action, token, creationOptions, false)
         {
@@ -460,7 +462,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Action<CancelableTask, CancellationToken> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
@@ -487,7 +489,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask<TResult> ContinueWith<TResult>(
             [NotNull] Func<CancelableTask, CancellationToken, TResult> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
@@ -518,7 +520,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Func<CancelableTask, CancellationToken, Task> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
@@ -547,7 +549,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask<TResult> ContinueWith<TResult>(
             [NotNull] Func<CancelableTask, CancellationToken, Task<TResult>> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
@@ -637,14 +639,17 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly CancelableTask<TResult> Default = new CancelableTask<TResult>(TaskResult<TResult>.Default, null);
+        public static readonly CancelableTask<TResult> Default = new CancelableTask<TResult>(
+            TaskResult<TResult>.Default,
+            null);
 
         /// <summary>
         /// The cancelled task.
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly CancelableTask<TResult> Cancelled = new CancelableTask<TResult>(TaskResult<TResult>.Cancelled, null);
+        public static readonly CancelableTask<TResult> Cancelled =
+            new CancelableTask<TResult>(TaskResult<TResult>.Cancelled, null);
 
         /// <summary>
         /// Creates a <see cref="CancelableTask{TResult}" /> that's completed successfully with the specified result.
@@ -659,7 +664,9 @@ namespace WebApplications.Utilities.Threading
         public static CancelableTask<TResult> FromResult(TResult result)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            return new CancelableTask<TResult>(System.Threading.Tasks.Task.FromResult(result), new CancelableTokenSource());
+            return new CancelableTask<TResult>(
+                System.Threading.Tasks.Task.FromResult(result),
+                new CancelableTokenSource());
         }
 
         /// <summary>
@@ -674,7 +681,9 @@ namespace WebApplications.Utilities.Threading
         public static CancelableTask<TResult> FromException(Exception exception)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            return new CancelableTask<TResult>(TaskResult<TResult>.FromException(exception), new CancelableTokenSource());
+            return new CancelableTask<TResult>(
+                TaskResult<TResult>.FromException(exception),
+                new CancelableTokenSource());
         }
 
         /// <summary>
@@ -875,7 +884,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="creationOptions">The <see cref="TaskCreationOptions"/> used to customize the task's behavior.</param>
         public CancelableTask(
             [NotNull] Func<CancellationToken, TResult> function,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskCreationOptions creationOptions = TaskCreationOptions.None)
             : this(function, token, creationOptions, false)
         {
@@ -890,7 +899,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="creationOptions">The <see cref="TaskCreationOptions" /> used to customize the task's behavior.</param>
         public CancelableTask(
             [NotNull] Func<CancellationToken, Task<TResult>> function,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskCreationOptions creationOptions = TaskCreationOptions.None)
             : this(function, token, creationOptions, false)
         {
@@ -968,7 +977,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Action<CancelableTask<TResult>, CancellationToken> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
@@ -995,7 +1004,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask<TNewResult> ContinueWith<TNewResult>(
             [NotNull] Func<CancelableTask<TResult>, CancellationToken, TNewResult> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
@@ -1026,7 +1035,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Func<CancelableTask<TResult>, CancellationToken, Task> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
@@ -1055,7 +1064,7 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         public CancelableTask<TNewResult> ContinueWith<TNewResult>(
             [NotNull] Func<CancelableTask<TResult>, CancellationToken, Task<TNewResult>> continuationAction,
-            CancellationToken token = default (CancellationToken),
+            CancellationToken token = default(CancellationToken),
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {

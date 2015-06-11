@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -272,9 +272,7 @@ namespace WebApplications.Utilities.Formatting
             }
             else if (RootChunk.ChildrenInternal != null &&
                      RootChunk.ChildrenInternal.Count > 0)
-            {
                 FormatChunk.DeepCopyChunks(RootChunk, formatBuilder.RootChunk);
-            }
 
             return formatBuilder;
         }
@@ -1167,6 +1165,7 @@ namespace WebApplications.Utilities.Formatting
             IResolvable resolvable;
             if (!ReferenceEquals(instance, null))
             {
+                // ReSharper disable once PossibleNullReferenceException
                 IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
                 resolvable = dictionary.Count > 0
                     ? new DictionaryResolvable(dictionary)
@@ -1285,6 +1284,7 @@ namespace WebApplications.Utilities.Formatting
                 IResolvable resolvable;
                 if (!ReferenceEquals(instance, null))
                 {
+                    // ReSharper disable once PossibleNullReferenceException
                     IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
                     resolvable = dictionary.Count > 0
                         ? new DictionaryResolvable(dictionary)
@@ -1412,10 +1412,13 @@ namespace WebApplications.Utilities.Formatting
                 ReferenceEquals(instance, null))
                 return this;
 
+            // ReSharper disable once PossibleNullReferenceException
             IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
             if (dictionary.Count < 1)
                 return this;
-            _initialResolutions = new Resolutions(_initialResolutions, new DictionaryResolvable(dictionary, false, false));
+            _initialResolutions = new Resolutions(
+                _initialResolutions,
+                new DictionaryResolvable(dictionary, false, false));
             return this;
         }
 
@@ -2532,6 +2535,7 @@ namespace WebApplications.Utilities.Formatting
             IResolvable resolvable;
             if (!ReferenceEquals(instance, null))
             {
+                // ReSharper disable once PossibleNullReferenceException
                 IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
                 resolvable = dictionary.Count > 0
                     ? new DictionaryResolvable(dictionary)
@@ -2601,6 +2605,7 @@ namespace WebApplications.Utilities.Formatting
             IResolvable resolvable;
             if (!ReferenceEquals(instance, null))
             {
+                // ReSharper disable once PossibleNullReferenceException
                 IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
                 resolvable = dictionary.Count > 0
                     ? new DictionaryResolvable(dictionary)
@@ -2878,7 +2883,7 @@ namespace WebApplications.Utilities.Formatting
                 format,
                 position);
         }
-        
+
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
@@ -3118,7 +3123,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             vStr = formattable.ToString(format, formatProvider);
                         }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             vStr = value.ToString();
@@ -3297,6 +3302,7 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(rootChunk != null);
             Contract.Requires(rootChunk.ChildrenInternal != null);
+            // ReSharper disable once PossibleNullReferenceException
             Contract.Requires(rootChunk.ChildrenInternal.Count > 0);
             Contract.Requires(writer != null);
             Contract.Requires(initialLayout != null);
@@ -3393,7 +3399,14 @@ namespace WebApplications.Utilities.Formatting
                 : initialResolutions;
 
             // Create out context object (we only need one as we run serially).
-            FormatWriteContext context = new FormatWriteContext(writerWidth, coloredTextWriter != null, controller != null, autoWraps, writer.FormatProvider, writer.Encoding, writer.NewLine);
+            FormatWriteContext context = new FormatWriteContext(
+                writerWidth,
+                coloredTextWriter != null,
+                controller != null,
+                autoWraps,
+                writer.FormatProvider,
+                writer.Encoding,
+                writer.NewLine);
 
             // The stack holds any chunks that we need to process, so start by pushing the root chunks children onto it
             // in reverse, so that they are taken off in order.
@@ -3563,7 +3576,8 @@ namespace WebApplications.Utilities.Formatting
                                                         r.ResolveControls);
                                                 else
                                                 {
-                                                    Accessor acc = resolvedValue as Accessor ?? Accessor.Create(resolvedValue);
+                                                    Accessor acc = resolvedValue as Accessor ??
+                                                                   Accessor.Create(resolvedValue);
                                                     resolutions = new Resolutions(
                                                         resolutions,
                                                         new DictionaryResolvable(acc, acc.IsCaseSensitive));
@@ -3619,7 +3633,7 @@ namespace WebApplications.Utilities.Formatting
                                                                 {
                                                                     // ReSharper disable PossibleNullReferenceException
                                                                     switch (c.Tag.ToLowerInvariant())
-                                                                    // ReSharper restore PossibleNullReferenceException
+                                                                        // ReSharper restore PossibleNullReferenceException
                                                                     {
                                                                         case IndexTag:
                                                                             return value;
@@ -3704,7 +3718,7 @@ namespace WebApplications.Utilities.Formatting
                     else if (chunk.Value == null)
                         continue;
                     else
-                        // We have a value chunk.
+                    // We have a value chunk.
                         chunkStr = GetChunkString(
                             chunk.Value,
                             chunk.Alignment,
@@ -4055,6 +4069,7 @@ namespace WebApplications.Utilities.Formatting
                                     {
                                         // We need to calculate spacers.
                                         decimal space = ((decimal)lws) / remaining;
+                                        // ReSharper disable once RedundantAssignment
                                         int o = (int)Math.Round(space / 2);
                                         spacers =
                                             new Queue<int>(
@@ -4191,8 +4206,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// The reset colors control tag.
         /// </summary>
-        [
-            NotNull]
+        [NotNull]
         [PublicAPI]
         public const string ResetColorsTag = "!resetcolors";
 
@@ -4200,6 +4214,7 @@ namespace WebApplications.Utilities.Formatting
         /// The reset colors chunk.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly FormatChunk ResetColorsChunk = new FormatChunk(null, ResetColorsTag, 0, null);
 
         /// <summary>

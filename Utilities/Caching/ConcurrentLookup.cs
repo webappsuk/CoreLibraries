@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,11 +45,13 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   A concurrent dictionary that holds the underlying data.
         /// </summary>
+        [NotNull]
         private readonly ConcurrentDictionary<TKey, Grouping> _dictionary;
 
         /// <summary>
         ///   The value comparer, used to check for equality.
         /// </summary>
+        [NotNull]
         private readonly IEqualityComparer<TValue> _valueComparer;
 
         /// <summary>
@@ -145,7 +147,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the specified <paramref name="key"/> is in the lookup; otherwise returns <see langword="false"/>.
         /// </returns>
-        public bool Contains([NotNull] TKey key)
+        public bool Contains(TKey key)
         {
             return _dictionary.ContainsKey(key);
         }
@@ -253,6 +255,7 @@ namespace WebApplications.Utilities.Caching
         public bool Remove([NotNull] TKey key, [NotNull] TValue value)
         {
             Grouping grouping;
+            // ReSharper disable once PossibleNullReferenceException - Should never be null
             return _dictionary.TryGetValue(key, out grouping) && grouping.Remove(value);
         }
 
@@ -272,6 +275,7 @@ namespace WebApplications.Utilities.Caching
             /// <summary>
             ///   The parent, which is the lookup that the group is contained in.
             /// </summary>
+            [NotNull]
             private readonly ConcurrentLookup<TKey, TValue> _parent;
 
             /// <summary>

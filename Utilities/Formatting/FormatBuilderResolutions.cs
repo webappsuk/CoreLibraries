@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
@@ -109,6 +110,7 @@ namespace WebApplications.Utilities.Formatting
                 Resolution resolution;
                 // ReSharper disable once PossibleNullReferenceException
                 string tag = chunk.Tag;
+                Debug.Assert(tag != null);
 
                 if (ResolveControls || !chunk.IsControl)
                 {
@@ -116,9 +118,7 @@ namespace WebApplications.Utilities.Formatting
                     {
                         // Get the resolution using the resolver.
                         object result = _resolver(context, chunk);
-                        resolution = result is Resolution
-                            ? (Resolution) result
-                            : new Resolution(result);
+                        resolution = result as Resolution? ?? new Resolution(result);
 
                         if (!resolution.NoCache)
                         {
@@ -135,7 +135,7 @@ namespace WebApplications.Utilities.Formatting
                         }
                     }
                 }
-                else 
+                else
                     resolution = (Resolution)Resolution.Unknown;
 
                 // If we don't have a resolution, ask the parent.

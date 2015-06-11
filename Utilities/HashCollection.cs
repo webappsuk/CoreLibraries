@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -152,7 +152,7 @@ namespace WebApplications.Utilities
         bool ISet.Add(object item)
         {
             Contract.Assert(item == null || item is T);
-            return Add((T) item);
+            return Add((T)item);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace WebApplications.Utilities
         /// <returns>true if the element is added to the set; false if the element is already in the set.</returns>
         public bool Remove(object item)
         {
-            return base.Remove((T) item);
+            return base.Remove((T)item);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace WebApplications.Utilities
         public bool Contains(object item)
         {
             Contract.Assert(item == null || item is T);
-            return base.Contains((T) item);
+            return base.Contains((T)item);
         }
 
         /// <summary>
@@ -351,6 +351,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>HashCollection.</returns>
         [NotNull]
+        [PublicAPI]
         public HashCollection<T> Clone()
         {
             return new HashCollection<T>(this);
@@ -362,7 +363,7 @@ namespace WebApplications.Utilities
         /// <value>The type.</value>
         public Type Type
         {
-            get { return typeof (T); }
+            get { return typeof(T); }
         }
 
         /// <summary>
@@ -446,7 +447,7 @@ namespace WebApplications.Utilities
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
             // ReSharper disable once RedundantCast
-            return ((HashSet<T>) this).ToArray().Cast<object>().GetEnumerator();
+            return ((HashSet<T>)this).ToArray().Cast<object>().GetEnumerator();
         }
 
         /// <summary>

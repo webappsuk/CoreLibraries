@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using WebApplications.Utilities.Annotations;
@@ -52,12 +53,15 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   An <see cref="Array"/> containing the types of all the items in the <see cref="Tuple"/>.
         /// </summary>
+        [NotNull]
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly Type[] _types;
 
         /// <summary>
         ///   Accepts a <see cref="Tuple"/> and returns its size (the number of items).
         /// </summary>
         [UsedImplicitly]
+        // ReSharper disable once StaticMemberInGenericType
         public static readonly int Size;
 
         /// <summary>
@@ -72,21 +76,24 @@ namespace WebApplications.Utilities
         /// </summary>
         static ExtendedTuple()
         {
-            Type tupleType = typeof (T);
+            Type tupleType = typeof(T);
             if ((!tupleType.IsGenericType) ||
+                // ReSharper disable PossibleNullReferenceException
                 (!tupleType.GetGenericTypeDefinition().FullName.StartsWith("System.Tuple`")))
+                // ReSharper restore PossibleNullReferenceException
                 throw new InvalidOperationException(
                     String.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ExtendedTuple_TypeIsNotValidTuple,
-                        typeof (T)));
+                        typeof(T)));
 
             // Create the tuple parameter.
-            ParameterExpression tupleParameter = Expression.Parameter(typeof (T), "tuple");
+            ParameterExpression tupleParameter = Expression.Parameter(typeof(T), "tuple");
 
             /*
              * Next create the indexer
              */
-            ParameterExpression indexParameter = Expression.Parameter(typeof (int), "index");
+            ParameterExpression indexParameter = Expression.Parameter(typeof(int), "index");
 
             // Expression to hold the current tuple's value.
             Expression currentTuple = tupleParameter;
@@ -105,6 +112,7 @@ namespace WebApplications.Utilities
                 // Sanity check, currently tuples only support 7 items and a 'Rest' item.
                 if (size > 8)
                     throw new InvalidOperationException(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         String.Format(Resources.ExtendedTuple_MoreThanEightGenericArguments, tupleType));
 
                 recurse = false;
@@ -117,17 +125,22 @@ namespace WebApplications.Utilities
                     // support recursion based on just the last element, though it would be trivial
                     // for us to do so, it would however mean a mismatch with the underlying implementation.
                     if ((tIndex == 7) &&
+                        // ReSharper disable PossibleNullReferenceException
                         (types[tIndex].IsGenericType) &&
                         (types[tIndex].GetGenericTypeDefinition().FullName.StartsWith("System.Tuple`")))
+                        // ReSharper restore PossibleNullReferenceException
                         recurse = true;
 
                     // Get the relevant property accessor
-                    MethodInfo propertyMethod = tupleType.GetProperty(
-                        propertyName,
-                        BindingFlags.Public | BindingFlags.Instance |
-                        BindingFlags.DeclaredOnly).GetGetMethod();
+                    // ReSharper disable once PossibleNullReferenceException
+                    MethodInfo propertyMethod = tupleType
+                        .GetProperty(
+                            propertyName,
+                            BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                        .GetGetMethod();
                     if (propertyMethod == null)
                         throw new InvalidOperationException(
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             string.Format(Resources.ExtendedTuple_CouldNotFindProperty, tupleType, propertyName));
 
                     // Create the property accessor expression.
@@ -136,8 +149,8 @@ namespace WebApplications.Utilities
                     if (!recurse)
                     {
                         // If we're not an object convert to object.
-                        if (types[tIndex] != typeof (object))
-                            propertyExpression = propertyExpression.Convert(typeof (object));
+                        if (types[tIndex] != typeof(object))
+                            propertyExpression = propertyExpression.Convert(typeof(object));
 
                         // Add switch case to return value of property.
                         switchCases.Add(
@@ -175,7 +188,7 @@ namespace WebApplications.Utilities
                         Expression.Throw(Expression.Constant(new IndexOutOfRangeException()))),
                     Expression.Switch(
                         indexParameter,
-                        Expression.Constant(null, typeof (object)),
+                        Expression.Constant(null, typeof(object)),
                         switchCases.ToArray())),
                 tupleParameter,
                 indexParameter).Compile();
@@ -196,7 +209,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Type[] Types
         {
-            get { return (Type[]) _types.Clone(); }
+            get { return (Type[])_types.Clone(); }
         }
 
         /// <summary>
@@ -231,6 +244,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Type GetIndexType(int index)
         {
+            Debug.Assert(_types[index] != null);
             return _types[index];
         }
 
@@ -246,14 +260,15 @@ namespace WebApplications.Utilities
         public TItem GetItem<TItem>(int index)
         {
             Type t = _types[index];
-            if (!typeof (TItem).IsAssignableFrom(t))
+            if (!typeof(TItem).IsAssignableFrom(t))
                 throw new InvalidCastException(
                     string.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ExtendedTuple_CannotCastItemAtIndex,
                         index,
                         t,
-                        typeof (TItem)));
-            return (TItem) this[index];
+                        typeof(TItem)));
+            return (TItem)this[index];
         }
     }
 }

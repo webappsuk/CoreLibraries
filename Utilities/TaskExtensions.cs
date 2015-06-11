@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -154,7 +154,8 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="task"/> is a <see langword="null"/>.
         /// </exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task WithAsyncCallback(
             [NotNull] this Task task,
             [CanBeNull] AsyncCallback callback,
@@ -185,7 +186,8 @@ namespace WebApplications.Utilities
         ///   The object to use as the underlying <see cref="Task&lt;TResult&gt;"/>'s state.
         /// </param>
         /// <returns>The passed in <paramref name="task"/>.</returns>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task<TResult> WithAsyncCallback<TResult>(
             [NotNull] this Task<TResult> task,
             [CanBeNull] AsyncCallback callback,
@@ -218,7 +220,8 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   This is particularly vital for APM where the exception needs to propagate to the end call.
         /// </remarks>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task Safe([NotNull] this Func<Task> taskCreator)
         {
             Contract.Requires(taskCreator != null);
@@ -285,7 +288,8 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation)
@@ -318,7 +322,8 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   An exception will be thrown if <paramref name="task"/> is ended prematurely by an exception.
         /// </remarks>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation,
@@ -381,9 +386,10 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task<TNewResult> AfterAll<TResult, TNewResult>(
-            [CanBeNull, InstantHandle] this IEnumerable<Task<TResult>> tasks,
+            [CanBeNull] [InstantHandle] this IEnumerable<Task<TResult>> tasks,
             [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult> continuation,
             TaskCreationOptions creationOptions)
         {
@@ -489,7 +495,8 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static WaitHandle WaitAny([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             Contract.Requires(handle != null);
@@ -545,7 +552,8 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static WaitHandle WaitAll([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             Contract.Requires(handle != null);
@@ -615,7 +623,8 @@ namespace WebApplications.Utilities
         ///   The <see cref="System.Threading.Tasks.Task&lt;TResult&gt;">Task&lt;TResult&gt;</see> created by
         ///   <see cref="System.Threading.Tasks.TaskCompletionSource&lt;TResult&gt;">TaskCompletionSource&lt;TResult&gt;</see>.
         /// </returns>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task<TResult> FromAsync<TResult>(
             [NotNull] this IAsyncResult asyncResult,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -751,6 +760,7 @@ namespace WebApplications.Utilities
             bool continueOnCapturedContext)
         {
             Contract.Requires(token.WaitHandle != null);
+            // ReSharper disable once MethodSupportsCancellation
             return token.WaitHandle.ToTask().ConfigureAwait(continueOnCapturedContext);
         }
 
@@ -818,6 +828,7 @@ namespace WebApplications.Utilities
         public static TaskAwaiter GetAwaiter(this CancellationToken token)
         {
             Contract.Requires(token.WaitHandle != null);
+            // ReSharper disable once MethodSupportsCancellation
             return token.WaitHandle.ToTask().GetAwaiter();
         }
 
@@ -873,8 +884,11 @@ namespace WebApplications.Utilities
         /// <remarks>
         /// There is a (brief) time delay between when the handle is signaled and when the task is marked as completed.
         /// </remarks>
-        [NotNull, PublicAPI]
-        public static Task ToTask([NotNull] this WaitHandle handle, CancellationToken token = default(CancellationToken))
+        [NotNull]
+        [PublicAPI]
+        public static Task ToTask(
+            [NotNull] this WaitHandle handle,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(handle != null);
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -917,7 +931,8 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task ToTask([NotNull] this Exception exception)
         {
             Contract.Requires(exception != null);
@@ -934,7 +949,8 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the T result.</typeparam>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static Task<TResult> ToTask<TResult>([NotNull] this Exception exception)
         {
             Contract.Requires(exception != null);
@@ -1100,7 +1116,7 @@ namespace WebApplications.Utilities
                     ? TokenSource.None
                     : new TokenSource(token2);
 
-            if (!token2.CanBeCanceled) 
+            if (!token2.CanBeCanceled)
                 return new TokenSource(token1);
 
             return new WrappedTokenSource(token1, token2);
@@ -1146,7 +1162,9 @@ namespace WebApplications.Utilities
         /// <returns>A token source that will be cancelled when either of the given tokens have been cancelled.</returns>
         [PublicAPI]
         [NotNull]
-        public static ICancelableTokenSource CreateCancelableLinked(this CancellationToken token1, CancellationToken token2)
+        public static ICancelableTokenSource CreateCancelableLinked(
+            this CancellationToken token1,
+            CancellationToken token2)
         {
             if (!token1.CanBeCanceled)
                 return !token2.CanBeCanceled
@@ -1230,9 +1248,9 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Gets an <see cref="ITokenSource" /> for the <paramref name="token" />.
+        /// Gets an <see cref="ITokenSource" /> for a <see cref="CancellationTokenSource" />.
         /// </summary>
-        /// <param name="cts">The CTS.</param>
+        /// <param name="cts">The CancellationTokenSource.</param>
         /// <returns></returns>
         [PublicAPI]
         [NotNull]

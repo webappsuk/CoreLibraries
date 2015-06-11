@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Security;
 using WebApplications.Utilities.Annotations;
@@ -338,9 +339,9 @@ namespace WebApplications.Utilities
             if (o == null)
                 return false;
             if (o is CombGuid)
-                return Guid.Equals(((CombGuid) o).Guid);
+                return Guid.Equals(((CombGuid)o).Guid);
             if (o is Guid)
-                return Guid.Equals((Guid) o);
+                return Guid.Equals((Guid)o);
             return false;
         }
 
@@ -393,9 +394,9 @@ namespace WebApplications.Utilities
             if (value == null)
                 return 1;
             if (value is CombGuid)
-                return Guid.CompareTo(((CombGuid) value).Guid);
+                return Guid.CompareTo(((CombGuid)value).Guid);
             if (value is Guid)
-                return Guid.CompareTo((Guid) value);
+                return Guid.CompareTo((Guid)value);
 
             throw new ArgumentException("Can only compare a CombGuid to a CombGuid.");
         }
@@ -552,7 +553,7 @@ namespace WebApplications.Utilities
                 throw new ArgumentOutOfRangeException(
                     "dateTime",
                     Resources.CombGuid_InvalidDateTime_TooEarly,
-                    _baseDate.ToString());
+                    _baseDate.ToString(CultureInfo.CurrentCulture));
 
             // First of all get a new GUID into a byte[].
             byte[] guidArray = Guid.NewGuid().ToByteArray();
@@ -560,7 +561,7 @@ namespace WebApplications.Utilities
             // Convert to a byte array  
             // Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333  
             byte[] daysArray = BitConverter.GetBytes((dateTime.Date - _baseDate).Days);
-            byte[] msecsArray = BitConverter.GetBytes((long) ((dateTime - dateTime.Date).TotalMilliseconds / 3.333333));
+            byte[] msecsArray = BitConverter.GetBytes((long)((dateTime - dateTime.Date).TotalMilliseconds / 3.333333));
 
             // We place the first four bytes of the msecs array into the last four bytes of the GUID (in reverse).
             guidArray[15] = msecsArray[0];

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,14 +44,14 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Holds all singletons of the type <typeparamref name="TSingleton"/>.
         /// </summary>
-        [UsedImplicitly]
+        [NotNull]
         protected static readonly ConcurrentDictionary<TKey, TSingleton> Singletons =
             new ConcurrentDictionary<TKey, TSingleton>();
 
         /// <summary>
         ///   Holds a function to create a singleton.
         /// </summary>
-        [UsedImplicitly]
+        [NotNull]
         protected static readonly Func<TKey, TSingleton> Constructor;
 
         // ReSharper restore StaticFieldInGenericType
@@ -72,11 +72,11 @@ namespace WebApplications.Utilities
             // Get the constructor for this type.
             try
             {
-                Constructor = typeof (TSingleton).ConstructorFunc<TKey, TSingleton>();
+                Constructor = typeof(TSingleton).ConstructorFunc<TKey, TSingleton>();
             }
             catch (Exception exception)
             {
-                throw new TypeInitializationException(typeof (TSingleton).FullName, exception);
+                throw new TypeInitializationException(typeof(TSingleton).FullName, exception);
             }
         }
 
@@ -101,6 +101,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         protected static TSingleton GetSingleton([NotNull] TKey key)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Singletons.GetOrAdd(key, k => Constructor(k));
         }
     }

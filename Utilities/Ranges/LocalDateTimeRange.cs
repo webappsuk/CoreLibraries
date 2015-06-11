@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,8 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Ranges
 {
@@ -67,6 +67,7 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="end">The end.</param>
         /// <param name="step">The step.</param>
         public LocalDateTimeRange(LocalDateTime start, LocalDateTime end, [NotNull] Period step)
+            // ReSharper disable once AssignNullToNotNullAttribute
             : base(start, end, step.Normalize())
         {
             Contract.Requires<ArgumentNullException>(step != null);
@@ -80,6 +81,7 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="duration">The duration.</param>
         /// <param name="step">The step.</param>
         public LocalDateTimeRange(LocalDateTime start, [NotNull] Period duration, [NotNull] Period step)
+            // ReSharper disable once AssignNullToNotNullAttribute
             : base(start, start + duration, step.Normalize())
         {
             Contract.Requires<ArgumentNullException>(step != null);

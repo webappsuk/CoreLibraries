@@ -4,8 +4,8 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -94,7 +94,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func<#= funcReturnTypeComment #>}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func<#= funcReturnTypeComment #>"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -116,7 +116,7 @@ namespace WebApplications.Utilities
         /// </summary><#= typeComments #>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action<#= actionReturnTypeComment #>}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action<#= actionReturnTypeComment #>"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -135,7 +135,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func<#= funcReturnTypeComment #>}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func<#= funcReturnTypeComment #>"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -152,7 +152,7 @@ namespace WebApplications.Utilities
         /// </summary><#= typeComments #>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func<#= actionReturnTypeComment #>}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action<#= actionReturnTypeComment #>"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]

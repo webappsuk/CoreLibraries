@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Threading
     ///   Based on Jeff Ritcher's wintellect threading libraries.
     /// </remarks>
     [DebuggerStepThrough]
-    [UsedImplicitly]
+    [PublicAPI]
     [Obsolete("Consider using TPL or Async.")]
     public class AsyncResult : IAsyncResult
     {
@@ -72,7 +72,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="state">
         ///   The object that can be obtained via the <see cref="AsyncResult.AsyncState"/> property.
         /// </param>
-        [UsedImplicitly]
+        [PublicAPI]
         public AsyncResult(AsyncCallback asyncCallback, object state)
         {
             _asyncCallback = asyncCallback;
@@ -88,7 +88,7 @@ namespace WebApplications.Utilities.Threading
         ///   <para>The object that is initiating the asynchronous operation.</para>
         ///   <para>This is stored in the <see cref="WebApplications.Utilities.Threading.AsyncResult.InitiatingObject"/> property.</para>
         /// </param>
-        [UsedImplicitly]
+        [PublicAPI]
         public AsyncResult(AsyncCallback asyncCallback, object state, object initiatingObject)
             : this(asyncCallback, state)
         {
@@ -98,7 +98,7 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         ///   Gets the <see cref="object"/> that was used to initiate the asynchronous operation.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public object InitiatingObject
         {
             get { return _initiatingObject; }
@@ -110,6 +110,7 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         ///   Returns <see langword="true"/> if the operation is cancelled; otherwise returns <see langword="false"/>.
         /// </value>
+        [PublicAPI]
         public bool IsCancelled
         {
             get { return (Thread.VolatileRead(ref _completedState) == StateCancelled); }
@@ -128,6 +129,7 @@ namespace WebApplications.Utilities.Threading
         ///   Gets a WaitHandle that is used to wait for an asynchronous operation to complete.
         /// </summary>
         /// <returns>A wait handle that is used to wait for an asynchronous operation to complete.</returns>
+        [NotNull]
         public WaitHandle AsyncWaitHandle
         {
             get
@@ -140,8 +142,12 @@ namespace WebApplications.Utilities.Threading
 #pragma warning restore 420
                         mre.Close();
                     else if (IsCompleted && CallingThreadShouldSetTheEvent())
+                    {
+                        Debug.Assert(_asyncWaitHandle != null);
                         _asyncWaitHandle.Set();
+                    }
                 }
+                Debug.Assert(_asyncWaitHandle != null);
                 return _asyncWaitHandle;
             }
         }
@@ -172,14 +178,15 @@ namespace WebApplications.Utilities.Threading
 
         private static void AsyncCallbackCompleteOpHelperNoReturnValue([NotNull] IAsyncResult otherAsyncResult)
         {
-            ((AsyncResult) otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
+            // ReSharper disable once PossibleNullReferenceException
+            ((AsyncResult)otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
         }
 
         /// <summary>
         ///   Returns the <see cref="IAsyncResult">status</see> of an operation that was queued to the thread pool.
         /// </summary>
         /// <returns>The IAsyncResult.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         protected IAsyncResult BeginInvokeOnWorkerThread()
         {
             ThreadPool.QueueUserWorkItem(_waitCallbackHelper, this);
@@ -215,7 +222,7 @@ namespace WebApplications.Utilities.Threading
             }
             finally
             {
-                SetAsCompleted(exception, false);
+                SetAsCompleted(exception);
             }
         }
 
@@ -223,7 +230,7 @@ namespace WebApplications.Utilities.Threading
         ///   Frees up the resources used by the asynchronous operation.
         ///   If the asynchronous operation failed then this method throws the exception.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public void EndInvoke()
         {
             if (!IsCompleted ||
@@ -243,7 +250,7 @@ namespace WebApplications.Utilities.Threading
         ///   the desired <see cref="AsyncCallback"/>
         /// </summary>
         /// <returns>The <see langword="static"/> delegate.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         protected static AsyncCallback GetAsyncCallbackHelper()
         {
             return _asyncCallbackHelper;
@@ -255,6 +262,8 @@ namespace WebApplications.Utilities.Threading
         /// <param name="result">
         ///   The <see cref="IAsyncResult"/> object identifying that the asynchronous operation that has completed.
         /// </param>
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         protected virtual void OnCompleteOperation(IAsyncResult result)
         {
         }
@@ -267,7 +276,7 @@ namespace WebApplications.Utilities.Threading
         /// </param>
         /// <param name="completedSynchronously">Indicates whether the operation completed synchronously or asynchronously.</param>
         /// <exception cref="InvalidOperationException">The operation result has already been set previously.</exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)
         {
             ExceptionDispatchInfo exceptionInfo = exception != null
@@ -294,7 +303,7 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         ///   Set the status of the asynchronous operation to cancelled.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public void SetAsCancelled()
         {
             // Set the state to completed asynchronously, you can do this even if already completed as you
@@ -316,7 +325,7 @@ namespace WebApplications.Utilities.Threading
 
         private static void WaitCallbackCompleteOpHelperNoReturnValue([NotNull] object o)
         {
-            ((AsyncResult) o).CompleteOpHelper(null);
+            ((AsyncResult)o).CompleteOpHelper(null);
         }
     }
 
@@ -325,8 +334,9 @@ namespace WebApplications.Utilities.Threading
     /// </summary>
     /// <typeparam name="TResult">The type of the value returned.</typeparam>
     [DebuggerStepThrough]
-    [UsedImplicitly]
+    [PublicAPI]
     [Obsolete("Consider using TPL or Async.")]
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class AsyncResult<TResult> : AsyncResult
     {
         // ReSharper disable StaticFieldInGenericType
@@ -366,14 +376,15 @@ namespace WebApplications.Utilities.Threading
 
         private static void AsyncCallbackCompleteOpHelperWithReturnValue([NotNull] IAsyncResult otherAsyncResult)
         {
-            ((AsyncResult<TResult>) otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
+            // ReSharper disable once PossibleNullReferenceException
+            ((AsyncResult<TResult>)otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
         }
 
         /// <summary>
         ///   Returns an <see cref="IAsyncResult"/> for an operation that was queued to the thread pool.
         /// </summary>
         /// <returns>The <see cref="IAsyncResult"/>.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         protected new IAsyncResult BeginInvokeOnWorkerThread()
         {
             ThreadPool.QueueUserWorkItem(_waitCallbackHelper, this);
@@ -400,9 +411,9 @@ namespace WebApplications.Utilities.Threading
                 exception = (e is TargetInvocationException) ? e.InnerException : e;
             }
             if (exception == null)
-                SetAsCompleted(result, false);
+                SetAsCompleted(result);
             else
-                SetAsCompleted(exception, false);
+                SetAsCompleted(exception);
         }
 
         /// <summary>
@@ -410,7 +421,7 @@ namespace WebApplications.Utilities.Threading
         ///   If the asynchronous operation failed then this method throws the exception.
         /// </summary>
         /// <returns>The value calculated by the asynchronous operation.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public new TResult EndInvoke()
         {
             base.EndInvoke();
@@ -422,7 +433,7 @@ namespace WebApplications.Utilities.Threading
         ///   the desired <see cref="AsyncCallback"/>.
         /// </summary>
         /// <returns>The single static delegate.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         protected new static AsyncCallback GetAsyncCallbackHelper()
         {
             return _asyncCallbackHelper;
@@ -435,6 +446,7 @@ namespace WebApplications.Utilities.Threading
         ///   The object identifying the asynchronous operation that has completed.
         /// </param>
         /// <returns>The value computed by the asynchronous operation.</returns>
+        [PublicAPI]
         protected new virtual TResult OnCompleteOperation(IAsyncResult result)
         {
             return default(TResult);
@@ -447,7 +459,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="completedSynchronously">
         ///   Indicates whether the operation completed synchronously or asynchronously.
         /// </param>
-        [UsedImplicitly]
+        [PublicAPI]
         public void SetAsCompleted(TResult result, bool completedSynchronously = false)
         {
             _result = result;
@@ -456,7 +468,7 @@ namespace WebApplications.Utilities.Threading
 
         private static void WaitCallbackCompleteOpHelperWithReturnValue([NotNull] object o)
         {
-            ((AsyncResult<TResult>) o).CompleteOpHelper(null);
+            ((AsyncResult<TResult>)o).CompleteOpHelper(null);
         }
     }
 }

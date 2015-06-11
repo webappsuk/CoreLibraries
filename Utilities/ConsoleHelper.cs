@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -147,7 +147,7 @@ namespace WebApplications.Utilities
             [PublicAPI]
             public ColorRef(Color color)
             {
-                ColorDWORD = color.R + (((uint) color.G) << 8) + (((uint) color.B) << 16);
+                ColorDWORD = color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
             }
 
             [PublicAPI]
@@ -160,9 +160,9 @@ namespace WebApplications.Utilities
             public Color GetColor()
             {
                 return Color.FromArgb(
-                    (int) (0x000000FFU & ColorDWORD),
-                    (int) (0x0000FF00U & ColorDWORD) >> 8,
-                    (int) (0x00FF0000U & ColorDWORD) >> 16);
+                    (int)(0x000000FFU & ColorDWORD),
+                    (int)(0x0000FF00U & ColorDWORD) >> 8,
+                    (int)(0x00FF0000U & ColorDWORD) >> 16);
             }
 
             /* For future use, we can technically set the colors and update the console window.
@@ -245,6 +245,8 @@ namespace WebApplications.Utilities
             if (Environment.UserInteractive)
                 try
                 {
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse 
+                    // - If we arent a console, CursorLeft will throw, otherwise we want IsConsole to be set to true.
                     IsConsole = Console.CursorLeft >= Int32.MinValue;
                 }
                 catch (IOException)
@@ -269,22 +271,22 @@ namespace WebApplications.Utilities
 
                     _consoleColors = new Dictionary<ConsoleColor, Color>
                     {
-                        {ConsoleColor.Black, csbe.Black.GetColor()},
-                        {ConsoleColor.DarkBlue, csbe.DarkBlue.GetColor()},
-                        {ConsoleColor.DarkGreen, csbe.DarkGreen.GetColor()},
-                        {ConsoleColor.DarkCyan, csbe.DarkCyan.GetColor()},
-                        {ConsoleColor.DarkRed, csbe.DarkRed.GetColor()},
-                        {ConsoleColor.DarkMagenta, csbe.DarkMagenta.GetColor()},
-                        {ConsoleColor.DarkYellow, csbe.DarkYellow.GetColor()},
-                        {ConsoleColor.Gray, csbe.Gray.GetColor()},
-                        {ConsoleColor.DarkGray, csbe.DarkGray.GetColor()},
-                        {ConsoleColor.Blue, csbe.Blue.GetColor()},
-                        {ConsoleColor.Green, csbe.Green.GetColor()},
-                        {ConsoleColor.Cyan, csbe.Cyan.GetColor()},
-                        {ConsoleColor.Red, csbe.Red.GetColor()},
-                        {ConsoleColor.Magenta, csbe.Magenta.GetColor()},
-                        {ConsoleColor.Yellow, csbe.Yellow.GetColor()},
-                        {ConsoleColor.White, csbe.White.GetColor()}
+                        { ConsoleColor.Black, csbe.Black.GetColor() },
+                        { ConsoleColor.DarkBlue, csbe.DarkBlue.GetColor() },
+                        { ConsoleColor.DarkGreen, csbe.DarkGreen.GetColor() },
+                        { ConsoleColor.DarkCyan, csbe.DarkCyan.GetColor() },
+                        { ConsoleColor.DarkRed, csbe.DarkRed.GetColor() },
+                        { ConsoleColor.DarkMagenta, csbe.DarkMagenta.GetColor() },
+                        { ConsoleColor.DarkYellow, csbe.DarkYellow.GetColor() },
+                        { ConsoleColor.Gray, csbe.Gray.GetColor() },
+                        { ConsoleColor.DarkGray, csbe.DarkGray.GetColor() },
+                        { ConsoleColor.Blue, csbe.Blue.GetColor() },
+                        { ConsoleColor.Green, csbe.Green.GetColor() },
+                        { ConsoleColor.Cyan, csbe.Cyan.GetColor() },
+                        { ConsoleColor.Red, csbe.Red.GetColor() },
+                        { ConsoleColor.Magenta, csbe.Magenta.GetColor() },
+                        { ConsoleColor.Yellow, csbe.Yellow.GetColor() },
+                        { ConsoleColor.White, csbe.White.GetColor() }
                     };
                 }
                 catch
@@ -306,22 +308,22 @@ namespace WebApplications.Utilities
         private static readonly IReadOnlyDictionary<ConsoleColor, Color> _defaultConsoleColors =
             new Dictionary<ConsoleColor, Color>
             {
-                {ConsoleColor.Black, Color.Black},
-                {ConsoleColor.DarkBlue, Color.DarkBlue},
-                {ConsoleColor.DarkGreen, Color.DarkGreen},
-                {ConsoleColor.DarkCyan, Color.DarkCyan},
-                {ConsoleColor.DarkRed, Color.DarkRed},
-                {ConsoleColor.DarkMagenta, Color.DarkMagenta},
-                {ConsoleColor.DarkYellow, Color.DarkGoldenrod},
-                {ConsoleColor.Gray, Color.Gray},
-                {ConsoleColor.DarkGray, Color.DarkGray},
-                {ConsoleColor.Blue, Color.Blue},
-                {ConsoleColor.Green, Color.Green},
-                {ConsoleColor.Cyan, Color.Cyan},
-                {ConsoleColor.Red, Color.Red},
-                {ConsoleColor.Magenta, Color.Magenta},
-                {ConsoleColor.Yellow, Color.Yellow},
-                {ConsoleColor.White, Color.White}
+                { ConsoleColor.Black, Color.Black },
+                { ConsoleColor.DarkBlue, Color.DarkBlue },
+                { ConsoleColor.DarkGreen, Color.DarkGreen },
+                { ConsoleColor.DarkCyan, Color.DarkCyan },
+                { ConsoleColor.DarkRed, Color.DarkRed },
+                { ConsoleColor.DarkMagenta, Color.DarkMagenta },
+                { ConsoleColor.DarkYellow, Color.DarkGoldenrod },
+                { ConsoleColor.Gray, Color.Gray },
+                { ConsoleColor.DarkGray, Color.DarkGray },
+                { ConsoleColor.Blue, Color.Blue },
+                { ConsoleColor.Green, Color.Green },
+                { ConsoleColor.Cyan, Color.Cyan },
+                { ConsoleColor.Red, Color.Red },
+                { ConsoleColor.Magenta, Color.Magenta },
+                { ConsoleColor.Yellow, Color.Yellow },
+                { ConsoleColor.White, Color.White }
             };
 
         /// <summary>
@@ -404,6 +406,7 @@ namespace WebApplications.Utilities
                     case '\b':
                         if (pass.Count > 0)
                         {
+                            // ReSharper disable once LocalizableElement
                             Console.Write("\b \b");
                             pass.RemoveLast();
                         }

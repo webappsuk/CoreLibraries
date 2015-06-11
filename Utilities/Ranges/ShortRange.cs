@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Ranges
         /// <exception cref="System.ArgumentOutOfRangeException">
         ///   The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
         /// </exception>
-        public ShortRange(short start, short end, short step = (short) 1)
+        public ShortRange(short start, short end, short step = (short)1)
             : base(start, end, step)
         {
         }

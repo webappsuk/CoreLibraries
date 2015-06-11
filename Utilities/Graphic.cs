@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -37,17 +37,20 @@ namespace WebApplications.Utilities
     /// Holds image data and supports out typing of images.  Prevents unnecessary loading of images when passing data
     /// around, and makes much safer use of streams.
     /// </summary>
+    [PublicAPI]
     public class Graphic : IEquatable<Graphic>
     {
         /// <summary>
         /// The data.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly HashedByteArray Data;
 
         /// <summary>
         /// The format of the image.
         /// </summary>
+        [PublicAPI]
         public readonly GraphicFormat Format;
 
         /// <summary>
@@ -144,6 +147,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>System.Drawing.Image.</returns>
         [NotNull]
+        [PublicAPI]
         public Image GetImage()
         {
             // Note the stream should not be wrapped in a using statement as Image
@@ -166,6 +170,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns></returns>
         [CanBeNull]
+        [PublicAPI]
         public string ToDataUrl()
         {
             StringBuilder builder = new StringBuilder("data:", Encoded.Length + 30);

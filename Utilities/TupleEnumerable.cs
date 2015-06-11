@@ -9,8 +9,8 @@
 
  
  
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -74,8 +73,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2>)
-                return (IEnumerable<T1, T2>)enumerable;
+            IEnumerable<T1, T2> tuples = enumerable as IEnumerable<T1, T2>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2>>()))
                 return Enumerable<T1, T2>.Empty;
             return new Enumerable<T1, T2>(enumerable);
@@ -84,6 +84,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2> : IEnumerable<T1, T2>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2> Empty = 
                 new Enumerable<T1, T2>(Enumerable.Empty<Tuple<T1, T2>>());
 
@@ -118,8 +119,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3>)
-                return (IEnumerable<T1, T2, T3>)enumerable;
+            IEnumerable<T1, T2, T3> tuples = enumerable as IEnumerable<T1, T2, T3>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3>>()))
                 return Enumerable<T1, T2, T3>.Empty;
             return new Enumerable<T1, T2, T3>(enumerable);
@@ -128,6 +130,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3> : IEnumerable<T1, T2, T3>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3> Empty = 
                 new Enumerable<T1, T2, T3>(Enumerable.Empty<Tuple<T1, T2, T3>>());
 
@@ -163,8 +166,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4>)
-                return (IEnumerable<T1, T2, T3, T4>)enumerable;
+            IEnumerable<T1, T2, T3, T4> tuples = enumerable as IEnumerable<T1, T2, T3, T4>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4>>()))
                 return Enumerable<T1, T2, T3, T4>.Empty;
             return new Enumerable<T1, T2, T3, T4>(enumerable);
@@ -173,6 +177,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4> : IEnumerable<T1, T2, T3, T4>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4> Empty = 
                 new Enumerable<T1, T2, T3, T4>(Enumerable.Empty<Tuple<T1, T2, T3, T4>>());
 
@@ -209,8 +214,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5>)
-                return (IEnumerable<T1, T2, T3, T4, T5>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5>>()))
                 return Enumerable<T1, T2, T3, T4, T5>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5>(enumerable);
@@ -219,6 +225,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5> : IEnumerable<T1, T2, T3, T4, T5>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5>>());
 
@@ -256,8 +263,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6>(enumerable);
@@ -266,6 +274,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6> : IEnumerable<T1, T2, T3, T4, T5, T6>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6>>());
 
@@ -304,8 +313,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7>(enumerable);
@@ -314,6 +324,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7> : IEnumerable<T1, T2, T3, T4, T5, T6, T7>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7>>());
 
@@ -353,8 +364,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8>(enumerable);
@@ -363,6 +375,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>>());
 
@@ -403,8 +416,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>(enumerable);
@@ -413,6 +427,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>>());
 
@@ -454,8 +469,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(enumerable);
@@ -464,6 +480,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>>());
 
@@ -506,8 +523,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(enumerable);
@@ -516,6 +534,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>>());
 
@@ -559,8 +578,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(enumerable);
@@ -569,6 +589,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>>());
 
@@ -613,8 +634,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(enumerable);
@@ -623,6 +645,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>>());
 
@@ -668,8 +691,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(enumerable);
@@ -678,6 +702,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>>());
 
@@ -724,8 +749,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(enumerable);
@@ -734,6 +760,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>>());
 
@@ -781,8 +808,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(enumerable);
@@ -791,6 +819,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>>());
 
@@ -839,8 +868,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(enumerable);
@@ -849,6 +879,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>>());
 
@@ -898,8 +929,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(enumerable);
@@ -908,6 +940,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>>());
 
@@ -958,8 +991,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(enumerable);
@@ -968,6 +1002,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>>());
 
@@ -1019,8 +1054,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(enumerable);
@@ -1029,6 +1065,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>>());
 
@@ -1081,8 +1118,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(enumerable);
@@ -1091,6 +1129,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>>());
 
@@ -1144,8 +1183,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(enumerable);
@@ -1154,6 +1194,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>>());
 
@@ -1208,8 +1249,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(enumerable);
@@ -1218,6 +1260,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>>());
 
@@ -1273,8 +1316,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(enumerable);
@@ -1283,6 +1327,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>>());
 
@@ -1339,8 +1384,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(enumerable);
@@ -1349,6 +1395,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>>());
 
@@ -1406,8 +1453,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(enumerable);
@@ -1416,6 +1464,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>>());
 
@@ -1474,8 +1523,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(enumerable);
@@ -1484,6 +1534,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>>());
 
@@ -1543,8 +1594,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(enumerable);
@@ -1553,6 +1605,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>>());
 
@@ -1613,8 +1666,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(enumerable);
@@ -1623,6 +1677,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>>());
 
@@ -1684,8 +1739,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(enumerable);
@@ -1694,6 +1750,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>>());
 
@@ -1756,8 +1813,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(enumerable);
@@ -1766,6 +1824,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>>());
 
@@ -1829,8 +1888,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(enumerable);
@@ -1839,6 +1899,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>>());
 
@@ -1903,8 +1964,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(enumerable);
@@ -1913,6 +1975,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>>());
 
@@ -1978,8 +2041,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(enumerable);
@@ -1988,6 +2052,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>>());
 
@@ -2054,8 +2119,9 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null)
                 return null;
-            if (enumerable is IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>)
-                return (IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>)enumerable;
+            IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> tuples = enumerable as IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>;
+            if (tuples != null)
+                return tuples;
             if (ReferenceEquals(enumerable, Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>>()))
                 return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>.Empty;
             return new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(enumerable);
@@ -2064,6 +2130,7 @@ namespace WebApplications.Utilities
         private class Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> : IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>
         {
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static readonly IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> Empty = 
                 new Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(Enumerable.Empty<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>>());
 

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
@@ -70,7 +71,8 @@ namespace WebApplications.Utilities
         private StringBuilder _builder = new StringBuilder();
 
         [NotNull]
-        private readonly Dictionary<LambdaExpression, string> _lambdaDefinitions = new Dictionary<LambdaExpression, string>();
+        private readonly Dictionary<LambdaExpression, string> _lambdaDefinitions =
+            new Dictionary<LambdaExpression, string>();
 
         private bool _lambdaIsRoot;
 
@@ -80,6 +82,11 @@ namespace WebApplications.Utilities
         private int _indent;
         private bool _newLine;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CSharpExpressionWriter"/> class.
+        /// </summary>
+        /// <param name="preVisitor">The pre visitor.</param>
+        /// <param name="rootIsLambda">if set to <see langword="true" /> [root is lambda].</param>
         private CSharpExpressionWriter([NotNull] PreVisitor preVisitor, bool rootIsLambda)
         {
             _preVisitor = preVisitor;
@@ -133,8 +140,16 @@ namespace WebApplications.Utilities
             private int _labelId = 1;
             private int _lambdaId = 1;
             private int _paramId = 1;
+
+            /// <summary>
+            /// Whether namespace qualified names will be used instead of shortened ones.
+            /// </summary>
             public readonly bool FullTypeNames;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="PreVisitor"/> class.
+            /// </summary>
+            /// <param name="fullTypeNames">if set to <see langword="true" /> [full type names].</param>
             public PreVisitor(bool fullTypeNames)
             {
                 _typeNames = new Lazy<Dictionary<Type, string>>(GetTypeNames);
@@ -142,11 +157,19 @@ namespace WebApplications.Utilities
                 FullTypeNames = fullTypeNames;
             }
 
+            /// <summary>
+            /// Adds the type to the collection.
+            /// </summary>
+            /// <param name="type">The type.</param>
             private void AddType([NotNull] Type type)
             {
                 AddTypes(type);
             }
 
+            /// <summary>
+            /// Adds the types to the collection.
+            /// </summary>
+            /// <param name="types">The types.</param>
             private void AddTypes([NotNull] params Type[] types)
             {
                 Stack<Type> stack = new Stack<Type>(types);
@@ -154,20 +177,29 @@ namespace WebApplications.Utilities
                 Type type;
                 while (stack.TryPop(out type))
                 {
+                    Debug.Assert(type != null);
+
                     _types.Add(type);
 
                     if (type.IsGenericTypeDefinition)
                         continue;
 
-                    Type[] typeArgs = type.GetGenericArguments();
+                    // ReSharper disable once ConstantNullCoalescingCondition - This can actually return null for certain types.
+                    Type[] typeArgs = type.GetGenericArguments() ?? Array<Type>.Empty;
                     foreach (Type t in typeArgs)
                     {
+                        Debug.Assert(t != null);
+
                         stack.Push(t);
                         _types.Add(type, t);
                     }
                 }
             }
 
+            /// <summary>
+            /// Gets the type names.
+            /// </summary>
+            /// <returns></returns>
             [NotNull]
             private Dictionary<Type, string> GetTypeNames()
             {
@@ -179,9 +211,12 @@ namespace WebApplications.Utilities
 
                 foreach (Type type in _types.AllTopDown)
                 {
+                    Debug.Assert(type != null);
+
                     string name;
                     if (FullTypeNames || !_keywordTypes.TryGetValue(type, out name))
                         name = type.FullName;
+                    Debug.Assert(name != null);
 
                     uniqueTypes[name] = type;
 
@@ -202,20 +237,28 @@ namespace WebApplications.Utilities
                 // Each part of the component paths that only appeared once can be added to the unique components
                 foreach (IGrouping<string, Type> group in ambiguousTypes)
                 {
+                    Debug.Assert(group != null);
+                    Debug.Assert(group.Key != null);
+
                     if (!uniqueTypes.ContainsKey(group.Key) &&
                         group.HasExact(1))
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         uniqueTypes[group.Key] = group.First();
                 }
 
                 Dictionary<Type, string> dict = uniqueTypes.GroupBy(kvp => kvp.Value, kvp => kvp.Key)
-                    // ReSharper disable once PossibleNullReferenceException
+                    // ReSharper disable PossibleNullReferenceException
                     .ToDictionary(g => g.Key, g => g.MinBy(p => p.Split('.').Length).Replace('+', '.'));
+                // ReSharper restore PossibleNullReferenceException
 
+                // ReSharper disable once PossibleNullReferenceException
                 foreach (Type type in _types.AllTopDown.Where(t => t.IsGenericType))
                 {
                     string name = dict[type];
+                    Debug.Assert(name != null);
 
                     if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         name = dict[type.GetGenericArguments()[0]] + "?";
                     else
                     {
@@ -223,11 +266,12 @@ namespace WebApplications.Utilities
                         if (genIndex > 0)
                             name = name.Substring(0, genIndex);
 
-                        name = name + "<" +
-                               string.Join(
-                                   ", ",
-                                   type.GetGenericArguments().Select(t => t.IsGenericParameter ? string.Empty : dict[t])) +
-                               ">";
+                        IEnumerable<string> args = type.GetGenericArguments()
+                            // ReSharper disable PossibleNullReferenceException
+                            .Select(t => t.IsGenericParameter ? string.Empty : dict[t]);
+                        // ReSharper restore PossibleNullReferenceException
+
+                        name = name + "<" + string.Join(", ", args) + ">";
                     }
 
                     dict[type] = name;
@@ -236,6 +280,13 @@ namespace WebApplications.Utilities
                 return dict;
             }
 
+            /// <summary>
+            /// Dispatches the expression to one of the more specialized visit methods in this class.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             [CanBeNull]
             public override Expression Visit([CanBeNull] Expression node)
             {
@@ -244,6 +295,13 @@ namespace WebApplications.Utilities
                 return base.Visit(node);
             }
 
+            /// <summary>
+            /// Visits the <see cref="T:System.Linq.Expressions.ConstantExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitConstant(ConstantExpression node)
             {
                 Type type = node.Value as Type;
@@ -253,6 +311,13 @@ namespace WebApplications.Utilities
                 return base.VisitConstant(node);
             }
 
+            /// <summary>
+            /// Visits the <see cref="T:System.Linq.Expressions.LabelTarget" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             [CanBeNull]
             protected override LabelTarget VisitLabelTarget([CanBeNull] LabelTarget node)
             {
@@ -267,6 +332,14 @@ namespace WebApplications.Utilities
                 return base.VisitLabelTarget(node);
             }
 
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.Expression`1" />.
+            /// </summary>
+            /// <typeparam name="T">The type of the delegate.</typeparam>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitLambda<T>(Expression<T> node)
             {
                 if (node.ReturnType != null)
@@ -277,6 +350,13 @@ namespace WebApplications.Utilities
                 return base.VisitLambda(node);
             }
 
+            /// <summary>
+            /// Visits the <see cref="T:System.Linq.Expressions.ParameterExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitParameter(ParameterExpression node)
             {
                 if (!string.IsNullOrWhiteSpace(node.Name))
@@ -285,7 +365,13 @@ namespace WebApplications.Utilities
                 return base.VisitParameter(node);
             }
 
-            [NotNull]
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.DynamicExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitDynamic(DynamicExpression node)
             {
                 if (node.DelegateType != null)
@@ -293,12 +379,26 @@ namespace WebApplications.Utilities
                 return base.VisitDynamic(node);
             }
 
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.TypeBinaryExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitTypeBinary(TypeBinaryExpression node)
             {
                 AddType(node.TypeOperand);
                 return base.VisitTypeBinary(node);
             }
 
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.CatchBlock" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override CatchBlock VisitCatchBlock(CatchBlock node)
             {
                 if (node.Test != null)
@@ -306,7 +406,13 @@ namespace WebApplications.Utilities
                 return base.VisitCatchBlock(node);
             }
 
-            [NotNull]
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.MethodCallExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitMethodCall(MethodCallExpression node)
             {
                 if (node.Object == null) // ReSharper disable once AssignNullToNotNullAttribute
@@ -317,15 +423,32 @@ namespace WebApplications.Utilities
                 return base.VisitMethodCall(node);
             }
 
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.NewArrayExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitNewArray(NewArrayExpression node)
             {
-                AddType(node.Type.GetElementType());
+                Type elementType = node.Type.GetElementType();
 
-                AddTypes(node.Type.GetElementType().GetGenericArguments());
+                Debug.Assert(elementType != null);
+
+                AddType(elementType);
+                AddTypes(elementType.GetGenericArguments());
 
                 return base.VisitNewArray(node);
             }
 
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.NewExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitNew(NewExpression node)
             {
                 AddTypes(node.Type.GetGenericArguments());
@@ -333,6 +456,13 @@ namespace WebApplications.Utilities
                 return base.VisitNew(node);
             }
 
+            /// <summary>
+            /// Visits the children of the <see cref="T:System.Linq.Expressions.MemberExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>
+            /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+            /// </returns>
             protected override Expression VisitMember(MemberExpression node)
             {
                 if (node.Expression == null) // ReSharper disable once AssignNullToNotNullAttribute
@@ -341,12 +471,20 @@ namespace WebApplications.Utilities
                 return base.VisitMember(node);
             }
 
+            /// <summary>
+            /// Gets the name of the label.
+            /// </summary>
+            /// <param name="label">The label.</param>
+            /// <returns></returns>
             [NotNull]
             public string GetLabelName([NotNull] LabelTarget label)
             {
                 string name;
                 if (_labelNames.TryGetValue(label, out name))
+                {
+                    Debug.Assert(name != null);
                     return name;
+                }
 
                 while (_labelNames.ContainsValue(name = "label" + _labelId++))
                 {
@@ -355,12 +493,20 @@ namespace WebApplications.Utilities
                 return name;
             }
 
+            /// <summary>
+            /// Gets the name of the lambda.
+            /// </summary>
+            /// <param name="lambda">The lambda.</param>
+            /// <returns></returns>
             [NotNull]
             public string GetLambdaName([NotNull] LambdaExpression lambda)
             {
                 string name;
                 if (_lambdaNames.TryGetValue(lambda, out name))
+                {
+                    Debug.Assert(name != null);
                     return name;
+                }
 
                 while (_lambdaNames.ContainsValue(name = "Lambda" + _lambdaId++))
                 {
@@ -369,12 +515,20 @@ namespace WebApplications.Utilities
                 return name;
             }
 
+            /// <summary>
+            /// Gets the name of the parameter.
+            /// </summary>
+            /// <param name="parameter">The parameter.</param>
+            /// <returns></returns>
             [NotNull]
             public string GetParameterName([NotNull] ParameterExpression parameter)
             {
                 string name;
                 if (_parameterNames.TryGetValue(parameter, out name))
+                {
+                    Debug.Assert(name != null);
                     return name;
+                }
 
                 while (_parameterNames.ContainsValue(name = "var" + _paramId++))
                 {
@@ -383,24 +537,40 @@ namespace WebApplications.Utilities
                 return name;
             }
 
+            /// <summary>
+            /// Gets the name of the type.
+            /// </summary>
+            /// <param name="type">The type.</param>
+            /// <returns></returns>
             [NotNull]
             public string GetTypeName([NotNull] Type type)
             {
                 string name;
+                Debug.Assert(_typeNames.Value != null);
                 if (_typeNames.Value.TryGetValue(type, out name))
+                {
+                    Debug.Assert(name != null);
                     return name;
+                }
 
                 if (type.IsGenericType)
                 {
                     name = type.FullName;
+                    // ReSharper disable once PossibleNullReferenceException
                     name = name.Substring(0, name.IndexOf('`'));
                     return name + "<" + string.Join(", ", type.GetGenericArguments().Select(GetTypeName)) + ">";
                 }
 
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return type.FullName;
             }
         }
 
+        /// <summary>
+        /// Gets the name of the label.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        /// <returns></returns>
         [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetLabelName([NotNull] LabelTarget label)
@@ -408,6 +578,11 @@ namespace WebApplications.Utilities
             return _preVisitor.GetLabelName(label);
         }
 
+        /// <summary>
+        /// Gets the name of the lambda.
+        /// </summary>
+        /// <param name="lambda">The lambda.</param>
+        /// <returns></returns>
         [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetLambdaName([NotNull] LambdaExpression lambda)
@@ -415,6 +590,11 @@ namespace WebApplications.Utilities
             return _preVisitor.GetLambdaName(lambda);
         }
 
+        /// <summary>
+        /// Gets the name of the parameter.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns></returns>
         [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetParameterName([NotNull] ParameterExpression parameter)
@@ -422,6 +602,11 @@ namespace WebApplications.Utilities
             return _preVisitor.GetParameterName(parameter);
         }
 
+        /// <summary>
+        /// Gets the name of the type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetTypeName([NotNull] Type type)
@@ -429,12 +614,18 @@ namespace WebApplications.Utilities
             return _preVisitor.GetTypeName(type);
         }
 
+        /// <summary>
+        /// Indents the output.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Indent()
         {
             _indent += Tab;
         }
 
+        /// <summary>
+        /// Deindents this output.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // ReSharper disable once IdentifierTypo
         private void Deindent()
@@ -442,15 +633,10 @@ namespace WebApplications.Utilities
             _indent -= Tab;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Out([NotNull] object s)
-        {
-            if (_newLine)
-                _builder.Append(TabChar, _indent);
-            _newLine = false;
-            _builder.Append(s);
-        }
-
+        /// <summary>
+        /// Outputs a string to the string builder.
+        /// </summary>
+        /// <param name="s">The s.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Out([NotNull] string s)
         {
@@ -460,15 +646,10 @@ namespace WebApplications.Utilities
             _builder.Append(s);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Out(char c)
-        {
-            if (_newLine)
-                _builder.Append(TabChar, _indent);
-            _newLine = false;
-            _builder.Append(c);
-        }
-
+        /// <summary>
+        /// Outputs a string followed by a new line to the string builder.
+        /// </summary>
+        /// <param name="s">The string.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OutLine([NotNull] string s)
         {
@@ -478,6 +659,9 @@ namespace WebApplications.Utilities
             _newLine = true;
         }
 
+        /// <summary>
+        /// Outputs a new line to the string builder.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void NewLine()
         {
@@ -485,6 +669,14 @@ namespace WebApplications.Utilities
             _newLine = true;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.BinaryExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
+        /// <exception cref="System.NotImplementedException"></exception>
         protected override Expression VisitBinary(BinaryExpression node)
         {
             if (node.NodeType == ExpressionType.ArrayIndex)
@@ -664,15 +856,27 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.BlockExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         [NotNull]
         protected override Expression VisitBlock(BlockExpression node)
         {
             OutLine("{");
             Indent();
 
+            // ReSharper disable once PossibleNullReferenceException
             foreach (ParameterExpression variable in node.Variables)
+            {
+                Debug.Assert(variable != null);
                 OutLine(GetTypeName(variable.Type) + " " + GetParameterName(variable) + ";");
+            }
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             VisitStatements(node.Expressions);
 
             Deindent();
@@ -681,11 +885,20 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the statements of a block.
+        /// </summary>
+        /// <param name="expressions">The expressions.</param>
         private void VisitStatements([NotNull] ReadOnlyCollection<Expression> expressions)
         {
             Visit(expressions, VisitStatement);
         }
 
+        /// <summary>
+        /// Visits a statement inside a block.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <returns></returns>
         [NotNull]
         private Expression VisitStatement([NotNull] Expression node)
         {
@@ -717,6 +930,13 @@ namespace WebApplications.Utilities
             }
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.ConditionalExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitConditional(ConditionalExpression node)
         {
             if (node.Type == typeof(void))
@@ -779,6 +999,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the <see cref="T:System.Linq.Expressions.ConstantExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitConstant(ConstantExpression node)
         {
             object value = node.Value;
@@ -787,6 +1014,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the <see cref="T:System.Linq.Expressions.DebugInfoExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitDebugInfo(DebugInfoExpression node)
         {
             // TODO Implement properly
@@ -794,6 +1028,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.DynamicExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         [NotNull]
         protected override Expression VisitDynamic(DynamicExpression node)
         {
@@ -802,6 +1043,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the <see cref="T:System.Linq.Expressions.DefaultExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitDefault(DefaultExpression node)
         {
             if (node.Type != typeof(void))
@@ -809,6 +1057,14 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the extension expression.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
         protected override Expression VisitExtension(Expression node)
         {
@@ -820,49 +1076,50 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.GotoExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException"></exception>
         protected override Expression VisitGoto(GotoExpression node)
         {
             switch (node.Kind)
             {
                 case GotoExpressionKind.Goto:
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     Out("goto " + GetLabelName(node.Target));
-                    if (node.Type != typeof(void))
-                    {
-                        Out(" ");
-                        Visit(node.Value);
-                    }
                     break;
                 case GotoExpressionKind.Return:
                     Out("return");
-                    if (node.Type != typeof(void))
-                    {
-                        Out(" ");
-                        Visit(node.Value);
-                    }
                     break;
                 case GotoExpressionKind.Break:
                     Out("break");
-                    if (node.Type != typeof(void))
-                    {
-                        Out(" ");
-                        Visit(node.Value);
-                    }
                     break;
                 case GotoExpressionKind.Continue:
                     Out("continue");
-                    if (node.Type != typeof(void))
-                    {
-                        Out(" ");
-                        Visit(node.Value);
-                    }
                     break;
                 default:
                     throw new NotSupportedException();
+            }
+            if (node.Value != null)
+            {
+                Out(" ");
+                Visit(node.Value);
             }
 
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.InvocationExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         [NotNull]
         protected override Expression VisitInvocation([NotNull] InvocationExpression node)
         {
@@ -872,8 +1129,16 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.LabelExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitLabel(LabelExpression node)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             Out(GetLabelName(node.Target));
 
             if (node.Type != typeof(void))
@@ -886,12 +1151,21 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.Expression`1" />.
+        /// </summary>
+        /// <typeparam name="T">The type of the delegate.</typeparam>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
+            // TODO Allow this to output inline lambdas
+
             bool isRoot = _lambdaIsRoot;
             StringBuilder builder = _builder;
             int indent = _indent;
-            bool newLine = _newLine;
             _lambdaIsRoot = false;
 
             string name = GetLambdaName(node);
@@ -904,9 +1178,9 @@ namespace WebApplications.Utilities
 
                     _builder = new StringBuilder();
                     _indent = 0;
-                    newLine = false;
                 }
 
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Out(GetTypeName(node.ReturnType) + " " + name);
 
                 Out("(");
@@ -915,6 +1189,7 @@ namespace WebApplications.Utilities
                     if (index > 0) Out(", ");
 
                     ParameterExpression parameter = node.Parameters[index];
+                    Debug.Assert(parameter != null);
                     if (parameter.Type.IsByRef)
                         Out("ref ");
                     Out(GetTypeName(parameter.Type) + " " + GetParameterName(parameter));
@@ -938,17 +1213,22 @@ namespace WebApplications.Utilities
 
                     _builder = builder;
                     _indent = indent;
-                    _newLine = newLine;
+                    _newLine = false;
                 }
             }
             else if (!isRoot)
-            {
                 Out(name);
-            }
 
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.LoopExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitLoop(LoopExpression node)
         {
             Out("loop");
@@ -962,6 +1242,7 @@ namespace WebApplications.Utilities
             {
                 OutLine("{");
                 Indent();
+                // ReSharper disable once AssignNullToNotNullAttribute
                 VisitStatement(node.Body);
                 Deindent();
                 Out("}");
@@ -973,6 +1254,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.MemberExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitMember(MemberExpression node)
         {
             if (node.Expression != null)
@@ -984,6 +1272,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.IndexExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         [NotNull]
         protected override Expression VisitIndex([NotNull] IndexExpression node)
         {
@@ -991,6 +1286,7 @@ namespace WebApplications.Utilities
             Out("[");
 
             bool first = true;
+            // ReSharper disable once PossibleNullReferenceException
             foreach (Expression index in node.Arguments)
             {
                 if (first) first = false;
@@ -1004,14 +1300,27 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.MethodCallExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         [NotNull]
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (!_preVisitor.FullTypeNames && node.Method.GetCustomAttribute<ExtensionAttribute>() != null)
+            if (!_preVisitor.FullTypeNames &&
+                node.Method.GetCustomAttribute<ExtensionAttribute>() != null)
             {
                 Visit(node.Arguments[0]);
                 Out(".");
-                VisitMethod(node.Method.Name, node.Method.GetGenericArguments(), node.Arguments.Skip(1).ToArray(), "(", ")");
+                VisitMethod(
+                    node.Method.Name,
+                    node.Method.GetGenericArguments(),
+                    node.Arguments.Skip(1).ToArray(),
+                    "(",
+                    ")");
 
                 return node;
             }
@@ -1027,9 +1336,17 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="typeArgs">The type arguments.</param>
+        /// <param name="args">The arguments.</param>
+        /// <param name="openBracket">The open bracket.</param>
+        /// <param name="closeBracket">The close bracket.</param>
         private void VisitMethod(
             [NotNull] string name,
-            [NotNull] Type[] typeArgs,
+            [NotNull] [ItemNotNull] IReadOnlyCollection<Type> typeArgs,
             [NotNull] IEnumerable<Expression> args,
             [NotNull] string openBracket,
             [NotNull] string closeBracket)
@@ -1037,7 +1354,7 @@ namespace WebApplications.Utilities
             Out(name);
 
             bool first;
-            if (typeArgs.Length > 0)
+            if (typeArgs.Count > 0)
             {
                 Out("<");
 
@@ -1069,10 +1386,18 @@ namespace WebApplications.Utilities
             Out(closeBracket);
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.NewArrayExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitNewArray(NewArrayExpression node)
         {
             Out("new ");
             Type elementType = node.Type.GetElementType();
+            Debug.Assert(elementType != null);
 
             if (node.NodeType == ExpressionType.NewArrayBounds)
                 VisitMethod(GetTypeName(elementType), Array<Type>.Empty, node.Expressions.ToArray(), "[", "]");
@@ -1085,6 +1410,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.NewExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitNew(NewExpression node)
         {
             Out("new ");
@@ -1093,6 +1425,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the <see cref="T:System.Linq.Expressions.ParameterExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitParameter(ParameterExpression node)
         {
             Out(GetParameterName(node));
@@ -1100,6 +1439,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.RuntimeVariablesExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
         {
             // TODO Implement properly
@@ -1107,9 +1453,17 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.SwitchCase" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override SwitchCase VisitSwitchCase(SwitchCase node)
         {
             Visit(
+                // ReSharper disable once AssignNullToNotNullAttribute
                 node.TestValues,
                 e =>
                 {
@@ -1126,16 +1480,24 @@ namespace WebApplications.Utilities
             BlockExpression block = node.Body as BlockExpression;
             if (block != null)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 if (block.Variables.Count < 1)
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     VisitStatements(block.Expressions);
                 else
                     Visit(node.Body);
 
+                // ReSharper disable once AssignNullToNotNullAttribute
                 if (block.Expressions.Last() is GotoExpression)
                     needsBreak = false;
             }
             else
+            {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 VisitStatement(node.Body);
+                if (node.Body is GotoExpression)
+                    needsBreak = false;
+            }
 
             if (needsBreak)
                 OutLine("break;");
@@ -1144,6 +1506,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.SwitchExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitSwitch(SwitchExpression node)
         {
             Out("switch (");
@@ -1152,6 +1521,7 @@ namespace WebApplications.Utilities
             OutLine("{");
             Indent();
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             Visit(node.Cases, VisitSwitchCase);
 
             if (node.DefaultBody != null)
@@ -1164,16 +1534,23 @@ namespace WebApplications.Utilities
                 BlockExpression block = node.DefaultBody as BlockExpression;
                 if (block != null)
                 {
+                    // ReSharper disable once PossibleNullReferenceException
                     if (block.Variables.Count < 1)
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         VisitStatements(block.Expressions);
                     else
                         Visit(block);
 
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     if (block.Expressions.Last() is GotoExpression)
                         needsBreak = false;
                 }
                 else
+                {
                     VisitStatement(node.DefaultBody);
+                    if (node.DefaultBody is GotoExpression)
+                        needsBreak = false;
+                }
 
                 if (needsBreak)
                     OutLine("break;");
@@ -1186,6 +1563,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.TryExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitTry(TryExpression node)
         {
             OutLine("try");
@@ -1196,11 +1580,13 @@ namespace WebApplications.Utilities
             {
                 OutLine("{");
                 Indent();
+                // ReSharper disable once AssignNullToNotNullAttribute
                 VisitStatement(node.Body);
                 Deindent();
                 OutLine("}");
             }
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             Visit(node.Handlers, VisitCatchBlock);
 
             if (node.Fault != null)
@@ -1235,6 +1621,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.CatchBlock" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override CatchBlock VisitCatchBlock(CatchBlock node)
         {
             Out("catch");
@@ -1269,6 +1662,7 @@ namespace WebApplications.Utilities
             {
                 OutLine("{");
                 Indent();
+                // ReSharper disable once AssignNullToNotNullAttribute
                 VisitStatement(node.Body);
                 Deindent();
                 OutLine("}");
@@ -1277,6 +1671,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.TypeBinaryExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitTypeBinary(TypeBinaryExpression node)
         {
             if (node.NodeType == ExpressionType.TypeIs)
@@ -1299,6 +1700,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.UnaryExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitUnary(UnaryExpression node)
         {
             switch (node.NodeType)
@@ -1395,6 +1803,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.MemberInitExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitMemberInit(MemberInitExpression node)
         {
             Visit(node.NewExpression);
@@ -1409,6 +1824,7 @@ namespace WebApplications.Utilities
                 if (first) first = false;
                 else OutLine(",");
 
+                Debug.Assert(binding != null);
                 VisitMemberBinding(binding);
             }
 
@@ -1419,6 +1835,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.ListInitExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override Expression VisitListInit(ListInitExpression node)
         {
             Visit(node.NewExpression);
@@ -1433,6 +1856,7 @@ namespace WebApplications.Utilities
                 if (first) first = false;
                 else OutLine(",");
 
+                Debug.Assert(init != null);
                 VisitElementInit(init);
             }
 
@@ -1443,6 +1867,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.ElementInit" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override ElementInit VisitElementInit(ElementInit node)
         {
             if (node.Arguments.Count > 1)
@@ -1462,6 +1893,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.MemberAssignment" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
         {
             Out(node.Member.Name);
@@ -1471,6 +1909,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.MemberMemberBinding" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
         {
             Out(node.Member.Name);
@@ -1484,6 +1929,7 @@ namespace WebApplications.Utilities
                 if (first) first = false;
                 else OutLine(",");
 
+                Debug.Assert(binding != null);
                 VisitMemberBinding(binding);
             }
 
@@ -1493,6 +1939,13 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Visits the children of the <see cref="T:System.Linq.Expressions.MemberListBinding" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>
+        /// The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
+        /// </returns>
         protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
         {
             Out(node.Member.Name);
@@ -1506,6 +1959,7 @@ namespace WebApplications.Utilities
                 if (first) first = false;
                 else OutLine(",");
 
+                Debug.Assert(init != null);
                 VisitElementInit(init);
             }
 
@@ -1515,39 +1969,65 @@ namespace WebApplications.Utilities
             return node;
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
-            foreach (string lambda in _lambdaDefinitions.OrderBy(kvp => GetLambdaName(kvp.Key)).Select(kvp => kvp.Value))
+            // ReSharper disable once AssignNullToNotNullAttribute
+            foreach (string lambda in _lambdaDefinitions
+                .OrderBy(kvp => GetLambdaName(kvp.Key))
+                .Select(kvp => kvp.Value))
             {
                 NewLine();
                 NewLine();
+                Debug.Assert(lambda != null);
                 Out(lambda);
             }
 
             return _builder.ToString();
         }
 
-        [UsedImplicitly]
+        /// <summary>
+        /// Gets the constant string for a value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        [NotNull]
         private string ConstantString([NotNull] object value)
         {
             Type type = value.GetType();
             if (type == typeof(object)) return "new object()";
-            if (type == typeof(string)) return ConstantString((string)value);
-            if (type == typeof(sbyte)) return ConstantString((sbyte)value);
-            if (type == typeof(byte)) return ConstantString((byte)value);
-            if (type == typeof(short)) return ConstantString((short)value);
-            if (type == typeof(ushort)) return ConstantString((ushort)value);
-            if (type == typeof(int)) return ConstantString((int)value);
-            if (type == typeof(uint)) return ConstantString((uint)value);
-            if (type == typeof(long)) return ConstantString((long)value);
-            if (type == typeof(ulong)) return ConstantString((ulong)value);
-            if (type == typeof(decimal)) return ConstantString((decimal)value);
-            if (type == typeof(float)) return ConstantString((float)value);
-            if (type == typeof(double)) return ConstantString((double)value);
-            if (type == typeof(bool)) return ConstantString((bool)value);
-            if (type == typeof(char)) return ConstantString((char)value);
-            if (type.DescendsFrom<Type>()) ConstantString((Type)value);
-            if (type.DescendsFrom<Enum>()) return ConstantString((Enum)value);
+            if (type == typeof(string)) return "\"" + ((string)value).Escape() + "\"";
+            if (type == typeof(sbyte)) return ((sbyte)value).ToString("D", CultureInfo.InvariantCulture);
+            if (type == typeof(byte)) return ((byte)value).ToString("D", CultureInfo.InvariantCulture);
+            if (type == typeof(short)) return ((short)value).ToString("D", CultureInfo.InvariantCulture);
+            if (type == typeof(ushort)) return ((ushort)value).ToString("D", CultureInfo.InvariantCulture);
+            if (type == typeof(int)) return ((int)value).ToString("D", CultureInfo.InvariantCulture);
+            if (type == typeof(uint)) return ((uint)value).ToString("D", CultureInfo.InvariantCulture) + "U";
+            if (type == typeof(long)) return ((long)value).ToString("D", CultureInfo.InvariantCulture) + "L";
+            if (type == typeof(ulong)) return ((ulong)value).ToString("D", CultureInfo.InvariantCulture) + "UL";
+            if (type == typeof(decimal)) return ((decimal)value).ToString("G", CultureInfo.InvariantCulture) + "M";
+            if (type == typeof(float)) return ((float)value).ToString("R", CultureInfo.InvariantCulture) + "F";
+            if (type == typeof(double)) return ((double)value).ToString("R", CultureInfo.InvariantCulture) + "D";
+            if (type == typeof(bool)) return (bool)value ? "true" : "false";
+            if (type == typeof(char)) return "'" + Char.ToString((char)value).Escape() + "'";
+            if (type.DescendsFrom<Type>()) return "typeof(" + GetTypeName((Type)value) + ")";
+            if (type.DescendsFrom<Enum>())
+            {
+                Enum e = (Enum)value;
+                string val = e.ToString();
+                string enumName = GetTypeName(e.GetType());
+
+                int i;
+                return int.TryParse(val, out i)
+                    ? "(" + enumName + ")" + (i < 0 ? "(" + val + ")" : val)
+                    : enumName + "." + val.Replace(", ", " | " + enumName + ".");
+            }
 
             string str = value.ToString();
 
@@ -1559,87 +2039,12 @@ namespace WebApplications.Utilities
             return string.Format("constant<{0}>({1})", GetTypeName(type), str);
         }
 
-        // ReSharper disable CodeAnnotationAnalyzer
-        [UsedImplicitly]
-        private string ConstantString(string value)
-        {
-            return "\"" + value.Escape() + "\"";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(bool value)
-        {
-            return value ? "true" : "false";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(char value)
-        {
-            return "'" + Char.ToString(value).Escape() + "'";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(Enum value)
-        {
-            string val = value.ToString();
-            string enumName = GetTypeName(value.GetType());
-
-            int i;
-            return int.TryParse(val, out i)
-                ? "(" + enumName + ")" + (i < 0 ? "(" + val + ")" : val)
-                : enumName + "." + val.Replace(", ", " | " + enumName + ".");
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(int value)
-        {
-            return value.ToString("D", CultureInfo.InvariantCulture);
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(uint value)
-        {
-            return value.ToString("D", CultureInfo.InvariantCulture) + "U";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(long value)
-        {
-            return value.ToString("D", CultureInfo.InvariantCulture) + "L";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(ulong value)
-        {
-            return value.ToString("D", CultureInfo.InvariantCulture) + "UL";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(decimal value)
-        {
-            return value.ToString("G", CultureInfo.InvariantCulture) + "M";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(float value)
-        {
-            return value.ToString("R", CultureInfo.InvariantCulture) + "F";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(double value)
-        {
-            return value.ToString("R", CultureInfo.InvariantCulture) + "D";
-        }
-
-        [UsedImplicitly]
-        private string ConstantString(Type value)
-        {
-            return "typeof(" + GetTypeName(value) + ")";
-        }
-
-        // ReSharper restore CodeAnnotationAnalyzer
-
+        /// <summary>
+        /// Determines whether the <paramref name="child"/> needs parantheses.
+        /// </summary>
+        /// <param name="parent">The parent.</param>
+        /// <param name="child">The child.</param>
+        /// <returns></returns>
         private static bool NeedsParentheses([NotNull] Expression parent, [CanBeNull] Expression child)
         {
             if (child == null)
@@ -1712,6 +2117,11 @@ namespace WebApplications.Utilities
             return childOpPrec < parentOpPrec;
         }
 
+        /// <summary>
+        /// Gets the operator precedence for the node given.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <returns></returns>
         private static int GetOperatorPrecedence([NotNull] Expression node)
         {
             // Roughly matches C# operator precedence, with some additional

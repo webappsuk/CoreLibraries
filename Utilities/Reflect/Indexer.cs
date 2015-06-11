@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -67,9 +67,14 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <remarks></remarks>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<ParameterInfo> IndexParameters
         {
-            get { return _indexParameters.Value; }
+            get
+            {
+                Debug.Assert(_indexParameters.Value != null);
+                return _indexParameters.Value;
+            }
         }
 
         #region ISignature Members
@@ -97,6 +102,7 @@ namespace WebApplications.Utilities.Reflect
             get
             {
                 Contract.Assert(_indexParameters.Value != null);
+                // ReSharper disable once PossibleNullReferenceException
                 return _indexParameters.Value.Select(p => p.ParameterType);
             }
         }
@@ -130,7 +136,8 @@ namespace WebApplications.Utilities.Reflect
         {
             return propertyInfo == null
                 ? null
-                : ((ExtendedType) propertyInfo.DeclaringType).GetIndexer(propertyInfo);
+                // ReSharper disable once PossibleNullReferenceException
+                : ((ExtendedType)propertyInfo.DeclaringType).GetIndexer(propertyInfo);
         }
 
         /// <summary>
@@ -142,6 +149,7 @@ namespace WebApplications.Utilities.Reflect
         /// <para>The closure arrays are ordered and contain the same number of elements as their corresponding
         /// generic arguments.  Where elements are <see langword="null"/> a closure is not required.</para></remarks>
         [CanBeNull]
+        [PublicAPI]
         public Indexer Close([NotNull] Type[] typeClosures)
         {
             // Check input arrays are valid.
@@ -149,7 +157,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             // If we haven't got any type closures, we can return this indexer.
-            if (!typeClosures.Any(t => t != null))
+            if (typeClosures.All(t => t == null))
                 return this;
 
             // Close type
@@ -167,7 +175,7 @@ namespace WebApplications.Utilities.Reflect
             Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
 
             // Search for closed 
-            var emptyTypes = Array<Type>.Empty;
+            Type[] emptyTypes = Array<Type>.Empty;
             for (int i = 0; i < pCount; i++)
             {
                 Contract.Assert(_indexParameters.Value[i] != null);

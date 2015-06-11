@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Threading
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
     [DebuggerStepThrough]
-    [UsedImplicitly]
+    [PublicAPI]
     [Obsolete("Consider using TPL or Async.")]
     public struct ApmWrap<T>
     {
@@ -58,10 +58,10 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         ///   Returns <see langword="true"/> if <paramref name="value"/> is equal to this instance; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool Equals(ApmWrap<T> value)
         {
-            return SyncContext.Equals(value.SyncContext);
+            return Equals(SyncContext, value.SyncContext);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Threading
         /// </returns>
         public override bool Equals(object obj)
         {
-            return ((obj is ApmWrap<T>) && Equals((ApmWrap<T>) obj));
+            return ((obj is ApmWrap<T>) && Equals((ApmWrap<T>)obj));
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace WebApplications.Utilities.Threading
         ///   If the SyncContext is a non-null value when creating an ApmWrap object then the ApmWrap object will force the
         ///   operation to complete using the specified <see cref="SynchronizationContext"/>.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         private SynchronizationContext SyncContext { get; set; }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="data">The data to embed in the ApmWrap object.</param>
         /// <param name="callback">The callback method that should be invoked when the operation completes.</param>
         /// <returns>An ApmWrap object's completion method.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public AsyncCallback CreateCallback([NotNull] AsyncCallback callback, T data)
         {
@@ -144,15 +144,14 @@ namespace WebApplications.Utilities.Threading
         ///   The internal callback stored within the created ApmWrap object.
         ///   A <see langword="null"/> is returned if the <paramref name="callback"/> is null.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public static AsyncCallback WrapCallback(
             [NotNull] AsyncCallback callback,
             T data,
             SynchronizationContext syncContext = null)
         {
-            if (callback == null)
-                return null;
+            if (callback == null) throw new ArgumentNullException("callback");
 
             ApmWrapper wrapper = new ApmWrapper
             {
@@ -171,11 +170,11 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         ///   An ApmWrap object that contains the originally-returned <see cref="IAsyncResult"/> object.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public static IAsyncResult Wrap([NotNull] IAsyncResult result, T data)
         {
-            return new ApmWrapper {Data = data, AsyncResult = result};
+            return new ApmWrapper { Data = data, AsyncResult = result };
         }
 
         /// <summary>
@@ -185,10 +184,13 @@ namespace WebApplications.Utilities.Threading
         ///   The <see langword="ref">reference</see> to the wrapped IAsyncResult object.
         /// </param>
         /// <returns>The embedded data.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public static T Unwrap([NotNull] ref IAsyncResult result)
         {
-            ApmWrapper apmWrap = (ApmWrapper) result;
+            ApmWrapper apmWrap = result as ApmWrapper;
+            if (apmWrap == null) throw new ArgumentException();
+
+            Debug.Assert(apmWrap.AsyncResult != null);
             result = apmWrap.AsyncResult;
             return apmWrap.Data;
         }
@@ -202,7 +204,7 @@ namespace WebApplications.Utilities.Threading
             /// <summary>
             ///   Initializes a new instance of the <see cref="ApmWrapper"/> class.
             /// </summary>
-            [UsedImplicitly]
+            [PublicAPI]
             internal ApmWrapper()
             {
             }
@@ -211,7 +213,7 @@ namespace WebApplications.Utilities.Threading
             ///   Gets or sets the <see cref="AsyncCallback">async callback</see>.
             /// </summary>
             /// <remarks>This is the method to call when the asynchronous operation has completed.</remarks>
-            [UsedImplicitly]
+            [PublicAPI]
             internal AsyncCallback AsyncCallback { get; set; }
 
             /// <summary>
@@ -232,7 +234,7 @@ namespace WebApplications.Utilities.Threading
             /// <remarks>
             ///   The synchronization context allows you to queue a unit of work to a specific context.
             /// </remarks>
-            [UsedImplicitly]
+            [PublicAPI]
             internal SynchronizationContext SyncContext { get; set; }
 
             #region IAsyncResult Members
@@ -242,7 +244,7 @@ namespace WebApplications.Utilities.Threading
             /// <seealso cref="IAsyncResult.AsyncState"/>
             public object AsyncState
             {
-                get { return AsyncResult.AsyncState; }
+                get { return AsyncResult == null ? null : AsyncResult.AsyncState; }
             }
 
             /// <summary>
@@ -251,7 +253,7 @@ namespace WebApplications.Utilities.Threading
             /// <returns>A wait handle that is used to wait for an asynchronous operation to complete.</returns>
             public WaitHandle AsyncWaitHandle
             {
-                get { return AsyncResult.AsyncWaitHandle; }
+                get { return AsyncResult == null ? null : AsyncResult.AsyncWaitHandle; }
             }
 
             /// <summary>
@@ -262,7 +264,7 @@ namespace WebApplications.Utilities.Threading
             /// </returns>
             public bool CompletedSynchronously
             {
-                get { return AsyncResult.CompletedSynchronously; }
+                get { return AsyncResult != null && AsyncResult.CompletedSynchronously; }
             }
 
             /// <summary>
@@ -271,7 +273,7 @@ namespace WebApplications.Utilities.Threading
             /// <value>Returns <see langword="true"/> if the operation is complete; otherwise returns <see langword="false"/>.</value>
             public bool IsCompleted
             {
-                get { return AsyncResult.IsCompleted; }
+                get { return AsyncResult != null && AsyncResult.IsCompleted; }
             }
             #endregion
 
@@ -283,7 +285,10 @@ namespace WebApplications.Utilities.Threading
             {
                 AsyncResult = result;
                 if (SyncContext == null)
+                {
+                    Debug.Assert(AsyncCallback != null);
                     AsyncCallback(this);
+                }
                 else
                     SyncContext.Post(PostCallback, this);
             }
@@ -297,7 +302,7 @@ namespace WebApplications.Utilities.Threading
             /// </returns>
             public override bool Equals(object obj)
             {
-                return AsyncResult.Equals(obj);
+                return Equals(AsyncResult, obj);
             }
 
             /// <summary>
@@ -308,7 +313,7 @@ namespace WebApplications.Utilities.Threading
             /// <seealso cref="System.Object.GetHashCode"/>
             public override int GetHashCode()
             {
-                return AsyncResult.GetHashCode();
+                return AsyncResult == null ? 0 : AsyncResult.GetHashCode();
             }
 
             /// <summary>
@@ -317,9 +322,12 @@ namespace WebApplications.Utilities.Threading
             /// <param name="state">The object passed to the delegate.</param>
             private static void PostCallback(object state)
             {
-                ApmWrapper apmWrap = (ApmWrapper) state;
+                ApmWrapper apmWrap = (ApmWrapper)state;
                 if (apmWrap != null)
+                {
+                    Debug.Assert(apmWrap.AsyncCallback != null);
                     apmWrap.AsyncCallback(apmWrap);
+                }
             }
 
             /// <summary>
@@ -328,7 +336,7 @@ namespace WebApplications.Utilities.Threading
             /// <returns>A <see cref="string"/> representation of the instance.</returns>
             public override string ToString()
             {
-                return AsyncResult.ToString();
+                return AsyncResult == null ? string.Empty : AsyncResult.ToString();
             }
         }
     }

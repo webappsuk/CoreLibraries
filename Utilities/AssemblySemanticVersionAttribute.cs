@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
@@ -36,13 +35,7 @@ namespace WebApplications.Utilities
     /// Attribute that is used to decorate assemblies with a semantic version
     /// number.
     /// </summary>
-    [SuppressMessage(
-        "Microsoft.Design",
-        "CA1019:DefineAccessorsForAttributeArguments",
-        Justification =
-            "MFC3: The version parameter to the attribute is converted to a SemanticVersion object and exposed through the Version property."
-        )]
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Assembly)]
     [Serializable]
     public sealed class AssemblySemanticVersionAttribute : Attribute
     {

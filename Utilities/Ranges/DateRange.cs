@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,12 +26,14 @@
 #endregion
 
 using System;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Ranges
 {
     /// <summary>
     ///   A range of <see cref="DateTime">date</see> values with the time component ignored.
     /// </summary>
+    [PublicAPI]
     public class DateRange : Range<DateTime, TimeSpan>
     {
         /// <summary>
@@ -80,7 +82,7 @@ namespace WebApplications.Utilities.Ranges
         /// </remarks>
         public int Days
         {
-            get { return (int) (End.Date - Start.Date).TotalDays + 1; }
+            get { return (int)(End.Date - Start.Date).TotalDays + 1; }
         }
 
         /// <summary>
@@ -92,7 +94,7 @@ namespace WebApplications.Utilities.Ranges
         /// </remarks>
         public int Nights
         {
-            get { return (int) (End.Date - Start.Date).TotalDays; }
+            get { return (int)(End.Date - Start.Date).TotalDays; }
         }
 
         /// <summary>

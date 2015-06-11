@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
 {
@@ -42,16 +42,25 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Stores the default GetHashCode function call <see cref="System.Object.GetHashCode"/>.
         /// </summary>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable PossibleNullReferenceException - Let it throw
         public static readonly Func<T, int> DefaultGetHashCodeFunction = o => o.GetHashCode();
+
+        // ReSharper restore PossibleNullReferenceException
 
         /// <summary>
         ///   The function used to calculate equality between two <see cref="object"/>s.
         /// </summary>
+        [NotNull]
+        [PublicAPI]
         public readonly Func<T, T, bool> EqualsFunction;
 
         /// <summary>
         ///   The function used to generate a hash code.
         /// </summary>
+        [NotNull]
+        [PublicAPI]
         public readonly Func<T, int> GetHashCodeFunction;
 
         /// <summary>
@@ -62,9 +71,10 @@ namespace WebApplications.Utilities
         ///   <para>The hash code generator.</para>
         ///   <para>By default <see cref="System.Object.GetHashCode"/> will be used.</para>
         /// </param>
-        public EqualityBuilder(Func<T, T, bool> equalityComparer, Func<T, int> hashCodeGenerator = null)
+        public EqualityBuilder([NotNull] Func<T, T, bool> equalityComparer, Func<T, int> hashCodeGenerator = null)
         {
-            Contract.Assert(equalityComparer != null);
+            if (equalityComparer == null) throw new ArgumentNullException("equalityComparer");
+
             EqualsFunction = equalityComparer;
             GetHashCodeFunction = hashCodeGenerator ?? DefaultGetHashCodeFunction;
         }

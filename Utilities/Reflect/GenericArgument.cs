@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -36,22 +36,26 @@ namespace WebApplications.Utilities.Reflect
     /// </summary>
     /// <remarks></remarks>
     [DebuggerDisplay("{Type} [{Location} position {Position}]")]
+    [PublicAPI]
     public struct GenericArgument
     {
         /// <summary>
         /// The arguments location.
         /// </summary>
+        [PublicAPI]
         public readonly GenericArgumentLocation Location;
 
         /// <summary>
         /// The arguments position.
         /// </summary>
+        [PublicAPI]
         public readonly int Position;
 
         /// <summary>
         /// The argument type.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly Type Type;
 
         /// <summary>
@@ -64,6 +68,7 @@ namespace WebApplications.Utilities.Reflect
         public GenericArgument(GenericArgumentLocation location, int position, [NotNull] Type type)
             : this()
         {
+            if (type == null) throw new ArgumentNullException("type");
             Location = location;
             Position = position;
             Type = type;

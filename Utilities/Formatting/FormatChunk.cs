@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -290,7 +291,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static IEnumerable<FormatChunk> Parse([NotNull] string value, [CanBeNull] IResolvable resolver = null)
         {
-            var fc = new FormatChunk();
+            FormatChunk fc = new FormatChunk();
             fc.Append(
                 value,
                 resolver);
@@ -589,7 +590,10 @@ namespace WebApplications.Utilities.Formatting
 
                     writer.Write(FormatBuilder.FormatChar);
                     foreach (FormatChunk chunk in ChildrenInternal)
+                    {
+                        Debug.Assert(chunk != null);
                         chunk.WriteTo(writer, format);
+                    }
                 }
                 writer.Write(FormatBuilder.CloseChar);
                 return;
@@ -619,7 +623,7 @@ namespace WebApplications.Utilities.Formatting
                             writer.Write(formattable.ToString(Format, writer.FormatProvider));
                             return;
                         }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                         }
@@ -649,7 +653,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             value = formattable.ToString(Format, writer.FormatProvider);
                         }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             value = Value.ToString();

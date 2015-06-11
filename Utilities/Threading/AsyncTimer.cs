@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,12 @@ namespace WebApplications.Utilities.Threading
             /// <param name="minimumGap">The minimum gap.</param>
             /// <param name="timeStamp">The time stamp.</param>
             /// <param name="dueTimeStamp">The due time stamp.</param>
-            public TimeOuts(Duration period, Duration dueTime, Duration minimumGap, long timeStamp, long? dueTimeStamp = null)
+            public TimeOuts(
+                Duration period,
+                Duration dueTime,
+                Duration minimumGap,
+                long timeStamp,
+                long? dueTimeStamp = null)
             {
                 TimeStamp = timeStamp;
                 DueTimeMs = dueTime < Duration.Zero ? -1 : (int)dueTime.TotalMilliseconds();
@@ -345,7 +350,6 @@ namespace WebApplications.Utilities.Threading
             long startTicks = long.MinValue;
             long endTicks = long.MinValue;
             while (!cancellationToken.IsCancellationRequested)
-            {
                 try
                 {
                     CancellationTokenSource timeoutsChanged;
@@ -414,15 +418,20 @@ namespace WebApplications.Utilities.Threading
                                 {
                                     // Calculate the wait time based on the minimum gap and the period.
                                     long now = HighPrecisionClock.Instance.NowTicks;
-                                    int a = timeOuts.PeriodMs - (int)((now - startTicks) / NodaConstants.TicksPerMillisecond);
-                                    int b = timeOuts.MinimumGapMs - (int)((now - endTicks) / NodaConstants.TicksPerMillisecond);
+                                    int a = timeOuts.PeriodMs -
+                                            (int)((now - startTicks) / NodaConstants.TicksPerMillisecond);
+                                    int b = timeOuts.MinimumGapMs -
+                                            (int)((now - endTicks) / NodaConstants.TicksPerMillisecond);
                                     int c = (int)((timeOuts.DueTimeStamp - now) / NodaConstants.TicksPerMillisecond);
 
                                     wait = Math.Max(a, Math.Max(b, c));
                                 }
                                 else
-                                    // Wait the initial due time
-                                    wait = (int)((timeOuts.DueTimeStamp - HighPrecisionClock.Instance.NowTicks) / NodaConstants.TicksPerMillisecond);
+                                // Wait the initial due time
+                                    wait =
+                                        (int)
+                                            ((timeOuts.DueTimeStamp - HighPrecisionClock.Instance.NowTicks) /
+                                             NodaConstants.TicksPerMillisecond);
 
                                 // If we don't need to wait run again immediately (after checking values haven't changed).
                                 if (wait < 1) continue;
@@ -480,7 +489,7 @@ namespace WebApplications.Utilities.Threading
 
                         return;
                     }
-                    // ReSharper disable once EmptyGeneralCatchClause
+                        // ReSharper disable once EmptyGeneralCatchClause
                     catch (Exception exception)
                     {
                         // Supress errors thrown by callback, unless someone is awaiting it.
@@ -515,7 +524,6 @@ namespace WebApplications.Utilities.Threading
                     if (!ReferenceEquals(_errorHandler, null))
                         _errorHandler(exception);
                 }
-            }
         }
 
         /// <summary>

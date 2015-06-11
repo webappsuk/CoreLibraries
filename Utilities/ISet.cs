@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -35,11 +35,13 @@ namespace WebApplications.Utilities
     /// <summary>
     /// Non-generic version of <see cref="ISet{T}" />
     /// </summary>
+    [PublicAPI]
     public interface ISet : ICollection, IEquatable<ISet>, IEquatable<IEnumerable>, IEnumerable<object>
     {
         /// <summary>
         /// Clears this instance.
         /// </summary>
+        [PublicAPI]
         void Clear();
 
         /// <summary>
@@ -49,6 +51,7 @@ namespace WebApplications.Utilities
         /// true if the element is added to the set; false if the element is already in the set.
         /// </returns>
         /// <param name="item">The element to add to the set.</param>
+        [PublicAPI]
         bool Add([NotNull] object item);
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace WebApplications.Utilities
         /// true if the element is added to the set; false if the element is already in the set.
         /// </returns>
         /// <param name="item">The element to add to the set.</param>
+        [PublicAPI]
         bool Remove([NotNull] object item);
 
         /// <summary>
@@ -67,6 +71,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///     <see langword="true" /> if the set contains the specified item; otherwise, <see langword="false" />.
         /// </returns>
+        [PublicAPI]
+        [Pure]
         bool Contains(object item);
 
         /// <summary>
@@ -77,6 +83,7 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
         void UnionWith([NotNull] IEnumerable other);
 
         /// <summary>
@@ -86,6 +93,7 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
         void IntersectWith([NotNull] IEnumerable other);
 
         /// <summary>
@@ -95,6 +103,7 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
         void ExceptWith([NotNull] IEnumerable other);
 
         /// <summary>
@@ -105,6 +114,7 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
         void SymmetricExceptWith([NotNull] IEnumerable other);
 
         /// <summary>
@@ -115,6 +125,8 @@ namespace WebApplications.Utilities
         ///     <paramref name="other" /> is null.
         /// </exception>
         [NotNull]
+        [PublicAPI]
+        [Pure]
         ISet Union([NotNull] IEnumerable other);
 
         /// <summary>
@@ -125,6 +137,8 @@ namespace WebApplications.Utilities
         ///     <paramref name="other" /> is null.
         /// </exception>
         [NotNull]
+        [PublicAPI]
+        [Pure]
         ISet Intersect([NotNull] IEnumerable other);
 
         /// <summary>
@@ -135,6 +149,8 @@ namespace WebApplications.Utilities
         ///     <paramref name="other" /> is null.
         /// </exception>
         [NotNull]
+        [PublicAPI]
+        [Pure]
         ISet Except([NotNull] IEnumerable other);
 
         /// <summary>
@@ -147,6 +163,8 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
+        [Pure]
         bool IsSubsetOf([NotNull] IEnumerable other);
 
         /// <summary>
@@ -159,6 +177,8 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
+        [Pure]
         bool IsSupersetOf([NotNull] IEnumerable other);
 
         /// <summary>
@@ -171,6 +191,8 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
+        [Pure]
         bool IsProperSupersetOf([NotNull] IEnumerable other);
 
         /// <summary>
@@ -183,6 +205,8 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
+        [Pure]
         bool IsProperSubsetOf([NotNull] IEnumerable other);
 
         /// <summary>
@@ -195,6 +219,8 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
+        [Pure]
         bool Overlaps([NotNull] IEnumerable other);
 
         /// <summary>
@@ -207,6 +233,8 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException">
         ///     <paramref name="other" /> is null.
         /// </exception>
+        [PublicAPI]
+        [Pure]
         bool SetEquals([NotNull] IEnumerable other);
 
         /// <summary>
@@ -214,6 +242,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>ISet.</returns>
         [NotNull]
+        [PublicAPI]
         ISet Clone();
 
         /// <summary>
@@ -221,6 +250,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The type.</value>
         [NotNull]
+        [PublicAPI]
         Type Type { get; }
     }
 }

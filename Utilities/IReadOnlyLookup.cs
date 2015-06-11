@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -36,21 +36,24 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TElement">The type of the element.</typeparam>
+    [PublicAPI]
     public interface IReadOnlyLookup<TKey, TElement> : ILookup<TKey, TElement>
     {
         /// <summary>
         /// Gets the values count.
         /// </summary>
         /// <value>The values count.</value>
+        [PublicAPI]
         int ValuesCount { get; }
 
         /// <summary>
-        /// Tries to get the values with the given key.
+        /// Attempts to get the values with the given key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="values">The values.</param>
         /// <returns><see langword="true" /> if the key was found, <see langword="false" /> otherwise.</returns>
         [ContractAnnotation("=>values:notnull")]
+        [PublicAPI]
         bool TryGetValues([NotNull] TKey key, out IEnumerable<TElement> values);
     }
 }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Interfaces.Caching;
 
 namespace WebApplications.Utilities.Caching
@@ -35,6 +36,7 @@ namespace WebApplications.Utilities.Caching
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
+    [PublicAPI]
     public abstract class CachingDictionaryBase<TKey, TValue> : ICaching<TKey, TValue>
     {
         private TimeSpan _defaultAbsoluteExpiration = TimeSpan.MaxValue;
@@ -106,8 +108,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public virtual TValue GetOrAdd(TKey key, TValue value)
+        public virtual TValue GetOrAdd([NotNull] TKey key, TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return GetOrAdd(key, value, AbsoluteExpiration(), DefaultSlidingExpiration);
         }
 
@@ -121,8 +124,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         /// Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue GetOrAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration)
+        public TValue GetOrAdd([NotNull] TKey key, TValue value, DateTimeOffset absoluteExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return GetOrAdd(key, value, absoluteExpiration, DefaultSlidingExpiration);
         }
 
@@ -138,8 +142,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue GetOrAdd(TKey key, TValue value, TimeSpan slidingExpiration)
+        public TValue GetOrAdd([NotNull] TKey key, TValue value, TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return GetOrAdd(key, value, AbsoluteExpiration(), slidingExpiration);
         }
 
@@ -152,8 +157,10 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory)
+        public TValue GetOrAdd([NotNull] TKey key, [NotNull] Func<TKey, TValue> addValueFactory)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
             return GetOrAdd(key, addValueFactory, AbsoluteExpiration(), DefaultSlidingExpiration);
         }
 
@@ -167,8 +174,13 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory, DateTimeOffset absoluteExpiration)
+        public TValue GetOrAdd(
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
+            DateTimeOffset absoluteExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
             return GetOrAdd(key, addValueFactory, absoluteExpiration, DefaultSlidingExpiration);
         }
 
@@ -184,8 +196,13 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory, TimeSpan slidingExpiration)
+        public TValue GetOrAdd(
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
+            TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
             return GetOrAdd(key, addValueFactory, AbsoluteExpiration(), slidingExpiration);
         }
 
@@ -198,8 +215,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue AddOrUpdate(TKey key, TValue value)
+        public TValue AddOrUpdate([NotNull] TKey key, TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return AddOrUpdate(key, value, AbsoluteExpiration(), DefaultSlidingExpiration);
         }
 
@@ -213,8 +231,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue AddOrUpdate(TKey key, TValue value, DateTimeOffset absoluteExpiration)
+        public TValue AddOrUpdate([NotNull] TKey key, TValue value, DateTimeOffset absoluteExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return AddOrUpdate(key, value, absoluteExpiration, DefaultSlidingExpiration);
         }
 
@@ -230,8 +249,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        public TValue AddOrUpdate(TKey key, TValue value, TimeSpan slidingExpiration)
+        public TValue AddOrUpdate([NotNull] TKey key, TValue value, TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return AddOrUpdate(key, value, AbsoluteExpiration(), slidingExpiration);
         }
 
@@ -246,10 +266,13 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
         public TValue AddOrUpdate(
-            TKey key,
-            Func<TKey, TValue> addValueFactory,
-            Func<TKey, TValue, TValue> updateValueFactory)
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
+            [NotNull] Func<TKey, TValue, TValue> updateValueFactory)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
+            if (updateValueFactory == null) throw new ArgumentNullException("updateValueFactory");
             return AddOrUpdate(
                 key,
                 addValueFactory,
@@ -270,11 +293,14 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or updated value depending on whether or not there's already an existing entry with the same key.
         /// </returns>
         public TValue AddOrUpdate(
-            TKey key,
-            Func<TKey, TValue> addValueFactory,
-            Func<TKey, TValue, TValue> updateValueFactory,
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
+            [NotNull] Func<TKey, TValue, TValue> updateValueFactory,
             DateTimeOffset absoluteExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
+            if (updateValueFactory == null) throw new ArgumentNullException("updateValueFactory");
             return AddOrUpdate(
                 key,
                 addValueFactory,
@@ -298,11 +324,14 @@ namespace WebApplications.Utilities.Caching
         ///   with the same key as <paramref name="key"/>.
         /// </returns>
         public TValue AddOrUpdate(
-            TKey key,
-            Func<TKey, TValue> addValueFactory,
-            Func<TKey, TValue, TValue> updateValueFactory,
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
+            [NotNull] Func<TKey, TValue, TValue> updateValueFactory,
             TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
+            if (updateValueFactory == null) throw new ArgumentNullException("updateValueFactory");
             return AddOrUpdate(
                 key,
                 addValueFactory,
@@ -320,7 +349,7 @@ namespace WebApplications.Utilities.Caching
         ///   Returns <see langword="true"/> if the corresponding <paramref name="key"/> exists and the value was successfully retrieved;
         ///   otherwise <see langword="false"/>.
         /// </returns>
-        public abstract bool TryGetValue(TKey key, out TValue value);
+        public abstract bool TryGetValue([NotNull] TKey key, out TValue value);
 
         /// <summary>
         ///   Tries to remove an entry using the specified key.
@@ -331,7 +360,7 @@ namespace WebApplications.Utilities.Caching
         ///   Returns <see langword="true"/> if the corresponding <paramref name="key"/> exists and the value was successfully removed;
         ///   otherwise <see langword="false"/>.
         /// </returns>
-        public abstract bool TryRemove(TKey key, out TValue value);
+        public abstract bool TryRemove([NotNull] TKey key, out TValue value);
 
         /// <summary>
         ///   Tries to insert an entry into the cache using the specified key and value.
@@ -341,8 +370,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        public bool TryAdd(TKey key, TValue value)
+        public bool TryAdd([NotNull] TKey key, TValue value)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return TryAdd(key, value, AbsoluteExpiration(), DefaultSlidingExpiration);
         }
 
@@ -355,8 +385,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        public bool TryAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration)
+        public bool TryAdd([NotNull] TKey key, TValue value, DateTimeOffset absoluteExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return TryAdd(key, value, absoluteExpiration, DefaultSlidingExpiration);
         }
 
@@ -371,8 +402,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         /// Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        public bool TryAdd(TKey key, TValue value, TimeSpan slidingExpiration)
+        public bool TryAdd([NotNull] TKey key, TValue value, TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
             return TryAdd(key, value, AbsoluteExpiration(), slidingExpiration);
         }
 
@@ -395,8 +427,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
+        [PublicAPI]
         public abstract TValue GetOrAdd(
-            TKey key,
+            [NotNull] TKey key,
             TValue value,
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration);
@@ -414,12 +447,17 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
+        [PublicAPI]
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue GetOrAdd(
-            TKey key,
-            Func<TKey, TValue> addValueFactory,
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
+
             TValue value;
             return TryGetValue(key, out value)
                 ? value
@@ -439,8 +477,9 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
+        [PublicAPI]
         public abstract TValue AddOrUpdate(
-            TKey key,
+            [NotNull] TKey key,
             TValue value,
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration);
@@ -459,13 +498,17 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
+        [PublicAPI] // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue AddOrUpdate(
-            TKey key,
-            Func<TKey, TValue> addValueFactory,
-            Func<TKey, TValue, TValue> updateValueFactory,
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
+            [NotNull] Func<TKey, TValue, TValue> updateValueFactory,
             DateTimeOffset absoluteExpiration,
             TimeSpan slidingExpiration)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (addValueFactory == null) throw new ArgumentNullException("addValueFactory");
+            if (updateValueFactory == null) throw new ArgumentNullException("updateValueFactory");
             TValue value;
             // Call factory outside of lock, and pass into standard AddOrUpdate
             return AddOrUpdate(
@@ -487,6 +530,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
+        [PublicAPI]
         public abstract bool TryAdd(
             TKey key,
             TValue value,

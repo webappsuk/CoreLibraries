@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
@@ -73,6 +74,7 @@ namespace WebApplications.Utilities.Threading
         ///   Caches the current stack against the Thread Local Storage
         ///   (http://msdn.microsoft.com/en-us/library/windows/desktop/ms686749).
         /// </summary>
+        [NotNull]
         private readonly ThreadLocal<KeyValuePair<string, IEnumerable<T>>> _stackCache =
             new ThreadLocal<KeyValuePair<string, IEnumerable<T>>>();
 
@@ -99,7 +101,10 @@ namespace WebApplications.Utilities.Threading
                 // Try to get the stack out of the current TLS.
                 KeyValuePair<string, IEnumerable<T>> kvp = _stackCache.Value;
                 if (kvp.Key == stack)
+                {
+                    Debug.Assert(kvp.Value != null);
                     return kvp.Value;
+                }
 
                 // Look up actual objects.
                 string[] objectKeys = stack.Split('|');
@@ -168,6 +173,7 @@ namespace WebApplications.Utilities.Threading
             /// <summary>
             ///   The owner stack.
             /// </summary>
+            [NotNull]
             private readonly ContextStack<T> _stack;
 
             /// <summary>
@@ -211,6 +217,7 @@ namespace WebApplications.Utilities.Threading
                 if (threadId != _threadId)
                     throw new InvalidOperationException(
                         string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.ContextStack_Dispose_CannotCloseCleanerRegion,
                             _threadId,
                             threadId));
@@ -244,6 +251,7 @@ namespace WebApplications.Utilities.Threading
             /// <summary>
             ///   The owner stack.
             /// </summary>
+            [NotNull]
             private readonly ContextStack<T> _stack;
 
             /// <summary>
@@ -288,6 +296,13 @@ namespace WebApplications.Utilities.Threading
             public void Dispose()
             {
                 int threadId = Thread.CurrentThread.ManagedThreadId;
+                if (threadId != _threadId)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.ContextStack_Dispose_CannotCloseRegion,
+                            _threadId,
+                            threadId));
 
                 // Try to clear the object from the stack.
                 T value;

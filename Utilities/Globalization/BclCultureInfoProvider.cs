@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ namespace WebApplications.Utilities.Globalization
                 new DateTime(2014, 5, 5),
                 CultureInfo.GetCultures(CultureTypes.AllCultures)
                     .Where(c => !ReferenceEquals(c, null))
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     .Select(c => new ExtendedCultureInfo(c)))
         {
         }

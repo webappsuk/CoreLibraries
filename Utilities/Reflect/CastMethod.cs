@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -42,6 +43,7 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The type this cast casts from.
         /// </summary>
+        [NotNull]
         public readonly Type FromType;
 
         /// <summary>
@@ -52,6 +54,7 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The type this cast casts to.
         /// </summary>
+        [NotNull]
         public readonly Type ToType;
 
         /// <summary>
@@ -66,7 +69,9 @@ namespace WebApplications.Utilities.Reflect
         {
             Contract.Requires(info.Name == "op_Explicit" || info.Name == "op_Implicit");
             IsExplicit = isExplicit;
+            // ReSharper disable once AssignNullToNotNullAttribute
             FromType = ParameterTypes.First();
+            Debug.Assert(FromType != null);
             ToType = ReturnType;
             Contract.Assert(FromType == extendedType.Type || ToType == extendedType.Type);
         }

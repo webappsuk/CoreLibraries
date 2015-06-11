@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -107,7 +107,7 @@ namespace WebApplications.Utilities.Caching
             if (cleanAfter > TimeSpan.Zero)
             {
                 // Create timer.
-                _cleanTimer = new Timer(s => Clean(), null, (long) CleanAfter.TotalMilliseconds, -1);
+                _cleanTimer = new Timer(s => Clean(), null, (long)CleanAfter.TotalMilliseconds, -1);
                 CleanAfter = cleanAfter;
             }
             else
@@ -177,7 +177,7 @@ namespace WebApplications.Utilities.Caching
         {
             if (array == null)
                 throw new ArgumentNullException("array");
-            ((ICollection) this.ToList()).CopyTo(array, index);
+            ((ICollection)this.ToList()).CopyTo(array, index);
         }
 
         /// <summary>
@@ -394,7 +394,7 @@ namespace WebApplications.Utilities.Caching
             {
                 // Set timer
                 if (_cleanTimer != null)
-                    _cleanTimer.Change((long) CleanAfter.TotalMilliseconds, -1);
+                    _cleanTimer.Change((long)CleanAfter.TotalMilliseconds, -1);
 
                 // Ensure we release the lock.
                 Monitor.Exit(_cleanLock);

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -76,11 +76,10 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Lazy<ConcurrentDictionary<string, Method>>
-            _closedMethods =
-                new Lazy<ConcurrentDictionary<string, Method>>(
-                    () => new ConcurrentDictionary<string, Method>(),
-                    LazyThreadSafetyMode.PublicationOnly);
+        private readonly Lazy<ConcurrentDictionary<string, Method>> _closedMethods =
+            new Lazy<ConcurrentDictionary<string, Method>>(
+                () => new ConcurrentDictionary<string, Method>(),
+                LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Initializes the <see cref="Method"/> class.
@@ -94,6 +93,7 @@ namespace WebApplications.Utilities.Reflect
             Info = info;
             _genericArguments = new Lazy<List<GenericArgument>>(
                 () => info.GetGenericArguments()
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     .Select((g, i) => new GenericArgument(GenericArgumentLocation.Signature, i, g))
                     .ToList(),
                 LazyThreadSafetyMode.PublicationOnly);
@@ -104,9 +104,14 @@ namespace WebApplications.Utilities.Reflect
         ///   The parameters.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<ParameterInfo> Parameters
         {
-            get { return _parameters.Value; }
+            get
+            {
+                Debug.Assert(_parameters.Value != null);
+                return _parameters.Value;
+            }
         }
 
         #region ISignature Members
@@ -122,7 +127,8 @@ namespace WebApplications.Utilities.Reflect
         {
             get
             {
-                Contract.Assert(_parameters.Value != null);
+                Debug.Assert(_parameters.Value != null);
+                // ReSharper disable once PossibleNullReferenceException
                 return _parameters.Value.Select(p => p.ParameterType);
             }
         }
@@ -172,6 +178,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>The closed <see cref="Method"/> if the generic types supplied are sufficient for closure; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         [CanBeNull]
+        [PublicAPI]
         public Method Close([NotNull] Type[] typeClosures, [NotNull] Type[] signatureClosures)
         {
             Contract.Assert(_genericArguments.Value != null);
@@ -220,6 +227,7 @@ namespace WebApplications.Utilities.Reflect
                 gta[i] = signatureClosures[i] ?? _genericArguments.Value[i].Type;
 
             // Create closed method, cache it and return.
+            // ReSharper disable once AssignNullToNotNullAttribute
             string key = String.Join("|", gta.Select(t => ExtendedType.Get(t).Signature));
 
             Contract.Assert(_closedMethods.Value != null);
@@ -310,24 +318,33 @@ namespace WebApplications.Utilities.Reflect
 
             // Now add parameter types.
             int p = 0;
-            int pCount = _parameters.Value.Length;
+
+            ParameterInfo[] parameters = _parameters.Value;
+            Debug.Assert(parameters != null);
+
+            int pCount = parameters.Length;
             for (; a < tCount; a++)
             {
                 // Check if we run out of parameters.
                 if (p >= pCount)
                     return null;
 
+                Debug.Assert(parameters[p] != null);
+
                 // actions don't support output, pointer, or by reference parameters
-                if (_parameters.Value[p].IsOut ||
-                    _parameters.Value[p].ParameterType.IsByRef ||
-                    _parameters.Value[p].ParameterType.IsPointer)
+                if (parameters[p].IsOut ||
+                    parameters[p].ParameterType.IsByRef ||
+                    parameters[p].ParameterType.IsPointer)
                     return null;
-                signatureTypes[a] = _parameters.Value[p++].ParameterType;
+
+                // ReSharper disable once PossibleNullReferenceException
+                signatureTypes[a] = parameters[p++].ParameterType;
             }
 
             // Any remaining parameters must be optional.
+            // ReSharper disable once PossibleNullReferenceException
             if ((p < pCount) &&
-                (!_parameters.Value[p].IsOptional))
+                (!parameters[p].IsOptional))
                 return null;
 
             // Create expressions
@@ -338,6 +355,9 @@ namespace WebApplications.Utilities.Reflect
                 Type funcType = funcTypes[i];
                 Type signatureType = signatureTypes[i];
 
+                Debug.Assert(funcType != null);
+                Debug.Assert(signatureType != null);
+
                 // Create parameter
                 parameterExpressions[i] = Expression.Parameter(funcType);
                 if (funcType != signatureType)
@@ -347,7 +367,7 @@ namespace WebApplications.Utilities.Reflect
                         return null;
                 }
                 else
-                    // No conversion necessary.
+                // No conversion necessary.
                     pExpressions[i] = parameterExpressions[i];
             }
 
@@ -358,7 +378,7 @@ namespace WebApplications.Utilities.Reflect
                 : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
 
             // Check if we have a return type.
-            if (Info.ReturnType != typeof (void))
+            if (Info.ReturnType != typeof(void))
             {
                 // Discard result by wrapping in a block and 'returning' void.
                 LabelTarget returnTarget = Expression.Label();
@@ -400,7 +420,7 @@ namespace WebApplications.Utilities.Reflect
         {
             // If the method is not closed or doesn't have return type, were' done.
             if ((Info.ContainsGenericParameters) ||
-                (Info.ReturnType == typeof (void)))
+                (Info.ReturnType == typeof(void)))
                 return null;
 
             bool isStatic = Info.IsStatic;
@@ -418,24 +438,32 @@ namespace WebApplications.Utilities.Reflect
 
             // Now add parameter types.
             int p = 0;
-            int pCount = _parameters.Value.Length;
+            ParameterInfo[] parameters = _parameters.Value;
+            Debug.Assert(parameters != null);
+
+            int pCount = parameters.Length;
             for (; a < tCount - 1; a++)
             {
                 // Check if we run out of parameters.
                 if (p >= pCount)
                     return null;
 
+                Debug.Assert(parameters[p] != null);
+
                 // Func's don't support output, pointer, or by reference parameters
-                if (_parameters.Value[p].IsOut ||
-                    _parameters.Value[p].ParameterType.IsByRef ||
-                    _parameters.Value[p].ParameterType.IsPointer)
+                if (parameters[p].IsOut ||
+                    parameters[p].ParameterType.IsByRef ||
+                    parameters[p].ParameterType.IsPointer)
                     return null;
-                signatureTypes[a] = _parameters.Value[p++].ParameterType;
+
+                // ReSharper disable once PossibleNullReferenceException
+                signatureTypes[a] = parameters[p++].ParameterType;
             }
 
             // Any remaining parameters must be optional.
+            // ReSharper disable once PossibleNullReferenceException
             if ((p < pCount) &&
-                (!_parameters.Value[p].IsOptional))
+                (!parameters[p].IsOptional))
                 return null;
 
             // Create expressions
@@ -446,6 +474,9 @@ namespace WebApplications.Utilities.Reflect
                 Type funcType = funcTypes[i];
                 Type signatureType = signatureTypes[i];
 
+                Debug.Assert(funcType != null);
+                Debug.Assert(signatureType != null);
+
                 // Create parameter
                 parameterExpressions[i] = Expression.Parameter(funcType);
                 if (funcType != signatureType)
@@ -455,7 +486,7 @@ namespace WebApplications.Utilities.Reflect
                         return null;
                 }
                 else
-                    // No conversion necessary.
+                // No conversion necessary.
                     pExpressions[i] = parameterExpressions[i];
             }
 
@@ -467,6 +498,7 @@ namespace WebApplications.Utilities.Reflect
 
             // Check if we need to do a cast to the func result type
             if (funcTypes[tCount - 1] != Info.ReturnType &&
+                // ReSharper disable once AssignNullToNotNullAttribute
                 !expression.TryConvert(funcTypes[tCount - 1], out expression))
                 return null;
 

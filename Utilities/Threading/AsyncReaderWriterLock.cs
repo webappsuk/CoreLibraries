@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -55,16 +55,17 @@ namespace WebApplications.Utilities.Threading
         private int _status;
 
         [NotNull]
-        private TaskCompletionSource<IDisposable> _waitingReader =
-            new TaskCompletionSource<IDisposable>();
+        private TaskCompletionSource<IDisposable> _waitingReader = new TaskCompletionSource<IDisposable>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncReaderWriterLock" /> class.
         /// </summary>
         public AsyncReaderWriterLock()
         {
-            _readerReleaser = Task.FromResult((IDisposable) new Releaser(this, false));
-            _writerReleaser = Task.FromResult((IDisposable) new Releaser(this, true));
+            // ReSharper disable AssignNullToNotNullAttribute
+            _readerReleaser = Task.FromResult((IDisposable)new Releaser(this, false));
+            _writerReleaser = Task.FromResult((IDisposable)new Releaser(this, true));
+            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>
@@ -74,6 +75,7 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task{IDisposable}.</returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
         [NotNull]
+        [PublicAPI]
         public Task<IDisposable> ReaderLockAsync(CancellationToken token)
         {
             lock (_waitingWriters)
@@ -85,7 +87,10 @@ namespace WebApplications.Utilities.Threading
                     return _readerReleaser;
                 }
                 ++_readersWaiting;
+
+                // ReSharper disable PossibleNullReferenceException
                 return _waitingReader.Task.ContinueWith(t => t.Result, token);
+                // ReSharper restore PossibleNullReferenceException
             }
         }
 
@@ -96,6 +101,7 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task{IDisposable}.</returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
         [NotNull]
+        [PublicAPI]
         public Task<IDisposable> WriterLockAsync(CancellationToken token)
         {
             lock (_waitingWriters)
@@ -107,6 +113,8 @@ namespace WebApplications.Utilities.Threading
                 }
                 TaskCompletionSource<IDisposable> waiter = new TaskCompletionSource<IDisposable>(token);
                 _waitingWriters.Enqueue(waiter);
+
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return waiter.Task;
             }
         }
@@ -176,9 +184,8 @@ namespace WebApplications.Utilities.Threading
             #region IDisposable Members
             public void Dispose()
             {
-                if (_toRelease != null)
-                    if (_writer) _toRelease.WriterRelease();
-                    else _toRelease.ReaderRelease();
+                if (_writer) _toRelease.WriterRelease();
+                else _toRelease.ReaderRelease();
             }
             #endregion
         }

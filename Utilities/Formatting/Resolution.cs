@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,36 +40,42 @@ namespace WebApplications.Utilities.Formatting
         /// The tag is unknown (cached).
         /// </summary>
         [PublicAPI]
+        [NotNull]
         public static readonly object Unknown = default(Resolution);
 
         /// <summary>
         /// The tag is not yet known (not cached).
         /// </summary>
         [PublicAPI]
+        [NotNull]
         public static readonly object UnknownYet = new Resolution(false, true);
 
         /// <summary>
         /// The tag's value is Null.
         /// </summary>
         [PublicAPI]
+        [NotNull]
         public static readonly object Null = new Resolution(null);
 
         /// <summary>
         /// The tag's value is currently null, but may change.
         /// </summary>
         [PublicAPI]
+        [NotNull]
         public static readonly object CurrentlyNull = new Resolution(null, true);
 
         /// <summary>
         /// The tag's value is <see cref="string.Empty"/>.
         /// </summary>
         [PublicAPI]
+        [NotNull]
         public static readonly object Empty = new Resolution(string.Empty);
 
         /// <summary>
         /// The tag's value is currently <see cref="string.Empty"/>, but may change.
         /// </summary>
         [PublicAPI]
+        [NotNull]
         public static readonly object CurrentlyEmpty = new Resolution(string.Empty, true);
 
         /// <summary>
@@ -122,7 +128,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return ToString(null, null);
+            return ToString(null);
         }
 
         /// <summary>
@@ -132,7 +138,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public string ToString([CanBeNull]string format, [CanBeNull]IFormatProvider formatProvider = null)
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             StringBuilder builder = new StringBuilder();
             if (!IsResolved)

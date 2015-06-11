@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,8 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using WebApplications.Utilities.Annotations;
 using Microsoft.Win32.SafeHandles;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.IO
@@ -206,14 +206,15 @@ namespace WebApplications.Utilities.IO
                                 breakCause = WaitHandle.WaitAny(breakConditions);
                             }
                             else
-                                //operation completed synchronously; there is data available
+                            //operation completed synchronously; there is data available
                                 breakCause = 0; //jump into the reading code in the switch below
                             switch (breakCause)
                             {
                                 case 0:
                                     // We have data so we can read it straight out
                                     // ReSharper disable once PossibleNullReferenceException
-                                    int bytesRead = await stream.ReadAsync(_buffer, 0, _buffer.Length, token).ConfigureAwait(false);
+                                    int bytesRead =
+                                        await stream.ReadAsync(_buffer, 0, _buffer.Length, token).ConfigureAwait(false);
                                     ms.Write(_buffer, 0, bytesRead);
 
                                     if (stream.ReadMode == PipeTransmissionMode.Byte ||

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -64,7 +64,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -83,7 +83,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -100,7 +100,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -121,7 +121,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -145,7 +145,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T1">The type of parameter 1.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -166,7 +166,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -184,7 +184,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T1">The type of parameter 1.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -206,7 +206,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -232,7 +232,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T2">The type of parameter 2.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -255,7 +255,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -274,7 +274,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T2">The type of parameter 2.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -297,7 +297,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -325,7 +325,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T3">The type of parameter 3.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -350,7 +350,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -370,7 +370,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T3">The type of parameter 3.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -394,7 +394,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -424,7 +424,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T4">The type of parameter 4.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -451,7 +451,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -472,7 +472,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T4">The type of parameter 4.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -497,7 +497,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -529,7 +529,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T5">The type of parameter 5.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -558,7 +558,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -580,7 +580,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T5">The type of parameter 5.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -606,7 +606,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -640,7 +640,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T6">The type of parameter 6.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -671,7 +671,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -694,7 +694,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T6">The type of parameter 6.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -721,7 +721,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -757,7 +757,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T7">The type of parameter 7.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -790,7 +790,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -814,7 +814,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T7">The type of parameter 7.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -842,7 +842,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -880,7 +880,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T8">The type of parameter 8.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -915,7 +915,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -940,7 +940,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T8">The type of parameter 8.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -969,7 +969,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1009,7 +1009,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T9">The type of parameter 9.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1046,7 +1046,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1072,7 +1072,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T9">The type of parameter 9.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1102,7 +1102,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1144,7 +1144,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T10">The type of parameter 10.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1183,7 +1183,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1210,7 +1210,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T10">The type of parameter 10.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1241,7 +1241,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1285,7 +1285,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T11">The type of parameter 11.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1326,7 +1326,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1354,7 +1354,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T11">The type of parameter 11.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1386,7 +1386,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1432,7 +1432,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T12">The type of parameter 12.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1475,7 +1475,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1504,7 +1504,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T12">The type of parameter 12.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1537,7 +1537,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1585,7 +1585,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T13">The type of parameter 13.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1630,7 +1630,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1660,7 +1660,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T13">The type of parameter 13.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1694,7 +1694,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1744,7 +1744,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T14">The type of parameter 14.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1791,7 +1791,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1822,7 +1822,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T14">The type of parameter 14.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1857,7 +1857,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1909,7 +1909,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T15">The type of parameter 15.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -1958,7 +1958,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -1990,7 +1990,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T15">The type of parameter 15.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -2026,7 +2026,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -2080,7 +2080,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T16">The type of parameter 16.</typeparam>
         /// <param name="expression">The lambda expression.</param>
         /// <returns>
-        /// <see cref="Expression{Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
         /// </returns>
         [NotNull]
         [PublicAPI]
@@ -2131,7 +2131,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
@@ -2164,7 +2164,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="T16">The type of parameter 16.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>
-        /// <see cref="Expression{Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}}"/>.
+        /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
         /// </returns>
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]

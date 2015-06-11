@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ namespace WebApplications.Utilities
     /// Allows the normalization of equalities.
     /// </summary>
     /// <typeparam name="T">The value type</typeparam>
+    [PublicAPI]
     public class EqualityNetwork<T> : IEnumerable<KeyValuePair<T, T>>
         where T : IComparable<T>
     {
@@ -76,6 +77,7 @@ namespace WebApplications.Utilities
         /// Adds a set of values that have to be equal to each other.
         /// </summary>
         /// <param name="values">The values.</param>
+        [PublicAPI]
         public void Add([NotNull] IEnumerable<T> values)
         {
             Add(values.ToArray());
@@ -85,7 +87,7 @@ namespace WebApplications.Utilities
         /// Adds a set of values that have to be equal to each other.
         /// </summary>
         /// <param name="values">The values.</param>
-        [UsedImplicitly]
+        [PublicAPI]
         public void Add([NotNull] params T[] values)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -128,7 +130,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <param name="target">The target.</param>
         /// <returns><c>true</c> if an equality was found, <c>false</c> otherwise</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool TryGetEquivalent([NotNull] T value, out T target)
         {
             Contract.Requires(!ReferenceEquals(value, null));
@@ -152,6 +154,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <returns>The equivalent value.</returns>
         [NotNull]
+        [PublicAPI]
         public T GetEquivalent([NotNull] T value)
         {
             Contract.Requires(!ReferenceEquals(value, null));
@@ -179,7 +182,7 @@ namespace WebApplications.Utilities
         /// <param name="a">One object</param>
         /// <param name="b">The other object</param>
         /// <returns>true if they are equal, false otherwise.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool AreEqual([NotNull] T a, [NotNull] T b)
         {
             Contract.Requires(!ReferenceEquals(a, null));

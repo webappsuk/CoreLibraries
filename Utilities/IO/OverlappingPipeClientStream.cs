@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ namespace WebApplications.Utilities.IO
         /// <summary>
         /// The read mode.
         /// </summary>
+        [PublicAPI]
         public readonly PipeTransmissionMode ReadMode;
 
         /// <summary>
@@ -85,11 +86,13 @@ namespace WebApplications.Utilities.IO
             if (stream == null) return TaskResult.False;
             if (stream.IsConnected) return TaskResult.True;
             // TODO May be a better way using PInvoke...
+            // ReSharper disable once PossibleNullReferenceException
             return Task.Run(() => stream.Connect(60000), token)
                 .ContinueWith(
                     t => stream.ReadMode = ReadMode,
                     token,
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     TaskScheduler.Default);
         }
     }

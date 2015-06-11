@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -556,7 +555,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
-            return _builder.ToString((string)null, formatProvider);
+            return _builder.ToString(null, formatProvider);
         }
 
         /// <summary>

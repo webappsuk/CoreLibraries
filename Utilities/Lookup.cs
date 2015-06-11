@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -81,10 +82,12 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>IEnumerable{.</returns>
-        public IEnumerable<TElement> this[TKey key]
+        public IEnumerable<TElement> this[[NotNull] TKey key]
         {
             get
             {
+                if (key == null) throw new ArgumentNullException("key");
+
                 List<TElement> value;
                 // ReSharper disable once AssignNullToNotNullAttribute
                 return _data.TryGetValue(key, out value)
@@ -183,7 +186,7 @@ namespace WebApplications.Utilities
         /// <param name="key">The key.</param>
         /// <param name="elements">The elements.</param>
         [PublicAPI]
-        public void AddRange([NotNull] TKey key, [NotNull][InstantHandle]  IEnumerable<TElement> elements)
+        public void AddRange([NotNull] TKey key, [NotNull] [InstantHandle] IEnumerable<TElement> elements)
         {
             List<TElement> list;
             if (!_data.TryGetValue(key, out list))

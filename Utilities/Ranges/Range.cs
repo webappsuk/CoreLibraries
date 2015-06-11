@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -68,16 +68,19 @@ namespace WebApplications.Utilities.Ranges
         /// <summary>
         ///   The end of the range (inclusive).
         /// </summary>
+        [NotNull]
         private readonly TValue _end;
 
         /// <summary>
         ///   The start of the range (inclusive).
         /// </summary>
+        [NotNull]
         private readonly TValue _start;
 
         /// <summary>
         ///   The step for enumeration
         /// </summary>
+        [CanBeNull]
         private readonly TStep _step;
 
         /// <summary>
@@ -110,7 +113,7 @@ namespace WebApplications.Utilities.Ranges
                     "start",
                     start,
                     string.Format(
-                    // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Range_StartGreaterThanEnd,
                         start,
                         end,
@@ -128,7 +131,7 @@ namespace WebApplications.Utilities.Ranges
         /// <exception cref="System.ArgumentOutOfRangeException">
         ///   The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
         /// </exception>
-        public Range([NotNull] TValue start, [NotNull] TValue end, [NotNull]  TStep step)
+        public Range([NotNull] TValue start, [NotNull] TValue end, [NotNull] TStep step)
         {
             Contract.Requires<ArgumentNullException>(!ReferenceEquals(start, null));
             Contract.Requires<ArgumentNullException>(!ReferenceEquals(end, null));
@@ -138,7 +141,7 @@ namespace WebApplications.Utilities.Ranges
                     "start",
                     start,
                     string.Format(
-                    // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Range_StartGreaterThanEnd,
                         start,
                         end,
@@ -208,6 +211,7 @@ namespace WebApplications.Utilities.Ranges
         /// <summary>
         ///   The start of the range (inclusive).
         /// </summary>
+        [NotNull]
         public TValue Start
         {
             get { return _start; }
@@ -216,6 +220,7 @@ namespace WebApplications.Utilities.Ranges
         /// <summary>
         ///   The end of the range (inclusive).
         /// </summary>
+        [NotNull]
         public TValue End
         {
             get { return _end; }
@@ -279,7 +284,8 @@ namespace WebApplications.Utilities.Ranges
         ///   A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        [NotNull,PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public IEnumerator<TValue> GetEnumerator(TStep step)
         {
             for (TValue loop = _start, next; !_lessThan(_end, loop); loop = next)

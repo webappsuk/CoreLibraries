@@ -8,11 +8,9 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Collections" #>
 <#@ import namespace="System.Collections.Generic" #> 
-<#@ import namespace="System.Text" #> 
-<#
-int maxParameters = 35;
-#>#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+<#@ import namespace="System.Text" #>
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -46,93 +44,101 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities
 {
 <# 
-            StringBuilder typeParams = new StringBuilder();
-            StringBuilder tuple = new StringBuilder();
-            StringBuilder tupleEnd = new StringBuilder();
-            StringBuilder typeComments = new StringBuilder();
-            StringBuilder paramsComments = new StringBuilder();
-            StringBuilder paramsWithType = new StringBuilder();
-            StringBuilder outParamsWithType = new StringBuilder();
-            StringBuilder paramsWithoutType = new StringBuilder();
-            StringBuilder assignments = new StringBuilder();
-            StringBuilder defaultAssignments = new StringBuilder();
-            for (int i = 1; i <= maxParameters; i++)
-            {
-                typeParams.Append(String.Format("{0}T{1}", i > 1 ? ", " : String.Empty, i));
-                if (i > 1)
-                {
-                    tuple.Append(", ");
-                    if ((i - 1)%7 == 0)
-                    {
-                        tuple.Append("Tuple<");
-                        tupleEnd.Append(">");
-                    }
-                }
-                tuple.Append(String.Format("T{0}", i));
-                paramsWithoutType.Clear();
-                for (int j = 1; j <= i; j++)
-                {
-                    if (j > 1)
-                    {
-                        paramsWithoutType.Append(", ");
-                        if ((j - 1)%7 == 0)
-                        {
-                            int closeCount = 1;
-                            paramsWithoutType.Append("new Tuple<");
-                            for (int k = j; k <= i; k++)
-                            {
-                                if (k > j)
-                                {
-                                    if ((k - 1)%7 == 0)
-                                    {
-                                        paramsWithoutType.Append(", Tuple<");
-                                        closeCount++;
-                                    }
-                                    else
-                                    {
-                                        paramsWithoutType.Append(", ");
-                                    }
-                                }
-                                paramsWithoutType.Append(String.Format("T{0}", k));
-                            }
-                            paramsWithoutType.Append(new string('>', closeCount));
-                            paramsWithoutType.Append("(");
-                        }
-                    }
-                    paramsWithoutType.Append(String.Format("item{0}", j));
-                }
-                paramsWithoutType.Append(new string(')', (i - 1)/7));
-                typeComments.Append(
-                    String.Format("{0}    /// <typeparam name=\"T{1}\">The type of item {1}.</typeparam>",
-                                  Environment.NewLine,
-                                  i));
-                paramsComments.Append(
-                    String.Format("{0}        /// <param name=\"item{1}\">Item {1} of the tuple.</param>",
-                                  Environment.NewLine,
-                                  i));
-                paramsWithType.Append(String.Format("{2}{0}            T{1} item{1}",
-                                                    Environment.NewLine,
-                                                    i,
-                                                    i > 1 ? "," : ""));
-                outParamsWithType.Append(String.Format("{2}{0}            out T{1} item{1}",
-                                                    Environment.NewLine,
-                                                    i,
-                                                    i > 1 ? "," : ""));
-                assignments.Append(String.Format("{0}            item{1} = tuple{2}.Item{3};",
-                                                    Environment.NewLine,
-                                                    i,
-                                                    string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
-                                                    (i-1)%7+1));
-                defaultAssignments.Append(String.Format("{0}                item{1} = default(T{1});",
-                                                    Environment.NewLine,
-                                                    i));
-                String t = tuple.ToString() + tupleEnd.ToString();
-                if (i<2) continue;
-    #>
+    int maxParameters = 35;
 
+    StringBuilder typeParams = new StringBuilder();
+    StringBuilder tuple = new StringBuilder();
+    StringBuilder tupleEnd = new StringBuilder();
+    StringBuilder typeComments = new StringBuilder();
+    StringBuilder paramsComments = new StringBuilder();
+    StringBuilder paramsWithType = new StringBuilder();
+    StringBuilder outParamsWithType = new StringBuilder();
+    StringBuilder paramsWithoutType = new StringBuilder();
+    StringBuilder assignments = new StringBuilder();
+    StringBuilder defaultAssignments = new StringBuilder();
+    string afterAssignments = string.Empty;
+    for (int i = 1; i <= maxParameters; i++)
+    {
+        typeParams.AppendFormat("{0}T{1}", i > 1 ? ", " : String.Empty, i);
+        if (i > 1)
+        {
+            tuple.Append(", ");
+            if ((i - 1)%7 == 0)
+            {
+                tuple.Append("Tuple<");
+                tupleEnd.Append(">");
+            }
+        }
+        tuple.AppendFormat("T{0}", i);
+        paramsWithoutType.Clear();
+        for (int j = 1; j <= i; j++)
+        {
+            if (j > 1)
+            {
+                paramsWithoutType.Append(", ");
+                if ((j - 1)%7 == 0)
+                {
+                    int closeCount = 1;
+                    paramsWithoutType.Append("new Tuple<");
+                    for (int k = j; k <= i; k++)
+                    {
+                        if (k > j)
+                        {
+                            if ((k - 1)%7 == 0)
+                            {
+                                paramsWithoutType.Append(", Tuple<");
+                                closeCount++;
+                            }
+                            else
+                            {
+                                paramsWithoutType.Append(", ");
+                            }
+                        }
+                        paramsWithoutType.AppendFormat("T{0}", k);
+                    }
+                    paramsWithoutType.Append(new string('>', closeCount));
+                    paramsWithoutType.Append("(");
+                }
+            }
+            paramsWithoutType.AppendFormat("item{0}", j);
+        }
+
+        paramsWithoutType.Append(new string(')', (i - 1)/7));
+        typeComments.AppendFormat("{0}    /// <typeparam name=\"T{1}\">The type of item {1}.</typeparam>",
+            Environment.NewLine,
+            i);
+        paramsComments.AppendFormat("{0}        /// <param name=\"item{1}\">Item {1} of the tuple.</param>",
+            Environment.NewLine,
+            i);
+        paramsWithType.AppendFormat("{2}{0}            T{1} item{1}",
+            Environment.NewLine,
+            i,
+            i > 1 ? "," : "");
+        outParamsWithType.AppendFormat("{2}{0}            out T{1} item{1}",
+            Environment.NewLine,
+            i,
+            i > 1 ? "," : "");
+                
+        if (i == 8)
+        {
+            assignments.AppendFormat("{0}            // ReSharper disable PossibleNullReferenceException", Environment.NewLine);
+            afterAssignments = string.Format("{0}            // ReSharper restore PossibleNullReferenceException", Environment.NewLine);
+        }
+
+        assignments.AppendFormat("{0}            item{1} = tuple{2}.Item{3};",
+            Environment.NewLine,
+            i,
+            string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
+            (i-1)%7+1);
+        defaultAssignments.AppendFormat("{0}                item{1} = default(T{1});",
+            Environment.NewLine,
+            i);
+        String t = tuple.ToString() + tupleEnd.ToString();
+        if (i<2) continue;
+    #>
     #region Stack with <#= i #> items.
     /// <summary>
-    /// A stack of <see cref="Tuple{<#= typeParams #>}"/>.
+    /// A stack of <c>Tuple&lt;<#= t.Replace("<", "&lt;").Replace(">", "&gt;") #>&gt;</c>.
     /// </summary><#= typeComments #>
     [PublicAPI]
     public class Stack<<#= typeParams #>> : Stack<Tuple<<#= t #>>>, IEnumerable<<#= typeParams #>>
@@ -152,7 +158,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="collection">The collection to copy elements from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is null.</exception>
-        public Stack(IEnumerable<Tuple<<#= t #>>> collection) : base(collection)
+        public Stack([NotNull] IEnumerable<Tuple<<#= t #>>> collection) : base(collection)
         {
         }
 
@@ -172,7 +178,7 @@ namespace WebApplications.Utilities
         public void Pop(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Pop();
-            Contract.Assert(tuple != null);<#= assignments #>
+            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
         }
         
         /// <summary>
@@ -182,7 +188,7 @@ namespace WebApplications.Utilities
         public void Peek(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Peek();
-            Contract.Assert(tuple != null);<#= assignments #>
+            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
         }
         
         /// <summary>
@@ -197,7 +203,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<<#= t #>> tuple = Pop();
-            Contract.Assert(tuple != null);<#= assignments #>
+            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
             return true;
         }
         
@@ -213,11 +219,12 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<<#= t #>> tuple = Peek();
-            Contract.Assert(tuple != null);<#= assignments #>
+            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
             return true;
         }
     }
     #endregion
+
 <# 
 }
 #>

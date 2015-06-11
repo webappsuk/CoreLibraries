@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -70,24 +70,25 @@ namespace WebApplications.Utilities.Reflect
         ///    <item><description><see cref="System.IConvertible.GetTypeCode">GetTypeCode</see> - Isn't actually a conversion method.</description></item>
         ///  </list>
         /// </remarks>
+        [NotNull]
         private static readonly Dictionary<Type, string> _iConvertibleMethods =
             new Dictionary<Type, string>
             {
-                {typeof (bool), "ToBoolean"},
-                {typeof (char), "ToChar"},
-                {typeof (sbyte), "ToSByte"},
-                {typeof (byte), "ToByte"},
-                {typeof (short), "ToInt16"},
-                {typeof (ushort), "ToUInt16"},
-                {typeof (int), "ToInt32"},
-                {typeof (uint), "ToUInt32"},
-                {typeof (long), "ToInt64"},
-                {typeof (ulong), "ToUInt64"},
-                {typeof (float), "ToSingle"},
-                {typeof (double), "ToDouble"},
-                {typeof (decimal), "ToDecimal"},
-                {typeof (DateTime), "ToDateTime"},
-                {typeof (string), "ToString"}
+                { typeof(bool), "ToBoolean" },
+                { typeof(char), "ToChar" },
+                { typeof(sbyte), "ToSByte" },
+                { typeof(byte), "ToByte" },
+                { typeof(short), "ToInt16" },
+                { typeof(ushort), "ToUInt16" },
+                { typeof(int), "ToInt32" },
+                { typeof(uint), "ToUInt32" },
+                { typeof(long), "ToInt64" },
+                { typeof(ulong), "ToUInt64" },
+                { typeof(float), "ToSingle" },
+                { typeof(double), "ToDouble" },
+                { typeof(decimal), "ToDecimal" },
+                { typeof(DateTime), "ToDateTime" },
+                { typeof(string), "ToString" }
             };
 
         /// <summary>
@@ -99,6 +100,7 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Creates a cache for casts on demand.
         /// </summary>
+        [NotNull]
         private readonly Lazy<ConcurrentDictionary<Type, bool>> _convertToCache =
             new Lazy<ConcurrentDictionary<Type, bool>>(
                 () => new ConcurrentDictionary<Type, bool>(),
@@ -139,7 +141,10 @@ namespace WebApplications.Utilities.Reflect
         private readonly Lazy<List<GenericArgument>>
             _genericArguments;
 
+        [NotNull]
         private readonly Lazy<Dictionary<string, Type>> _interfaces;
+
+        [NotNull]
         private readonly Lazy<bool> _isConvertible;
 
         /// <summary>
@@ -148,6 +153,7 @@ namespace WebApplications.Utilities.Reflect
         [NotNull]
         private readonly Dictionary<string, List<Method>> _methods = new Dictionary<string, List<Method>>();
 
+        [NotNull]
         private readonly Lazy<Type> _nonNullableType;
 
         /// <summary>
@@ -173,34 +179,37 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Holds user defined methods that cast to this type from another type.
         /// </summary>
-        private Dictionary<Type, CastMethod> _castsFrom = new Dictionary<Type, CastMethod>();
+        [NotNull]
+        private readonly Dictionary<Type, CastMethod> _castsFrom = new Dictionary<Type, CastMethod>();
 
         /// <summary>
         /// Holds user defined methods that cast from this type to another type.
         /// </summary>
-        private Dictionary<Type, CastMethod> _castsTo = new Dictionary<Type, CastMethod>();
+        [NotNull]
+        private readonly Dictionary<Type, CastMethod> _castsTo = new Dictionary<Type, CastMethod>();
 
         /// <summary>
         /// Caches closed types.
         /// </summary>
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private
-            Lazy<ConcurrentDictionary<string, ExtendedType>> _closedTypes =
-                new Lazy<ConcurrentDictionary<string, ExtendedType>>(
-                    () => new ConcurrentDictionary<string, ExtendedType>(),
-                    LazyThreadSafetyMode.PublicationOnly);
+        private readonly Lazy<ConcurrentDictionary<string, ExtendedType>> _closedTypes =
+            new Lazy<ConcurrentDictionary<string, ExtendedType>>(
+                () => new ConcurrentDictionary<string, ExtendedType>(),
+                LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Holds all constructors.
         /// </summary>
+        [ItemNotNull]
         private IEnumerable<Constructor> _constructors;
 
         /// <summary>
         /// Holds all indexers.
         /// </summary>
         [NotNull]
-        private IEnumerable<Indexer> _indexers;
+        [ItemNotNull]
+        private IEnumerable<Indexer> _indexers = Enumerable.Empty<Indexer>();
 
         /// <summary>
         /// Spinlock for locking during member load.
@@ -246,7 +255,10 @@ namespace WebApplications.Utilities.Reflect
                         Type elementType = type;
 
                         while (elementType.HasElementType)
+                        {
                             elementType = elementType.GetElementType();
+                            Debug.Assert(elementType != null);
+                        }
 
                         if (elementType.IsNested)
                             return type.Name;
@@ -254,8 +266,8 @@ namespace WebApplications.Utilities.Reflect
                         string sigToString = type.ToString();
 
                         if (elementType.IsPrimitive ||
-                            elementType == typeof (void) ||
-                            elementType == typeof (TypedReference))
+                            elementType == typeof(void) ||
+                            elementType == typeof(TypedReference))
                             sigToString = sigToString.Substring(7);
 
                         return sigToString;
@@ -269,6 +281,7 @@ namespace WebApplications.Utilities.Reflect
 
             _genericArguments = new Lazy<List<GenericArgument>>(
                 () => Type.GetGenericArguments()
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     .Select((g, i) => new GenericArgument(GenericArgumentLocation.Type, i, g))
                     .ToList(),
                 LazyThreadSafetyMode.PublicationOnly);
@@ -276,7 +289,7 @@ namespace WebApplications.Utilities.Reflect
             _nonNullableType =
                 new Lazy<Type>(
                     () =>
-                        (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>))
+                        (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
                             ? Type.GetGenericArguments()[0]
                             : Type,
                     LazyThreadSafetyMode.PublicationOnly);
@@ -285,6 +298,8 @@ namespace WebApplications.Utilities.Reflect
                 () =>
                 {
                     Type t = _nonNullableType.Value;
+                    Debug.Assert(t != null);
+
                     if (t.IsEnum)
                         return true;
                     switch (Type.GetTypeCode(t))
@@ -310,6 +325,7 @@ namespace WebApplications.Utilities.Reflect
 
             _interfaces =
                 new Lazy<Dictionary<string, Type>>(
+                    // ReSharper disable once PossibleNullReferenceException
                     () => Type.GetInterfaces().ToDictionary(t => t.FullName ?? t.Name, t => t),
                     LazyThreadSafetyMode.PublicationOnly);
         }
@@ -318,6 +334,7 @@ namespace WebApplications.Utilities.Reflect
         /// Gets the <see cref="ExtendedType"/> for the Base Type.
         /// </summary>
         /// <value>The type of the base.</value>
+        [PublicAPI]
         public ExtendedType BaseType
         {
             get
@@ -516,6 +533,7 @@ namespace WebApplications.Utilities.Reflect
             get
             {
                 if (!_loaded) LoadMembers();
+                Debug.Assert(_constructors != null);
                 return _constructors;
             }
         }
@@ -606,7 +624,11 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public IEnumerable<GenericArgument> GenericArguments
         {
-            get { return _genericArguments.Value; }
+            get
+            {
+                Debug.Assert(_genericArguments.Value != null);
+                return _genericArguments.Value;
+            }
         }
 
         /// <summary>
@@ -615,9 +637,14 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <value>The type of the non nullable type.</value>
         [PublicAPI]
+        [NotNull]
         public Type NonNullableType
         {
-            get { return _nonNullableType.Value; }
+            get
+            {
+                Debug.Assert(_nonNullableType.Value != null);
+                return _nonNullableType.Value;
+            }
         }
 
         /// <summary>
@@ -648,7 +675,11 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public IEnumerable<Type> Interfaces
         {
-            get { return _interfaces.Value.Values; }
+            get
+            {
+                Debug.Assert(_interfaces.Value != null);
+                return _interfaces.Value.Values;
+            }
         }
 
         /// <summary>
@@ -660,7 +691,9 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public static ExtendedType Get([NotNull] Type type)
         {
+            // ReSharper disable AssignNullToNotNullAttribute
             return _extendedTypes.GetOrAdd(type, t => new ExtendedType(t));
+            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>
@@ -693,7 +726,8 @@ namespace WebApplications.Utilities.Reflect
                     if (p != null)
                     {
                         // Seperate out indexers (which can not be disambiguated by name).
-                        if (p.Name == DefaultMember || p.GetIndexParameters().Length > 0)
+                        if (p.Name == DefaultMember ||
+                            p.GetIndexParameters().Length > 0)
                         {
                             if (indexers == null) indexers = new List<Indexer>();
                             indexers.Add(new Indexer(this, p));
@@ -823,6 +857,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>
         /// <see langword="true"/> this type implements a cast from the specified type; otherwise <see langword="false"/>.
         /// </returns>
+        [PublicAPI]
         public bool ImplementsCastFrom([NotNull] Type fromType, bool implicitOnly = true)
         {
             CastMethod cast = GetCastFromMethod(fromType);
@@ -835,6 +870,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="fromType">The type to cast from.</param>
         /// <returns>The method that implements the cast; otherwise <see langword="null"/>.</returns>
         [CanBeNull]
+        [PublicAPI]
         public CastMethod GetCastFromMethod([NotNull] Type fromType)
         {
             CastMethod cast;
@@ -849,6 +885,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>
         /// <see langword="true"/> this type implements a cast to the specified type; otherwise <see langword="false"/>.
         /// </returns>
+        [PublicAPI]
         public bool ImplementsCastTo([NotNull] Type toType, bool implicitOnly = true)
         {
             CastMethod cast = GetCastToMethod(toType);
@@ -861,6 +898,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="toType">The type to cast to.</param>
         /// <returns>The method that implements the cast; otherwise <see langword="null"/>.</returns>
         [CanBeNull]
+        [PublicAPI]
         public CastMethod GetCastToMethod([NotNull] Type toType)
         {
             CastMethod cast;
@@ -872,8 +910,10 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <param name="interfaceType">Type of the interface.</param>
         /// <returns><see langword="true"/> if <see cref="Type"/> implements the interface type; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
         public bool Implements([NotNull] Type interfaceType)
         {
+            Debug.Assert(_interfaces.Value != null);
             return _interfaces.Value.ContainsKey(interfaceType.FullName ?? interfaceType.Name);
         }
 
@@ -883,6 +923,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="name">The name.</param>
         /// <param name="includeBase">if set to <see langword="true" /> includes fields from the base type.</param>
         /// <returns>The <see cref="Field" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Field GetField([NotNull] string name, bool includeBase = true)
         {
             ExtendedType type = this;
@@ -904,12 +945,14 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="fieldInfo">The field info.</param>
         /// <param name="includeBase">if set to <see langword="true" /> includes fields from the base type.</param>
         /// <returns>The <see cref="Field" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Field GetField([NotNull] FieldInfo fieldInfo, bool includeBase = true)
         {
             ExtendedType type = this;
             while (type != null)
             {
                 if (!type._loaded) type.LoadMembers();
+                // ReSharper disable once PossibleNullReferenceException
                 Field field = type._fields.Values.FirstOrDefault(f => f.Info == fieldInfo);
                 if ((field != null) ||
                     (!includeBase))
@@ -952,6 +995,7 @@ namespace WebApplications.Utilities.Reflect
             while (type != null)
             {
                 if (!type._loaded) type.LoadMembers();
+                // ReSharper disable once PossibleNullReferenceException
                 Property property = type._properties.Values.FirstOrDefault(p => p.Info == propertyInfo);
                 if ((property != null) ||
                     !includeBase)
@@ -978,6 +1022,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="types">The types.</param>
         /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
         /// <returns>The indexer.</returns>
+        [PublicAPI]
         public Indexer GetIndexer(out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
             return GetIndexer(true, out castsRequired, types);
@@ -989,10 +1034,11 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="includeBase">if set to <see langword="true" /> includes indexers from the base type.</param>
         /// <param name="types">The types.</param>
         /// <returns>The indexer.</returns>
+        [PublicAPI]
         public Indexer GetIndexer(bool includeBase, [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
-            return GetIndexer(out castsRequired, types);
+            return GetIndexer(includeBase, out castsRequired, types);
         }
 
         /// <summary>
@@ -1002,6 +1048,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
         /// <param name="types">The types.</param>
         /// <returns>The indexer.</returns>
+        [PublicAPI]
         public Indexer GetIndexer(bool includeBase, out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
             ExtendedType type = this;
@@ -1079,7 +1126,8 @@ namespace WebApplications.Utilities.Reflect
                 List<Method> methods;
                 if (type._methods.TryGetValue(methodInfo.Name, out methods))
                 {
-                    Contract.Assert(methods != null);
+                    Debug.Assert(methods != null);
+                    // ReSharper disable once PossibleNullReferenceException
                     Method method = methods.FirstOrDefault(m => m.Info == methodInfo);
                     if (method != null)
                         return method;
@@ -1109,6 +1157,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
+        [PublicAPI]
         public Method GetMethod([NotNull] string name, bool includeBase, [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
@@ -1136,6 +1185,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Method GetMethod(
             [NotNull] string name,
             int genericArguments,
@@ -1155,6 +1205,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Method GetMethod(
             [NotNull] string name,
             int genericArguments,
@@ -1176,6 +1227,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Method GetMethod(
             [NotNull] string name,
             int genericArguments,
@@ -1220,6 +1272,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Method GetMethod(
             [NotNull] string name,
             int genericArguments,
@@ -1266,6 +1319,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="includeBase">if set to <see langword="true" /> includes constructors from the base type.</param>
         /// <param name="types">The parameter types and return type (normally the same as <see cref="Type" />).</param>
         /// <returns>The <see cref="Constructor" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Constructor GetConstructor(bool includeBase, [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
@@ -1278,6 +1332,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
         /// <param name="types">The parameter types and return type (normally the same as <see cref="Type" />).</param>
         /// <returns>The <see cref="Constructor" /> if found; otherwise <see langword="null" />.</returns>
+        [PublicAPI]
         public Constructor GetConstructor(out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
             return GetConstructor(out castsRequired, true, types);
@@ -1290,6 +1345,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="includeBase">if set to <see langword="true" /> includes constructors from the base type.</param>
         /// <param name="types">The parameter types and return type (normally the same as <see cref="Type"/>).</param>
         /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
+        [PublicAPI]
         public Constructor GetConstructor(
             out bool[] castsRequired,
             bool includeBase,
@@ -1324,6 +1380,7 @@ namespace WebApplications.Utilities.Reflect
                 if (!type._loaded) type.LoadMembers();
                 Constructor constructor = type._constructors == null
                     ? null
+                    // ReSharper disable once PossibleNullReferenceException
                     : type._constructors.FirstOrDefault(c => c.Info == constructorInfo);
                 if ((constructor != null) ||
                     !includeBase)
@@ -1339,6 +1396,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="name">The name.</param>
         /// <param name="includeBase">if set to <see langword="true" /> includes events from the base type.</param>
         /// <returns>The <see cref="Event"/> if found; otherwise <see langword="null"/>.</returns>
+        [PublicAPI]
         public Event GetEvent([NotNull] string name, bool includeBase = true)
         {
             ExtendedType type = this;
@@ -1366,6 +1424,7 @@ namespace WebApplications.Utilities.Reflect
             while (type != null)
             {
                 if (!type._loaded) type.LoadMembers();
+                // ReSharper disable once PossibleNullReferenceException
                 Event @event = _events.Values.FirstOrDefault(e => e.Info == eventInfo);
                 if ((@event != null) ||
                     !includeBase)
@@ -1383,6 +1442,9 @@ namespace WebApplications.Utilities.Reflect
         public ExtendedType CloseType([NotNull] params Type[] genericTypes)
         {
             int length = genericTypes.Length;
+
+            Debug.Assert(_genericArguments.Value != null);
+
             // Check length matches.
             if (length != _genericArguments.Value.Count)
                 return null;
@@ -1398,8 +1460,7 @@ namespace WebApplications.Utilities.Reflect
                 {
                     // See if we have a concrete type for this index.
                     Type et = _genericArguments.Value[i].Type;
-                    if ((et == null) ||
-                        (et.IsGenericType))
+                    if (et.IsGenericType)
                         return null;
                     gt = et;
                 }
@@ -1414,7 +1475,10 @@ namespace WebApplications.Utilities.Reflect
             // implementing a constraint validation algorithm - as the .NET one is
             // not exposed - this could be done using Type.GenericParameterAttributes
             // followed by Type.GetGenericParameterConstraints.
+            // ReSharper disable once PossibleNullReferenceException
             string key = String.Join("|", gta.Select(t => t.FullName));
+
+            Debug.Assert(_closedTypes.Value != null);
             return _closedTypes.Value.GetOrAdd(
                 key,
                 k =>
@@ -1435,9 +1499,10 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <param name="extendedType">Type of the extended.</param>
         /// <returns>The result of the conversion.</returns>
+        [ContractAnnotation("type:null=>null;type:notnull=>notnull")]
         public static implicit operator Type(ExtendedType extendedType)
         {
-            return extendedType != null ? extendedType.Type : null;
+            return extendedType == null ? null : extendedType.Type;
         }
 
         /// <summary>
@@ -1445,6 +1510,7 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The result of the conversion.</returns>
+        [ContractAnnotation("type:null=>null;type:notnull=>notnull")]
         public static implicit operator ExtendedType(Type type)
         {
             return type == null ? null : Get(type);
@@ -1466,6 +1532,7 @@ namespace WebApplications.Utilities.Reflect
                 (type.ContainsGenericParameters))
                 return false;
 
+            Debug.Assert(_convertToCache.Value != null);
             return _convertToCache.Value.GetOrAdd(
                 type,
                 t =>
@@ -1476,10 +1543,10 @@ namespace WebApplications.Utilities.Reflect
                     // First we check to see if a cast is possible
                     if ((NonNullableType == dest.NonNullableType) ||
                         (NonNullableType.IsEquivalentTo(NonNullableType)) ||
-                        (dest.NonNullableType != typeof (bool) && IsConvertible && dest.IsConvertible) ||
+                        (dest.NonNullableType != typeof(bool) && IsConvertible && dest.IsConvertible) ||
                         (ImplementsCastTo(dest)) ||
                         (dest.ImplementsCastFrom(this)) ||
-                        (Implements(typeof (IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
+                        (Implements(typeof(IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
                         return true;
 
                     // TODO SUPPORT TYPE CONVERTERS
@@ -1525,17 +1592,17 @@ namespace WebApplications.Utilities.Reflect
             }
 
             // Look for IConvertible method
-            if (et.Implements(typeof (IConvertible)))
+            if (et.Implements(typeof(IConvertible)))
             {
                 string methodName;
                 IEnumerable<Method> methods;
                 if ((_iConvertibleMethods.TryGetValue(Type, out methodName)) &&
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     ((methods = et.GetMethods(methodName)) != null))
                 {
-                    Method cm =
-                        methods.FirstOrDefault(
-                            m =>
-                                m.ParameterTypes.Count() == 1 && m.ParameterTypes.First() == typeof (IFormatProvider));
+                    Method cm = methods.FirstOrDefault(
+                        // ReSharper disable once PossibleNullReferenceException
+                        m => m.ParameterTypes.Count() == 1 && m.ParameterTypes.First() == typeof(IFormatProvider));
                     if (cm != null)
                     {
                         // Call the IConvertible method on the object, passing in CultureInfo.CurrentCulture as the parameter.
@@ -1556,7 +1623,7 @@ namespace WebApplications.Utilities.Reflect
             // Look for TypeConverter on output type.
             bool useTo = false;
             TypeConverterAttribute typeConverterAttribute = Type
-                .GetCustomAttributes(typeof (TypeConverterAttribute), false)
+                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
                 .OfType<TypeConverterAttribute>()
                 .FirstOrDefault();
 
@@ -1566,7 +1633,7 @@ namespace WebApplications.Utilities.Reflect
                 // Look for TypeConverter on expression type.
                 useTo = true;
                 typeConverterAttribute = expression.Type
-                    .GetCustomAttributes(typeof (TypeConverterAttribute), false)
+                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
                     .OfType<TypeConverterAttribute>()
                     .FirstOrDefault();
             }
@@ -1592,20 +1659,20 @@ namespace WebApplications.Utilities.Reflect
                                     BindingFlags.Instance | BindingFlags.Public |
                                     BindingFlags.FlattenHierarchy,
                                     null,
-                                    new[] {typeof (object), typeof (Type)},
+                                    new[] { typeof(object), typeof(Type) },
                                     null)
                                 : typeConverterType.GetMethod(
                                     "ConvertFrom",
                                     BindingFlags.Instance | BindingFlags.Public |
                                     BindingFlags.FlattenHierarchy,
                                     null,
-                                    new[] {typeof (object)},
+                                    new[] { typeof(object) },
                                     null);
                             if (mi != null)
                             {
                                 // The convert methods accepts the value as an object parameters, so we may need a cast.
-                                if (expression.Type != typeof (object))
-                                    expression = Expression.Convert(expression, typeof (object));
+                                if (expression.Type != typeof(object))
+                                    expression = Expression.Convert(expression, typeof(object));
 
                                 // Create an expression which creates a new instance of the type converter and passes in
                                 // the existing expression as the first parameter to ConvertTo or ConvertFrom.
@@ -1614,7 +1681,7 @@ namespace WebApplications.Utilities.Reflect
                                         Expression.New(typeConverterType),
                                         mi,
                                         expression,
-                                        Expression.Constant(Type, typeof (Type)))
+                                        Expression.Constant(Type, typeof(Type)))
                                     : Expression.Call(
                                         Expression.New(typeConverterType),
                                         mi,
@@ -1630,10 +1697,11 @@ namespace WebApplications.Utilities.Reflect
                 }
                 catch
                 {
+                    // Ignore exceptions
                 }
 
             // Finally, if we want to output to string, call ToString() method.
-            if (Type == typeof (string))
+            if (Type == typeof(string))
             {
                 outputExpression = Expression.Call(expression, Reflection.ToStringMethodInfo);
                 return true;
@@ -1650,6 +1718,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>
         /// <see langword="true"/> if the type extends from the <paramref name="baseType"/> specified; otherwise <see langword="false"/>
         /// </returns> 
+        [PublicAPI]
         public bool DescendsFrom([NotNull] Type baseType)
         {
             Type sourceType = Type;

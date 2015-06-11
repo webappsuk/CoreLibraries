@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,33 +44,110 @@ namespace WebApplications.Utilities
     public class Impersonator : IDisposable
     {
         #region PInvoke
+        /// <summary>
+        /// The types of logon operation that can be performed.
+        /// </summary>
         [PublicAPI]
         public enum LogonType
         {
+            /// <summary>
+            /// This logon type is intended for users who will be interactively using the computer, such as a user being
+            ///  logged on by a terminal server, remote shell, or similar process. This logon type has the additional 
+            /// expense of caching logon information for disconnected operations; therefore, it is inappropriate for 
+            /// some client/server applications, such as a mail server.
+            /// </summary>
+            [PublicAPI]
             Interactive = 2,
-            Network = 3,
-            Batch = 4,
-            Service = 5,
-            Unlock = 7,
-            NetworkCleartext = 8, // Win2K or higher
-            NewCredentials = 9 // Win2K or higher
-        };
 
+            /// <summary>
+            /// This logon type is intended for high performance servers to authenticate plaintext passwords. 
+            /// Credentials are not cached for this logon type.
+            /// </summary>
+            [PublicAPI]
+            Network = 3,
+
+            /// <summary>
+            /// This logon type is intended for batch servers, where processes may be executing on behalf of a user 
+            /// without their direct intervention. This type is also for higher performance servers that process many 
+            /// plaintext authentication attempts at a time, such as mail or web servers.
+            /// </summary>
+            [PublicAPI]
+            Batch = 4,
+
+            /// <summary>
+            /// Indicates a service-type logon. The account provided must have the service privilege enabled.
+            /// </summary>
+            [PublicAPI]
+            Service = 5,
+
+            /// <summary>
+            /// <para>GINAs are no longer supported.</para>
+            /// <para><b>Windows Server 2003 and Windows XP:</b> This logon type is for GINA DLLs that log on users who will be 
+            /// interactively using the computer. This logon type can generate a unique audit record that shows when 
+            /// the workstation was unlocked.</para>
+            /// </summary>
+            [Obsolete("GINAs are no longer supported.")]
+            [PublicAPI]
+            Unlock = 7,
+
+            /// <summary>
+            /// This logon type preserves the name and password in the authentication package, which allows the server to make 
+            /// connections to other network servers while impersonating the client. A server can accept plaintext credentials 
+            /// from a client, create an <see cref="Impersonator"/>, verify that the user can access the system across the network, and still 
+            /// communicate with other servers.
+            /// </summary>
+            [PublicAPI]
+            NetworkCleartext = 8,
+
+            /// <summary>
+            /// This logon type allows the caller to clone its current token and specify new credentials for outbound connections. 
+            /// The new logon session has the same local identifier but uses different credentials for other network connections.
+            /// This logon type is supported only by the <see cref="LogonProvider.WinNT50"/> logon provider.
+            /// </summary>
+            [PublicAPI]
+            NewCredentials = 9
+        }
+
+        /// <summary>
+        /// The logon providers.
+        /// </summary>
         [PublicAPI]
         public enum LogonProvider
         {
+            /// <summary>
+            /// Use the standard logon provider for the system. The default security provider is negotiate, unless you pass 
+            /// null for the domain name and the user name is not in UPN format. In this case, the default provider is NTLM.
+            /// </summary>
+            [PublicAPI]
             Default = 0,
+
+            /// <summary>
+            /// Use the NT 3.51 logon provider.
+            /// </summary>
+            [PublicAPI]
             WinNT35 = 1,
+
+            /// <summary>
+            /// Use the NTLM logon provider.
+            /// </summary>
+            [PublicAPI]
             WinNT40 = 2,
+
+            /// <summary>
+            /// Use the negotiate logon provider.
+            /// </summary>
+            [PublicAPI]
             WinNT50 = 3
-        };
+        }
 
         private enum ImpersonationLevel
         {
+            // ReSharper disable UnusedMember.Local
             SecurityAnonymous = 0,
             SecurityIdentification = 1,
             SecurityImpersonation = 2,
             SecurityDelegation = 3
+            // ReSharper restore UnusedMember.Local
         }
 
         [DllImport("advapi32.dll", SetLastError = true)]
@@ -78,8 +155,8 @@ namespace WebApplications.Utilities
             string lpszUserName,
             string lpszDomain,
             string lpszPassword,
-            int dwLogonType,
-            int dwLogonProvider,
+            LogonType dwLogonType,
+            LogonProvider dwLogonProvider,
             ref IntPtr phToken);
 
         [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -115,7 +192,7 @@ namespace WebApplications.Utilities
             string[] up = userName.Split('\\');
             string domainName;
             if (up.Length > 2)
-                throw new ArgumentException(userName, "Invalid username.");
+                throw new ArgumentException(userName, Resources.Impersonator_Impersonator_InvalidUsername);
             if (up.Length < 2)
                 domainName = ".";
             else
@@ -124,6 +201,50 @@ namespace WebApplications.Utilities
                 userName = up[1];
             }
 
+            Init(userName, password, domainName, logonType, logonProvider);
+        }
+
+        /// <summary>
+        /// Begins impersonation with the given credentials, Logon type and Logon provider.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="domainName">Name of the domain.</param>
+        /// <param name="logonType">Type of the logon.</param>
+        /// <param name="logonProvider">The logon provider.</param>
+        /// <exception cref="System.ComponentModel.Win32Exception">
+        /// </exception>
+        public Impersonator(
+            [NotNull] string userName,
+            [NotNull] string password,
+            [NotNull] string domainName,
+            LogonType logonType = LogonType.Interactive,
+            LogonProvider logonProvider = LogonProvider.Default)
+        {
+            Contract.Requires(userName != null);
+            Contract.Requires(password != null);
+            Contract.Requires(domainName != null);
+
+            Init(userName, password, domainName, logonType, logonProvider);
+        }
+
+        /// <summary>
+        /// Initializes the impersonator.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="domainName">Name of the domain.</param>
+        /// <param name="logonType">Type of the logon.</param>
+        /// <param name="logonProvider">The logon provider.</param>
+        /// <exception cref="System.ComponentModel.Win32Exception">
+        /// </exception>
+        private void Init(
+            string userName,
+            string password,
+            string domainName,
+            LogonType logonType,
+            LogonProvider logonProvider)
+        {
             IntPtr logonToken = IntPtr.Zero;
             IntPtr logonTokenDuplicate = IntPtr.Zero;
             try
@@ -136,8 +257,8 @@ namespace WebApplications.Utilities
                     userName,
                     domainName,
                     password,
-                    (int) logonType,
-                    (int) logonProvider,
+                    logonType,
+                    logonProvider,
                     ref logonToken) != 0)
                     if (DuplicateToken(logonToken, ImpersonationLevel.SecurityImpersonation, ref logonTokenDuplicate) !=
                         0)

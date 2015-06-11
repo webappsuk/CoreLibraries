@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Security;
 using WebApplications.Utilities.Annotations;
@@ -53,6 +54,7 @@ namespace WebApplications.Utilities
         /// The block size, if creating arrays smaller than the block size, consider using
         /// standard arrays.
         /// </summary>
+        [PublicAPI]
         public const int BlockSize = 262144;
 
         private const int BlockSizeLog2 = 18;
@@ -62,10 +64,10 @@ namespace WebApplications.Utilities
         // exception throwing in our code there is a good chance that the JIT won't inline.
         // maximum BigArray size = BLOCK_SIZE * Int.MaxValue
         [NotNull]
+        [ItemNotNull]
         private readonly T[][] _elements;
 
         private readonly ulong _length;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BigArray&lt;T&gt;"/> class.
@@ -73,7 +75,7 @@ namespace WebApplications.Utilities
         /// <param name="size">The size.</param>
         /// <remarks></remarks>
         public BigArray(int size)
-            : this((ulong) size)
+            : this((ulong)size)
         {
         }
 
@@ -84,7 +86,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public BigArray(ulong size)
         {
-            int numBlocks = (int) Math.Ceiling((double) size / BlockSize);
+            int numBlocks = (int)Math.Ceiling((double)size / BlockSize);
 
             _length = size;
             _elements = new T[numBlocks][];
@@ -103,6 +105,7 @@ namespace WebApplications.Utilities
         /// Gets the length.
         /// </summary>
         /// <remarks></remarks>
+        [PublicAPI]
         public ulong Length
         {
             get { return _length; }
@@ -118,18 +121,21 @@ namespace WebApplications.Utilities
         ///   
         /// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.IList"/> is read-only. </exception>
         /// <remarks></remarks>
+        [PublicAPI]
         public T this[ulong index]
         {
             get
             {
-                int blockNum = (int) (index >> BlockSizeLog2);
-                int elementNumberInBlock = (int) (index & (BlockSize - 1));
+                int blockNum = (int)(index >> BlockSizeLog2);
+                int elementNumberInBlock = (int)(index & (BlockSize - 1));
+                Debug.Assert(_elements[blockNum] != null);
                 return _elements[blockNum][elementNumberInBlock];
             }
             set
             {
-                int blockNum = (int) (index >> BlockSizeLog2);
-                int elementNumberInBlock = (int) (index & (BlockSize - 1));
+                int blockNum = (int)(index >> BlockSizeLog2);
+                int elementNumberInBlock = (int)(index & (BlockSize - 1));
+                Debug.Assert(_elements[blockNum] != null);
                 _elements[blockNum][elementNumberInBlock] = value;
             }
         }
@@ -144,18 +150,21 @@ namespace WebApplications.Utilities
         ///   
         /// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.IList"/> is read-only. </exception>
         /// <remarks></remarks>
+        [PublicAPI]
         public T this[int index]
         {
             get
             {
                 int blockNum = index >> BlockSizeLog2;
                 int elementNumberInBlock = index & (BlockSize - 1);
+                Debug.Assert(_elements[blockNum] != null);
                 return _elements[blockNum][elementNumberInBlock];
             }
             set
             {
                 int blockNum = index >> BlockSizeLog2;
                 int elementNumberInBlock = index & (BlockSize - 1);
+                Debug.Assert(_elements[blockNum] != null);
                 _elements[blockNum][elementNumberInBlock] = value;
             }
         }
@@ -191,7 +200,7 @@ namespace WebApplications.Utilities
                 if (_length > int.MaxValue)
                     throw new InvalidOperationException(
                         String.Format("Count '{0}' is too big to be expressed as an interger.", _length));
-                return (int) _length;
+                return (int)_length;
             }
         }
 
@@ -218,7 +227,7 @@ namespace WebApplications.Utilities
         {
             if (!(value is T))
                 return false;
-            return LongIndexOf((T) value) != ulong.MaxValue;
+            return LongIndexOf((T)value) != ulong.MaxValue;
         }
 
         /// <inheritdoc/>
@@ -237,13 +246,13 @@ namespace WebApplications.Utilities
             if (!(value is T))
                 return -1;
 
-            ulong index = LongIndexOf((T) value);
+            ulong index = LongIndexOf((T)value);
             if (index == ulong.MaxValue)
                 return -1;
             if (index > int.MaxValue)
                 throw new InvalidOperationException(
                     String.Format("Index '{0}' is too big to be expressed as an interger.", index));
-            return (int) index;
+            return (int)index;
         }
 
         /// <inheritdoc/>
@@ -267,19 +276,13 @@ namespace WebApplications.Utilities
         /// <inheritdoc/>
         object IList.this[int index]
         {
-            get
-            {
-                Contract.Requires<IndexOutOfRangeException>(index >= 0);
-                return this[(ulong) index];
-            }
+            get { return this[(ulong)index]; }
             set
             {
                 if (index < 0)
-                {
                     throw new IndexOutOfRangeException();
-                }
 
-                this[(ulong) index] = (T) value;
+                this[(ulong)index] = (T)value;
             }
         }
 
@@ -308,7 +311,7 @@ namespace WebApplications.Utilities
             if (o == null ||
                 _length != o._length)
                 throw new ArgumentException(
-                    String.Format("The other must be a BigArray of type '{0}'.", typeof (T)),
+                    String.Format("The other must be a BigArray of type '{0}'.", typeof(T)),
                     "other");
 
             ulong i = 0;
@@ -379,6 +382,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <returns>The long index of the value; otherwise <see cref="ulong.MaxValue"/>.</returns>
         /// <remarks></remarks>
+        [PublicAPI]
         public ulong LongIndexOf(T value)
         {
             ulong offset = 0UL;
@@ -387,7 +391,7 @@ namespace WebApplications.Utilities
                 Contract.Assert(array != null);
                 int index = Array.IndexOf(array, value);
                 if (index >= 0)
-                    return (ulong) index + offset;
+                    return (ulong)index + offset;
                 offset += BlockSize;
             }
             return ulong.MaxValue;

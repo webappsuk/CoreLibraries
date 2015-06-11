@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,7 @@ namespace WebApplications.Utilities.Threading
 
         static PauseToken()
         {
-            PauseTokenSource pausedSource= new PauseTokenSource();
-            pausedSource.IsPaused = true;
+            PauseTokenSource pausedSource = new PauseTokenSource { IsPaused = true };
             Paused = pausedSource.Token;
         }
 
@@ -101,7 +100,7 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         [PublicAPI]
         [NotNull]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Annotations.Pure]
         [System.Diagnostics.Contracts.Pure]
         public Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Remoting;
 using System.Threading;
@@ -164,8 +165,13 @@ namespace WebApplications.Utilities.IO
         /// <returns>
         /// A task that represents the asynchronous copy operation.
         /// </returns>
-        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        public override Task CopyToAsync(
+            [NotNull] Stream destination,
+            int bufferSize,
+            CancellationToken cancellationToken)
         {
+            if (destination == null) throw new ArgumentNullException("destination");
+
             if (_nextByte.HasValue)
             {
                 if (_nextByte < 0)
@@ -203,9 +209,14 @@ namespace WebApplications.Utilities.IO
         /// <param name="count">The maximum number of bytes to read.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None" />.</param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The value of the <paramref name="TResult" /> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if the end of the stream has been reached.
+        /// A task that represents the asynchronous read operation. The value of the <see cref="Task{T}.Result" /> parameter contains the total number of bytes read into the buffer. 
+        /// The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if the end of the stream has been reached.
         /// </returns>
-        public override Task<int> ReadAsync([NotNull] byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override Task<int> ReadAsync(
+            [NotNull] byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken)
         {
             if (_nextByte.HasValue)
             {
@@ -225,12 +236,14 @@ namespace WebApplications.Utilities.IO
                     .ContinueWith(
                         t =>
                         {
+                            Debug.Assert(t != null);
                             if (t.Status == TaskStatus.RanToCompletion)
                                 return Task.FromResult(t.Result + 1);
                             return t;
                         },
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously,
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         TaskScheduler.Current).Unwrap();
             }
 
@@ -250,10 +263,12 @@ namespace WebApplications.Utilities.IO
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             Task task = _baseStream.WriteAsync(buffer, offset, count, cancellationToken);
+            Debug.Assert(task != null);
             task.ContinueWith(
                 t => _nextByte = null,
                 cancellationToken,
                 TaskContinuationOptions.ExecuteSynchronously,
+                // ReSharper disable once AssignNullToNotNullAttribute
                 TaskScheduler.Current);
             return task;
         }

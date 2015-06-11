@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -103,17 +104,17 @@ namespace WebApplications.Utilities
                         new[]
                         {
                             type,
-                            typeof (bool),
-                            typeof (bool),
-                            typeof (bool),
-                            typeof (bool),
-                            typeof (bool),
-                            typeof (bool),
-                            typeof (bool),
-                            typeof (bool)
+                            typeof(bool),
+                            typeof(bool),
+                            typeof(bool),
+                            typeof(bool),
+                            typeof(bool),
+                            typeof(bool),
+                            typeof(bool),
+                            typeof(bool)
                         },
                         null)
-                    .Func<object, bool, bool, bool, bool, bool, bool, bool, bool, Accessor>(false))(
+                    .Func<object, bool, bool, bool, bool, bool, bool, bool, bool, Accessor>())(
                         instance,
                         includeFields,
                         includeProperties,
@@ -148,6 +149,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         public abstract IEnumerator<KeyValuePair<string, object>> GetEnumerator();
+
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
@@ -162,6 +164,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         public abstract void Add(KeyValuePair<string, object> item);
+
         /// <summary>
         /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
@@ -171,37 +174,44 @@ namespace WebApplications.Utilities
         /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <param name="all">If set to <see langword="true" /> removes all the items; otherwise only the none field or property items.</param>
+        [PublicAPI]
         public abstract void Clear(bool all);
+
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
         /// </summary>
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
         public abstract bool Contains(KeyValuePair<string, object> item);
+
         /// <summary>
         /// Copies to.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
         public abstract void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex);
+
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         public abstract bool Remove(KeyValuePair<string, object> item);
+
         /// <summary>
         /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <value>The count.</value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         public abstract int Count { get; }
+
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
         /// </summary>
         /// <value><see langword="true" /> if this instance is read only; otherwise, <see langword="false" />.</value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
         public abstract bool IsReadOnly { get; }
+
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.
         /// </summary>
@@ -209,6 +219,7 @@ namespace WebApplications.Utilities
         /// <returns>true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
         public abstract bool ContainsKey(string key);
+
         /// <summary>
         /// Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
@@ -216,6 +227,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The object to use as the value of the element to add.</param>
         // ReSharper disable once CodeAnnotationAnalyzer
         public abstract void Add(string key, object value);
+
         /// <summary>
         /// Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
@@ -223,6 +235,7 @@ namespace WebApplications.Utilities
         /// <returns>true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key" /> was not found in the original <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
         public abstract bool Remove(string key);
+
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>
@@ -230,12 +243,14 @@ namespace WebApplications.Utilities
         /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value" /> parameter. This parameter is passed uninitialized.</param>
         /// <returns>true if the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.</returns>
         public abstract bool TryGetValue(string key, out object value);
+
         /// <summary>
         /// Gets or sets the element with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>System.Object.</returns>
         public abstract object this[string key] { get; set; }
+
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
@@ -264,6 +279,7 @@ namespace WebApplications.Utilities
         /// <value>The keys.</value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
         public abstract ICollection<string> Keys { get; }
+
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
@@ -527,6 +543,9 @@ namespace WebApplications.Utilities
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         public override void Add(KeyValuePair<string, object> item)
         {
+            if (item.Key == null)
+                throw new ArgumentException("The key cannot be null");
+
             object value;
             if (!_dictionary.TryGetValue(item.Key, out value))
             {
@@ -550,9 +569,7 @@ namespace WebApplications.Utilities
         public override void Clear()
         {
             if (_dictionary.Values.Any(o => o is Access))
-            {
                 throw new InvalidOperationException("Can't clear away property or field accessors");
-            }
 
             _dictionary.Clear();
         }
@@ -575,6 +592,8 @@ namespace WebApplications.Utilities
                 .Select(kvp => kvp.Key)
                 .ToArray())
             {
+                Debug.Assert(key != null);
+
                 _dictionary.Remove(key);
             }
         }
@@ -659,8 +678,11 @@ namespace WebApplications.Utilities
         /// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</param>
         /// <returns>true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override bool ContainsKey(string key)
+        public override bool ContainsKey([NotNull] string key)
         {
+            if (key == null)
+                throw new ArgumentNullException("key");
+
             return _dictionary.ContainsKey(key);
         }
 
@@ -670,8 +692,11 @@ namespace WebApplications.Utilities
         /// <param name="key">The object to use as the key of the element to add.</param>
         /// <param name="value">The object to use as the value of the element to add.</param>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override void Add(string key, object value)
+        public override void Add([NotNull] string key, object value)
         {
+            if (key == null)
+                throw new ArgumentNullException("key");
+
             object v;
             if (!_dictionary.TryGetValue(key, out v))
             {
@@ -695,8 +720,11 @@ namespace WebApplications.Utilities
         /// <param name="key">The key.</param>
         /// <returns>System.Boolean.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override bool Remove(string key)
+        public override bool Remove([NotNull] string key)
         {
+            if (key == null)
+                throw new ArgumentNullException("key");
+
             if (!_supportsNew) return false;
             object value;
             if (!_dictionary.TryGetValue(key, out value))
@@ -778,10 +806,7 @@ namespace WebApplications.Utilities
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
         public override ICollection<object> Values
         {
-            get
-            {
-                return new Dictionary<string, object>.ValueCollection(new Dictionary<string, object>(this));
-            }
+            get { return new Dictionary<string, object>.ValueCollection(new Dictionary<string, object>(this)); }
         }
         #endregion
 

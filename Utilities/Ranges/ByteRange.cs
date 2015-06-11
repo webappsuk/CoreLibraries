@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,11 +25,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using WebApplications.Utilities.Annotations;
+
 namespace WebApplications.Utilities.Ranges
 {
     /// <summary>
     /// A range of <see cref="byte"/>s.
     /// </summary>
+    [PublicAPI]
     public class ByteRange : Range<byte>
     {
         /// <summary>
@@ -38,7 +41,7 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         /// <param name="step">The step.</param>
-        public ByteRange(byte start, byte end, byte step = (byte) 1)
+        public ByteRange(byte start, byte end, byte step = (byte)1)
             : base(start, end, step)
         {
         }

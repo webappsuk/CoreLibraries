@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
@@ -241,6 +242,7 @@ namespace WebApplications.Utilities.Globalization
             [NotNull] [ItemNotNull] IEnumerable<ExtendedCultureInfo> cultures)
         {
             _published = published;
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             _cultureInfos = cultures.Distinct().ToDictionary(c => c.Name, StringComparer.InvariantCultureIgnoreCase);
             _currencyCultureInfos = _cultureInfos.Values
                 .GroupBy(c => c.ISOCurrencySymbol, StringComparer.InvariantCultureIgnoreCase)
@@ -249,12 +251,12 @@ namespace WebApplications.Utilities.Globalization
                     g => g.Key,
                     g => (IEnumerable<ExtendedCultureInfo>)g.ToArray(),
                     StringComparer.InvariantCultureIgnoreCase);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
 
         /// <summary>
         /// The date this provider was published.
         /// </summary>
-        /// <exception cref="System.NotImplementedException"></exception>
         public DateTime Published
         {
             get { return _published; }
@@ -263,10 +265,13 @@ namespace WebApplications.Utilities.Globalization
         /// <summary>
         /// The cultures in the provider.
         /// </summary>
-        /// <exception cref="System.NotImplementedException"></exception>
         public IEnumerable<ExtendedCultureInfo> All
         {
-            get { return _cultureInfos.Values; }
+            get
+            {
+                Debug.Assert(_cultureInfos.Values != null);
+                return _cultureInfos.Values;
+            }
         }
 
         /// <summary>
@@ -275,7 +280,6 @@ namespace WebApplications.Utilities.Globalization
         /// <value>
         /// The count.
         /// </value>
-        /// <exception cref="System.NotImplementedException"></exception>
         public int Count
         {
             get { return _cultureInfos.Count; }
@@ -291,7 +295,6 @@ namespace WebApplications.Utilities.Globalization
         /// <paramref name="cultureName" /> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         /// <remarks>
         /// There is a 
         /// <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,

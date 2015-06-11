@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Text;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -83,7 +82,7 @@ namespace WebApplications.Utilities.Formatting
                 return format;
             return new FormatBuilder().AppendFormat(format, parameters).ToString(formatOptions, formatProvider);
         }
-        
+
         /// <summary>
         /// Produces a serialized version of the specified writer, using <see cref="SerializingSynchronizationContext" />, that
         /// will write output serially.

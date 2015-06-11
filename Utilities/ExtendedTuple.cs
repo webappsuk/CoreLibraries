@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using WebApplications.Utilities.Annotations;
@@ -42,18 +43,21 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   A cache for indexers (by tuple type), so that when requested they can be retrieved rather than recomputed.
         /// </summary>
+        [NotNull]
         private static readonly ConcurrentDictionary<Type, Func<object, int, object>> _tupleIndexers =
             new ConcurrentDictionary<Type, Func<object, int, object>>();
 
         /// <summary>
         ///   A cache of the item types for a tuple (by tuple type), so that when requested they can be retrieved rather than recomputed.
         /// </summary>
+        [NotNull]
         private static readonly ConcurrentDictionary<Type, Type[]> _tupleTypes =
             new ConcurrentDictionary<Type, Type[]>();
 
         /// <summary>
         ///   A cache of the iterators (by tuple type) so that when requested they can be retrieved rather than recomputed.
         /// </summary>
+        [NotNull]
         private static readonly ConcurrentDictionary<Type, Func<object, IEnumerable>> _tupleIterators =
             new ConcurrentDictionary<Type, Func<object, IEnumerable>>();
 
@@ -72,14 +76,15 @@ namespace WebApplications.Utilities
             where TTuple : class, IStructuralEquatable, IStructuralComparable, IComparable
         {
             Type t = GetIndexType(tuple, index);
-            if (!typeof (TItem).IsAssignableFrom(t))
+            if (!typeof(TItem).IsAssignableFrom(t))
                 throw new InvalidCastException(
                     string.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ExtendedTuple_CannotCastItemAtIndex,
                         index,
                         t,
-                        typeof (TItem)));
-            return (TItem) ExtendedTuple<TTuple>.Indexer(tuple, index);
+                        typeof(TItem)));
+            return (TItem)ExtendedTuple<TTuple>.Indexer(tuple, index);
         }
 
         /// <summary>
@@ -114,22 +119,23 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Func<object, int, object> GetTupleIndexer([NotNull] this Type tupleType)
         {
-            return _tupleIndexers.GetOrAdd(
+            Func<object, int, object> indexer = _tupleIndexers.GetOrAdd(
                 tupleType,
                 t =>
                 {
                     // Create extended tuple type
-                    Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
+                    Type extendedType = typeof(ExtendedTuple<>).MakeGenericType(tupleType);
 
                     // Create parameters
-                    ParameterExpression tupleObjectParameter = Expression.Parameter(typeof (object), "tuple");
-                    ParameterExpression indexParameter = Expression.Parameter(typeof (int), "index");
+                    ParameterExpression tupleObjectParameter = Expression.Parameter(typeof(object), "tuple");
+                    ParameterExpression indexParameter = Expression.Parameter(typeof(int), "index");
 
                     // Convert parameter from object to tuple type.
                     Expression castTuple = tupleObjectParameter.Convert(tupleType);
 
                     // Get the indexer lambda and convert to a constant
                     Expression lambda = Expression.Constant(
+                        // ReSharper disable once PossibleNullReferenceException
                         extendedType.GetField("Indexer", BindingFlags.Static | BindingFlags.Public)
                             .GetValue(null));
 
@@ -138,6 +144,8 @@ namespace WebApplications.Utilities
                         tupleObjectParameter,
                         indexParameter).Compile();
                 });
+            Debug.Assert(indexer != null);
+            return indexer;
         }
 
         /// <summary>
@@ -148,6 +156,7 @@ namespace WebApplications.Utilities
         /// <param name="index">The item index.</param>
         /// <returns>The type of the item at the specified <paramref name="index"/>.</returns>
         [NotNull]
+        // ReSharper disable once UnusedParameter.Global
         public static Type GetIndexType<T>([NotNull] this T tuple, int index)
             where T : class, IStructuralEquatable, IStructuralComparable, IComparable
         {
@@ -163,6 +172,7 @@ namespace WebApplications.Utilities
         ///   An <see cref="Array"/> containing all the item types of the specified <paramref name="tuple"/>.
         /// </returns>
         [NotNull]
+        // ReSharper disable once UnusedParameter.Global
         public static Type[] GetIndexTypes<T>([NotNull] this T tuple)
             where T : class, IStructuralEquatable, IStructuralComparable, IComparable
         {
@@ -185,8 +195,9 @@ namespace WebApplications.Utilities
                 t =>
                 {
                     // Create extended tuple type
-                    Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
-                    return (Type[]) extendedType.GetProperty("Types", BindingFlags.Static | BindingFlags.Public)
+                    Type extendedType = typeof(ExtendedTuple<>).MakeGenericType(tupleType);
+                    // ReSharper disable once PossibleNullReferenceException
+                    return (Type[])extendedType.GetProperty("Types", BindingFlags.Static | BindingFlags.Public)
                         .GetValue(null, null);
                 });
             // ReSharper restore AssignNullToNotNullAttribute
@@ -216,20 +227,21 @@ namespace WebApplications.Utilities
                 t =>
                 {
                     // Create extended tuple type
-                    Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
+                    Type extendedType = typeof(ExtendedTuple<>).MakeGenericType(tupleType);
 
                     // Create parameter
-                    ParameterExpression tupleObjectParameter = Expression.Parameter(typeof (object), "tuple");
+                    ParameterExpression tupleObjectParameter = Expression.Parameter(typeof(object), "tuple");
 
                     // Convert parameter from object to tuple type.
                     Expression castTuple = tupleObjectParameter.Convert(tupleType);
 
                     // Find constructor that takes the tuple type
-                    ConstructorInfo constructor = extendedType.GetConstructor(new[] {tupleType});
+                    ConstructorInfo constructor = extendedType.GetConstructor(new[] { tupleType });
+                    Debug.Assert(constructor != null);
 
                     // Create a lambda that creates a new ExtendedTuple<tupletype> and casts it to an IEnumerable.
                     return Expression.Lambda<Func<object, IEnumerable>>(
-                        Expression.New(constructor, castTuple).Convert(typeof (IEnumerable)),
+                        Expression.New(constructor, castTuple).Convert(typeof(IEnumerable)),
                         tupleObjectParameter).
                         Compile();
                 });

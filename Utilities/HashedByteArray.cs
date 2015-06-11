@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
@@ -38,6 +39,7 @@ namespace WebApplications.Utilities
     /// Holds a readonly byte array with an associated hash for rapid true equality comparison and dictionary
     /// insertion.
     /// </summary>
+    [PublicAPI]
     public class HashedByteArray : IEquatable<HashedByteArray>, IEquatable<byte[]>, IEnumerable<byte>
     {
         [NotNull]
@@ -82,9 +84,11 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashedByteArray"/> class.
+        /// Initializes a new instance of the <see cref="HashedByteArray" /> class.
         /// </summary>
         /// <param name="data">The data.</param>
+        /// <param name="encoded">The encoded data.</param>
+        /// <exception cref="System.ArgumentNullException">data</exception>
         private HashedByteArray([NotNull] byte[] data, [NotNull] Lazy<string> encoded)
         {
             if (data == null)
@@ -101,10 +105,10 @@ namespace WebApplications.Utilities
                     // hashing based on every byte would take too long,
                     // as a hash doesn't guarantee equality we're only trying
                     // to minimize collisions without compromising speed.
-                    double step = (double) length / 32;
+                    double step = (double)length / 32;
                     _hash = LargePrime;
                     for (double ix = 0; ix < length; ix += step)
-                        _hash = (_hash * SmallPrime) + data[(long) ix];
+                        _hash = (_hash * SmallPrime) + data[(long)ix];
                 }
             else if (length > 8)
                 unchecked
@@ -117,13 +121,19 @@ namespace WebApplications.Utilities
             else if (length > 4)
             {
                 if (length != 8)
+                {
                     Array.Resize(ref data, 8);
+                    Debug.Assert(data != null);
+                }
                 _hash = BitConverter.ToInt64(data, 0);
             }
             else if (length > 2)
             {
                 if (length != 4)
+                {
                     Array.Resize(ref data, 4);
+                    Debug.Assert(data != null);
+                }
                 _hash = BitConverter.ToInt32(data, 0);
             }
             else if (length > 1)
@@ -137,15 +147,21 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The encoded.</value>
         [NotNull]
+        [PublicAPI]
         public string Encoded
         {
-            get { return _encoded.Value; }
+            get
+            {
+                Debug.Assert(_encoded.Value != null);
+                return _encoded.Value;
+            }
         }
 
         /// <summary>
         /// Gets the length.
         /// </summary>
         /// <value>The length.</value>
+        [PublicAPI]
         public int Length
         {
             get { return _data.Length; }
@@ -155,6 +171,7 @@ namespace WebApplications.Utilities
         /// Gets the long length.
         /// </summary>
         /// <value>The length.</value>
+        [PublicAPI]
         public long LongLength
         {
             get { return _data.LongLength; }
@@ -165,6 +182,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
+        [PublicAPI]
         public byte this[int index]
         {
             get { return _data[index]; }
@@ -202,10 +220,8 @@ namespace WebApplications.Utilities
             if (_data.LongLength < 9) return true;
 
             for (long i = 0, l = _data.LongLength; i < l; i++)
-            {
                 if (_data[i] != other._data[i])
                     return false;
-            }
 
             return true;
         }
@@ -237,7 +253,7 @@ namespace WebApplications.Utilities
         {
             unchecked
             {
-                return (int) _hash;
+                return (int)_hash;
             }
         }
 
@@ -246,6 +262,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>A long hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table, provides better seperation that the standard
         /// integer hash code.</returns>
+        [PublicAPI]
         public long HashCode
         {
             get { return _hash; }
@@ -300,7 +317,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Byte[]"/> to <see cref="HashedByteArray"/>.
+        /// Performs an implicit conversion from <see cref="T:System.Byte[]"/> to <see cref="HashedByteArray"/>.
         /// </summary>
         /// <param name="bytes">The bytes.</param>
         /// <returns>The result of the conversion.</returns>
@@ -310,7 +327,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="HashedByteArray"/> to <see cref="System.Byte[]"/>.
+        /// Performs an implicit conversion from <see cref="HashedByteArray"/> to <see cref="T:System.Byte[]"/>.
         /// </summary>
         /// <param name="hashedByteArray">The hashed byte array.</param>
         /// <returns>The result of the conversion.</returns>

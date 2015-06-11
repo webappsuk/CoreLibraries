@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,17 +45,17 @@ namespace WebApplications.Utilities
             <Guid, GraphicFormat>
         {
             // Memory Bitmap
-            {new Guid("b96b3caa-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp},
+            { new Guid("b96b3caa-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp },
             // Normal Bitmap
-            {new Guid("b96b3cab-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp},
-            {new Guid("b96b3cac-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Emf},
-            {new Guid("b96b3cad-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Wmf},
-            {new Guid("b96b3cb0-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Gif},
-            {new Guid("b96b3cae-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Jpeg},
-            {new Guid("b96b3caf-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Png},
-            {new Guid("b96b3cb1-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Tiff},
+            { new Guid("b96b3cab-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp },
+            { new Guid("b96b3cac-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Emf },
+            { new Guid("b96b3cad-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Wmf },
+            { new Guid("b96b3cb0-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Gif },
+            { new Guid("b96b3cae-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Jpeg },
+            { new Guid("b96b3caf-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Png },
+            { new Guid("b96b3cb1-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Tiff },
             //{new Guid("b96b3cb2-0728-11d3-9d7b-0000f81ef32e"), ImageFormat.Exif},
-            {new Guid("b96b3cb5-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Icon}
+            { new Guid("b96b3cb5-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Icon }
         };
 
         /// <summary>
@@ -65,15 +65,15 @@ namespace WebApplications.Utilities
         private static readonly Dictionary<GraphicFormat, ImageFormat> _graphicFormats =
             new Dictionary<GraphicFormat, ImageFormat>
             {
-                {GraphicFormat.Bmp, ImageFormat.Bmp},
-                {GraphicFormat.Emf, ImageFormat.Emf},
-                {GraphicFormat.Wmf, ImageFormat.Wmf},
-                {GraphicFormat.Gif, ImageFormat.Gif},
-                {GraphicFormat.Jpeg, ImageFormat.Jpeg},
-                {GraphicFormat.Png, ImageFormat.Png},
-                {GraphicFormat.Tiff, ImageFormat.Tiff},
+                { GraphicFormat.Bmp, ImageFormat.Bmp },
+                { GraphicFormat.Emf, ImageFormat.Emf },
+                { GraphicFormat.Wmf, ImageFormat.Wmf },
+                { GraphicFormat.Gif, ImageFormat.Gif },
+                { GraphicFormat.Jpeg, ImageFormat.Jpeg },
+                { GraphicFormat.Png, ImageFormat.Png },
+                { GraphicFormat.Tiff, ImageFormat.Tiff },
                 //{ImageFormat.Exif, ImageFormat.Exif},
-                {GraphicFormat.Icon, ImageFormat.Icon}
+                { GraphicFormat.Icon, ImageFormat.Icon }
             };
 
         /// <summary>
@@ -81,6 +81,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>ImageFormat.</returns>
+        [PublicAPI]
         public static GraphicFormat ToGraphicFormat([NotNull] this ImageFormat format)
         {
             GraphicFormat graphicFormat;
@@ -96,8 +97,10 @@ namespace WebApplications.Utilities
         /// <param name="format">The format.</param>
         /// <returns>System.Drawing.Imaging.ImageFormat.</returns>
         [NotNull]
+        [PublicAPI]
         public static ImageFormat ToImageFormat(this GraphicFormat format)
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _graphicFormats[format];
         }
 

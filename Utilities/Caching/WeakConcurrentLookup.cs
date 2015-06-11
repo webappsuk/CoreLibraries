@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Enumerations;
@@ -43,7 +44,7 @@ namespace WebApplications.Utilities.Caching
     /// </summary>
     /// <typeparam name="TKey">The of the key.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class WeakConcurrentLookup<TKey, TValue> : ILookup<TKey, TValue>
         where TValue : class
     {
@@ -167,7 +168,7 @@ namespace WebApplications.Utilities.Caching
         ///   Returns <see langword="true"/> if the specified <paramref name="key"/> is in the lookup;
         ///   otherwise returns <see langword="false"/>.
         /// </returns>
-        public bool Contains([NotNull] TKey key)
+        public bool Contains(TKey key)
         {
             return _dictionary.ContainsKey(key);
         }
@@ -211,7 +212,7 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is <see langword="null">null</see>.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool TryGet([NotNull] TKey key, out IGrouping<TKey, TValue> value)
         {
             WeakGrouping weakGrouping;
@@ -235,7 +236,7 @@ namespace WebApplications.Utilities.Caching
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
         public IEnumerable<TValue> Add([NotNull] TKey key, [NotNull] TValue value)
         {
             // ReSharper disable PossibleNullReferenceException
@@ -254,7 +255,7 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool Remove([NotNull] TKey key)
         {
             WeakGrouping weakGrouping;
@@ -272,10 +273,11 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool Remove([NotNull] TKey key, [NotNull] TValue value)
         {
             WeakGrouping weakGrouping;
+            // ReSharper disable once PossibleNullReferenceException - Should never be null
             return _dictionary.TryGetValue(key, out weakGrouping) && weakGrouping.Remove(value);
         }
 
@@ -295,6 +297,7 @@ namespace WebApplications.Utilities.Caching
             /// <summary>
             ///   The parent, which is the lookup that the group is contained in.
             /// </summary>
+            [NotNull]
             private readonly WeakConcurrentLookup<TKey, TValue> _parent;
 
             /// <summary>
@@ -337,6 +340,8 @@ namespace WebApplications.Utilities.Caching
                 List<Guid> deadGuids = new List<Guid>();
                 foreach (KeyValuePair<Guid, WeakReference<TValue>> kvp in _dictionary)
                 {
+                    Debug.Assert(kvp.Value != null);
+
                     TValue target;
                     if (!kvp.Value.TryGetTarget(out target))
                         deadGuids.Add(kvp.Key);
@@ -423,7 +428,6 @@ namespace WebApplications.Utilities.Caching
             /// <returns>
             ///   Returns <see langword="true"/> if the value was successfully removed; otherwise returns <see langword="false"/>.
             /// </returns>
-            [UsedImplicitly]
             public bool Remove(TValue value)
             {
                 // Scan dictionary looking for dead elements
@@ -431,6 +435,8 @@ namespace WebApplications.Utilities.Caching
                 bool found = false;
                 foreach (KeyValuePair<Guid, WeakReference<TValue>> kvp in _dictionary)
                 {
+                    Debug.Assert(kvp.Value != null);
+
                     TValue v;
                     if (!kvp.Value.TryGetTarget(out v))
                         deadGuids.Add(kvp.Key);

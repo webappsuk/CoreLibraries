@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,10 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        protected ResolvableWriteable(bool isCaseSensitive = false, bool resolveOuterTags = true, bool resolveControls = false)
+        protected ResolvableWriteable(
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
             : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
         }
@@ -122,7 +125,8 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
         [PublicAPI]
-        public virtual void WriteTo([NotNull]TextWriter writer, [CanBeNull] FormatBuilder format = null)
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
+        public virtual void WriteTo([NotNull] TextWriter writer, [CanBeNull] FormatBuilder format = null)
         {
             Contract.Requires(writer != null);
             if (format == null)

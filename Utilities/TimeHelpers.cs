@@ -274,7 +274,7 @@ namespace WebApplications.Utilities
             }
             // ReSharper disable once AssignNullToNotNullAttribute
             else
-                // ReSharper disable once AssignNullToNotNullAttribute
+            // ReSharper disable once AssignNullToNotNullAttribute
                 provider = DateTimeZoneProviders.Tzdb;
 
             Contract.Assert(provider != null);
