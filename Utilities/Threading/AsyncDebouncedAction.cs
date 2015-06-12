@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -78,9 +77,11 @@ namespace WebApplications.Utilities.Threading
             TimeSpan minimumGap = default(TimeSpan))
             : this(token => action(), duration, minimumGap)
         {
-            Contract.Requires(action != null);
-            Contract.Requires(duration >= TimeSpan.Zero);
-            Contract.Requires(minimumGap >= TimeSpan.Zero);
+            if (action == null) throw new ArgumentNullException("action");
+            if (duration < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("duration", Resources.AsyncDebounced_DurationNegative);
+            if (minimumGap < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("minimumGap", Resources.AsyncDebounced_MinimumGapNegative);
         }
 
         /// <summary>
@@ -95,9 +96,11 @@ namespace WebApplications.Utilities.Threading
             TimeSpan duration = default(TimeSpan),
             TimeSpan minimumGap = default(TimeSpan))
         {
-            Contract.Requires(action != null);
-            Contract.Requires(duration >= TimeSpan.Zero);
-            Contract.Requires(minimumGap >= TimeSpan.Zero);
+            if (action == null) throw new ArgumentNullException("action");
+            if (duration < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("duration", Resources.AsyncDebounced_DurationNegative);
+            if (minimumGap < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("minimumGap", Resources.AsyncDebounced_MinimumGapNegative);
 
             // Calculate the gap ticks, based on stopwatch frequency.
             _durationTicks = duration.Ticks;

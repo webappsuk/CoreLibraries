@@ -28,7 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -67,7 +67,7 @@ namespace WebApplications.Utilities
         public HashCollection([NotNull] IEnumerable<T> collection)
             : base(collection, EqualityComparer<T>.Default)
         {
-            Contract.Requires(collection != null);
+            if (collection == null) throw new ArgumentNullException("collection");
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace WebApplications.Utilities
         public HashCollection([NotNull] IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : base(collection, comparer)
         {
-            Contract.Requires(collection != null);
+            if (collection == null) throw new ArgumentNullException("collection");
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace WebApplications.Utilities
             // Grab source array (not very efficient, but we shouldn't use this method normally anyway).
             T[] source = this.ToArray<T>();
 
-            Contract.Assert(arrayIndex < array.Length && source.Length <= array.Length - arrayIndex);
+            Debug.Assert(arrayIndex < array.Length && source.Length <= array.Length - arrayIndex);
             for (int i = 0; i < source.Length; i++)
                 array.SetValue(source[i], arrayIndex + i);
         }
@@ -151,7 +151,7 @@ namespace WebApplications.Utilities
         /// <returns>true if the element is added to the set; false if the element is already in the set.</returns>
         bool ISet.Add(object item)
         {
-            Contract.Assert(item == null || item is T);
+            Debug.Assert(item == null || item is T);
             return Add((T)item);
         }
 
@@ -174,7 +174,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public bool Contains(object item)
         {
-            Contract.Assert(item == null || item is T);
+            Debug.Assert(item == null || item is T);
             return base.Contains((T)item);
         }
 
@@ -185,7 +185,7 @@ namespace WebApplications.Utilities
         /// <param name="other">The collection to compare to the current set.</param>
         void ISet.UnionWith(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             UnionWith(other.Cast<T>());
         }
 
@@ -195,7 +195,7 @@ namespace WebApplications.Utilities
         /// <param name="other">The collection to compare to the current set.</param>
         void ISet.IntersectWith(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             IntersectWith(other.Cast<T>());
         }
 
@@ -205,7 +205,7 @@ namespace WebApplications.Utilities
         /// <param name="other">The collection of items to remove from the set.</param>
         void ISet.ExceptWith(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             ExceptWith(other.Cast<T>());
         }
 
@@ -225,7 +225,7 @@ namespace WebApplications.Utilities
         /// <param name="other">The collection to compare to the current set.</param>
         void ISet.SymmetricExceptWith(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             SymmetricExceptWith(other.Cast<T>());
         }
 
@@ -268,7 +268,7 @@ namespace WebApplications.Utilities
         /// </returns>
         bool ISet.IsSubsetOf(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             return IsSubsetOf(other.OfType<T>());
         }
 
@@ -281,7 +281,7 @@ namespace WebApplications.Utilities
         /// </returns>
         bool ISet.IsSupersetOf(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             return IsSupersetOf(other.Cast<T>());
         }
 
@@ -294,7 +294,7 @@ namespace WebApplications.Utilities
         /// </returns>
         bool ISet.IsProperSupersetOf(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             return IsProperSupersetOf(other.Cast<T>());
         }
 
@@ -307,7 +307,7 @@ namespace WebApplications.Utilities
         /// </returns>
         bool ISet.IsProperSubsetOf(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             return IsProperSubsetOf(other.OfType<T>());
         }
 
@@ -320,7 +320,7 @@ namespace WebApplications.Utilities
         /// </returns>
         bool ISet.Overlaps(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             return Overlaps(other.OfType<T>());
         }
 
@@ -333,7 +333,7 @@ namespace WebApplications.Utilities
         /// </returns>
         bool ISet.SetEquals(IEnumerable other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
             return SetEquals(other.OfType<T>());
         }
 

@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
@@ -53,7 +52,7 @@ namespace WebApplications.Utilities.Financials
         /// <param name="amount">The amount.</param>
         public Financial([NotNull] CurrencyInfo currency, decimal amount)
         {
-            Contract.Requires(currency != null, "Parameter 'currency' can not be null");
+            if (currency == null) throw new ArgumentNullException("currency");
 
             _currency = currency;
             _amount = amount;

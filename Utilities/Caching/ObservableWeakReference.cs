@@ -90,6 +90,7 @@ namespace WebApplications.Utilities.Caching
             [NotNull] params EventHandler[] handlers)
             : base(target, trackResurrection == TriState.Unknown ? !Disposable : (trackResurrection == TriState.Yes))
         {
+            if (handlers == null) throw new ArgumentNullException("handlers");
             foreach (EventHandler handler in handlers.Where(handler => handler != null))
                 Finalized += handler;
         }

@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Financials;
 using WebApplications.Utilities.Globalization;
@@ -50,9 +49,9 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end)
             : base(start, end, 1)
         {
-            Contract.Requires(start != null);
-            Contract.Requires(end != null);
-            Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
+            if (start == null) throw new ArgumentNullException("start");
+            if (end == null) throw new ArgumentNullException("end");
+            if (start.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
         }
 
         /// <summary>
@@ -67,9 +66,9 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end, decimal step)
             : base(start, end, step)
         {
-            Contract.Requires(start != null);
-            Contract.Requires(end != null);
-            Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
+            if (start == null) throw new ArgumentNullException("start");
+            if (end == null) throw new ArgumentNullException("end");
+            if (start.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
         }
 
         /// <summary>
@@ -84,11 +83,11 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end, [NotNull] Financial step)
             : base(start, end, step.Amount)
         {
-            Contract.Requires(start != null);
-            Contract.Requires(end != null);
-            Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
-            Contract.Requires(step.Currency == start.Currency, "The currencies in the financial parameters must match.");
-            Contract.Requires(step.Currency == end.Currency, "The currencies in the financial parameters must match.");
+            if (start == null) throw new ArgumentNullException("start");
+            if (end == null) throw new ArgumentNullException("end");
+            if (start.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
+            if (step.Currency != start.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
+            if (step.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end)
             : base(new Financial(currency, start), new Financial(currency, end), 1)
         {
-            Contract.Requires(currency != null);
+            if (currency == null) throw new ArgumentNullException("currency");
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end, decimal step)
             : base(new Financial(currency, start), new Financial(currency, end), step)
         {
-            Contract.Requires(currency != null);
+            if (currency == null) throw new ArgumentNullException("currency");
         }
 
         /// <summary>
@@ -126,8 +125,8 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end, [NotNull] Financial step)
             : base(new Financial(currency, start), new Financial(currency, end), step.Amount)
         {
-            Contract.Requires(currency != null);
-            Contract.Requires(step.Currency == currency, "The currencies in the financial parameters must match.");
+            if (currency == null) throw new ArgumentNullException("currency");
+            if (step.Currency != currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
         }
 
         /// <summary>

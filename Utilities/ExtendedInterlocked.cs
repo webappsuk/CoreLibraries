@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Ranges;
@@ -46,6 +47,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static int Increment(ref int value, [NotNull] IntRange range)
         {
+            if (range == null) throw new ArgumentNullException("range");
             return Increment(ref value, range.Start, range.End);
         }
 
@@ -79,6 +81,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static int Decrement(ref int value, [NotNull] IntRange range)
         {
+            if (range == null) throw new ArgumentNullException("range");
             return Decrement(ref value, range.Start, range.End);
         }
 

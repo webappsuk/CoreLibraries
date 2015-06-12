@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -83,7 +83,7 @@ namespace WebApplications.Utilities
         /// </param>
         private Optional(T value, bool isAssigned)
         {
-            Contract.Requires(isAssigned || Equals(value, default(T)));
+            Debug.Assert(isAssigned || Equals(value, default(T)));
             _value = value;
             _isAssigned = isAssigned;
         }
@@ -311,7 +311,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         public static Optional<T> UnassignedOnError([NotNull] Func<T> valueFunction, bool unassignedOnNull = false)
         {
-            Contract.Requires(valueFunction != null);
+            if (valueFunction == null) throw new ArgumentNullException("valueFunction");
             try
             {
                 T result = valueFunction();
@@ -344,7 +344,7 @@ namespace WebApplications.Utilities
             bool unassignedOnNull = false)
             where TOut : T
         {
-            Contract.Requires(tryFunction != null);
+            if (tryFunction == null) throw new ArgumentNullException("tryFunction");
             TOut result;
             if (tryFunction(input, out result))
                 return unassignedOnNull && ReferenceEquals(result, null)

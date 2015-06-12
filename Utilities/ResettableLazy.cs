@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -234,7 +233,7 @@ namespace WebApplications.Utilities
             LazyThreadSafetyMode mode = LazyThreadSafetyMode.ExecutionAndPublication,
             bool createOnToString = false)
         {
-            Contract.Requires<ArgumentNullException>(valueFactory != null, "valueFactory");
+            if (valueFactory == null) throw new ArgumentNullException("valueFactory");
 
             _threadSafeObj = GetObjectFromMode(mode);
             _valueFactory = valueFactory;
@@ -398,7 +397,7 @@ namespace WebApplications.Utilities
                         return boxed.Value;
 
                     ExceptionDispatchInfo exc = _boxed as ExceptionDispatchInfo;
-                    Contract.Assert(exc != null);
+                    Debug.Assert(exc != null);
                     exc.Throw();
                 }
 
@@ -436,7 +435,7 @@ namespace WebApplications.Utilities
             }
             else
             {
-                Contract.Assert(_threadSafeObj != null);
+                Debug.Assert(_threadSafeObj != null);
                 lock (_threadSafeObj)
                 {
                     if (_boxed == null)
@@ -451,13 +450,13 @@ namespace WebApplications.Utilities
                         if (boxed == null) // it is not Boxed, so it is a ExceptionDispatchInfo
                         {
                             ExceptionDispatchInfo exHolder = _boxed as ExceptionDispatchInfo;
-                            Contract.Assert(exHolder != null);
+                            Debug.Assert(exHolder != null);
                             exHolder.Throw();
                         }
                     }
                 }
             }
-            Contract.Assert(boxed != null);
+            Debug.Assert(boxed != null);
             return boxed.Value;
         }
 
@@ -510,7 +509,7 @@ namespace WebApplications.Utilities
             LazyThreadSafetyMode mode = Mode;
             if (mode == LazyThreadSafetyMode.ExecutionAndPublication)
             {
-                Contract.Assert(_threadSafeObj != null);
+                Debug.Assert(_threadSafeObj != null);
                 lock (_threadSafeObj)
                 {
                     _boxed = null;

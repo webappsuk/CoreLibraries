@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -164,12 +164,12 @@ namespace WebApplications.Utilities
         {
             get
             {
-                Contract.Ensures(Contract.Result<IDateTimeZoneProvider>() != null);
+                Debug.Assert(_dateTimeZoneProvider != null);
                 return _dateTimeZoneProvider;
             }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
                 _dateTimeZoneProvider = value;
                 _isFromConfig = false;
             }
@@ -185,12 +185,12 @@ namespace WebApplications.Utilities
         {
             get
             {
-                Contract.Ensures(Contract.Result<IClock>() != null);
+                Debug.Assert(_clock != null);
                 return _clock;
             }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
                 _clock = value;
             }
         }
@@ -277,7 +277,7 @@ namespace WebApplications.Utilities
             // ReSharper disable once AssignNullToNotNullAttribute
                 provider = DateTimeZoneProviders.Tzdb;
 
-            Contract.Assert(provider != null);
+            Debug.Assert(provider != null);
 
             return provider;
         }
@@ -553,7 +553,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool IsZero([NotNull] this Period period)
         {
-            Contract.Requires(period != null);
+            if (period == null) throw new ArgumentNullException("period");
 
             return period.Ticks == 0 &&
                    period.Milliseconds == 0 &&
@@ -578,7 +578,7 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
         {
-            Contract.Requires(period != null);
+            if (period == null) throw new ArgumentNullException("period");
 
             return (local + period) > local;
         }
@@ -595,7 +595,7 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
         {
-            Contract.Requires(period != null);
+            if (period == null) throw new ArgumentNullException("period");
 
             return (local + period) < local;
         }
@@ -612,7 +612,7 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDate local)
         {
-            Contract.Requires(period != null);
+            if (period == null) throw new ArgumentNullException("period");
 
             return (local + period) > local;
         }
@@ -629,7 +629,7 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDate local)
         {
-            Contract.Requires(period != null);
+            if (period == null) throw new ArgumentNullException("period");
 
             return (local + period) < local;
         }

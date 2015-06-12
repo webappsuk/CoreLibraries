@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using WebApplications.Utilities.Annotations;
 
@@ -128,7 +127,8 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void WriteTo([NotNull] TextWriter writer, [CanBeNull] FormatBuilder format = null)
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
+
             if (format == null)
                 format = DefaultFormat;
 

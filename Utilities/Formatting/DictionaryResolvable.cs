@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -58,7 +57,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
             : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
-            Contract.Requires(dictionary != null);
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
             _values = dictionary.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
@@ -89,7 +88,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void Add([NotNull] string tag, [CanBeNull] TValue value)
         {
-            Contract.Requires(tag != null);
+            if (tag == null) throw new ArgumentNullException("tag");
             _values[tag] = value;
         }
 
@@ -100,7 +99,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public bool Remove([NotNull] string tag)
         {
-            Contract.Requires(tag != null);
+            if (tag == null) throw new ArgumentNullException("tag");
             return _values.Remove(tag);
         }
 
@@ -228,7 +227,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
             : base(dictionary, isCaseSensitive, resolveOuterTags, resolveControls)
         {
-            Contract.Requires(dictionary != null);
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
         }
 
         /// <summary>

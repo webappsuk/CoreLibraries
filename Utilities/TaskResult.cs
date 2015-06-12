@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -137,7 +136,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Task FromException([NotNull] Exception exception)
         {
-            Contract.Requires(exception != null);
+            if (exception == null) throw new ArgumentNullException("exception");
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             tcs.SetException(exception);
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -153,7 +152,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Task FromException([NotNull] IEnumerable<Exception> exceptions)
         {
-            Contract.Requires(exceptions != null);
+            if (exceptions == null) throw new ArgumentNullException("exceptions");
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             tcs.SetException(exceptions);
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -204,7 +203,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Task<T> FromException([NotNull] Exception exception)
         {
-            Contract.Requires(exception != null);
+            if (exception == null) throw new ArgumentNullException("exception");
             TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
             tcs.SetException(exception);
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -220,7 +219,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Task<T> FromException([NotNull] IEnumerable<Exception> exceptions)
         {
-            Contract.Requires(exceptions != null);
+            if (exceptions == null) throw new ArgumentNullException("exceptions");
             TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
             tcs.SetException(exceptions);
             // ReSharper disable once AssignNullToNotNullAttribute

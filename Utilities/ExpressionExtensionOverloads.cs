@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
@@ -48,8 +47,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<TResult>> GetFuncExpression<TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 0);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 0) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             Expression body = expression;
 
@@ -70,9 +70,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action> GetActionExpression([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 0);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 0) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             return Expression.Lambda<Action>(expression);
         }
@@ -127,8 +127,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, TResult>> GetFuncExpression<T1, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 1);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 1) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             Expression body = expression.Inline(p1);
@@ -151,9 +152,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1>> GetActionExpression<T1>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 1);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 1) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             return Expression.Lambda<Action<T1>>(expression.Inline(p1), p1);
@@ -212,8 +213,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, TResult>> GetFuncExpression<T1, T2, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 2);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 2) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -238,9 +240,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2>> GetActionExpression<T1, T2>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 2);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 2) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -303,8 +305,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, TResult>> GetFuncExpression<T1, T2, T3, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 3);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 3) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -331,9 +334,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3>> GetActionExpression<T1, T2, T3>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 3);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 3) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -400,8 +403,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, TResult>> GetFuncExpression<T1, T2, T3, T4, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 4);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 4) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -430,9 +434,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4>> GetActionExpression<T1, T2, T3, T4>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 4);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 4) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -503,8 +507,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 5);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 5) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -535,9 +540,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5>> GetActionExpression<T1, T2, T3, T4, T5>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 5);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 5) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -612,8 +617,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 6);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 6) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -646,9 +652,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6>> GetActionExpression<T1, T2, T3, T4, T5, T6>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 6);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 6) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -727,8 +733,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 7);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 7) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -763,9 +770,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 7);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 7) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -848,8 +855,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 8);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 8) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -886,9 +894,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 8);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 8) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -975,8 +983,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 9);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 9) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1015,9 +1024,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 9);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 9) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1108,8 +1117,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 10);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 10) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1150,9 +1160,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 10);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 10) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1247,8 +1257,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 11);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 11) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1291,9 +1302,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 11);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 11) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1392,8 +1403,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 12);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 12) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1438,9 +1450,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 12);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 12) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1543,8 +1555,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 13);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 13) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1591,9 +1604,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 13);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 13) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1700,8 +1713,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 14);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 14) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1750,9 +1764,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 14);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 14) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1863,8 +1877,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 15);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 15) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -1915,9 +1930,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 15);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 15) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -2032,8 +2047,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 16);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 16) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));
@@ -2086,9 +2102,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == 16);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != 16) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             
             ParameterExpression p1 = Expression.Parameter(typeof(T1));
             ParameterExpression p2 = Expression.Parameter(typeof(T2));

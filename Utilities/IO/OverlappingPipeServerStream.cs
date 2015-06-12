@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
+using System;
 using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +66,7 @@ namespace WebApplications.Utilities.IO
                        security),
                    inBufferSize)
         {
-            Contract.Requires(name != null);
+            if (name == null) throw new ArgumentNullException("name");
         }
 
         /// <summary>

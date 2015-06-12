@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -298,7 +298,7 @@ namespace WebApplications.Utilities.Threading
             TaskCreationOptions creationOptions,
             bool run)
         {
-            Contract.Requires(action != null);
+            if (action == null) throw new ArgumentNullException("action");
 
             _cts = token.ToCancelable();
             token = _cts.Token;
@@ -315,7 +315,7 @@ namespace WebApplications.Utilities.Threading
             Task task = run
                 ? Task.Run(wrapped, token)
                 : new Task(wrapped, token, creationOptions);
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             _task = task;
         }
@@ -333,7 +333,7 @@ namespace WebApplications.Utilities.Threading
             TaskCreationOptions creationOptions,
             bool run)
         {
-            Contract.Requires(action != null);
+            if (action == null) throw new ArgumentNullException("action");
 
             _cts = token.ToCancelable();
             token = _cts.Token;
@@ -356,7 +356,7 @@ namespace WebApplications.Utilities.Threading
             Task task = run
                 ? Task.Run(wrapped, token)
                 : new Task<Task>(wrapped, token, creationOptions).Unwrap();
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             _task = task;
         }
@@ -373,7 +373,7 @@ namespace WebApplications.Utilities.Threading
             TaskCreationOptions creationOptions = TaskCreationOptions.None)
             : this(action, token, creationOptions, false)
         {
-            Contract.Requires(action != null);
+            if (action == null) throw new ArgumentNullException("action");
         }
 
         /// <summary>
@@ -388,7 +388,7 @@ namespace WebApplications.Utilities.Threading
             TaskCreationOptions creationOptions = TaskCreationOptions.None)
             : this(action, token, creationOptions, false)
         {
-            Contract.Requires(action != null);
+            if (action == null) throw new ArgumentNullException("action");
         }
 
         /// <summary>
@@ -466,11 +466,11 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task task = _task.ContinueWith(t => continuationAction(this, cts.Token), cts.Token, options, scheduler);
@@ -493,11 +493,11 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task<TResult> task = _task.ContinueWith(
@@ -524,16 +524,16 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task task =
                 _task.ContinueWith(t => continuationAction(this, cts.Token), cts.Token, options, scheduler).Unwrap();
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             return new CancelableTask(task, cts);
         }
@@ -553,16 +553,16 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task<TResult> task =
                 _task.ContinueWith(t => continuationAction(this, cts.Token), cts.Token, options, scheduler).Unwrap();
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             return new CancelableTask<TResult>(task, cts);
         }
@@ -808,7 +808,7 @@ namespace WebApplications.Utilities.Threading
             TaskCreationOptions creationOptions,
             bool run)
         {
-            Contract.Requires(function != null);
+            if (function == null) throw new ArgumentNullException("function");
 
             _cts = token.ToCancelable();
             token = _cts.Token;
@@ -827,7 +827,7 @@ namespace WebApplications.Utilities.Threading
             Task<TResult> task = run
                 ? System.Threading.Tasks.Task.Run(wrapped, token)
                 : new Task<TResult>(wrapped, token, creationOptions);
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             _task = task;
         }
@@ -845,7 +845,7 @@ namespace WebApplications.Utilities.Threading
             TaskCreationOptions creationOptions,
             bool run)
         {
-            Contract.Requires(function != null);
+            if (function == null) throw new ArgumentNullException("function");
 
             _cts = token.ToCancelable();
             token = _cts.Token;
@@ -870,7 +870,7 @@ namespace WebApplications.Utilities.Threading
             Task<TResult> task = run
                 ? System.Threading.Tasks.Task.Run(wrapped, token)
                 : new Task<Task<TResult>>(wrapped, token, creationOptions).Unwrap();
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             _task = task;
         }
@@ -903,7 +903,7 @@ namespace WebApplications.Utilities.Threading
             TaskCreationOptions creationOptions = TaskCreationOptions.None)
             : this(function, token, creationOptions, false)
         {
-            Contract.Requires(function != null);
+            if (function == null) throw new ArgumentNullException("function");
         }
 
         /// <summary>
@@ -981,11 +981,11 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task task = _task.ContinueWith(t => continuationAction(this, cts.Token), cts.Token, options, scheduler);
@@ -1008,11 +1008,11 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task<TNewResult> task = _task.ContinueWith(
@@ -1039,16 +1039,16 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task task =
                 _task.ContinueWith(t => continuationAction(this, cts.Token), cts.Token, options, scheduler).Unwrap();
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             return new CancelableTask(task, cts);
         }
@@ -1068,16 +1068,16 @@ namespace WebApplications.Utilities.Threading
             TaskContinuationOptions options = TaskContinuationOptions.None,
             TaskScheduler scheduler = null)
         {
-            Contract.Requires<ArgumentNullException>(continuationAction != null);
+            if (continuationAction == null) throw new ArgumentNullException("continuationAction");
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Current;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             ICancelableTokenSource cts = token.ToCancelable();
             Task<TNewResult> task =
                 _task.ContinueWith(t => continuationAction(this, cts.Token), cts.Token, options, scheduler).Unwrap();
-            Contract.Assert(task != null);
+            Debug.Assert(task != null);
 
             return new CancelableTask<TNewResult>(task, cts);
         }

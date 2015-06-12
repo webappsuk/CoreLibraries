@@ -37,7 +37,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -95,7 +94,7 @@ namespace WebApplications.Utilities
             out T2 item2)
         {
             Tuple<T1, T2> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
         }
@@ -111,7 +110,7 @@ namespace WebApplications.Utilities
             out T2 item2)
         {
             Tuple<T1, T2> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
         }
@@ -134,7 +133,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             return true;
@@ -158,7 +157,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             return true;
@@ -224,7 +223,7 @@ namespace WebApplications.Utilities
             out T3 item3)
         {
             Tuple<T1, T2, T3> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -243,7 +242,7 @@ namespace WebApplications.Utilities
             out T3 item3)
         {
             Tuple<T1, T2, T3> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -270,7 +269,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -298,7 +297,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -370,7 +369,7 @@ namespace WebApplications.Utilities
             out T4 item4)
         {
             Tuple<T1, T2, T3, T4> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -392,7 +391,7 @@ namespace WebApplications.Utilities
             out T4 item4)
         {
             Tuple<T1, T2, T3, T4> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -423,7 +422,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -455,7 +454,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -533,7 +532,7 @@ namespace WebApplications.Utilities
             out T5 item5)
         {
             Tuple<T1, T2, T3, T4, T5> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -558,7 +557,7 @@ namespace WebApplications.Utilities
             out T5 item5)
         {
             Tuple<T1, T2, T3, T4, T5> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -593,7 +592,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -629,7 +628,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -713,7 +712,7 @@ namespace WebApplications.Utilities
             out T6 item6)
         {
             Tuple<T1, T2, T3, T4, T5, T6> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -741,7 +740,7 @@ namespace WebApplications.Utilities
             out T6 item6)
         {
             Tuple<T1, T2, T3, T4, T5, T6> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -780,7 +779,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -820,7 +819,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -910,7 +909,7 @@ namespace WebApplications.Utilities
             out T7 item7)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -941,7 +940,7 @@ namespace WebApplications.Utilities
             out T7 item7)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -984,7 +983,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1028,7 +1027,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1124,7 +1123,7 @@ namespace WebApplications.Utilities
             out T8 item8)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1160,7 +1159,7 @@ namespace WebApplications.Utilities
             out T8 item8)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1209,7 +1208,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1259,7 +1258,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1363,7 +1362,7 @@ namespace WebApplications.Utilities
             out T9 item9)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1402,7 +1401,7 @@ namespace WebApplications.Utilities
             out T9 item9)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1455,7 +1454,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1509,7 +1508,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1619,7 +1618,7 @@ namespace WebApplications.Utilities
             out T10 item10)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1661,7 +1660,7 @@ namespace WebApplications.Utilities
             out T10 item10)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1718,7 +1717,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1776,7 +1775,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1892,7 +1891,7 @@ namespace WebApplications.Utilities
             out T11 item11)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1937,7 +1936,7 @@ namespace WebApplications.Utilities
             out T11 item11)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -1998,7 +1997,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2060,7 +2059,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2182,7 +2181,7 @@ namespace WebApplications.Utilities
             out T12 item12)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2230,7 +2229,7 @@ namespace WebApplications.Utilities
             out T12 item12)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2295,7 +2294,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2361,7 +2360,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2489,7 +2488,7 @@ namespace WebApplications.Utilities
             out T13 item13)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2540,7 +2539,7 @@ namespace WebApplications.Utilities
             out T13 item13)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2609,7 +2608,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2679,7 +2678,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2813,7 +2812,7 @@ namespace WebApplications.Utilities
             out T14 item14)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2867,7 +2866,7 @@ namespace WebApplications.Utilities
             out T14 item14)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -2940,7 +2939,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3014,7 +3013,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3154,7 +3153,7 @@ namespace WebApplications.Utilities
             out T15 item15)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3211,7 +3210,7 @@ namespace WebApplications.Utilities
             out T15 item15)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3288,7 +3287,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3366,7 +3365,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3512,7 +3511,7 @@ namespace WebApplications.Utilities
             out T16 item16)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3572,7 +3571,7 @@ namespace WebApplications.Utilities
             out T16 item16)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3653,7 +3652,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3735,7 +3734,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3887,7 +3886,7 @@ namespace WebApplications.Utilities
             out T17 item17)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -3950,7 +3949,7 @@ namespace WebApplications.Utilities
             out T17 item17)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4035,7 +4034,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4121,7 +4120,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4279,7 +4278,7 @@ namespace WebApplications.Utilities
             out T18 item18)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4345,7 +4344,7 @@ namespace WebApplications.Utilities
             out T18 item18)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4434,7 +4433,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4524,7 +4523,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4688,7 +4687,7 @@ namespace WebApplications.Utilities
             out T19 item19)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4757,7 +4756,7 @@ namespace WebApplications.Utilities
             out T19 item19)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4850,7 +4849,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -4944,7 +4943,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5114,7 +5113,7 @@ namespace WebApplications.Utilities
             out T20 item20)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5186,7 +5185,7 @@ namespace WebApplications.Utilities
             out T20 item20)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5283,7 +5282,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5381,7 +5380,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5557,7 +5556,7 @@ namespace WebApplications.Utilities
             out T21 item21)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5632,7 +5631,7 @@ namespace WebApplications.Utilities
             out T21 item21)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5733,7 +5732,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -5835,7 +5834,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6017,7 +6016,7 @@ namespace WebApplications.Utilities
             out T22 item22)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6095,7 +6094,7 @@ namespace WebApplications.Utilities
             out T22 item22)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6200,7 +6199,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6306,7 +6305,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6494,7 +6493,7 @@ namespace WebApplications.Utilities
             out T23 item23)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6575,7 +6574,7 @@ namespace WebApplications.Utilities
             out T23 item23)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6684,7 +6683,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6794,7 +6793,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -6988,7 +6987,7 @@ namespace WebApplications.Utilities
             out T24 item24)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -7072,7 +7071,7 @@ namespace WebApplications.Utilities
             out T24 item24)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -7185,7 +7184,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -7299,7 +7298,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -7499,7 +7498,7 @@ namespace WebApplications.Utilities
             out T25 item25)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -7586,7 +7585,7 @@ namespace WebApplications.Utilities
             out T25 item25)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -7703,7 +7702,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -7821,7 +7820,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8027,7 +8026,7 @@ namespace WebApplications.Utilities
             out T26 item26)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8117,7 +8116,7 @@ namespace WebApplications.Utilities
             out T26 item26)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8238,7 +8237,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8360,7 +8359,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8572,7 +8571,7 @@ namespace WebApplications.Utilities
             out T27 item27)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8665,7 +8664,7 @@ namespace WebApplications.Utilities
             out T27 item27)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8790,7 +8789,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -8916,7 +8915,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -9134,7 +9133,7 @@ namespace WebApplications.Utilities
             out T28 item28)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -9230,7 +9229,7 @@ namespace WebApplications.Utilities
             out T28 item28)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -9359,7 +9358,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -9489,7 +9488,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -9713,7 +9712,7 @@ namespace WebApplications.Utilities
             out T29 item29)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -9812,7 +9811,7 @@ namespace WebApplications.Utilities
             out T29 item29)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -9945,7 +9944,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -10079,7 +10078,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -10309,7 +10308,7 @@ namespace WebApplications.Utilities
             out T30 item30)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -10411,7 +10410,7 @@ namespace WebApplications.Utilities
             out T30 item30)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -10548,7 +10547,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -10686,7 +10685,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -10922,7 +10921,7 @@ namespace WebApplications.Utilities
             out T31 item31)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -11027,7 +11026,7 @@ namespace WebApplications.Utilities
             out T31 item31)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -11168,7 +11167,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -11310,7 +11309,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -11552,7 +11551,7 @@ namespace WebApplications.Utilities
             out T32 item32)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -11660,7 +11659,7 @@ namespace WebApplications.Utilities
             out T32 item32)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -11805,7 +11804,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -11951,7 +11950,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -12199,7 +12198,7 @@ namespace WebApplications.Utilities
             out T33 item33)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -12310,7 +12309,7 @@ namespace WebApplications.Utilities
             out T33 item33)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -12459,7 +12458,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -12609,7 +12608,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -12863,7 +12862,7 @@ namespace WebApplications.Utilities
             out T34 item34)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -12977,7 +12976,7 @@ namespace WebApplications.Utilities
             out T34 item34)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -13130,7 +13129,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -13284,7 +13283,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -13544,7 +13543,7 @@ namespace WebApplications.Utilities
             out T35 item35)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -13661,7 +13660,7 @@ namespace WebApplications.Utilities
             out T35 item35)
         {
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -13818,7 +13817,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> tuple = Pop();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;
@@ -13976,7 +13975,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> tuple = Peek();
-            Contract.Assert(tuple != null);
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
             item3 = tuple.Item3;

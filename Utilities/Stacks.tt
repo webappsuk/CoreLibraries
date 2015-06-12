@@ -38,7 +38,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -178,7 +177,7 @@ namespace WebApplications.Utilities
         public void Pop(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Pop();
-            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);<#= assignments + afterAssignments #>
         }
         
         /// <summary>
@@ -188,7 +187,7 @@ namespace WebApplications.Utilities
         public void Peek(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Peek();
-            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);<#= assignments + afterAssignments #>
         }
         
         /// <summary>
@@ -203,7 +202,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<<#= t #>> tuple = Pop();
-            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);<#= assignments + afterAssignments #>
             return true;
         }
         
@@ -219,7 +218,7 @@ namespace WebApplications.Utilities
                 return false;
             }
             Tuple<<#= t #>> tuple = Peek();
-            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
+            if (tuple == null) throw new NullReferenceException(Resources.Stack_TupleNull);<#= assignments + afterAssignments #>
             return true;
         }
     }

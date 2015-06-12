@@ -27,7 +27,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using WebApplications.Utilities.Annotations;
@@ -186,8 +185,8 @@ namespace WebApplications.Utilities
             LogonType logonType = LogonType.Interactive,
             LogonProvider logonProvider = LogonProvider.Default)
         {
-            Contract.Requires(userName != null);
-            Contract.Requires(password != null);
+            if (userName == null) throw new ArgumentNullException("userName");
+            if (password == null) throw new ArgumentNullException("password");
 
             string[] up = userName.Split('\\');
             string domainName;
@@ -221,9 +220,9 @@ namespace WebApplications.Utilities
             LogonType logonType = LogonType.Interactive,
             LogonProvider logonProvider = LogonProvider.Default)
         {
-            Contract.Requires(userName != null);
-            Contract.Requires(password != null);
-            Contract.Requires(domainName != null);
+            if (userName == null) throw new ArgumentNullException("userName");
+            if (password == null) throw new ArgumentNullException("password");
+            if (domainName == null) throw new ArgumentNullException("domainName");
 
             Init(userName, password, domainName, logonType, logonProvider);
         }

@@ -51,14 +51,17 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TResult>(
-            [NotNull]this Func<AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -85,15 +88,18 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TResult>(
-            [NotNull]this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -122,16 +128,19 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TResult>(
-            [NotNull]this Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -162,17 +171,20 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -205,18 +217,21 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
             TArg4 arg4,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -251,19 +266,22 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
             TArg4 arg4,
             TArg5 arg5,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -300,8 +318,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -309,11 +327,14 @@ namespace WebApplications.Utilities
             TArg5 arg5,
             TArg6 arg6,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -352,8 +373,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -362,11 +383,14 @@ namespace WebApplications.Utilities
             TArg6 arg6,
             TArg7 arg7,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -407,8 +431,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -418,11 +442,14 @@ namespace WebApplications.Utilities
             TArg7 arg7,
             TArg8 arg8,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -465,8 +492,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -477,11 +504,14 @@ namespace WebApplications.Utilities
             TArg8 arg8,
             TArg9 arg9,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -526,8 +556,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -539,11 +569,14 @@ namespace WebApplications.Utilities
             TArg9 arg9,
             TArg10 arg10,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -590,8 +623,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -604,11 +637,14 @@ namespace WebApplications.Utilities
             TArg10 arg10,
             TArg11 arg11,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -657,8 +693,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -672,11 +708,14 @@ namespace WebApplications.Utilities
             TArg11 arg11,
             TArg12 arg12,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -727,8 +766,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -743,11 +782,14 @@ namespace WebApplications.Utilities
             TArg12 arg12,
             TArg13 arg13,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
@@ -800,8 +842,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14, TResult>(
-            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -817,11 +859,14 @@ namespace WebApplications.Utilities
             TArg13 arg13,
             TArg14 arg14,
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,

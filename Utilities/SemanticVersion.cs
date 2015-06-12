@@ -29,7 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -98,9 +97,9 @@ namespace WebApplications.Utilities
             Optional<string> build,
             bool isPartial)
         {
-            Contract.Requires(major.Value >= 0);
-            Contract.Requires(minor.Value >= 0);
-            Contract.Requires(patch.Value >= 0);
+            if (major.Value < 0) throw new ArgumentOutOfRangeException("major", major, Resources.SemanticVersion_SemanticVersion_MajorNegative);
+            if (minor.Value < 0) throw new ArgumentOutOfRangeException("minor", minor, Resources.SemanticVersion_SemanticVersion_MinorNegative);
+            if (patch.Value < 0) throw new ArgumentOutOfRangeException("patch", patch, Resources.SemanticVersion_SemanticVersion_PatchNegative);
 
             Major = major;
             Minor = minor;
@@ -230,22 +229,6 @@ namespace WebApplications.Utilities
                 !minor.IsAssigned ||
                 !major.IsAssigned)
         {
-            if (major.Value < 0)
-                throw new ArgumentOutOfRangeException(
-                    "major",
-                    major,
-                    Resources.SemanticVersion_SemanticVersion_MajorNegative);
-            if (minor.Value < 0)
-                throw new ArgumentOutOfRangeException(
-                    "minor",
-                    minor,
-                    Resources.SemanticVersion_SemanticVersion_MinorNegative);
-            if (patch.Value < 0)
-                throw new ArgumentOutOfRangeException(
-                    "patch",
-                    patch,
-                    Resources.SemanticVersion_SemanticVersion_PatchNegative);
-            Contract.EndContractBlock();
             if ((preRelease.Value != null) &&
                 (!IsValidPart(preRelease.Value)))
                 throw new ArgumentOutOfRangeException(
@@ -277,7 +260,7 @@ namespace WebApplications.Utilities
                     ? string.Format("build.{0}", version.Revision)
                     : null)
         {
-            Contract.Requires(version != null);
+            if (version == null) throw new ArgumentNullException("version");
         }
 
         /// <summary>
@@ -565,7 +548,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static explicit operator Version([NotNull] SemanticVersion version)
         {
-            Contract.Requires(version != null);
+            if (version == null) throw new ArgumentNullException("version");
 
             if (string.IsNullOrEmpty(version.Build.Value))
                 return new Version(version.Major.Value, version.Minor.Value, version.Patch.Value);
@@ -585,7 +568,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static implicit operator SemanticVersion([NotNull] Version version)
         {
-            Contract.Requires(version != null);
+            if (version == null) throw new ArgumentNullException("version");
             return new SemanticVersion(version);
         }
 
@@ -673,7 +656,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public int CompareTo([NotNull] SemanticVersion other)
         {
-            Contract.Assert(other != null);
+            Debug.Assert(other != null);
 
             if (ReferenceEquals(this, other))
                 return 0;
@@ -700,7 +683,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         public bool Matches([NotNull] SemanticVersion other)
         {
-            Contract.Requires(other != null);
+            if (other == null) throw new ArgumentNullException("other");
 
             if (ReferenceEquals(this, other))
                 return true;
@@ -848,8 +831,8 @@ namespace WebApplications.Utilities
             if (!identifier2.IsAssigned)
                 return 1;
 
-            Contract.Assert(identifier1.Value != null);
-            Contract.Assert(identifier2.Value != null);
+            Debug.Assert(identifier1.Value != null);
+            Debug.Assert(identifier2.Value != null);
 
             if (identifier1.Value.Length < 1)
                 return identifier2.Value.Length < 1 ? 1 : 0;
@@ -881,8 +864,8 @@ namespace WebApplications.Utilities
                 string part1 = parts1[i];
                 string part2 = parts2[i];
 
-                Contract.Assert(part1 != null);
-                Contract.Assert(part2 != null);
+                Debug.Assert(part1 != null);
+                Debug.Assert(part2 != null);
 
                 int value1, value2;
                 if (int.TryParse(part1, NumberStyles.None, CultureInfo.InvariantCulture, out value1) &&
@@ -1008,7 +991,7 @@ namespace WebApplications.Utilities
                             builder.Append(c);
                             break;
                         default:
-                            Contract.Assert(false);
+                            Debug.Assert(false);
                             break;
                     }
 
@@ -1069,7 +1052,7 @@ namespace WebApplications.Utilities
                             build = new Optional<string>(part);
                             break;
                         default:
-                            Contract.Assert(false);
+                            Debug.Assert(false);
                             break;
                     }
                 }
@@ -1090,7 +1073,7 @@ namespace WebApplications.Utilities
                         build = Optional<string>.DefaultAssigned;
                         break;
                     default:
-                        Contract.Assert(false);
+                        Debug.Assert(false);
                         break;
                 }
             }

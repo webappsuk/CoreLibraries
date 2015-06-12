@@ -29,7 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -123,7 +123,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder([CanBeNull] Layout layout, bool isReadOnly = false)
         {
             InitialLayout = Layout.Default.Apply(layout);
-            Contract.Assert(InitialLayout.IsFull);
+            Debug.Assert(InitialLayout.IsFull);
             _isReadOnly = isReadOnly;
         }
 
@@ -137,7 +137,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder([CanBeNull] Layout layout, [CanBeNull] string format, bool isReadOnly = false)
         {
             InitialLayout = Layout.Default.Apply(layout);
-            Contract.Assert(InitialLayout.IsFull);
+            Debug.Assert(InitialLayout.IsFull);
             if (!string.IsNullOrEmpty(format))
                 AppendFormat(format);
             _isReadOnly = isReadOnly;
@@ -193,7 +193,7 @@ namespace WebApplications.Utilities.Formatting
                 hyphenate,
                 hyphenChar,
                 wrapMode);
-            Contract.Assert(InitialLayout.IsFull);
+            Debug.Assert(InitialLayout.IsFull);
             if (!string.IsNullOrEmpty(format))
                 AppendFormat(format);
             _isReadOnly = isReadOnly;
@@ -256,11 +256,6 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Clone(bool readOnly = false)
         {
-            // ReSharper disable once PossibleNullReferenceException
-            Contract.Ensures(
-                !readOnly || Contract.Result<FormatBuilder>().IsReadOnly,
-                "Returned builder should be read only if readOnly is true");
-
             if (_isReadOnly && readOnly)
                 return this;
 
@@ -287,9 +282,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(bool value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -303,9 +296,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(sbyte value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -319,9 +310,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(byte value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -335,9 +324,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(char value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -351,9 +338,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(short value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -367,9 +352,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(int value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -383,9 +366,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(long value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -399,9 +380,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(float value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -415,9 +394,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(double value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -431,9 +408,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(decimal value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -447,9 +422,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(ushort value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -463,9 +436,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(uint value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -479,9 +450,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(ulong value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -495,9 +464,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] object value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             if (value == null) return this;
 
@@ -538,9 +505,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if ((value != null) &&
                 (value.Length > 0))
                 RootChunk.AppendChunk(new FormatChunk(new string(value)));
@@ -558,9 +523,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value, int startIndex, int charCount)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if ((value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
@@ -583,9 +546,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(char value, int repeatCount)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (repeatCount > 0)
                 RootChunk.AppendChunk(new FormatChunk(new string(value, repeatCount)));
             return this;
@@ -600,9 +561,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] string value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(value))
                 RootChunk.AppendChunk(new FormatChunk(value));
             return this;
@@ -617,9 +576,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] FormatChunk chunk)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunk != null)
                 RootChunk.AppendChunk(chunk);
             return this;
@@ -634,9 +591,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunks == null) return this;
 
             FormatChunk[] cArr = chunks.ToArray();
@@ -657,15 +612,13 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] FormatBuilder builder)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             if (builder == null ||
                 builder.IsEmpty) return this;
 
-            Contract.Assert(builder.RootChunk.ChildrenInternal != null);
-            Contract.Assert(builder.RootChunk.ChildrenInternal.Count > 0);
+            Debug.Assert(builder.RootChunk.ChildrenInternal != null);
+            Debug.Assert(builder.RootChunk.ChildrenInternal.Count > 0);
 
             // ReSharper disable AssignNullToNotNullAttribute
             if (RootChunk.ChildrenInternal == null)
@@ -686,9 +639,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine()
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(NewLineChunk);
             return this;
         }
@@ -702,9 +653,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(bool value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -719,9 +668,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(sbyte value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -736,9 +683,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(byte value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -753,9 +698,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(char value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -770,9 +713,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(short value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -787,9 +728,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(int value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -804,9 +743,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(long value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -821,9 +758,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(float value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -838,9 +773,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(double value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -855,9 +788,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(decimal value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -872,9 +803,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(ushort value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -889,9 +818,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(uint value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -906,9 +833,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(ulong value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -923,9 +848,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] object value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             if (value == null)
             {
@@ -974,9 +897,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if ((value != null) &&
                 (value.Length > 0))
                 RootChunk.AppendChunk(new FormatChunk(new string(value)));
@@ -996,9 +917,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value, int startIndex, int charCount)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if ((value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
@@ -1023,9 +942,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(char value, int repeatCount)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (repeatCount > 0)
                 RootChunk.AppendChunk(new FormatChunk(new string(value, repeatCount)));
             RootChunk.AppendChunk(NewLineChunk);
@@ -1041,9 +958,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] string value)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(value))
                 RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
@@ -1059,9 +974,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] FormatChunk chunk)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunk != null)
                 RootChunk.AppendChunk(chunk);
             RootChunk.AppendChunk(NewLineChunk);
@@ -1077,9 +990,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunks != null)
             {
                 FormatChunk[] cArr = chunks.ToArray();
@@ -1102,14 +1013,12 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] FormatBuilder builder)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (builder != null &&
                 !builder.IsEmpty)
             {
-                Contract.Assert(builder.RootChunk.ChildrenInternal != null);
-                Contract.Assert(builder.RootChunk.ChildrenInternal.Count > 0);
+                Debug.Assert(builder.RootChunk.ChildrenInternal != null);
+                Debug.Assert(builder.RootChunk.ChildrenInternal.Count > 0);
 
                 // ReSharper disable AssignNullToNotNullAttribute
                 if (RootChunk.ChildrenInternal == null)
@@ -1135,9 +1044,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] params object[] args)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(format, args == null || args.Length < 1 ? null : new ListResolvable(args, false));
             return this;
@@ -1156,9 +1063,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatInstance<T>([CanBeNull] string format, [CanBeNull] T instance)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             if (string.IsNullOrEmpty(format)) return this;
 
@@ -1192,9 +1097,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive = false)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(
                     format,
@@ -1217,9 +1120,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] ResolveDelegate resolver,
             bool isCaseSensitive = false)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(format, resolver == null ? null : new FuncResolvable(resolver, isCaseSensitive));
             return this;
@@ -1235,9 +1136,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendFormatLine()
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             RootChunk.AppendChunk(NewLineChunk);
             return this;
         }
@@ -1253,9 +1152,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine([CanBeNull] string format, [CanBeNull] params object[] args)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(format, args == null || args.Length < 1 ? null : new ListResolvable(args, false));
             RootChunk.AppendChunk(NewLineChunk);
@@ -1275,9 +1172,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLineInstance<T>([CanBeNull] string format, [CanBeNull] T instance)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             if (!string.IsNullOrEmpty(format))
             {
@@ -1314,9 +1209,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(
                     format,
@@ -1344,9 +1237,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] ResolveDelegate resolver,
             bool isCaseSensitive = false)
         {
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(format, resolver == null ? null : new FuncResolvable(resolver, isCaseSensitive));
             RootChunk.AppendChunk(NewLineChunk);
@@ -1374,10 +1265,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format = null,
             Optional<object> value = default(Optional<object>))
         {
-            Contract.Requires(!string.IsNullOrEmpty(tag));
-            Contract.Requires(!IsReadOnly);
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (string.IsNullOrEmpty(tag)) throw new ArgumentException(Resources.FormatBuilder_TagNullOrEmpty, "tag");
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             // Ensure the tag starts with the control character
             if (tag[0] != ControlChar)
@@ -1406,8 +1295,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder ResolveInstance<T>([CanBeNull] T instance)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if ((IsEmpty) ||
                 ReferenceEquals(instance, null))
                 return this;
@@ -1435,8 +1323,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive = false)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (IsEmpty ||
                 (values == null) ||
                 (values.Count < 1))
@@ -1462,8 +1349,7 @@ namespace WebApplications.Utilities.Formatting
             bool isCaseSensitive = false,
             bool resolveControls = false)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (IsEmpty ||
                 (resolver == null))
                 return this;
@@ -2481,7 +2367,7 @@ namespace WebApplications.Utilities.Formatting
         public int WriteTo([CanBeNull] TextWriter writer, [CanBeNull] Layout layout = null, int position = 0)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2503,7 +2389,7 @@ namespace WebApplications.Utilities.Formatting
         public void WriteTo([CanBeNull] TextWriter writer, string format)
         {
             if (writer == null || IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             WriteTo(
                 RootChunk,
@@ -2530,7 +2416,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] T instance)
         {
             if (writer == null || IsEmpty) return 0;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             IResolvable resolvable;
             if (!ReferenceEquals(instance, null))
@@ -2570,7 +2456,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2600,7 +2486,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] T instance)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             IResolvable resolvable;
             if (!ReferenceEquals(instance, null))
@@ -2642,7 +2528,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return 0;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2678,7 +2564,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2708,7 +2594,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return 0;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2742,7 +2628,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2776,7 +2662,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return 0;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2804,7 +2690,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IResolvable resolver)
         {
             if (writer == null || IsEmpty) return 0;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2840,7 +2726,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2872,7 +2758,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IResolvable resolver)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2902,7 +2788,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return 0;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2928,7 +2814,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IResolvable resolver)
         {
             if (writer == null || IsEmpty) return 0;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2962,7 +2848,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -2992,7 +2878,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IResolvable resolver)
         {
             if (writer == null || IsEmpty) return position;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            Debug.Assert(RootChunk.ChildrenInternal != null);
 
             return WriteTo(
                 RootChunk,
@@ -3026,9 +2912,10 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             int position)
         {
-            Contract.Requires(rootChunk != null);
-            Contract.Requires(writer != null);
-            Contract.Requires(initialLayout != null);
+            if (rootChunk == null) throw new ArgumentNullException("rootChunk");
+            if (writer == null) throw new ArgumentNullException("writer");
+            if (initialLayout == null) throw new ArgumentNullException("initialLayout");
+
             ISerialTextWriter serialTextWriter = writer as ISerialTextWriter;
             return serialTextWriter == null
                 ? DoWrite(
@@ -3102,7 +2989,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider)
         {
-            Contract.Requires(value != null);
+            if (value == null) throw new ArgumentNullException("value");
+
             string vStr;
             // We are not aligning so we can output the value directly.
             if (!string.IsNullOrEmpty(format))
@@ -3123,7 +3011,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             vStr = formattable.ToString(format, formatProvider);
                         }
-                            // ReSharper disable once EmptyGeneralCatchClause
+                        // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             vStr = value.ToString();
@@ -3161,11 +3049,9 @@ namespace WebApplications.Utilities.Formatting
             [NotNull] Stack<Layout> layoutStack,
             int writerWidth)
         {
-            Contract.Requires(chunk != null);
-            Contract.Requires(chunk.IsControl);
-            Contract.Requires(layoutStack != null);
-            Contract.Requires(layoutStack.Count > 0);
-            Contract.Requires(string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase));
+            Debug.Assert(chunk.IsControl);
+            Debug.Assert(layoutStack.Count > 0);
+            Debug.Assert(string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase));
 
             Layout newLayout;
             bool hasFormat = !string.IsNullOrEmpty(chunk.Format);
@@ -3201,9 +3087,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns><see langword="true" /> if color control, <see langword="false" /> otherwise.</returns>
         private static bool HandleColor([NotNull] FormatChunk chunk, [NotNull] IColoredTextWriter coloredTextWriter)
         {
-            Contract.Requires(chunk != null);
-            Contract.Requires(coloredTextWriter != null);
-            Contract.Requires(chunk.IsControl);
+            Debug.Assert(chunk.IsControl);
 
             // Handle colored output.
             // ReSharper disable once PossibleNullReferenceException
@@ -3300,12 +3184,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             int position)
         {
-            Contract.Requires(rootChunk != null);
-            Contract.Requires(rootChunk.ChildrenInternal != null);
+            Debug.Assert(rootChunk.ChildrenInternal != null);
             // ReSharper disable once PossibleNullReferenceException
-            Contract.Requires(rootChunk.ChildrenInternal.Count > 0);
-            Contract.Requires(writer != null);
-            Contract.Requires(initialLayout != null);
+            Debug.Assert(rootChunk.ChildrenInternal.Count > 0);
 
             #region Setup
             /*
@@ -3633,7 +3514,7 @@ namespace WebApplications.Utilities.Formatting
                                                                 {
                                                                     // ReSharper disable PossibleNullReferenceException
                                                                     switch (c.Tag.ToLowerInvariant())
-                                                                        // ReSharper restore PossibleNullReferenceException
+                                                                    // ReSharper restore PossibleNullReferenceException
                                                                     {
                                                                         case IndexTag:
                                                                             return value;
@@ -3718,7 +3599,7 @@ namespace WebApplications.Utilities.Formatting
                     else if (chunk.Value == null)
                         continue;
                     else
-                    // We have a value chunk.
+                        // We have a value chunk.
                         chunkStr = GetChunkString(
                             chunk.Value,
                             chunk.Alignment,
@@ -3731,7 +3612,7 @@ namespace WebApplications.Utilities.Formatting
                         // Check for control chunks.
                         if (chunkStr == null)
                         {
-                            Contract.Assert(controls.Count > 0, "No controls left in queue, unhandled null.");
+                            Debug.Assert(controls.Count > 0, "No controls left in queue, unhandled null.");
                             chunk = controls.First.Value;
                             controls.RemoveFirst();
                             if (string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
@@ -3888,7 +3769,7 @@ namespace WebApplications.Utilities.Formatting
                         switch (lineType)
                         {
                             case LineType.None:
-                                Contract.Assert(lineStart > 0);
+                                Debug.Assert(lineStart > 0);
                                 alignment = Alignment.None;
                                 break;
                             case LineType.First:
@@ -4092,7 +3973,7 @@ namespace WebApplications.Utilities.Formatting
                                     if (w == null)
                                     {
                                         // Handle control chunks
-                                        Contract.Assert(
+                                        Debug.Assert(
                                             controls.Count > 0,
                                             "No controls left in queue, unhandled null.");
 
@@ -4145,7 +4026,7 @@ namespace WebApplications.Utilities.Formatting
                         }
                         else
                         {
-                            Contract.Assert(p == 0);
+                            Debug.Assert(p == 0);
                             p = lineStart;
                         }
 
@@ -4261,8 +4142,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendResetColors()
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             RootChunk.AppendChunk(ResetColorsChunk);
             return this;
@@ -4276,8 +4156,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendResetForegroundColor()
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             RootChunk.AppendChunk(ResetForegroundColorChunk);
             return this;
@@ -4291,8 +4170,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendResetBackgroundColor()
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             RootChunk.AppendChunk(ResetBackgroundColorChunk);
             return this;
@@ -4307,8 +4185,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendForegroundColor(ConsoleColor color)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             Color c = color.ToColor();
             RootChunk.AppendChunk(new FormatChunk(null, ForegroundColorTag, 0, c.GetName(), c));
@@ -4324,8 +4201,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendForegroundColor(Color color)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             RootChunk.AppendChunk(new FormatChunk(null, ForegroundColorTag, 0, color.GetName(), color));
             return this;
@@ -4340,8 +4216,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendForegroundColor([CanBeNull] string color)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (string.IsNullOrWhiteSpace(color)) return this;
 
             RootChunk.AppendChunk(new FormatChunk(null, ForegroundColorTag, 0, color));
@@ -4357,8 +4232,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendBackgroundColor(ConsoleColor color)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             Color c = color.ToColor();
             RootChunk.AppendChunk(new FormatChunk(null, BackgroundColorTag, 0, c.GetName(), c));
@@ -4374,8 +4248,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendBackgroundColor(Color color)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             RootChunk.AppendChunk(new FormatChunk(null, BackgroundColorTag, 0, color.GetName(), color));
             return this;
@@ -4390,8 +4263,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendBackgroundColor([CanBeNull] string color)
         {
-            if (_isReadOnly)
-                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (string.IsNullOrWhiteSpace(color)) return this;
 
             RootChunk.AppendChunk(new FormatChunk(null, BackgroundColorTag, 0, color));
@@ -4429,7 +4301,6 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendPopLayout()
         {
-            Contract.Requires(!IsReadOnly);
             RootChunk.AppendChunk(PopLayoutChunk);
             return this;
         }
@@ -4443,7 +4314,6 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLayout([CanBeNull] Layout layout)
         {
-            Contract.Requires(!IsReadOnly);
             if (layout == null) return this;
             RootChunk.AppendChunk(new FormatChunk(null, LayoutTag, 0, layout.ToString("f"), layout));
             return this;
@@ -4483,21 +4353,20 @@ namespace WebApplications.Utilities.Formatting
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
-            Contract.Requires(!IsReadOnly);
             Layout layout = new Layout(
-                width,
-                indentSize,
-                rightMarginSize,
-                indentChar,
-                firstLineIndentSize,
-                tabStops,
-                tabSize,
-                tabChar,
-                alignment,
-                splitLength,
-                hyphenate,
-                hyphenChar,
-                wrapMode);
+    width,
+    indentSize,
+    rightMarginSize,
+    indentChar,
+    firstLineIndentSize,
+    tabStops,
+    tabSize,
+    tabChar,
+    alignment,
+    splitLength,
+    hyphenate,
+    hyphenChar,
+    wrapMode);
             return Append(new FormatChunk(null, LayoutTag, 0, layout.ToString("f"), layout));
         }
         #endregion

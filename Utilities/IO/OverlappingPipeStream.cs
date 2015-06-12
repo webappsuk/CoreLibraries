@@ -27,7 +27,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
@@ -90,7 +89,7 @@ namespace WebApplications.Utilities.IO
         /// <param name="bufferSize">Size of the buffer.</param>
         public OverlappingPipeStream([NotNull] PipeStream stream, int bufferSize = 0)
         {
-            Contract.Requires(stream != null);
+            if (stream == null) throw new ArgumentNullException("stream");
             Stream = stream;
             if (bufferSize < 1) bufferSize = 1024;
             _buffer = new byte[bufferSize];

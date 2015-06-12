@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -243,14 +242,14 @@ namespace WebApplications.Utilities.Reflect
             // Get a member access expression
             Expression expression = Expression.Property(null, Info);
 
-            Contract.Assert(expression != null);
+            Debug.Assert(expression != null);
 
             // Cast return value if necessary
             if ((returnType != propertyType) &&
                 !expression.TryConvert(returnType, out expression))
                 return null;
 
-            Contract.Assert(expression != null);
+            Debug.Assert(expression != null);
 
             // Create lambda and compile
             return Expression.Lambda<Func<TValue>>(expression).Compile();
@@ -293,16 +292,16 @@ namespace WebApplications.Utilities.Reflect
             // Get a member access expression
             expression = Expression.Property(expression, Info);
 
-            Contract.Assert(expression != null);
-            Contract.Assert(returnType != null);
+            Debug.Assert(expression != null);
+            Debug.Assert(returnType != null);
 
             // Cast return value if necessary
             if ((returnType != propertyType) &&
                 !expression.TryConvert(returnType, out expression))
                 return null;
 
-            Contract.Assert(expression != null);
-            Contract.Assert(parameterExpression != null);
+            Debug.Assert(expression != null);
+            Debug.Assert(parameterExpression != null);
 
             // Create lambda and compile
             return Expression.Lambda<Func<T, TValue>>(expression, parameterExpression).Compile();
@@ -343,13 +342,13 @@ namespace WebApplications.Utilities.Reflect
                 !valueExpression.TryConvert(propertyType, out valueExpression))
                 return null;
 
-            Contract.Assert(expression != null);
-            Contract.Assert(valueExpression != null);
+            Debug.Assert(expression != null);
+            Debug.Assert(valueExpression != null);
 
             // Create assignment
             expression = Expression.Assign(expression, valueExpression);
 
-            Contract.Assert(expression != null);
+            Debug.Assert(expression != null);
 
             // Create lambda and compile
             return
@@ -405,14 +404,14 @@ namespace WebApplications.Utilities.Reflect
                 !valueExpression.TryConvert(propertyType, out valueExpression))
                 return null;
 
-            Contract.Assert(expression != null);
-            Contract.Assert(valueExpression != null);
+            Debug.Assert(expression != null);
+            Debug.Assert(valueExpression != null);
 
             // Create assignment
             expression = Expression.Assign(expression, valueExpression);
 
-            Contract.Assert(expression != null);
-            Contract.Assert(parameterExpression != null);
+            Debug.Assert(expression != null);
+            Debug.Assert(parameterExpression != null);
 
             // Create lambda and compile
             return

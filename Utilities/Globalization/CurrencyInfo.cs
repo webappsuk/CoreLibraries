@@ -26,7 +26,6 @@
 #endregion
 
 #if !BUILD_TASKS
-using System.Globalization;
 using System;
 #endif
 using System.Globalization;

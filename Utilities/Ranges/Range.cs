@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using WebApplications.Utilities.Annotations;
 
@@ -97,18 +96,19 @@ namespace WebApplications.Utilities.Ranges
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="Range&lt;T,S&gt;"/> class.
+        /// Checks that the start is greater than the end.
         /// </summary>
-        /// <param name="start">The start value (inclusive).</param>
-        /// <param name="end">The end value (inclusive).</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        ///   The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
-        /// </exception>
-        public Range([NotNull] TValue start, [NotNull] TValue end)
+        /// <param name="start">The start.</param>
+        /// <param name="end">The end.</param>
+        /// <param name="throw">if set to <see langword="true" /> throw if failed.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">start</exception>
+        protected static bool CheckStartGreaterThanEnd([NotNull] TValue start, [NotNull] TValue end, bool @throw = true)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(start, null));
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(end, null));
-            if (_lessThan(end, start))
+            if (!_lessThan(end, start)) 
+                return true;
+
+            if (@throw)
                 throw new ArgumentOutOfRangeException(
                     "start",
                     start,
@@ -118,6 +118,23 @@ namespace WebApplications.Utilities.Ranges
                         start,
                         end,
                         typeof(TValue)));
+            return false;
+        }
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="Range&lt;T,S&gt;"/> class.
+        /// </summary>
+        /// <param name="start">The start value (inclusive).</param>
+        /// <param name="end">The end value (inclusive).</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        ///   The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
+        /// </exception>
+        public Range([NotNull] TValue start, [NotNull] TValue end)
+        {
+            if (ReferenceEquals(start, null)) throw new ArgumentNullException("start");
+            if (ReferenceEquals(end, null)) throw new ArgumentNullException("end");
+            CheckStartGreaterThanEnd(start, end);
+
             _start = start;
             _end = end;
         }
@@ -133,19 +150,11 @@ namespace WebApplications.Utilities.Ranges
         /// </exception>
         public Range([NotNull] TValue start, [NotNull] TValue end, [NotNull] TStep step)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(start, null));
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(end, null));
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(step, null));
-            if (_lessThan(end, start))
-                throw new ArgumentOutOfRangeException(
-                    "start",
-                    start,
-                    string.Format(
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.Range_StartGreaterThanEnd,
-                        start,
-                        end,
-                        typeof(TValue)));
+            if (ReferenceEquals(start, null)) throw new ArgumentNullException("start");
+            if (ReferenceEquals(end, null)) throw new ArgumentNullException("end");
+            if (ReferenceEquals(step, null)) throw new ArgumentNullException("step");
+            CheckStartGreaterThanEnd(start, end);
+
             _start = start;
             _end = end;
             _step = step;
@@ -242,7 +251,7 @@ namespace WebApplications.Utilities.Ranges
         [PublicAPI]
         public TValue Bind([NotNull] TValue value)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(value, null));
+            if (ReferenceEquals(value, null)) throw new ArgumentNullException("value");
             if (_lessThan(value, _start))
                 return _start;
             if (_lessThan(_end, value))
@@ -259,7 +268,7 @@ namespace WebApplications.Utilities.Ranges
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains([NotNull] TValue value)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(value, null));
+            if (ReferenceEquals(value, null)) throw new ArgumentNullException("value");
             return _lessThanOrEqual(_start, value) && _lessThanOrEqual(value, _end);
         }
 
@@ -272,7 +281,7 @@ namespace WebApplications.Utilities.Ranges
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Intersects([NotNull] Range<TValue, TStep> other)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(other, null));
+            if (ReferenceEquals(other, null)) throw new ArgumentNullException("other");
             return _greaterThanOrEqual(other._end, _start) && _greaterThanOrEqual(_end, other._start);
         }
 

@@ -70,6 +70,7 @@ namespace WebApplications.Utilities
         /// <param name="data">The data.</param>
         public Graphic([NotNull] byte[] data)
         {
+            if (data == null) throw new ArgumentNullException("data");
             Format = data.GetGraphicFormat();
             Data = data;
         }

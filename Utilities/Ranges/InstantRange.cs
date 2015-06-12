@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 
@@ -64,7 +63,7 @@ namespace WebApplications.Utilities.Ranges
         public InstantRange(Instant start, Duration duration)
             : base(start, start + duration, DurationRange.AutoStep(duration))
         {
-            Contract.Requires<ArgumentOutOfRangeException>(duration >= Duration.Zero);
+            if (duration < Duration.Zero) throw new ArgumentOutOfRangeException("duration");
         }
 
         /// <summary>
@@ -93,7 +92,7 @@ namespace WebApplications.Utilities.Ranges
         public InstantRange(Instant start, Duration duration, Duration step)
             : base(start, start + duration, step)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(duration >= Duration.Zero);
+            if (duration < Duration.Zero) throw new ArgumentOutOfRangeException("duration");
         }
 
         /// <summary>

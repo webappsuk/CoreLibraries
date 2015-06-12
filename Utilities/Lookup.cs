@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -156,6 +155,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public void Add([NotNull] TKey key, TElement element)
         {
+            if (key == null) throw new ArgumentNullException("key");
+
             List<TElement> list;
             if (!_data.TryGetValue(key, out list))
                 _data[key] = list = new List<TElement>();
@@ -171,13 +172,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public void Add(KeyValuePair<TKey, TElement> keyValuePair)
         {
-            Contract.Requires(!ReferenceEquals(keyValuePair.Key, null));
-            List<TElement> list;
-            if (!_data.TryGetValue(keyValuePair.Key, out list))
-                _data[keyValuePair.Key] = list = new List<TElement>();
-            _valuesCount++;
-            // ReSharper disable once PossibleNullReferenceException
-            list.Add(keyValuePair.Value);
+            // ReSharper disable once AssignNullToNotNullAttribute - Let Add throw
+            Add(keyValuePair.Key, keyValuePair.Value);
         }
 
         /// <summary>
@@ -186,8 +182,11 @@ namespace WebApplications.Utilities
         /// <param name="key">The key.</param>
         /// <param name="elements">The elements.</param>
         [PublicAPI]
-        public void AddRange([NotNull] TKey key, [NotNull] [InstantHandle] IEnumerable<TElement> elements)
+        public void AddRange([NotNull] TKey key, [InstantHandle] [NotNull] IEnumerable<TElement> elements)
         {
+            if (key == null) throw new ArgumentNullException("key");
+            if (elements == null) throw new ArgumentNullException("elements");
+
             List<TElement> list;
             if (!_data.TryGetValue(key, out list))
                 _data[key] = list = new List<TElement>();
@@ -201,8 +200,9 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="elements">The elements.</param>
         [PublicAPI]
-        public void AddRange([NotNull] [InstantHandle] IEnumerable<KeyValuePair<TKey, TElement>> elements)
+        public void AddRange([InstantHandle] [NotNull] IEnumerable<KeyValuePair<TKey, TElement>> elements)
         {
+            if (elements == null) throw new ArgumentNullException("elements");
             foreach (KeyValuePair<TKey, TElement> kvp in elements)
                 Add(kvp);
         }

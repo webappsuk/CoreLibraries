@@ -100,8 +100,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Func<#= funcTypeParams #>> GetFuncExpression<#= funcTypeParams #>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == <#= i #>);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != <#= i #>) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType == typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_FuncReturnsVoid);
             <#= paramConvert #>
             Expression body = <#= inlineExpression #>;
 
@@ -122,9 +123,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<Action<#= actionTypeParams #>> GetActionExpression<#= actionTypeParams #>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(expression.Parameters.Count == <#= i #>);
-            Contract.Requires(expression.ReturnType == typeof(void));
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression.Parameters.Count != <#= i #>) throw new ArgumentException(Resources.ExpressionExtensions_ParameterCount);
+            if (expression.ReturnType != typeof(void)) throw new ArgumentException(Resources.ExpressionExtensions_ActionReturnsNonVoid);
             <#= paramConvert #>
             return Expression.Lambda<Action<#= actionTypeParams #>>(<#= inlineExpression #><#= paramExpressions #>);
         }

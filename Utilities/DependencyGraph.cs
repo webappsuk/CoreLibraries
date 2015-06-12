@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using WebApplications.Utilities.Annotations;
@@ -58,7 +58,6 @@ namespace WebApplications.Utilities
         /// Contains all the objects in the graph.
         /// </summary>
         [NotNull]
-        [ContractPublicPropertyName("All")]
         private readonly HashSet<T> _all;
 
         /// <summary>
@@ -164,7 +163,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public bool Add([NotNull] T obj)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(obj, null));
+            if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
 
             if (!_all.Add(obj)) return false;
 
@@ -183,8 +182,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public void Add([NotNull] T a, [NotNull] T b)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(a, null));
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(b, null));
+            if (ReferenceEquals(a, null)) throw new ArgumentNullException("a");
+            if (ReferenceEquals(b, null)) throw new ArgumentNullException("b");
 
             _all.Add(a);
             _all.Add(b);
@@ -195,12 +194,12 @@ namespace WebApplications.Utilities
             HashSet<T> depends;
             if (!_dependsOn.TryGetValue(a, out depends))
                 _dependsOn[a] = depends = new HashSet<T>(_comparer);
-            Contract.Assert(depends != null);
+            Debug.Assert(depends != null);
             depends.Add(b);
 
             if (!_dependencies.TryGetValue(b, out depends))
                 _dependencies[b] = depends = new HashSet<T>(_comparer);
-            Contract.Assert(depends != null);
+            Debug.Assert(depends != null);
             depends.Add(a);
         }
 
@@ -212,7 +211,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public bool Contains([NotNull] T obj)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(obj, null));
+            if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
 
             return _all.Contains(obj);
         }
@@ -227,8 +226,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public IEnumerable<T> GetDependencies([NotNull] T obj)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(obj, null));
-            Contract.Requires<ArgumentOutOfRangeException>(_all.Contains(obj), "The value given is not in the graph");
+            if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
+            if (!_all.Contains(obj)) throw new ArgumentOutOfRangeException(Resources.DependencyGraph_ValueNotInGraph);
 
             HashSet<T> depends;
             // ReSharper disable AssignNullToNotNullAttribute
@@ -247,8 +246,8 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<T> GetAllDependencies([NotNull] T obj)
         {
-            Contract.Requires<ArgumentNullException>(!ReferenceEquals(obj, null));
-            Contract.Requires<ArgumentOutOfRangeException>(_all.Contains(obj), "The value given is not in the graph");
+            if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
+            if (!_all.Contains(obj)) throw new ArgumentOutOfRangeException(Resources.DependencyGraph_ValueNotInGraph);
 
             return GetAllDependenciesIterator(obj);
         }
@@ -263,12 +262,12 @@ namespace WebApplications.Utilities
             while (queue.Count > 0)
             {
                 T current = queue.Dequeue();
-                Contract.Assert(!ReferenceEquals(current, null));
+                Debug.Assert(!ReferenceEquals(current, null));
 
                 HashSet<T> depends;
                 if (_dependencies.TryGetValue(current, out depends))
                 {
-                    Contract.Assert(depends != null);
+                    Debug.Assert(depends != null);
                     foreach (T val in depends)
                     {
                         if (seen.Add(val))
@@ -287,13 +286,13 @@ namespace WebApplications.Utilities
 
             foreach (T current in objs)
             {
-                Contract.Assert(!ReferenceEquals(current, null));
+                Debug.Assert(!ReferenceEquals(current, null));
                 yield return current;
 
                 HashSet<T> depends;
                 if (dict.TryGetValue(current, out depends))
                 {
-                    Contract.Assert(depends != null);
+                    Debug.Assert(depends != null);
                     foreach (T val in depends)
                         queue.Enqueue(val);
                 }
@@ -302,14 +301,14 @@ namespace WebApplications.Utilities
             while (queue.Count > 0)
             {
                 T current = queue.Dequeue();
-                Contract.Assert(!ReferenceEquals(current, null));
+                Debug.Assert(!ReferenceEquals(current, null));
                 if (seen.Add(current))
                     yield return current;
 
                 HashSet<T> depends;
                 if (dict.TryGetValue(current, out depends))
                 {
-                    Contract.Assert(depends != null);
+                    Debug.Assert(depends != null);
                     foreach (T val in depends)
                         queue.Enqueue(val);
                 }
@@ -326,7 +325,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public IEnumerable<T> TraverseTopDown([NotNull] [InstantHandle] Action<T, IEnumerable<T>> action)
         {
-            Contract.Requires<ArgumentNullException>(action != null);
+            if (action == null) throw new ArgumentNullException("action");
             return TraverseInternal(action, TopLeaves, BottomLeaves, _dependsOn, _dependencies);
         }
 
@@ -339,7 +338,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public IEnumerable<T> TraverseBottomUp([NotNull] [InstantHandle] Action<T, IEnumerable<T>> action)
         {
-            Contract.Requires<ArgumentNullException>(action != null);
+            if (action == null) throw new ArgumentNullException("action");
             return TraverseInternal(action, BottomLeaves, TopLeaves, _dependencies, _dependsOn);
         }
 
@@ -367,7 +366,7 @@ namespace WebApplications.Utilities
             while (queue.Count > 0)
             {
                 T current = queue.Dequeue();
-                Contract.Assert(!ReferenceEquals(current, null));
+                Debug.Assert(!ReferenceEquals(current, null));
 
                 HashSet<T> depends;
                 action(
@@ -380,7 +379,7 @@ namespace WebApplications.Utilities
                     // ReSharper disable once PossibleNullReferenceException
                     depends.Count > 0)
                 {
-                    Contract.Assert(depends != null);
+                    Debug.Assert(depends != null);
                     foreach (T val in depends)
                         if (seen.Add(val))
                             queue.Enqueue(val);

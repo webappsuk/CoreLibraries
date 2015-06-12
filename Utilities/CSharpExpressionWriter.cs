@@ -29,7 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -1403,7 +1402,7 @@ namespace WebApplications.Utilities
                 VisitMethod(GetTypeName(elementType), Array<Type>.Empty, node.Expressions.ToArray(), "[", "]");
             else
             {
-                Contract.Assert(node.NodeType == ExpressionType.NewArrayInit);
+                Debug.Assert(node.NodeType == ExpressionType.NewArrayInit);
                 VisitMethod(GetTypeName(elementType) + "[]", Array<Type>.Empty, node.Expressions.ToArray(), "{ ", " }");
             }
 
@@ -2087,7 +2086,7 @@ namespace WebApplications.Utilities
                     case ExpressionType.ExclusiveOr:
                         // Since these ops are the only ones on their precedence,
                         // the child op must be the same.
-                        Contract.Assert(child.NodeType == parent.NodeType);
+                        Debug.Assert(child.NodeType == parent.NodeType);
                         // We remove the parenthesis, e.g. x && y && z
                         return false;
                     case ExpressionType.Add:
@@ -2100,7 +2099,7 @@ namespace WebApplications.Utilities
                     case ExpressionType.Divide:
                     case ExpressionType.Modulo:
                         BinaryExpression binary = parent as BinaryExpression;
-                        Contract.Assert(binary != null);
+                        Debug.Assert(binary != null);
                         // Need to have parenthesis for the right operand.
                         return child == binary.Right;
                 }

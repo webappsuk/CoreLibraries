@@ -38,7 +38,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -171,7 +170,7 @@ namespace WebApplications.Utilities
         public void Get(int index, <#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = this[index];
-            Contract.Assert(tuple != null);<#= assignments + afterAssignments #>
+            if (tuple == null) throw new NullReferenceException(Resources.List_Get_TupleNull);<#= assignments + afterAssignments #>
         }
 
         /// <summary>

@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -99,7 +99,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatTextWriter([NotNull] TextWriter writer)
             : base(new UnderlyingFormatTextWriter(writer, new FormatBuilder(), 0))
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
             _writer = (UnderlyingFormatTextWriter)Writer;
         }
 
@@ -115,7 +115,7 @@ namespace WebApplications.Utilities.Formatting
             int startPosition = 0)
             : base(new UnderlyingFormatTextWriter(writer, new FormatBuilder(defaultLayout), startPosition))
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
             _writer = (UnderlyingFormatTextWriter)Writer;
         }
 
@@ -171,7 +171,7 @@ namespace WebApplications.Utilities.Formatting
                            wrapMode),
                        startPosition))
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
             _writer = (UnderlyingFormatTextWriter)Writer;
         }
         #endregion
@@ -343,8 +343,8 @@ namespace WebApplications.Utilities.Formatting
                 [NotNull] FormatBuilder builder,
                 int startPosition)
             {
-                Contract.Requires(writer != null);
-                Contract.Requires(builder != null);
+                if (writer == null) throw new ArgumentNullException("writer");
+                if (builder == null) throw new ArgumentNullException("builder");
                 if (writer is ILayoutTextWriter)
                     throw new InvalidOperationException(
                         "Cannot wrap an ILayoutTextWriter in a FormatTextWriter as this can cause issues with position tracking.");
@@ -380,7 +380,7 @@ namespace WebApplications.Utilities.Formatting
                 get { return _writer.NewLine; }
                 set
                 {
-                    Contract.Requires(value != null);
+                    if (value == null) throw new ArgumentNullException("value");
                     _writer.NewLine = value;
                 }
             }
@@ -412,7 +412,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(bool value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -424,7 +424,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(char value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -436,7 +436,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="buffer">The buffer.</param>
             public override void Write([CanBeNull] char[] buffer)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(buffer);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -448,7 +448,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(decimal value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -460,7 +460,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(double value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -472,7 +472,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(float value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -484,7 +484,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(int value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -496,7 +496,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(long value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -508,7 +508,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write([CanBeNull] object value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -520,7 +520,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write([CanBeNull] string value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -532,7 +532,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(uint value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -544,7 +544,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void Write(ulong value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -557,8 +557,8 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="arg0">The arg0.</param>
             public override void Write(string format, [CanBeNull] object arg0)
             {
-                Contract.Requires(format != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg0);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -571,9 +571,9 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="arg">The argument.</param>
             public override void Write(string format, params object[] arg)
             {
-                Contract.Requires(format != null);
-                Contract.Requires(arg != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                if (arg == null) throw new ArgumentNullException("arg");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -587,8 +587,8 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="count">The count.</param>
             public override void Write(char[] buffer, int index, int count)
             {
-                Contract.Requires(buffer != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (buffer == null) throw new ArgumentNullException("buffer");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(buffer, index, count);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -602,8 +602,8 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="arg1">The arg1.</param>
             public override void Write(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
             {
-                Contract.Requires(format != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg0, arg1);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -622,8 +622,8 @@ namespace WebApplications.Utilities.Formatting
                 [CanBeNull] object arg1,
                 [CanBeNull] object arg2)
             {
-                Contract.Requires(format != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg0, arg1, arg2);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -634,7 +634,7 @@ namespace WebApplications.Utilities.Formatting
             /// </summary>
             public override void WriteLine()
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine();
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -646,7 +646,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(bool value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -658,7 +658,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(char value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -670,7 +670,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="buffer">The buffer.</param>
             public override void WriteLine([CanBeNull] char[] buffer)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(buffer);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -682,7 +682,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(decimal value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -694,7 +694,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(double value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -706,7 +706,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(float value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -718,7 +718,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(int value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -730,7 +730,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(long value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -742,7 +742,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine([CanBeNull] object value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -754,7 +754,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine([CanBeNull] string value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -766,7 +766,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(uint value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -778,7 +778,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="value">The value.</param>
             public override void WriteLine(ulong value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -791,8 +791,8 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="arg0">The arg0.</param>
             public override void WriteLine(string format, [CanBeNull] object arg0)
             {
-                Contract.Requires(format != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg0);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -805,9 +805,9 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="arg">The argument.</param>
             public override void WriteLine(string format, params object[] arg)
             {
-                Contract.Requires(format != null);
-                Contract.Requires(arg != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                if (arg == null) throw new ArgumentNullException("arg");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -821,8 +821,8 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="count">The count.</param>
             public override void WriteLine(char[] buffer, int index, int count)
             {
-                Contract.Requires(buffer != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (buffer == null) throw new ArgumentNullException("buffer");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(buffer, index, count);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -836,8 +836,8 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="arg1">The arg1.</param>
             public override void WriteLine(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
             {
-                Contract.Requires(format != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg0, arg1);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -856,8 +856,8 @@ namespace WebApplications.Utilities.Formatting
                 [CanBeNull] object arg1,
                 [CanBeNull] object arg2)
             {
-                Contract.Requires(format != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (format == null) throw new ArgumentNullException("format");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg0, arg1, arg2);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -872,7 +872,7 @@ namespace WebApplications.Utilities.Formatting
             /// </returns>
             public override Task WriteAsync(char value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -890,8 +890,8 @@ namespace WebApplications.Utilities.Formatting
             /// </returns>
             public override Task WriteAsync(char[] buffer, int index, int count)
             {
-                Contract.Requires(buffer != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (buffer == null) throw new ArgumentNullException("buffer");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.Append(buffer, index, count);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -907,7 +907,7 @@ namespace WebApplications.Utilities.Formatting
             /// </returns>
             public override Task WriteAsync([CanBeNull] string value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -922,7 +922,7 @@ namespace WebApplications.Utilities.Formatting
             /// </returns>
             public override Task WriteLineAsync()
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine();
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -938,7 +938,7 @@ namespace WebApplications.Utilities.Formatting
             /// </returns>
             public override Task WriteLineAsync(char value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -956,8 +956,8 @@ namespace WebApplications.Utilities.Formatting
             /// </returns>
             public override Task WriteLineAsync(char[] buffer, int index, int count)
             {
-                Contract.Requires(buffer != null);
-                Contract.Assert(Builder.IsEmpty);
+                if (buffer == null) throw new ArgumentNullException("buffer");
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendLine(buffer, index, count);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
@@ -973,7 +973,7 @@ namespace WebApplications.Utilities.Formatting
             /// </returns>
             public override Task WriteLineAsync([CanBeNull] string value)
             {
-                Contract.Assert(Builder.IsEmpty);
+                Debug.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(value);
                 Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();

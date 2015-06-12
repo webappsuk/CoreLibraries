@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -120,7 +120,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// </returns>
         public override bool Execute()
         {
-            Contract.Assert(Log != null);
+            Debug.Assert(Log != null);
 
             string path = Path.GetFullPath(string.IsNullOrWhiteSpace(OutputFolderPath) ? "Resources" : OutputFolderPath);
 

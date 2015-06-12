@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -95,8 +94,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static void SetName(this Color color, [NotNull] string name)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(Resources.ColorHelper_SetName_NameNullOrWhitespace, "name");
             lock (_namedColors)
             {
                 _namedColors[name] = color;
@@ -112,8 +111,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static Optional<Color> RemoveName([NotNull] string name)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(Resources.ColorHelper_SetName_NameNullOrWhitespace, "name");
             lock (_namedColors)
             {
                 Color existing;
@@ -138,8 +137,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static Optional<Color> GetColor([NotNull] string name)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException(Resources.ColorHelper_SetName_NameNullOrWhitespace, "name");
             Color color;
             lock (_namedColors)
                 if (_namedColors.TryGetValue(name, out color))

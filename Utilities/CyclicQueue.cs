@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -124,7 +123,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public T Dequeue()
         {
-            Contract.Requires<InvalidOperationException>(Count > 0);
+            if (Count < 1) throw new InvalidOperationException(Resources.CyclicQueue_QueueEmpty);
 
             T removed = _array[_head];
             _array[_head] = default(T);
@@ -143,7 +142,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public T Peek()
         {
-            Contract.Requires<InvalidOperationException>(Count > 0);
+            if (Count < 1) throw new InvalidOperationException(Resources.CyclicQueue_QueueEmpty);
 
             return _array[_head];
         }

@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -58,7 +57,7 @@ namespace WebApplications.Utilities.Reflect
         internal Indexer([NotNull] ExtendedType extendedType, [NotNull] PropertyInfo info)
             : base(extendedType, info)
         {
-            Contract.Assert(extendedType.DefaultMember == info.Name || info.GetIndexParameters().Length > 0);
+            Debug.Assert(extendedType.DefaultMember == info.Name || info.GetIndexParameters().Length > 0);
             _indexParameters = new Lazy<ParameterInfo[]>(info.GetIndexParameters, LazyThreadSafetyMode.PublicationOnly);
         }
 
@@ -101,7 +100,7 @@ namespace WebApplications.Utilities.Reflect
         {
             get
             {
-                Contract.Assert(_indexParameters.Value != null);
+                Debug.Assert(_indexParameters.Value != null);
                 // ReSharper disable once PossibleNullReferenceException
                 return _indexParameters.Value.Select(p => p.ParameterType);
             }
@@ -152,6 +151,8 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public Indexer Close([NotNull] Type[] typeClosures)
         {
+            if (typeClosures == null) throw new ArgumentNullException("typeClosures");
+
             // Check input arrays are valid.
             if (typeClosures.Length != ExtendedType.GenericArguments.Count())
                 return null;
@@ -168,7 +169,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             // Create new search.
-            Contract.Assert(_indexParameters.Value != null);
+            Debug.Assert(_indexParameters.Value != null);
             int pCount = _indexParameters.Value.Length;
             TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
 
@@ -178,7 +179,7 @@ namespace WebApplications.Utilities.Reflect
             Type[] emptyTypes = Array<Type>.Empty;
             for (int i = 0; i < pCount; i++)
             {
-                Contract.Assert(_indexParameters.Value[i] != null);
+                Debug.Assert(_indexParameters.Value[i] != null);
                 Type pType = _indexParameters.Value[i].ParameterType;
                 searchTypes[i] = Reflection.ExpandParameterType(pType, emptyTypes, typeGenericArguments);
             }

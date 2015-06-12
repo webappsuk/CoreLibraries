@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Security;
 using WebApplications.Utilities.Annotations;
 
@@ -235,7 +234,7 @@ namespace WebApplications.Utilities
         {
             foreach (T[] array in _elements)
             {
-                Contract.Assert(array != null);
+                Debug.Assert(array != null);
                 Array.Clear(array, 0, array.Length);
             }
         }
@@ -388,7 +387,7 @@ namespace WebApplications.Utilities
             ulong offset = 0UL;
             foreach (T[] array in _elements)
             {
-                Contract.Assert(array != null);
+                Debug.Assert(array != null);
                 int index = Array.IndexOf(array, value);
                 if (index >= 0)
                     return (ulong)index + offset;

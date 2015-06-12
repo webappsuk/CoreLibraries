@@ -210,6 +210,8 @@ namespace WebApplications.Utilities.Reflect
         public TypeSearch([NotNull] Type type)
             : this(type, isByReference: type.IsByRef, isPointer: type.IsPointer)
         {
+            if (type == null) throw new ArgumentNullException("type");
+
             if (type.IsGenericParameter)
             {
                 GenericArgumentLocation = type.DeclaringMethod != null

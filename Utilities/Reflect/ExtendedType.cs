@@ -30,7 +30,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -767,12 +766,12 @@ namespace WebApplications.Utilities.Reflect
                             CastMethod cm = new CastMethod(this, m, isExplicit);
                             if (cm.FromType == Type)
                             {
-                                Contract.Assert(cm.ToType != Type);
+                                Debug.Assert(cm.ToType != Type);
                                 _castsTo.Add(cm.ToType, cm);
                             }
                             else
                             {
-                                Contract.Assert(cm.ToType == Type);
+                                Debug.Assert(cm.ToType == Type);
                                 _castsFrom.Add(cm.FromType, cm);
                             }
 
@@ -788,7 +787,7 @@ namespace WebApplications.Utilities.Reflect
                             methods = new List<Method>();
                             _methods.Add(m.Name, methods);
                         }
-                        Contract.Assert(methods != null);
+                        Debug.Assert(methods != null);
                         methods.Add(method);
 
                         // If the method name is fully qualified (e.g. explicti interface implementation) then
@@ -802,7 +801,7 @@ namespace WebApplications.Utilities.Reflect
                                 methods = new List<Method>();
                                 _methods.Add(shortName, methods);
                             }
-                            Contract.Assert(methods != null);
+                            Debug.Assert(methods != null);
                             methods.Add(method);
                         }
                         continue;
@@ -816,7 +815,7 @@ namespace WebApplications.Utilities.Reflect
                         // Check if we're the static constructor
                         if (c.IsStatic)
                         {
-                            Contract.Assert(StaticConstructor == null);
+                            Debug.Assert(StaticConstructor == null);
                             StaticConstructor = constructor;
                             continue;
                         }
@@ -913,6 +912,7 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public bool Implements([NotNull] Type interfaceType)
         {
+            if (interfaceType == null) throw new ArgumentNullException("interfaceType");
             Debug.Assert(_interfaces.Value != null);
             return _interfaces.Value.ContainsKey(interfaceType.FullName ?? interfaceType.Name);
         }
@@ -1073,6 +1073,8 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>The indexer.</returns>
         public Indexer GetIndexer([NotNull] PropertyInfo propertyInfo, bool includeBase = true)
         {
+            if (propertyInfo == null) throw new ArgumentNullException("propertyInfo");
+
             ExtendedType type = this;
             while (type != null)
             {
@@ -1119,6 +1121,8 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
         public Method GetMethod([NotNull] MethodInfo methodInfo, bool includeBase = true)
         {
+            if (methodInfo == null) throw new ArgumentNullException("methodInfo");
+
             ExtendedType type = this;
             while (type != null)
             {
@@ -1289,7 +1293,7 @@ namespace WebApplications.Utilities.Reflect
                 List<Method> methods;
                 if (type._methods.TryGetValue(name, out methods))
                 {
-                    Contract.Assert(methods != null);
+                    Debug.Assert(methods != null);
                     Method method =
                         methods.BestMatch(genericArguments, allowClosure, allowCasts, out castsRequired, types) as
                             Method;
@@ -1441,6 +1445,8 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>The <see cref="ExtendedType"/> without open generic parameter if the supplied generic types are able to close the type; otherwise <see langword="null"/>.</returns>
         public ExtendedType CloseType([NotNull] params Type[] genericTypes)
         {
+            if (genericTypes == null) throw new ArgumentNullException("genericTypes");
+
             int length = genericTypes.Length;
 
             Debug.Assert(_genericArguments.Value != null);
@@ -1565,6 +1571,8 @@ namespace WebApplications.Utilities.Reflect
         [UsedImplicitly]
         public bool TryConvert([NotNull] Expression expression, [NotNull] out Expression outputExpression)
         {
+            if (expression == null) throw new ArgumentNullException("expression");
+
             Type expressionType = expression.Type;
             // If the types are the same we don't need to convert.
             if (expression.Type == Type)

@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using WebApplications.Utilities.Annotations;
@@ -52,7 +52,7 @@ namespace WebApplications.Utilities.Formatting
         private ConsoleTextWriter([NotNull] TextWriter writer)
             : base(writer)
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace WebApplications.Utilities.Formatting
                     ILayoutTextWriter lw = Writer as ILayoutTextWriter;
                     return lw == null ? int.MaxValue : lw.Width;
                 }
-                Contract.Assert(Console.BufferWidth > 0);
+                Debug.Assert(Console.BufferWidth > 0);
                 return Console.BufferWidth;
             }
         }
@@ -119,7 +119,7 @@ namespace WebApplications.Utilities.Formatting
                     ILayoutTextWriter lw = Writer as ILayoutTextWriter;
                     return lw == null ? 0 : lw.Position;
                 }
-                Contract.Assert(Console.CursorLeft > 0);
+                Debug.Assert(Console.CursorLeft > 0);
                 return Console.CursorLeft;
             }
         }

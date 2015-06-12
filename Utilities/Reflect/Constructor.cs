@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -127,7 +126,7 @@ namespace WebApplications.Utilities.Reflect
         {
             get
             {
-                Contract.Assert(_parameters.Value != null);
+                Debug.Assert(_parameters.Value != null);
                 // ReSharper disable once PossibleNullReferenceException
                 return _parameters.Value.Select(p => p.ParameterType);
             }
@@ -185,6 +184,8 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public Constructor Close([NotNull] Type[] typeClosures)
         {
+            if (typeClosures == null) throw new ArgumentNullException("typeClosures");
+
             // Check input arrays are valid.
             if (typeClosures.Length != ExtendedType.GenericArguments.Count())
                 return null;
@@ -201,16 +202,16 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             // Create new search.
-            Contract.Assert(_parameters.Value != null);
+            Debug.Assert(_parameters.Value != null);
             int pCount = _parameters.Value.Length;
             TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
             Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
             // Search for closed 
             for (int i = 0; i < pCount; i++)
             {
-                Contract.Assert(_parameters.Value[i] != null);
+                Debug.Assert(_parameters.Value[i] != null);
                 Type pType = _parameters.Value[i].ParameterType;
-                Contract.Assert(pType != null);
+                Debug.Assert(pType != null);
                 searchTypes[i] = Reflection.ExpandParameterType(pType, Array<Type>.Empty, typeGenericArguments);
             }
 

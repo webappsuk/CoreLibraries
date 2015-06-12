@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -131,7 +130,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string alignment,
             [CanBeNull] string format)
         {
-            Contract.Requires(tag != null);
+            if (tag == null) throw new ArgumentNullException("tag");
+
             Resolver = resolver;
             Tag = tag;
             IsControl = tag.Length > 0 && tag[0] == FormatBuilder.ControlChar;
@@ -186,7 +186,8 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public FormatChunk([NotNull] FormatChunk chunk, Optional<object> value)
         {
-            Contract.Requires(chunk != null);
+            if (chunk == null) throw new ArgumentNullException("chunk");
+
             Resolver = chunk.Resolver;
             Tag = chunk.Tag;
             IsControl = chunk.IsControl;
@@ -236,8 +237,9 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="destination">The destination.</param>
         internal static void DeepCopyChunks([NotNull] FormatChunk source, [NotNull] FormatChunk destination)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(destination != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (destination == null) throw new ArgumentNullException("destination");
+
             if (source.ChildrenInternal != null &&
                 source.ChildrenInternal.Count > 0)
             {
@@ -250,8 +252,8 @@ namespace WebApplications.Utilities.Formatting
                     IEnumerable<FormatChunk> chunks;
                     stack.Pop(out currParent, out chunks);
 
-                    Contract.Assert(currParent != null);
-                    Contract.Assert(chunks != null);
+                    Debug.Assert(currParent != null);
+                    Debug.Assert(chunks != null);
 
                     // ReSharper disable once PossibleNullReferenceException
                     currParent.ChildrenInternal = new List<FormatChunk>();
@@ -260,7 +262,7 @@ namespace WebApplications.Utilities.Formatting
                     // ReSharper disable once PossibleNullReferenceException
                     foreach (FormatChunk child in chunks)
                     {
-                        Contract.Assert(child != null);
+                        Debug.Assert(child != null);
                         FormatChunk newChunk = new FormatChunk(
                             child.Resolver,
                             child.Tag,
@@ -291,6 +293,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static IEnumerable<FormatChunk> Parse([NotNull] string value, [CanBeNull] IResolvable resolver = null)
         {
+            if (value == null) throw new ArgumentNullException("value");
+
             FormatChunk fc = new FormatChunk();
             fc.Append(
                 value,
@@ -308,7 +312,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         internal FormatChunk Append([NotNull] string value, [CanBeNull] IResolvable resolver = null)
         {
-            Contract.Requires(value != null);
+            if (value == null) throw new ArgumentNullException("value");
+            
             string tag = null;
             string alignment = null;
             string format = null;
@@ -387,7 +392,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             case FormatBuilder.OpenChar:
                                 // We have a nested format!
-                                Contract.Assert(tag != null);
+                                Debug.Assert(tag != null);
                                 FormatChunk newChunk = new FormatChunk(
                                     chunks.Count < 1 ? resolver : null,
                                     tag,
@@ -397,7 +402,7 @@ namespace WebApplications.Utilities.Formatting
                                 alignment = null;
                                 if (builder.Length > 0)
                                 {
-                                    Contract.Assert(newChunk.ChildrenInternal == null);
+                                    Debug.Assert(newChunk.ChildrenInternal == null);
                                     newChunk.AppendChunk(new FormatChunk(builder.ToString()));
                                     builder.Clear();
                                 }
@@ -441,7 +446,7 @@ namespace WebApplications.Utilities.Formatting
                                         builder.Clear();
                                     }
                                     chunk = chunks.Pop();
-                                    Contract.Assert(chunk != null);
+                                    Debug.Assert(chunk != null);
                                 }
                                 else
                                     builder.Append(c);
@@ -455,7 +460,7 @@ namespace WebApplications.Utilities.Formatting
 
                 if (gotFillPoint)
                 {
-                    Contract.Assert(tag != null);
+                    Debug.Assert(tag != null);
                     FormatChunk newChunk = new FormatChunk(
                         chunks.Count < 1 ? resolver : null,
                         tag,
@@ -586,7 +591,7 @@ namespace WebApplications.Utilities.Formatting
                 if (ChildrenInternal != null &&
                     ChildrenInternal.Count > 0)
                 {
-                    Contract.Assert(Format == null);
+                    Debug.Assert(Format == null);
 
                     writer.Write(FormatBuilder.FormatChar);
                     foreach (FormatChunk chunk in ChildrenInternal)

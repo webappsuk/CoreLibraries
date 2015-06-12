@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -107,7 +106,7 @@ namespace WebApplications.Utilities.Globalization
                     cdict = new Dictionary<CultureInfo, RegionInfo>();
                     _currencyCultureInfo.Add(ri.ISOCurrencySymbol, cdict);
                 }
-                Contract.Assert(cdict != null);
+                Debug.Assert(cdict != null);
                 cdict.Add(ci, ri);
                 if (!_regionNames.ContainsKey(ri.EnglishName))
                     _regionNames.Add(ri.EnglishName, ri);
@@ -207,7 +206,7 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static RegionInfo RegionInfo([NotNull] this CultureInfo cultureInfo)
         {
-            Contract.Requires(cultureInfo != null, Resources.CultureHelper_CultureInfoCannotBeNull);
+            if (cultureInfo == null) throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
 
             return new RegionInfo(cultureInfo.LCID);
         }
@@ -231,7 +230,7 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static CurrencyInfo CurrencyInfo([NotNull] this RegionInfo regionInfo)
         {
-            Contract.Requires(regionInfo != null, Resources.CultureHelper_RegionInfoCannotBeNull);
+            if (regionInfo == null) throw new ArgumentNullException("regionInfo", Resources.CultureHelper_RegionInfoCannotBeNull);
 
             return CurrencyInfoProvider.Current.Get(regionInfo.ISOCurrencySymbol);
         }
@@ -252,7 +251,7 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static CurrencyInfo CurrencyInfo([NotNull] this CultureInfo cultureInfo)
         {
-            Contract.Requires(cultureInfo != null, Resources.CultureHelper_CultureInfoCannotBeNull);
+            if (cultureInfo == null) throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
 
             return CurrencyInfoProvider.Current.Get(cultureInfo);
         }
@@ -272,7 +271,7 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static IEnumerable<CultureInfo> CultureInfoFromCurrencyISO([NotNull] string isoCode)
         {
-            Contract.Requires(isoCode != null, Resources.CultureHelper_RegionInfoCannotBeNull);
+            if (isoCode == null) throw new ArgumentNullException("isoCode", Resources.CultureHelper_RegionInfoCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<CultureInfo>(0);
@@ -298,7 +297,7 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static IEnumerable<RegionInfo> RegionInfoFromCurrencyISO([NotNull] string isoCode)
         {
-            Contract.Requires(isoCode != null, Resources.CultureHelper_IsoCodeCannotBeNull);
+            if (isoCode == null) throw new ArgumentNullException("isoCode", Resources.CultureHelper_IsoCodeCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<RegionInfo>(0);
@@ -333,7 +332,7 @@ namespace WebApplications.Utilities.Globalization
             [NotNull] string currencyISO,
             [CanBeNull] string countryISO = null)
         {
-            Contract.Requires(currencyISO != null, Resources.CultureHelper_CurrencyIsoCannotBeNull);
+            if (currencyISO == null) throw new ArgumentNullException("currencyISO", Resources.CultureHelper_CurrencyIsoCannotBeNull);
 
             CultureInfo[] c = null;
 
@@ -408,9 +407,9 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static RegionInfo FindRegionFromName([NotNull] string name)
         {
-            Contract.Requires(name != null, Resources.CultureHelper_NameCannotBeNull);
+            if (name == null) throw new ArgumentNullException("name", Resources.CultureHelper_NameCannotBeNull);
 
-            if (string.IsNullOrEmpty(name))
+            if (name.Length < 1)
                 return null;
 
             RegionInfo r;
@@ -443,9 +442,9 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static RegionInfo FindRegion([NotNull] string name)
         {
-            Contract.Requires(name != null, Resources.CultureHelper_NameCannotBeNull);
+            if (name == null) throw new ArgumentNullException("name", Resources.CultureHelper_NameCannotBeNull);
 
-            if (string.IsNullOrEmpty(name))
+            if (name.Length < 1)
                 return null;
 
             RegionInfo r;

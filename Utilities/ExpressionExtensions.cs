@@ -29,7 +29,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -92,8 +91,8 @@ namespace WebApplications.Utilities
             [CanBeNull] LabelTarget @break = null,
             [CanBeNull] LabelTarget @continue = null)
         {
-            Contract.Requires(sourceEnumerable != null);
-            Contract.Requires(getBody != null);
+            if (sourceEnumerable == null) throw new ArgumentNullException("sourceEnumerable");
+            if (getBody == null) throw new ArgumentNullException("getBody");
             return ForEach(sourceEnumerable, item => new[] { getBody(item) }, @break, @continue);
         }
 
@@ -119,8 +118,8 @@ namespace WebApplications.Utilities
             [CanBeNull] LabelTarget @break = null,
             [CanBeNull] LabelTarget @continue = null)
         {
-            Contract.Requires(sourceEnumerable != null);
-            Contract.Requires(getBody != null);
+            if (sourceEnumerable == null) throw new ArgumentNullException("sourceEnumerable");
+            if (getBody == null) throw new ArgumentNullException("getBody");
 
             Type enumerableType = sourceEnumerable.Type;
             Type elementType;
@@ -195,7 +194,7 @@ namespace WebApplications.Utilities
             [CanBeNull] this IEnumerable<Expression> expressions,
             [NotNull] IEnumerable<ParameterExpression> locals)
         {
-            Contract.Requires(locals != null);
+            if (locals == null) throw new ArgumentNullException("locals");
             return expressions.Blockify(locals.ToArray());
         }
 
@@ -211,8 +210,6 @@ namespace WebApplications.Utilities
             [CanBeNull] this IEnumerable<Expression> expressions,
             [CanBeNull] params ParameterExpression[] locals)
         {
-            Contract.Ensures(Contract.Result<Expression>() != null);
-
             Expression[] e = (expressions ?? Enumerable.Empty<Expression>()).ToArray();
             if ((locals != null) &&
                 (locals.Length > 0))
@@ -238,8 +235,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Expression> UnBlockify([NotNull] this Expression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Ensures(Contract.Result<IEnumerable<Expression>>() != null);
+            if (expression == null) throw new ArgumentNullException("expression");
 
             return UnBlockifyIterator(expression);
         }
@@ -255,8 +251,8 @@ namespace WebApplications.Utilities
                 yield break;
             }
 
-            Contract.Assert(block.Variables != null);
-            Contract.Assert(block.Expressions != null);
+            Debug.Assert(block.Variables != null);
+            Debug.Assert(block.Expressions != null);
             if (block.Variables.Count > 0)
             {
                 // The block has local variables so we can't un-block it.
@@ -282,9 +278,7 @@ namespace WebApplications.Utilities
             [NotNull] this Expression expression,
             [NotNull] out IEnumerable<ParameterExpression> variables)
         {
-            Contract.Requires(expression != null);
-            Contract.Ensures(Contract.ValueAtReturn(out variables) != null);
-            Contract.Ensures(Contract.Result<IEnumerable<Expression>>() != null);
+            if (expression == null) throw new ArgumentNullException("expression");
 
             BlockExpression block = expression as BlockExpression;
             if (block == null)
@@ -293,8 +287,8 @@ namespace WebApplications.Utilities
                 variables = Enumerable.Empty<ParameterExpression>();
                 return new[] { expression };
             }
-            Contract.Assert(block.Variables != null);
-            Contract.Assert(block.Expressions != null);
+            Debug.Assert(block.Variables != null);
+            Debug.Assert(block.Expressions != null);
             variables = block.Variables;
             return block.Expressions;
         }
@@ -311,9 +305,9 @@ namespace WebApplications.Utilities
             [NotNull] this Expression block,
             [NotNull] IEnumerable<ParameterExpression> variables)
         {
-            Contract.Requires(block != null);
-            Contract.Requires(variables != null);
-            Contract.Ensures(Contract.Result<Expression>() != null);
+            if (block == null) throw new ArgumentNullException("block");
+            if (variables == null) throw new ArgumentNullException("variables");
+
             return AddVariables(block, variables.ToArray());
         }
 
@@ -329,9 +323,8 @@ namespace WebApplications.Utilities
             [NotNull] this Expression block,
             [NotNull] params ParameterExpression[] variables)
         {
-            Contract.Requires(block != null);
-            Contract.Requires(variables != null);
-            Contract.Ensures(Contract.Result<Expression>() != null);
+            if (block == null) throw new ArgumentNullException("block");
+            if (variables == null) throw new ArgumentNullException("variables");
 
             ParameterExpression[] v = variables.ToArray();
             if (v.Length < 1)
@@ -357,9 +350,9 @@ namespace WebApplications.Utilities
             [NotNull] this Expression block,
             [NotNull] IEnumerable<Expression> expressions)
         {
-            Contract.Requires(block != null);
-            Contract.Requires(expressions != null);
-            Contract.Ensures(Contract.Result<Expression>() != null);
+            if (block == null) throw new ArgumentNullException("block");
+            if (expressions == null) throw new ArgumentNullException("expressions");
+
             return block.AddExpressions(expressions.ToArray());
         }
 
@@ -375,9 +368,8 @@ namespace WebApplications.Utilities
             [NotNull] this Expression block,
             [NotNull] params Expression[] expressions)
         {
-            Contract.Requires(block != null);
-            Contract.Requires(expressions != null);
-            Contract.Ensures(Contract.Result<Expression>() != null);
+            if (block == null) throw new ArgumentNullException("block");
+            if (expressions == null) throw new ArgumentNullException("expressions");
 
             if (expressions.Length < 1)
                 return block;
@@ -400,12 +392,12 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Expression<TDelegate> GetDelegateExpression<TDelegate>([NotNull] this LambdaExpression expression)
         {
-            Contract.Requires(typeof(TDelegate).DescendsFrom(typeof(Delegate)));
-            Contract.Requires(expression != null);
+            if (!typeof(TDelegate).DescendsFrom(typeof(Delegate))) throw new ArgumentException(Resources.ExpressionExtensions_GetDelegateExpression_TypeMustBeDelegate);
+            if (expression == null) throw new ArgumentNullException("expression");
 
             Type delegateType = typeof(TDelegate);
             MethodInfo delegateMethod = delegateType.GetMethod("Invoke");
-            Contract.Assert(delegateMethod != null);
+            Debug.Assert(delegateMethod != null);
 
             ParameterInfo[] delegateParameters = delegateMethod.GetParameters();
 
@@ -447,8 +439,8 @@ namespace WebApplications.Utilities
             [NotNull] this LambdaExpression expression,
             [NotNull] params Expression[] parameters)
         {
-            Contract.Requires(expression != null);
-            Contract.Requires(parameters != null);
+            if (expression == null) throw new ArgumentNullException("expression");
+            if (parameters == null) throw new ArgumentNullException("parameters");
             return new ParameterReplacerVisitor(expression, parameters).Visit();
         }
 
@@ -478,8 +470,9 @@ namespace WebApplications.Utilities
                 [NotNull] LambdaExpression expression,
                 [NotNull] params Expression[] parameters)
             {
-                Contract.Requires(expression != null, "Parameter_Null");
-                Contract.Requires(parameters != null, "Parameter_Null");
+                if (expression == null) throw new ArgumentNullException("expression");
+                if (parameters == null) throw new ArgumentNullException("parameters");
+
                 _lambda = expression;
                 int pcount = _lambda.Parameters.Count;
 
@@ -541,8 +534,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string GetDebugView([NotNull] this Expression expression)
         {
-            Contract.Requires(expression != null);
-            Contract.Ensures(Contract.Result<string>() != null);
+            if (expression == null) throw new ArgumentNullException("expression");
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return _expressionDebugView(expression);
@@ -569,7 +561,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static ParameterUsageVisitor GetParameterUsage([NotNull] this Expression expression)
         {
-            Contract.Requires(expression != null);
+            if (expression == null) throw new ArgumentNullException("expression");
             return ParameterUsageVisitor.Create(expression);
         }
 

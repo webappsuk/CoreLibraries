@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
@@ -84,7 +84,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="token">The token.</param>
         public TimedTokenSource(int milliseconds, CancellationToken token)
         {
-            Contract.Requires(token.CanBeCanceled);
+            Debug.Assert(token.CanBeCanceled);
 
             _timeoutSource = new CancellationTokenSource(milliseconds);
             _source = CancellationTokenSource.CreateLinkedTokenSource(
@@ -99,7 +99,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="token">The token.</param>
         public TimedTokenSource(TimeSpan timeout, CancellationToken token)
         {
-            Contract.Requires(token.CanBeCanceled);
+            Debug.Assert(token.CanBeCanceled);
 
             _timeoutSource = new CancellationTokenSource(timeout);
             _source = CancellationTokenSource.CreateLinkedTokenSource(
@@ -114,9 +114,9 @@ namespace WebApplications.Utilities.Threading
         /// <param name="tokens">The tokens.</param>
         public TimedTokenSource(int milliseconds, [NotNull] params CancellationToken[] tokens)
         {
-            Contract.Requires(tokens != null);
-            Contract.Requires(tokens.Length > 0);
-            Contract.Requires(tokens.Any(t => t.CanBeCanceled));
+            Debug.Assert(tokens != null);
+            Debug.Assert(tokens.Length > 0);
+            Debug.Assert(tokens.Any(t => t.CanBeCanceled));
 
             _timeoutSource = new CancellationTokenSource(milliseconds);
             _source = CancellationTokenSource.CreateLinkedTokenSource(
@@ -130,9 +130,9 @@ namespace WebApplications.Utilities.Threading
         /// <param name="tokens">The tokens.</param>
         public TimedTokenSource(TimeSpan timeout, [NotNull] params CancellationToken[] tokens)
         {
-            Contract.Requires(tokens != null);
-            Contract.Requires(tokens.Length > 0);
-            Contract.Requires(tokens.Any(t => t.CanBeCanceled));
+            Debug.Assert(tokens != null);
+            Debug.Assert(tokens.Length > 0);
+            Debug.Assert(tokens.Any(t => t.CanBeCanceled));
 
             _timeoutSource = new CancellationTokenSource(timeout);
             _source = CancellationTokenSource.CreateLinkedTokenSource(

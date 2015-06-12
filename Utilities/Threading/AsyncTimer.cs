@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
@@ -320,7 +319,8 @@ namespace WebApplications.Utilities.Threading
             PauseToken pauseToken = default(PauseToken),
             Action<Exception> errorHandler = null)
         {
-            Contract.Requires<ArgumentNullException>(callback != null);
+            if (callback == null) throw new ArgumentNullException("callback");
+
             long timeStamp = HighPrecisionClock.Instance.NowTicks;
             _callback = callback;
             _pauseToken = pauseToken;

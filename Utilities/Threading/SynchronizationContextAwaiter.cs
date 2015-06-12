@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
@@ -51,7 +50,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="context">The context.</param>
         public SynchronizationContextAwaiter([NotNull] SynchronizationContext context)
         {
-            Contract.Requires(context != null);
+            if (context == null) throw new ArgumentNullException("context");
             _context = context;
             // ReSharper disable once PossibleNullReferenceException
             _executor = a => ((Action)a)();

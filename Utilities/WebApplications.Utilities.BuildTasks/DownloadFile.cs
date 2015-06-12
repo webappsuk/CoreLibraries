@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Microsoft.Build.Framework;
@@ -113,7 +113,7 @@ namespace WebApplications.Utilities.BuildTasks
         /// </returns>
         public override bool Execute()
         {
-            Contract.Assert(Log != null);
+            Debug.Assert(Log != null);
             string path = Path.GetFullPath(OutputFilePath);
 
             // Validate uri.

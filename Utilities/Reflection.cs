@@ -31,7 +31,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -567,6 +566,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<TIn, TOut> GetConversion<TIn, TOut>([NotNull] this Type inputType, Type outputType = null)
         {
+            if (inputType == null) throw new ArgumentNullException("inputType");
+
             if (outputType == null)
                 outputType = typeof(TOut);
 
@@ -766,6 +767,9 @@ namespace WebApplications.Utilities
         [NotNull]
         public static MethodInfo GetEquivalent([NotNull] this MethodInfo methodInfo, [NotNull] Type declaringType)
         {
+            if (methodInfo == null) throw new ArgumentNullException("methodInfo");
+            if (declaringType == null) throw new ArgumentNullException("declaringType");
+
             // ReSharper disable once AssignNullToNotNullAttribute
             return methodInfo.DeclaringType == declaringType
                 ? methodInfo
@@ -788,6 +792,7 @@ namespace WebApplications.Utilities
         [CanBeNull]
         public static object RawDefaultValueSafe([NotNull] this ParameterInfo parameter)
         {
+            if (parameter == null) throw new ArgumentNullException("parameter");
             object value;
             try
             {
@@ -813,6 +818,7 @@ namespace WebApplications.Utilities
         [CanBeNull]
         public static object Default([NotNull] this Type type)
         {
+            if (type == null) throw new ArgumentNullException("type");
             return !type.IsValueType ? null : Activator.CreateInstance(type, true);
         }
 
@@ -827,7 +833,7 @@ namespace WebApplications.Utilities
             [NotNull] this Type type,
             [CanBeNull] params string[] excludedAssemblies)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
             // ReSharper disable once AssignNullToNotNullAttribute
             return SimplifiedTypeFullName(type.AssemblyQualifiedName, excludedAssemblies);
         }
@@ -844,7 +850,8 @@ namespace WebApplications.Utilities
             [NotNull] string typeAssemblyQualifiedName,
             [CanBeNull] params string[] excludedAssemblies)
         {
-            Contract.Requires(typeAssemblyQualifiedName != null);
+            if (typeAssemblyQualifiedName == null) throw new ArgumentNullException("typeAssemblyQualifiedName");
+
             HashSet<string> exclude = (excludedAssemblies == null) ||
                                       (excludedAssemblies.Length < 1)
                 ? new HashSet<string> { "mscorlib" }
@@ -1249,7 +1256,7 @@ namespace WebApplications.Utilities
             // Check return type
             Type returnType = signature.ReturnType;
             TypeSearch returnTypeSearch = types.Last();
-            Contract.Assert(returnTypeSearch != null);
+            Debug.Assert(returnTypeSearch != null);
             bool requiresCast;
             GenericArgumentLocation closureLocation;
             int closurePosition;
@@ -1283,8 +1290,8 @@ namespace WebApplications.Utilities
                 while (pe.MoveNext())
                 {
                     te.MoveNext();
-                    Contract.Assert(pe.Current != null);
-                    Contract.Assert(te.Current != null);
+                    Debug.Assert(pe.Current != null);
+                    Debug.Assert(te.Current != null);
                     Type t = (Type)pe.Current;
                     TypeSearch s = ((TypeSearch)te.Current);
                     if (!t.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
@@ -1324,12 +1331,12 @@ namespace WebApplications.Utilities
             int closurePosition,
             Type closureType)
         {
-            Contract.Assert(closureLocation != GenericArgumentLocation.Any);
+            Debug.Assert(closureLocation != GenericArgumentLocation.Any);
 
             if (requiresCast)
             {
-                Contract.Assert(closureLocation == GenericArgumentLocation.None);
-                Contract.Assert(closurePosition < 0);
+                Debug.Assert(closureLocation == GenericArgumentLocation.None);
+                Debug.Assert(closurePosition < 0);
                 castRequired = true;
                 return true;
             }
@@ -1337,15 +1344,15 @@ namespace WebApplications.Utilities
             // Check if we have a closure location
             if (closureLocation == GenericArgumentLocation.None)
             {
-                Contract.Assert(closurePosition < 0);
+                Debug.Assert(closurePosition < 0);
                 return true;
             }
 
-            Contract.Assert(closureType != null);
+            Debug.Assert(closureType != null);
             if (closureLocation == GenericArgumentLocation.Signature)
             {
                 // Requires method closure
-                Contract.Assert(closurePosition < methodClosures.Length);
+                Debug.Assert(closurePosition < methodClosures.Length);
 
                 // If we already have a closure, ensure it matches!
                 Type t = methodClosures[closurePosition];
@@ -1369,9 +1376,9 @@ namespace WebApplications.Utilities
             }
             else
             {
-                Contract.Assert(closureLocation == GenericArgumentLocation.Type);
+                Debug.Assert(closureLocation == GenericArgumentLocation.Type);
                 // Requires type closure
-                Contract.Assert(closurePosition < typeClosures.Length);
+                Debug.Assert(closurePosition < typeClosures.Length);
 
                 // If we already have a closure, ensure it matches!
                 Type t = typeClosures[closurePosition];
@@ -1590,7 +1597,7 @@ namespace WebApplications.Utilities
                 Type nt = t.DeclaringMethod != null
                     ? signatureArguments[position]
                     : typeArguments[position];
-                Contract.Assert(nt != null);
+                Debug.Assert(nt != null);
                 if (parameterType.IsByRef)
                     parameterType = nt.MakeByRefType();
                 else if (parameterType.IsPointer)
@@ -1612,6 +1619,9 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         public static bool DescendsFrom([NotNull] this Type sourceType, [NotNull] Type baseType)
         {
+            if (sourceType == null) throw new ArgumentNullException("sourceType");
+            if (baseType == null) throw new ArgumentNullException("baseType");
+
             bool isGenericDef = baseType.IsGenericTypeDefinition;
             do
             {
@@ -1661,9 +1671,10 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool ImplementsInterface([NotNull] this Type type, [NotNull] Type interfaceType)
         {
-            Contract.Requires(type != null);
-            Contract.Requires(interfaceType != null);
-            Contract.Requires(interfaceType.IsInterface);
+            if (type == null) throw new ArgumentNullException("type");
+            if (interfaceType == null) throw new ArgumentNullException("interfaceType");
+            if (!interfaceType.IsInterface)
+                throw new ArgumentException(Resources.Reflection_ImplementsInterface_MustBeInterface, "interfaceType");
 
             if (type == interfaceType ||
                 ExtendedType.Get(type).Implements(interfaceType))
@@ -1678,7 +1689,7 @@ namespace WebApplications.Utilities
 
             foreach (Type @interface in ExtendedType.Get(type).Interfaces)
             {
-                Contract.Assert(@interface != null);
+                Debug.Assert(@interface != null);
                 if (@interface.IsGenericType &&
                     @interface.GetGenericTypeDefinition() == interfaceType)
                     return true;
@@ -1698,8 +1709,11 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool ImplementsInterface<TInterface>([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
-            Contract.Requires(typeof(TInterface).IsInterface);
+            if (type == null) throw new ArgumentNullException("type");
+            if (!typeof(TInterface).IsInterface)
+                // ReSharper disable once NotResolvedInText
+                throw new ArgumentException(Resources.Reflection_ImplementsInterface_MustBeInterface, "TInterface");
+
             // ReSharper disable once PossibleNullReferenceException
             return type == typeof(TInterface) || ((ExtendedType)type).Implements(typeof(TInterface));
         }
@@ -2134,7 +2148,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool IsOptional([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
         }
@@ -2162,7 +2176,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetNonOptionalType([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
@@ -2180,7 +2194,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetOptionalType([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
                 ? type
@@ -2201,7 +2215,7 @@ namespace WebApplications.Utilities
         /// <returns>Type.</returns>
         public static object DefaultAssigned([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             if (!type.IsGenericType ||
                 (type.GetGenericTypeDefinition() != typeof(Optional<>)))
@@ -2270,7 +2284,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullable([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             type = GetNonOptionalType(type);
             return type.IsClass ||
@@ -2288,7 +2302,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullableType([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             type = GetNonOptionalType(type);
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
@@ -2304,7 +2318,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetNullableType([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             type = GetNonOptionalType(type);
             if (!type.IsClass &&
@@ -2324,7 +2338,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetNonNullableType([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             type = GetNonOptionalType(type);
             if (type.IsNullableType())
@@ -2342,7 +2356,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public static bool IsNumeric([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             type = type.GetNonNullableType();
             if (type.IsEnum)
@@ -2390,7 +2404,7 @@ namespace WebApplications.Utilities
         public static bool IsCompilerGenerated(
             [NotNull] this MemberInfo member)
         {
-            Contract.Requires(member != null);
+            if (member == null) throw new ArgumentNullException("member");
             // ReSharper disable once AssignNullToNotNullAttribute
             return member.GetCustomAttributes(typeof(CompilerGeneratedAttribute)).Any();
         }

@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Security.Principal;
@@ -69,7 +69,7 @@ namespace WebApplications.Utilities.IO
                        impersonationLevel,
                        inheritability))
         {
-            Contract.Assert(Stream != null);
+            Debug.Assert(Stream != null);
             ReadMode = transmissionMode;
         }
 

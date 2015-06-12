@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -54,7 +53,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveOuterTags = true)
             : base(false, resolveOuterTags, false)
         {
-            Contract.Requires(values != null);
+            if (values == null) throw new ArgumentNullException("values");
             _values = new List<TValue>(values);
         }
 
@@ -192,7 +191,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveOuterTags = true)
             : base(values.Cast<object>(), resolveOuterTags)
         {
-            Contract.Requires(values != null);
+            if (values == null) throw new ArgumentNullException("values");
         }
 
         /// <summary>

@@ -28,7 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -96,11 +96,11 @@ namespace WebApplications.Utilities
                 _sets.Add(new HashSet<T>(values, _equalityComparer));
             else
             {
-                Contract.Assert(sets[0] != null);
+                Debug.Assert(sets[0] != null);
                 sets[0].UnionWith(values);
                 for (int i = 1; i < sets.Length; i++)
                 {
-                    Contract.Assert(sets[i] != null);
+                    Debug.Assert(sets[i] != null);
                     sets[0].UnionWith(sets[i]);
                     _sets.Remove(sets[i]);
                 }
@@ -116,7 +116,7 @@ namespace WebApplications.Utilities
             return _sets.SelectMany(
                 equalitySet =>
                 {
-                    Contract.Assert(equalitySet != null);
+                    Debug.Assert(equalitySet != null);
                     T target = equalitySet.Min(_comparer);
                     // ReSharper disable once PossibleNullReferenceException
                     return equalitySet.Where(value => !value.Equals(target))
@@ -133,14 +133,14 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public bool TryGetEquivalent([NotNull] T value, out T target)
         {
-            Contract.Requires(!ReferenceEquals(value, null));
+            if (ReferenceEquals(value, null)) throw new ArgumentNullException("value");
 
             // ReSharper disable once PossibleNullReferenceException
             HashSet<T> equalitySet = _sets.FirstOrDefault(es => es.Contains(value));
             if (equalitySet != null)
             {
                 target = equalitySet.Min(_comparer);
-                Contract.Assert(!ReferenceEquals(target, null));
+                Debug.Assert(!ReferenceEquals(target, null));
                 return !target.Equals(value);
             }
             target = default(T);
@@ -157,7 +157,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public T GetEquivalent([NotNull] T value)
         {
-            Contract.Requires(!ReferenceEquals(value, null));
+            if (ReferenceEquals(value, null)) throw new ArgumentNullException("value");
 
             // ReSharper disable once PossibleNullReferenceException
             HashSet<T> equalitySet = _sets.FirstOrDefault(es => es.Contains(value));
@@ -185,12 +185,12 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public bool AreEqual([NotNull] T a, [NotNull] T b)
         {
-            Contract.Requires(!ReferenceEquals(a, null));
-            Contract.Requires(!ReferenceEquals(b, null));
+            if (ReferenceEquals(a, null)) throw new ArgumentNullException("a");
+            if (ReferenceEquals(b, null)) throw new ArgumentNullException("b");
 
             foreach (HashSet<T> hashSet in _sets)
             {
-                Contract.Assert(hashSet != null);
+                Debug.Assert(hashSet != null);
                 if (hashSet.Contains(a))
                     return hashSet.Contains(b);
             }

@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -72,7 +71,7 @@ namespace WebApplications.Utilities.Formatting
                 [NotNull] IResolvable resolvable)
                 : base(resolvable.IsCaseSensitive, resolvable.ResolveOuterTags, resolvable.ResolveControls)
             {
-                Contract.Requires(resolvable != null);
+                if (resolvable == null) throw new ArgumentNullException("resolvable");
                 Parent = parent;
                 _resolver = resolvable.Resolve;
             }
@@ -93,7 +92,7 @@ namespace WebApplications.Utilities.Formatting
                 bool resolveControls)
                 : base(isCaseSensitive, resolveOuterTags, resolveControls)
             {
-                Contract.Requires(resolver != null);
+                if (resolver == null) throw new ArgumentNullException("resolver");
                 Parent = parent;
                 _resolver = resolver;
             }

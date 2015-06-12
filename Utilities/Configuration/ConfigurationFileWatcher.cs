@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -88,7 +87,7 @@ namespace WebApplications.Utilities.Configuration
         /// <remarks>The event could be fired multiple times for a single change. To prevent unnessacary refreshes, we wait for 100ms after a change before we fire the handler.</remarks>
         private static async Task ConfigFileChangedHandler()
         {
-            Contract.Assert(_configWatcher != null);
+            Debug.Assert(_configWatcher != null);
 
             // ReSharper disable once PossibleNullReferenceException
             await Task.Delay(100).ConfigureAwait(false);

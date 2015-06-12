@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -180,7 +179,7 @@ namespace WebApplications.Utilities.Globalization
             get { return _current; }
             set
             {
-                Contract.Requires<ArgumentNullException>(value != null);
+                if (value == null) throw new ArgumentNullException("value");
                 _current = value;
                 _isFromConfig = false;
             }
@@ -352,8 +351,9 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="published">The date this file was published.</param>
         /// <param name="currencies">The currencies in the file.</param>
-        public CurrencyInfoProvider(DateTime published, [NotNull] [ItemNotNull] IEnumerable<CurrencyInfo> currencies)
+        public CurrencyInfoProvider(DateTime published, [ItemNotNull] [NotNull] IEnumerable<CurrencyInfo> currencies)
         {
+            if (currencies == null) throw new ArgumentNullException("currencies");
             _published = published;
             // ReSharper disable once PossibleNullReferenceException
             _currencyInfos = currencies.Distinct().ToDictionary(c => c.Code, StringComparer.InvariantCultureIgnoreCase);
@@ -402,6 +402,8 @@ namespace WebApplications.Utilities.Globalization
         [CanBeNull]
         public static CurrencyInfoProvider LoadFromXml([NotNull] string xml)
         {
+            if (xml == null) throw new ArgumentNullException("xml");
+
             using (StringReader reader = new StringReader(xml))
                 return LoadFromXml(reader);
         }
@@ -415,6 +417,8 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public static CurrencyInfoProvider LoadFromXml([NotNull] TextReader reader)
         {
+            if (reader == null) throw new ArgumentNullException("reader");
+
             string xml = reader.ReadToEnd();
             XDocument doc = XDocument.Parse(xml); //.Load(reader);
 
@@ -470,7 +474,7 @@ namespace WebApplications.Utilities.Globalization
                 CurrencyInfo existing;
                 if (currencies.TryGetValue(code.Value, out existing))
                 {
-                    Contract.Assert(existing != null);
+                    Debug.Assert(existing != null);
 
                     if (latest && !existing.IsLatest)
                     {
@@ -506,6 +510,8 @@ namespace WebApplications.Utilities.Globalization
         [NotNull]
         public static CurrencyInfoProvider LoadFromBinary([NotNull] Stream stream, bool leaveOpen = false)
         {
+            if (stream == null) throw new ArgumentNullException("stream");
+
             using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen))
             {
                 // Read the header info.

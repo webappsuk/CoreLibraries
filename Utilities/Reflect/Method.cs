@@ -29,7 +29,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -181,7 +180,10 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public Method Close([NotNull] Type[] typeClosures, [NotNull] Type[] signatureClosures)
         {
-            Contract.Assert(_genericArguments.Value != null);
+            if (typeClosures == null) throw new ArgumentNullException("typeClosures");
+            if (signatureClosures == null) throw new ArgumentNullException("signatureClosures");
+
+            Debug.Assert(_genericArguments.Value != null);
 
             // Check input arrays are valid.
             if ((typeClosures.Length != ExtendedType.GenericArguments.Count()) ||
@@ -199,16 +201,16 @@ namespace WebApplications.Utilities.Reflect
                     return null;
 
                 // Create new search.
-                Contract.Assert(_parameters.Value != null);
+                Debug.Assert(_parameters.Value != null);
                 int pCount = _parameters.Value.Length;
                 TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
                 Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
                 // Search for closed 
                 for (int i = 0; i < pCount; i++)
                 {
-                    Contract.Assert(_parameters.Value[i] != null);
+                    Debug.Assert(_parameters.Value[i] != null);
                     Type pType = _parameters.Value[i].ParameterType;
-                    Contract.Assert(pType != null);
+                    Debug.Assert(pType != null);
                     searchTypes[i] = Reflection.ExpandParameterType(pType, signatureClosures, typeGenericArguments);
                 }
 
@@ -230,7 +232,7 @@ namespace WebApplications.Utilities.Reflect
             // ReSharper disable once AssignNullToNotNullAttribute
             string key = String.Join("|", gta.Select(t => ExtendedType.Get(t).Signature));
 
-            Contract.Assert(_closedMethods.Value != null);
+            Debug.Assert(_closedMethods.Value != null);
             return _closedMethods.Value.GetOrAdd(
                 key,
                 k =>
@@ -268,7 +270,7 @@ namespace WebApplications.Utilities.Reflect
             if (methodInfo == null)
                 return null;
             ExtendedType et = methodInfo.DeclaringType;
-            Contract.Assert(et != null);
+            Debug.Assert(et != null);
             return et.GetMethod(methodInfo);
         }
 

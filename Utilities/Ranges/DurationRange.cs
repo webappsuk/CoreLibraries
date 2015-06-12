@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 
@@ -67,7 +66,7 @@ namespace WebApplications.Utilities.Ranges
         [PublicAPI]
         public static Duration AutoStep(Duration delta)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(delta >= Duration.Zero);
+            if (delta < Duration.Zero) throw new ArgumentOutOfRangeException("delta");
 
             if (delta < Duration.FromMilliseconds(1))
                 return Duration.FromTicks(1);

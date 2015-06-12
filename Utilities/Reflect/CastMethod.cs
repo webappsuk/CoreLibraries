@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using WebApplications.Utilities.Annotations;
@@ -67,13 +66,13 @@ namespace WebApplications.Utilities.Reflect
         internal CastMethod([NotNull] ExtendedType extendedType, [NotNull] MethodInfo info, bool isExplicit)
             : base(extendedType, info)
         {
-            Contract.Requires(info.Name == "op_Explicit" || info.Name == "op_Implicit");
+            Debug.Assert(info.Name == "op_Explicit" || info.Name == "op_Implicit");
             IsExplicit = isExplicit;
             // ReSharper disable once AssignNullToNotNullAttribute
             FromType = ParameterTypes.First();
             Debug.Assert(FromType != null);
             ToType = ReturnType;
-            Contract.Assert(FromType == extendedType.Type || ToType == extendedType.Type);
+            Debug.Assert(FromType == extendedType.Type || ToType == extendedType.Type);
         }
     }
 }

@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -70,7 +70,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="source">The source.</param>
         internal PauseToken([NotNull] PauseTokenSource source)
         {
-            Contract.Requires(source != null);
+            if (source == null) throw new ArgumentNullException("source");
             _source = source;
         }
 
@@ -100,7 +100,7 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         [PublicAPI]
         [NotNull]
-        [Annotations.Pure]
+        [Pure]
         [System.Diagnostics.Contracts.Pure]
         public Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {

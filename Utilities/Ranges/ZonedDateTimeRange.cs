@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 
@@ -70,7 +69,7 @@ namespace WebApplications.Utilities.Ranges
                 new ZonedDateTime(instantRange.End, dateTimeZone),
                 instantRange.Step)
         {
-            Contract.Requires<ArgumentNullException>(dateTimeZone != null);
+            if (dateTimeZone == null) throw new ArgumentNullException("dateTimeZone");
         }
 
         /// <summary>
@@ -87,8 +86,8 @@ namespace WebApplications.Utilities.Ranges
                 new ZonedDateTime(instantRange.Start, startDateTimeZone),
                 new ZonedDateTime(instantRange.End, endDateTimeZone))
         {
-            Contract.Requires<ArgumentNullException>(startDateTimeZone != null);
-            Contract.Requires<ArgumentNullException>(endDateTimeZone != null);
+            if (startDateTimeZone == null) throw new ArgumentNullException("startDateTimeZone");
+            if (endDateTimeZone == null) throw new ArgumentNullException("endDateTimeZone");
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace WebApplications.Utilities.Ranges
         public ZonedDateTimeRange(Instant start, Instant end, [NotNull] DateTimeZone dateTimeZone)
             : base(new ZonedDateTime(start, dateTimeZone), new ZonedDateTime(end, dateTimeZone))
         {
-            Contract.Requires<ArgumentNullException>(dateTimeZone != null);
+            if (dateTimeZone == null) throw new ArgumentNullException("dateTimeZone");
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace WebApplications.Utilities.Ranges
         public ZonedDateTimeRange(Instant start, Instant end, [NotNull] DateTimeZone dateTimeZone, Duration step)
             : base(new ZonedDateTime(start, dateTimeZone), new ZonedDateTime(end, dateTimeZone), step)
         {
-            Contract.Requires<ArgumentNullException>(dateTimeZone != null);
+            if (dateTimeZone == null) throw new ArgumentNullException("dateTimeZone");
         }
 
         /// <summary>
@@ -130,8 +129,8 @@ namespace WebApplications.Utilities.Ranges
             [NotNull] DateTimeZone endDateTimeZone)
             : base(new ZonedDateTime(start, startDateTimeZone), new ZonedDateTime(end, endDateTimeZone))
         {
-            Contract.Requires<ArgumentNullException>(startDateTimeZone != null);
-            Contract.Requires<ArgumentNullException>(endDateTimeZone != null);
+            if (startDateTimeZone == null) throw new ArgumentNullException("startDateTimeZone");
+            if (endDateTimeZone == null) throw new ArgumentNullException("endDateTimeZone");
         }
 
         /// <summary>
@@ -150,8 +149,8 @@ namespace WebApplications.Utilities.Ranges
             Duration step)
             : base(new ZonedDateTime(start, startDateTimeZone), new ZonedDateTime(end, endDateTimeZone), step)
         {
-            Contract.Requires<ArgumentNullException>(startDateTimeZone != null);
-            Contract.Requires<ArgumentNullException>(endDateTimeZone != null);
+            if (startDateTimeZone == null) throw new ArgumentNullException("startDateTimeZone");
+            if (endDateTimeZone == null) throw new ArgumentNullException("endDateTimeZone");
         }
 
         /// <summary>
@@ -163,6 +162,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public static implicit operator InstantRange([NotNull] ZonedDateTimeRange zonedDateTimeRange)
         {
+            if (zonedDateTimeRange == null) throw new ArgumentNullException("zonedDateTimeRange");
             return new InstantRange(zonedDateTimeRange);
         }
 

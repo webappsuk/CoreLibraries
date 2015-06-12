@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -116,11 +115,11 @@ namespace WebApplications.Utilities.PowerShell
 
             using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Read))
             {
-                Contract.Assert(archive != null);
+                Debug.Assert(archive != null);
 
                 foreach (ZipArchiveEntry entry in archive.Entries)
                 {
-                    Contract.Assert(entry != null);
+                    Debug.Assert(entry != null);
 
                     //Identifies the destination file name and path
                     string fileName = Path.Combine(directory, entry.FullName);

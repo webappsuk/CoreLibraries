@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -62,7 +61,7 @@ namespace WebApplications.Utilities
         /// </param>
         public AssemblySemanticVersionAttribute([NotNull] string semanticVersion)
         {
-            Contract.Ensures(null != SemanticVersion);
+            if (semanticVersion == null) throw new ArgumentNullException("semanticVersion");
             _semanticVersion = semanticVersion;
         }
     }

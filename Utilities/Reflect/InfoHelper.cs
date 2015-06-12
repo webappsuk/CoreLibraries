@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 using WebApplications.Utilities.Annotations;
@@ -96,7 +95,7 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public static MethodInfo GetMethodInfo([NotNull] Expression<Action> exp, bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MethodCallExpression body = exp.Body as MethodCallExpression;
             if (body != null) return body.Method;
             if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
@@ -120,7 +119,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Action<TInstance>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MethodCallExpression body = exp.Body as MethodCallExpression;
             if (body != null) return body.Method;
             if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
@@ -146,7 +145,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Action<TInstance>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
 
             MethodCallExpression body = exp.Body as MethodCallExpression;
             if (body != null) return body.Method;
@@ -168,7 +167,7 @@ namespace WebApplications.Utilities.Reflect
         [PublicAPI]
         public static MethodInfo GetMethodInfo([NotNull] Expression<Func<object>> exp, bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             Expression body = exp.Body.NodeType == ExpressionType.Convert
                 ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
@@ -196,7 +195,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             Expression body = exp.Body.NodeType == ExpressionType.Convert
                 ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
@@ -226,7 +225,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             Expression body = exp.Body.NodeType == ExpressionType.Convert
                 ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
@@ -254,7 +253,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             NewExpression body = exp.Body as NewExpression;
             if (body != null) return body.Constructor;
             if (throwIfNotFound) throw new ArgumentException("ConstructorInfo not found in expression");
@@ -278,7 +277,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             Expression body = exp.Body.NodeType == ExpressionType.Convert
                 ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
@@ -306,7 +305,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TResult>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MemberExpression body = exp.Body as MemberExpression;
             if (body != null) return body.Member as PropertyInfo;
             if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
@@ -331,7 +330,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MemberExpression body = exp.Body as MemberExpression;
             if (body != null) return body.Member as PropertyInfo;
             if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
@@ -358,7 +357,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MemberExpression body = exp.Body as MemberExpression;
             if (body != null) return body.Member as PropertyInfo;
             if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
@@ -382,7 +381,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             Expression memExp = exp.Body.NodeType == ExpressionType.Convert
                 ? ((UnaryExpression)exp.Body).Operand
                 : exp.Body;
@@ -410,7 +409,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TResult>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MemberExpression body = exp.Body as MemberExpression;
             if (body != null) return body.Member as FieldInfo;
             if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
@@ -435,7 +434,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MemberExpression body = exp.Body as MemberExpression;
             if (body != null) return body.Member as FieldInfo;
             if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
@@ -462,7 +461,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MemberExpression body = exp.Body as MemberExpression;
             if (body != null) return body.Member as FieldInfo;
             if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
@@ -490,7 +489,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Action<TParam>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MethodCallExpression body = exp.Body as MethodCallExpression;
             if (body != null)
             {
@@ -525,7 +524,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Action<TInstance, TParam>> exp,
             bool throwIfNotFound = false)
         {
-            Contract.Requires(exp != null);
+            if (exp == null) throw new ArgumentNullException("exp");
             MethodCallExpression body = exp.Body as MethodCallExpression;
             if (body != null)
             {

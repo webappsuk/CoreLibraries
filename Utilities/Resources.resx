@@ -468,4 +468,70 @@
   <data name="Impersonator_Impersonator_InvalidUsername" xml:space="preserve">
     <value>Invalid username.</value>
   </data>
+  <data name="List_Get_TupleNull" xml:space="preserve">
+    <value>The tuple was null.</value>
+  </data>
+  <data name="Queue_TupleNull" xml:space="preserve">
+    <value>The tuple at the beginning of the queue was null.</value>
+  </data>
+  <data name="Stack_TupleNull" xml:space="preserve">
+    <value>The tuple at the top of the stack was null.</value>
+  </data>
+  <data name="ColorHelper_SetName_NameNullOrWhitespace" xml:space="preserve">
+    <value>Name cannot be null or whitespace</value>
+  </data>
+  <data name="FormatBuilder_TagNullOrEmpty" xml:space="preserve">
+    <value>Tag cannot be null or empty</value>
+  </data>
+  <data name="CyclicQueue_QueueEmpty" xml:space="preserve">
+    <value>Queue empty.</value>
+  </data>
+  <data name="DependencyGraph_ValueNotInGraph" xml:space="preserve">
+    <value>The value given is not in the graph</value>
+  </data>
+  <data name="ExpressionExtensions_ParameterCount" xml:space="preserve">
+    <value>The expression had the wrong number of parameters.</value>
+  </data>
+  <data name="ExpressionExtensions_FuncReturnsVoid" xml:space="preserve">
+    <value>The function expression is expected to not return void.</value>
+  </data>
+  <data name="ExpressionExtensions_ActionReturnsNonVoid" xml:space="preserve">
+    <value>The action expression is expected to return void.</value>
+  </data>
+  <data name="ExpressionExtensions_GetDelegateExpression_TypeMustBeDelegate" xml:space="preserve">
+    <value>The type parameter must be derived from System.Delegate.</value>
+  </data>
+  <data name="FinancialRange_CurrenciesMustMatch" xml:space="preserve">
+    <value>The currencies in the financial parameters must match.</value>
+  </data>
+  <data name="LocalDateRange_StepCannotHaveTime" xml:space="preserve">
+    <value>Step cannot have time component</value>
+  </data>
+  <data name="LocalDateRange_DurationCannotHaveTime" xml:space="preserve">
+    <value>Duration cannot have time component</value>
+  </data>
+  <data name="LocalRange_StepMustBePositive" xml:space="preserve">
+    <value>Step must be positive</value>
+  </data>
+  <data name="LocalRange_DurationMustBePositive" xml:space="preserve">
+    <value>Duration must be positive</value>
+  </data>
+  <data name="LocalDateRange_StartEnd" xml:space="preserve">
+    <value>Start must be less than end</value>
+  </data>
+  <data name="LocalTimeRange_StepCannotHaveDate" xml:space="preserve">
+    <value>Step cannot have date component</value>
+  </data>
+  <data name="LocalTimeRange_DurationCannotHaveDate" xml:space="preserve">
+    <value>Duration cannot have date component</value>
+  </data>
+  <data name="Reflection_ImplementsInterface_MustBeInterface" xml:space="preserve">
+    <value>The type must be an interface</value>
+  </data>
+  <data name="AsyncDebounced_DurationNegative" xml:space="preserve">
+    <value>Duration cannot be negative</value>
+  </data>
+  <data name="AsyncDebounced_MinimumGapNegative" xml:space="preserve">
+    <value>Minimum gap cannot be negative</value>
+  </data>
 </root>

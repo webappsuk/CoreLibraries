@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -146,7 +145,7 @@ namespace WebApplications.Utilities.Threading
             public CallbackInfo([NotNull] SendOrPostCallback callback, [CanBeNull] object state)
                 : this()
             {
-                Contract.Requires(callback != null);
+                if (callback == null) throw new ArgumentNullException("callback");
                 Callback = callback;
                 State = state;
             }

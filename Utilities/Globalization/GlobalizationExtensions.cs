@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -53,6 +53,9 @@ namespace WebApplications.Utilities.Globalization
             [NotNull] Stream stream,
             bool leaveOpen = false)
         {
+            if (currencyInfoProvider == null) throw new ArgumentNullException("currencyInfoProvider");
+            if (stream == null) throw new ArgumentNullException("stream");
+
             using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen))
             {
                 writer.Write(CurrencyInfoProvider.BinaryHeader);
@@ -83,6 +86,8 @@ namespace WebApplications.Utilities.Globalization
         [NotNull]
         public static string ToXml([NotNull] this ICurrencyInfoProvider currencyInfoProvider)
         {
+            if (currencyInfoProvider == null) throw new ArgumentNullException("currencyInfoProvider");
+
             XElement ccyTbl = new XElement("CcyTbl");
 
             XDocument doc = new XDocument(
@@ -122,6 +127,9 @@ namespace WebApplications.Utilities.Globalization
             [NotNull] this ICurrencyInfoProvider first,
             [NotNull] ICurrencyInfoProvider second)
         {
+            if (first == null) throw new ArgumentNullException("first");
+            if (second == null) throw new ArgumentNullException("second");
+
             ICurrencyInfoProvider newest = first.Published > second.Published ? first : second;
             second = first.Published > second.Published ? second : first;
 
@@ -141,7 +149,7 @@ namespace WebApplications.Utilities.Globalization
                 if (!currencies.ContainsKey(currency.Code))
                     currencies.Add(currency.Code, areSameDate ? currency.GetOutOfDate() : currency);
 
-            Contract.Assert(currencies.Count > 0);
+            Debug.Assert(currencies.Count > 0);
             return new CurrencyInfoProvider(newest.Published, currencies.Values);
         }
     }

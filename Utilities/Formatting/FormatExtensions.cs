@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
@@ -93,8 +92,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static TextWriter Serialize([NotNull] this TextWriter writer)
         {
-            Contract.Requires(writer != null);
-            Contract.Ensures(Contract.Result<TextWriter>() != null);
+            if (writer == null) throw new ArgumentNullException("writer");
+
             ISerialTextWriter stw = writer as ISerialTextWriter;
             return stw != null
                 ? writer
@@ -115,8 +114,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout = null,
             ushort startPosition = 0)
         {
-            Contract.Requires(writer != null);
-            Contract.Ensures(Contract.Result<TextWriter>() != null);
+            if (writer == null) throw new ArgumentNullException("writer");
 
             FormatTextWriter ltw = writer as FormatTextWriter;
             if (ltw == null) return new FormatTextWriter(writer, layout, startPosition);
@@ -163,8 +161,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
             ushort startPosition = 0)
         {
-            Contract.Requires(writer != null);
-            Contract.Ensures(Contract.Result<TextWriter>() != null);
+            if (writer == null) throw new ArgumentNullException("writer");
 
             FormatTextWriter ltw = writer as FormatTextWriter;
             if (ltw == null)

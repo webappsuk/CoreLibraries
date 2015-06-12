@@ -61,6 +61,24 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duration cannot be negative.
+        /// </summary>
+        internal static string AsyncDebounced_DurationNegative {
+            get {
+                return ResourceManager.GetString("AsyncDebounced_DurationNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum gap cannot be negative.
+        /// </summary>
+        internal static string AsyncDebounced_MinimumGapNegative {
+            get {
+                return ResourceManager.GetString("AsyncDebounced_MinimumGapNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can set a result only once.
         /// </summary>
         internal static string AsyncResult_SetAsCompleted_CanOnlySetResultOnce {
@@ -93,6 +111,15 @@ namespace WebApplications.Utilities {
         internal static string CancelableTask_CancelableTask_NullTask {
             get {
                 return ResourceManager.GetString("CancelableTask_CancelableTask_NullTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name cannot be null or whitespace.
+        /// </summary>
+        internal static string ColorHelper_SetName_NameNullOrWhitespace {
+            get {
+                return ResourceManager.GetString("ColorHelper_SetName_NameNullOrWhitespace", resourceCulture);
             }
         }
         
@@ -277,11 +304,29 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Queue empty..
+        /// </summary>
+        internal static string CyclicQueue_QueueEmpty {
+            get {
+                return ResourceManager.GetString("CyclicQueue_QueueEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} completed in {1}ms..
         /// </summary>
         internal static string DebuggingExtensions_Stopwatch_ToString {
             get {
                 return ResourceManager.GetString("DebuggingExtensions_Stopwatch_ToString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value given is not in the graph.
+        /// </summary>
+        internal static string DependencyGraph_ValueNotInGraph {
+            get {
+                return ResourceManager.GetString("DependencyGraph_ValueNotInGraph", resourceCulture);
             }
         }
         
@@ -295,6 +340,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The action expression is expected to return void..
+        /// </summary>
+        internal static string ExpressionExtensions_ActionReturnsNonVoid {
+            get {
+                return ResourceManager.GetString("ExpressionExtensions_ActionReturnsNonVoid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The source enumerable is not of an enumerable type.
         /// </summary>
         internal static string ExpressionExtensions_ForEach_SourceNotEnumerable {
@@ -304,11 +358,38 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The function expression is expected to not return void..
+        /// </summary>
+        internal static string ExpressionExtensions_FuncReturnsVoid {
+            get {
+                return ResourceManager.GetString("ExpressionExtensions_FuncReturnsVoid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The expression does not have the same number of parameters as the delegate..
         /// </summary>
         internal static string ExpressionExtensions_GetDelegateExpression_ParameterCountMismatch {
             get {
                 return ResourceManager.GetString("ExpressionExtensions_GetDelegateExpression_ParameterCountMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type parameter must be derived from System.Delegate..
+        /// </summary>
+        internal static string ExpressionExtensions_GetDelegateExpression_TypeMustBeDelegate {
+            get {
+                return ResourceManager.GetString("ExpressionExtensions_GetDelegateExpression_TypeMustBeDelegate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The expression had the wrong number of parameters..
+        /// </summary>
+        internal static string ExpressionExtensions_ParameterCount {
+            get {
+                return ResourceManager.GetString("ExpressionExtensions_ParameterCount", resourceCulture);
             }
         }
         
@@ -502,11 +583,29 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The currencies in the financial parameters must match..
+        /// </summary>
+        internal static string FinancialRange_CurrenciesMustMatch {
+            get {
+                return ResourceManager.GetString("FinancialRange_CurrenciesMustMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot modify a read only FormatBuilder..
         /// </summary>
         internal static string FormatBuilder_ReadOnly {
             get {
                 return ResourceManager.GetString("FormatBuilder_ReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tag cannot be null or empty.
+        /// </summary>
+        internal static string FormatBuilder_TagNullOrEmpty {
+            get {
+                return ResourceManager.GetString("FormatBuilder_TagNullOrEmpty", resourceCulture);
             }
         }
         
@@ -552,6 +651,78 @@ namespace WebApplications.Utilities {
         internal static string LimitedConcurrentQueue_SyncRoot_ICollection_SyncRoot_Unsupported {
             get {
                 return ResourceManager.GetString("LimitedConcurrentQueue_SyncRoot_ICollection_SyncRoot_Unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tuple was null..
+        /// </summary>
+        internal static string List_Get_TupleNull {
+            get {
+                return ResourceManager.GetString("List_Get_TupleNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration cannot have time component.
+        /// </summary>
+        internal static string LocalDateRange_DurationCannotHaveTime {
+            get {
+                return ResourceManager.GetString("LocalDateRange_DurationCannotHaveTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start must be less than end.
+        /// </summary>
+        internal static string LocalDateRange_StartEnd {
+            get {
+                return ResourceManager.GetString("LocalDateRange_StartEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Step cannot have time component.
+        /// </summary>
+        internal static string LocalDateRange_StepCannotHaveTime {
+            get {
+                return ResourceManager.GetString("LocalDateRange_StepCannotHaveTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration must be positive.
+        /// </summary>
+        internal static string LocalRange_DurationMustBePositive {
+            get {
+                return ResourceManager.GetString("LocalRange_DurationMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Step must be positive.
+        /// </summary>
+        internal static string LocalRange_StepMustBePositive {
+            get {
+                return ResourceManager.GetString("LocalRange_StepMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration cannot have date component.
+        /// </summary>
+        internal static string LocalTimeRange_DurationCannotHaveDate {
+            get {
+                return ResourceManager.GetString("LocalTimeRange_DurationCannotHaveDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Step cannot have date component.
+        /// </summary>
+        internal static string LocalTimeRange_StepCannotHaveDate {
+            get {
+                return ResourceManager.GetString("LocalTimeRange_StepCannotHaveDate", resourceCulture);
             }
         }
         
@@ -606,6 +777,15 @@ namespace WebApplications.Utilities {
         internal static string PInfo_ValueProperty_NoValueSet {
             get {
                 return ResourceManager.GetString("PInfo_ValueProperty_NoValueSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tuple at the beginning of the queue was null..
+        /// </summary>
+        internal static string Queue_TupleNull {
+            get {
+                return ResourceManager.GetString("Queue_TupleNull", resourceCulture);
             }
         }
         
@@ -772,6 +952,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type must be an interface.
+        /// </summary>
+        internal static string Reflection_ImplementsInterface_MustBeInterface {
+            get {
+                return ResourceManager.GetString("Reflection_ImplementsInterface_MustBeInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; getter on the type &apos;{1}&apos; as the name does not correspond to a field or property with a get accessor..
         /// </summary>
         internal static string Reflector_GetGetter_DoesNotHaveGetter {
@@ -876,6 +1065,15 @@ namespace WebApplications.Utilities {
         internal static string Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate {
             get {
                 return ResourceManager.GetString("Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tuple at the top of the stack was null..
+        /// </summary>
+        internal static string Stack_TupleNull {
+            get {
+                return ResourceManager.GetString("Stack_TupleNull", resourceCulture);
             }
         }
         

@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
@@ -171,7 +170,7 @@ namespace WebApplications.Utilities.Globalization
             get { return _current; }
             set
             {
-                Contract.Requires<ArgumentNullException>(value != null);
+                if (value == null) throw new ArgumentNullException("value");
                 _current = value;
             }
         }
@@ -186,35 +185,6 @@ namespace WebApplications.Utilities.Globalization
             // Create BCL provider
             // Note we must update the DateTime whenever we build against a new framework.
             _current = Bcl = new BclCultureInfoProvider();
-
-#if false
-            string path = Configuration.UtilityConfiguration.Active.ISO4217;
-            if (string.IsNullOrWhiteSpace(path))
-                return;
-
-            if (!File.Exists(path))
-                throw new FileNotFoundException(
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_FileNotFound, path));
-
-            try
-            {
-                CurrencyInfoProvider currencyInfoProvider = LoadFromFile(path);
-
-                if (currencyInfoProvider == null)
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new InvalidDataException(string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_DataInvalid, path));
-
-                _current = currencyInfoProvider;
-            }
-            catch (Exception e)
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                throw new FileLoadException(
-                    string.Format(Resources.CurrencyInfoProvider_CurrencyInfoProvider_LoadError, path),
-                    e);
-            }
-#endif
         }
 
         private readonly DateTime _published;
@@ -239,8 +209,10 @@ namespace WebApplications.Utilities.Globalization
         [PublicAPI]
         public CultureInfoProvider(
             DateTime published,
-            [NotNull] [ItemNotNull] IEnumerable<ExtendedCultureInfo> cultures)
+            [ItemNotNull] [NotNull] IEnumerable<ExtendedCultureInfo> cultures)
         {
+            if (cultures == null) throw new ArgumentNullException("cultures");
+
             _published = published;
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             _cultureInfos = cultures.Distinct().ToDictionary(c => c.Name, StringComparer.InvariantCultureIgnoreCase);

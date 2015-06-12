@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -66,8 +66,8 @@ namespace WebApplications.Utilities
             [NotNull] this TaskCompletionSource<bool> tcs,
             [NotNull] Task task)
         {
-            Contract.Requires(tcs != null);
-            Contract.Requires(task != null);
+            if (tcs == null) throw new ArgumentNullException("tcs");
+            if (task == null) throw new ArgumentNullException("task");
 
             switch (task.Status)
             {
@@ -116,8 +116,8 @@ namespace WebApplications.Utilities
             [NotNull] this TaskCompletionSource<TResult> tcs,
             [NotNull] Task<TResult> task)
         {
-            Contract.Requires(tcs != null);
-            Contract.Requires(task != null);
+            if (tcs == null) throw new ArgumentNullException("tcs");
+            if (task == null) throw new ArgumentNullException("task");
 
             switch (task.Status)
             {
@@ -161,7 +161,7 @@ namespace WebApplications.Utilities
             [CanBeNull] AsyncCallback callback,
             [CanBeNull] object state)
         {
-            Contract.Requires(task != null);
+            if (task == null) throw new ArgumentNullException("task");
 
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>(state);
             task.ContinueWith(
@@ -193,7 +193,7 @@ namespace WebApplications.Utilities
             [CanBeNull] AsyncCallback callback,
             [CanBeNull] object state)
         {
-            Contract.Requires(task != null);
+            if (task == null) throw new ArgumentNullException("task");
 
             TaskCompletionSource<TResult> tcs = new TaskCompletionSource<TResult>(state);
             task.ContinueWith(
@@ -224,8 +224,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Task Safe([NotNull] this Func<Task> taskCreator)
         {
-            Contract.Requires(taskCreator != null);
-            Contract.Ensures(Contract.Result<Task>() != null);
+            if (taskCreator == null) throw new ArgumentNullException("taskCreator");
 
             try
             {
@@ -259,7 +258,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Task<TResult> Safe<TResult>([NotNull] this Func<Task<TResult>> taskCreator)
         {
-            Contract.Requires(taskCreator != null);
+            if (taskCreator == null) throw new ArgumentNullException("taskCreator");
             try
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -294,7 +293,7 @@ namespace WebApplications.Utilities
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation)
         {
-            Contract.Requires(continuation != null);
+            if (continuation == null) throw new ArgumentNullException("continuation");
 
             // ReSharper disable once PossibleNullReferenceException
             return After(task, continuation, Task<TNewResult>.Factory.CreationOptions);
@@ -329,7 +328,7 @@ namespace WebApplications.Utilities
             [NotNull] Func<Task<TResult>, TNewResult> continuation,
             TaskCreationOptions creationOptions)
         {
-            Contract.Requires(continuation != null);
+            if (continuation == null) throw new ArgumentNullException("continuation");
 
             // If the antecedent task is null just start the continuation (but pass in null).
             if ((task == null))
@@ -393,7 +392,7 @@ namespace WebApplications.Utilities
             [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult> continuation,
             TaskCreationOptions creationOptions)
         {
-            Contract.Requires(continuation != null);
+            if (continuation == null) throw new ArgumentNullException("continuation");
 
             if (tasks == null) tasks = Enumerable.Empty<Task<TResult>>();
             Task<TResult>[] taskArray = tasks.ToArray();
@@ -499,8 +498,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static WaitHandle WaitAny([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
-            Contract.Requires(handle != null);
-            Contract.Requires(handles != null);
+            if (handle == null) throw new ArgumentNullException("handle");
+            if (handles == null) throw new ArgumentNullException("handles");
 
             ManualResetEvent newHandle = new ManualResetEvent(false);
             int handleCount = handles.Length;
@@ -556,8 +555,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static WaitHandle WaitAll([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
-            Contract.Requires(handle != null);
-            Contract.Requires(handles != null);
+            if (handle == null) throw new ArgumentNullException("handle");
+            if (handles == null) throw new ArgumentNullException("handles");
 
             ManualResetEvent newHandle = new ManualResetEvent(false);
 
@@ -633,14 +632,14 @@ namespace WebApplications.Utilities
             [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(asyncResult != null);
-            Contract.Requires(endMethod != null);
+            if (asyncResult == null) throw new ArgumentNullException("asyncResult");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
 
             bool cancelable = cancellationToken.CanBeCanceled;
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Default;
-            Contract.Assert(scheduler != null);
+            Debug.Assert(scheduler != null);
 
             // Create a task completion source.
             TaskCompletionSource<TResult> tcs = new TaskCompletionSource<TResult>();
@@ -694,7 +693,7 @@ namespace WebApplications.Utilities
             {
                 // We're not complete so get the wait handle.
                 WaitHandle waitHandle = asyncResult.AsyncWaitHandle;
-                Contract.Assert(waitHandle != null);
+                Debug.Assert(waitHandle != null);
 
                 // If we have a cancellation token combine wait handles.
                 if (cancelable)
@@ -759,7 +758,7 @@ namespace WebApplications.Utilities
             this CancellationToken token,
             bool continueOnCapturedContext)
         {
-            Contract.Requires(token.WaitHandle != null);
+            Debug.Assert(token.WaitHandle != null);
             // ReSharper disable once MethodSupportsCancellation
             return token.WaitHandle.ToTask().ConfigureAwait(continueOnCapturedContext);
         }
@@ -776,8 +775,8 @@ namespace WebApplications.Utilities
             this ITokenSource tokenSource,
             bool continueOnCapturedContext)
         {
-            Contract.Requires(tokenSource != null);
-            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            if (tokenSource == null) throw new ArgumentNullException("tokenSource");
+            Debug.Assert(tokenSource.Token.WaitHandle != null);
             return tokenSource.Token.WaitHandle.ToTask().ConfigureAwait(continueOnCapturedContext);
         }
 
@@ -795,8 +794,8 @@ namespace WebApplications.Utilities
             this CancelableTokenSource tokenSource,
             bool continueOnCapturedContext)
         {
-            Contract.Requires(tokenSource != null);
-            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            if (tokenSource == null) throw new ArgumentNullException("tokenSource");
+            Debug.Assert(tokenSource.Token.WaitHandle != null);
             return tokenSource.Token.WaitHandle.ToTask().ConfigureAwait(continueOnCapturedContext);
         }
 
@@ -814,7 +813,7 @@ namespace WebApplications.Utilities
             this WaitHandle handle,
             bool continueOnCapturedContext)
         {
-            Contract.Requires(handle != null);
+            if (handle == null) throw new ArgumentNullException("handle");
             return handle.ToTask().ConfigureAwait(continueOnCapturedContext);
         }
 
@@ -827,7 +826,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter(this CancellationToken token)
         {
-            Contract.Requires(token.WaitHandle != null);
+            Debug.Assert(token.WaitHandle != null);
             // ReSharper disable once MethodSupportsCancellation
             return token.WaitHandle.ToTask().GetAwaiter();
         }
@@ -841,8 +840,8 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter([NotNull] this ITokenSource tokenSource)
         {
-            Contract.Requires(tokenSource != null);
-            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            if (tokenSource == null) throw new ArgumentNullException("tokenSource");
+            Debug.Assert(tokenSource.Token.WaitHandle != null);
             return tokenSource.Token.WaitHandle.ToTask().GetAwaiter();
         }
 
@@ -855,8 +854,8 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter([NotNull] this CancellationTokenSource tokenSource)
         {
-            Contract.Requires(tokenSource != null);
-            Contract.Requires(tokenSource.Token.WaitHandle != null);
+            if (tokenSource == null) throw new ArgumentNullException("tokenSource");
+            Debug.Assert(tokenSource.Token.WaitHandle != null);
             return tokenSource.Token.WaitHandle.ToTask().GetAwaiter();
         }
 
@@ -869,7 +868,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter([NotNull] this WaitHandle handle)
         {
-            Contract.Requires(handle != null);
+            if (handle == null) throw new ArgumentNullException("handle");
             return handle.ToTask().GetAwaiter();
         }
 
@@ -890,8 +889,7 @@ namespace WebApplications.Utilities
             [NotNull] this WaitHandle handle,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires(handle != null);
-            Contract.Ensures(Contract.Result<Task>() != null);
+            if (handle == null) throw new ArgumentNullException("handle");
 
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
             if (token.CanBeCanceled)
@@ -912,7 +910,7 @@ namespace WebApplications.Utilities
                         lock (localVariableInitLock)
                         {
                             // ReSharper disable AccessToModifiedClosure
-                            Contract.Assert(callbackHandle != null);
+                            Debug.Assert(callbackHandle != null);
                             callbackHandle.Unregister(null);
                             // ReSharper restore AccessToModifiedClosure
                         }
@@ -935,7 +933,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Task ToTask([NotNull] this Exception exception)
         {
-            Contract.Requires(exception != null);
+            if (exception == null) throw new ArgumentNullException("exception");
 
             TaskCompletionSource<Exception> source = new TaskCompletionSource<Exception>();
             source.SetException(exception);
@@ -953,7 +951,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Task<TResult> ToTask<TResult>([NotNull] this Exception exception)
         {
-            Contract.Requires(exception != null);
+            if (exception == null) throw new ArgumentNullException("exception");
 
             TaskCompletionSource<TResult> source = new TaskCompletionSource<TResult>();
             source.SetException(exception);
@@ -974,7 +972,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Task WithCancellation([NotNull] this Task task, CancellationToken cancellationToken)
         {
-            Contract.Requires(task != null);
+            if (task == null) throw new ArgumentNullException("task");
 
             if (task.IsCompleted ||
                 !cancellationToken.CanBeCanceled)
@@ -1020,7 +1018,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Task<T> WithCancellation<T>([NotNull] this Task<T> task, CancellationToken cancellationToken)
         {
-            Contract.Requires(task != null);
+            if (task == null) throw new ArgumentNullException("task");
 
             if (task.IsCompleted ||
                 !cancellationToken.CanBeCanceled)
@@ -1229,7 +1227,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static ICancelableTokenSource ToCancelable([NotNull] this CancellationTokenSource cts)
         {
-            Contract.Requires(cts != null);
+            if (cts == null) throw new ArgumentNullException("cts");
             return new WrappedTokenSource(cts);
         }
 
@@ -1256,7 +1254,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static ITokenSource ToTokenSource([NotNull] this CancellationTokenSource cts)
         {
-            Contract.Requires(cts != null);
+            if (cts == null) throw new ArgumentNullException("cts");
             return new WrappedTokenSource(cts);
         }
 
@@ -1268,7 +1266,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static SynchronizationContextAwaiter GetAwaiter([NotNull] this SynchronizationContext context)
         {
-            Contract.Requires(context != null);
+            if (context == null) throw new ArgumentNullException("context");
             return new SynchronizationContextAwaiter(context);
         }
 
@@ -1280,8 +1278,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void Invoke([NotNull] this SynchronizationContext context, [NotNull] Action callback)
         {
-            Contract.Requires(context != null);
-            Contract.Requires(callback != null);
+            if (context == null) throw new ArgumentNullException("context");
+            if (callback == null) throw new ArgumentNullException("callback");
             context.Send(_ => callback(), null);
         }
 
@@ -1295,8 +1293,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static T Invoke<T>([NotNull] this SynchronizationContext context, [NotNull] Func<T> callback)
         {
-            Contract.Requires(context != null);
-            Contract.Requires(callback != null);
+            if (context == null) throw new ArgumentNullException("context");
+            if (callback == null) throw new ArgumentNullException("callback");
             T result = default(T);
             context.Send(_ => result = callback(), null);
 

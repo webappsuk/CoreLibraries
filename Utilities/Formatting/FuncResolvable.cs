@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
+using System;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
             : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
-            Contract.Requires(resolver != null);
+            if (resolver == null) throw new ArgumentNullException("resolver");
             _resolver = resolver;
         }
 

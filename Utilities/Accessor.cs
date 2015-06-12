@@ -31,7 +31,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using WebApplications.Utilities.Annotations;
@@ -362,7 +361,7 @@ namespace WebApplications.Utilities
             /// <param name="field">The field.</param>
             public Access([NotNull] Field field)
             {
-                Contract.Requires(field != null);
+                if (field == null) throw new ArgumentNullException("field");
                 Name = field.Info.Name;
                 IsStatic = field.Info.IsStatic;
                 IsPublic = field.Info.IsPublic;
@@ -388,7 +387,7 @@ namespace WebApplications.Utilities
             /// <param name="property">The property.</param>
             public Access([NotNull] Property property)
             {
-                Contract.Requires(property != null);
+                if (property == null) throw new ArgumentNullException("property");
                 Name = property.Info.Name;
                 IsProperty = true;
                 if (property.GetMethod != null)
@@ -501,7 +500,7 @@ namespace WebApplications.Utilities
                     : StringComparer.CurrentCultureIgnoreCase);
             foreach (Access accessor in _accessors)
             {
-                Contract.Assert(accessor != null);
+                Debug.Assert(accessor != null);
                 // Filter accessors
                 // ReSharper disable PossibleNullReferenceException
                 if ((!includeFields && !accessor.IsProperty) ||

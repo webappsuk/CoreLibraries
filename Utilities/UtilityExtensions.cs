@@ -31,7 +31,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -308,7 +307,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void AppendEnglish([NotNull] this StringBuilder builder, double number)
         {
-            Contract.Requires(builder != null);
+            if (builder == null) throw new ArgumentNullException("builder");
             using (StringWriter writer = new StringWriter(builder))
                 WriteEnglish(writer, number);
         }
@@ -322,7 +321,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void AppendEnglish([NotNull] this StringBuilder builder, int number)
         {
-            Contract.Requires(builder != null);
+            if (builder == null) throw new ArgumentNullException("builder");
             using (StringWriter writer = new StringWriter(builder))
                 WriteEnglish(writer, number);
         }
@@ -336,7 +335,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void AppendEnglish([NotNull] this StringBuilder builder, long number)
         {
-            Contract.Requires(builder != null);
+            if (builder == null) throw new ArgumentNullException("builder");
             using (StringWriter writer = new StringWriter(builder))
                 WriteEnglish(writer, number);
         }
@@ -350,7 +349,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteEnglish([NotNull] this TextWriter writer, double number)
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
             WriteEnglish(writer, (long)number);
 
             if (number < 0)
@@ -386,7 +385,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteEnglish([NotNull] this TextWriter writer, long number)
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
             bool start = true;
             if (number < 0)
             {
@@ -505,7 +504,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Func<object, object, bool> GetTypeEqualityFunction([NotNull] this Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return _equalityFunctions.GetOrAdd(
@@ -678,7 +677,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Dictionary<string, string> ToDictionary([NotNull] this NameValueCollection collection)
         {
-            Contract.Requires(collection != null);
+            if (collection == null) throw new ArgumentNullException("collection");
 
             Dictionary<string, string> d = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
             foreach (string name in collection)
@@ -700,7 +699,7 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<KeyValuePair<TKey, TValue>> source,
             [CanBeNull] IEqualityComparer<TKey> comparer = null)
         {
-            Contract.Requires(source != null);
+            if (source == null) throw new ArgumentNullException("source");
 
             Dictionary<TKey, TValue> d = new Dictionary<TKey, TValue>(comparer);
 
@@ -739,7 +738,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static StringBuilder AppendJSON([NotNull] this StringBuilder stringBuilder, [CanBeNull] string input)
         {
-            Contract.Requires(stringBuilder != null);
+            if (stringBuilder == null) throw new ArgumentNullException("stringBuilder");
 
             if (input == null)
             {
@@ -828,7 +827,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexLower(this byte[] value)
         {
-            Contract.Requires(value != null);
+            if (value == null) throw new ArgumentNullException("value");
             char[] chars = new char[value.Length << 1];
             for (int i = 0, j = 0; i < value.Length; i++)
             {
@@ -862,7 +861,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexUpper([NotNull] this byte[] value)
         {
-            Contract.Requires(value != null);
+            if (value == null) throw new ArgumentNullException("value");
             char[] chars = new char[value.Length << 1];
             for (int i = 0, j = 0; i < value.Length; i++)
             {
@@ -898,8 +897,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            Contract.Requires<ArgumentNullException>(integers != null);
-            Contract.Requires<ArgumentNullException>(getObject != null);
+            if (integers == null) throw new ArgumentNullException("integers");
+            if (getObject == null) throw new ArgumentNullException("getObject");
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -948,8 +947,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            Contract.Requires<ArgumentNullException>(integers != null);
-            Contract.Requires<ArgumentNullException>(getObject != null);
+            if (integers == null) throw new ArgumentNullException("integers");
+            if (getObject == null) throw new ArgumentNullException("getObject");
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -997,8 +996,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            Contract.Requires<ArgumentNullException>(integers != null);
-            Contract.Requires<ArgumentNullException>(getObject != null);
+            if (integers == null) throw new ArgumentNullException("integers");
+            if (getObject == null) throw new ArgumentNullException("getObject");
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -1048,7 +1047,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string XmlEscape([NotNull] this object raw)
         {
-            Contract.Requires<ArgumentNullException>(raw != null);
+            if (raw == null) throw new ArgumentNullException("raw");
             return raw.ToString().XmlEscape();
         }
 
@@ -1269,7 +1268,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string StripHTML([NotNull] this string input)
         {
-            Contract.Requires(input != null);
+            if (input == null) throw new ArgumentNullException("input");
             // TODO: a) make more efficient b) question purpose/usage
             int depthCounter = 0;
             StringBuilder builder = new StringBuilder(input.Length);
@@ -1313,10 +1312,10 @@ namespace WebApplications.Utilities
             [CanBeNull] string ellipsisString = "...",
             int ellipsisLength = -1)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(maxLength > 0);
-            Contract.Requires<ArgumentOutOfRangeException>(
-                (options & TruncateOptions.IncludeEllipsis) != TruncateOptions.IncludeEllipsis ||
-                maxLength > (ellipsisString != null && ellipsisLength < 0 ? ellipsisString.Length : ellipsisLength));
+            if (maxLength < 1) throw new ArgumentOutOfRangeException("maxLength");
+            if ((options & TruncateOptions.IncludeEllipsis) == TruncateOptions.IncludeEllipsis &&
+                maxLength <= ((ellipsisString != null && ellipsisLength < 0) ? ellipsisString.Length : ellipsisLength))
+                throw new ArgumentOutOfRangeException("maxLength");
             if (ellipsisLength < 0 &&
                 ellipsisString == null) throw new ArgumentNullException("ellipsisString");
 
@@ -1429,7 +1428,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
-            Contract.Requires(builder != null);
+            if (builder == null) throw new ArgumentNullException("builder");
             if (String.IsNullOrEmpty(str)) return;
             int i = 0;
             bool escaped = false;
@@ -1548,7 +1547,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
-            Contract.Requires(builder != null);
+            if (builder == null) throw new ArgumentNullException("builder");
             if (String.IsNullOrEmpty(str)) return;
             int i = 0;
             while (i < str.Length)
@@ -1641,7 +1640,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result)
         {
-            Contract.Requires(result != null);
+            if (result == null) throw new ArgumentNullException("result");
             return ApmWrap<T>.Unwrap(ref result);
         }
 
@@ -1657,7 +1656,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result, out IAsyncResult unwrappedResult)
         {
-            Contract.Requires(result != null);
+            if (result == null) throw new ArgumentNullException("result");
             unwrappedResult = result;
             return ApmWrap<T>.Unwrap(ref unwrappedResult);
         }
@@ -1679,7 +1678,7 @@ namespace WebApplications.Utilities
             [CanBeNull] T data,
             [CanBeNull] SynchronizationContext syncContext = null)
         {
-            Contract.Requires(callback != null);
+            if (callback == null) throw new ArgumentNullException("callback");
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
         }
 
@@ -1695,8 +1694,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static T[][] Split<T>([NotNull] this T[] array, [NotNull] params int[] indices)
         {
-            Contract.Requires(array != null);
-            Contract.Requires(indices != null);
+            if (array == null) throw new ArgumentNullException("array");
+            if (indices == null) throw new ArgumentNullException("indices");
 
             int length = array.Length;
 
@@ -1746,8 +1745,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            Contract.Requires(elements != null);
-            Contract.Requires(separator != null);
+            if (elements == null) throw new ArgumentNullException("elements");
+            if (separator == null) throw new ArgumentNullException("separator");
 
             return String.Join(separator, elements);
         }
@@ -1764,8 +1763,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            Contract.Requires(elements != null);
-            Contract.Requires(separator != null);
+            if (elements == null) throw new ArgumentNullException("elements");
+            if (separator == null) throw new ArgumentNullException("separator");
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1793,8 +1792,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            Contract.Requires(elements != null);
-            Contract.Requires(separator != null);
+            if (elements == null) throw new ArgumentNullException("elements");
+            if (separator == null) throw new ArgumentNullException("separator");
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1822,8 +1821,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            Contract.Requires(elements != null);
-            Contract.Requires(separator != null);
+            if (elements == null) throw new ArgumentNullException("elements");
+            if (separator == null) throw new ArgumentNullException("separator");
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1848,7 +1847,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<string> SplitLines([NotNull] this string input)
         {
-            Contract.Requires(input != null);
+            if (input == null) throw new ArgumentNullException("input");
             return _lineSplitter.Split(input);
         }
 
@@ -1861,7 +1860,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string LowerCaseFirstLetter([NotNull] this string input)
         {
-            Contract.Requires(input != null);
+            if (input == null) throw new ArgumentNullException("input");
+            if (input.Length < 1 ||
+                char.IsLower(input[0])) return input;
             return Char.ToLower(input[0]) + input.Substring(1);
         }
 
@@ -1893,7 +1894,7 @@ namespace WebApplications.Utilities
             byte[] bytes = ipAddress.GetAddressBytes();
             if (ipAddress.AddressFamily == AddressFamily.InterNetworkV6)
             {
-                Contract.Assert(bytes.Length == 16);
+                Debug.Assert(bytes.Length == 16);
 
                 // We need to add Scope for v6 addresses.
                 int offset = bytes.Length;
@@ -1907,7 +1908,7 @@ namespace WebApplications.Utilities
                 Array.Copy(scopeBytes, 0, bytes, offset, 4);
             }
             else
-                Contract.Assert(bytes.Length == 4);
+                Debug.Assert(bytes.Length == 4);
             return bytes;
         }
 
@@ -1925,7 +1926,7 @@ namespace WebApplications.Utilities
             int l = bytes.Length;
             if (l > 4)
             {
-                Contract.Assert(l == 20);
+                Debug.Assert(l == 20);
                 // This is an IPv6 address, remove the scope from the end - note we encode it as a uint32 but have to supply
                 // it to IPAddress as a long (which is CLS compliant).
                 l -= 4;
@@ -1936,7 +1937,7 @@ namespace WebApplications.Utilities
                 return new IPAddress(bytes, scope);
             }
             // We have an IP4 address.
-            Contract.Assert(l == 4);
+            Debug.Assert(l == 4);
             return new IPAddress(bytes);
         }
 
@@ -1952,7 +1953,7 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [CanBeNull] IEqualityComparer<T> equalityComparer = null)
         {
-            Contract.Requires(enumerable != null);
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
             IReadOnlyCollection<T> collection = enumerable.Enumerate();
             return collection.Count == collection.Distinct(equalityComparer ?? EqualityComparer<T>.Default).Count();
         }
@@ -1974,8 +1975,8 @@ namespace WebApplications.Utilities
             [NotNull] TKey key,
             [CanBeNull] TValue value)
         {
-            Contract.Requires(dict != null);
-            Contract.Requires(!ReferenceEquals(key, null));
+            if (dict == null) throw new ArgumentNullException("dict");
+            if (ReferenceEquals(key, null)) throw new ArgumentNullException("key");
             TValue val;
             if (!dict.TryGetValue(key, out val))
                 dict.Add(key, val = value);
@@ -1999,9 +2000,9 @@ namespace WebApplications.Utilities
             [NotNull] TKey key,
             [NotNull] [InstantHandle] Func<TKey, TValue> valueFactory)
         {
-            Contract.Requires(dict != null);
-            Contract.Requires(!ReferenceEquals(key, null));
-            Contract.Requires(valueFactory != null);
+            if (dict == null) throw new ArgumentNullException("dict");
+            if (ReferenceEquals(key, null)) throw new ArgumentNullException("key");
+            if (valueFactory == null) throw new ArgumentNullException("valueFactory");
             TValue val;
             if (!dict.TryGetValue(key, out val))
                 dict.Add(key, val = valueFactory(key));
@@ -2043,7 +2044,7 @@ namespace WebApplications.Utilities
             [CanBeNull] [InstantHandle] this IEnumerable<T> values,
             [NotNull] [InstantHandle] Func<T, double> selector)
         {
-            Contract.Requires(selector != null);
+            if (selector == null) throw new ArgumentNullException("selector");
             if (values == null) return 0;
 
             double[] array = values.Select(selector).ToArray();
@@ -2083,8 +2084,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
 
             return source.MaxBy(selector, Comparer<TKey>.Default);
         }
@@ -2112,8 +2113,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
 
             return source.MaxByOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2144,9 +2145,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2192,9 +2193,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2237,8 +2238,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
 
             return source.MinBy(selector, Comparer<TKey>.Default);
         }
@@ -2266,8 +2267,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
 
             return source.MinByOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2298,9 +2299,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2346,9 +2347,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2388,8 +2389,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
 
             return source.MaxOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2418,9 +2419,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2457,8 +2458,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
 
             return source.MinOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2488,9 +2489,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(selector != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (selector == null) throw new ArgumentNullException("selector");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2519,8 +2520,8 @@ namespace WebApplications.Utilities
         public static T Min<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
-            Contract.Requires(source != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             source = source.Enumerate();
             if (!source.Any())
@@ -2563,8 +2564,8 @@ namespace WebApplications.Utilities
         public static T Max<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
-            Contract.Requires(source != null);
-            Contract.Requires(comparer != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (comparer == null) throw new ArgumentNullException("comparer");
 
             source = source.Enumerate();
             if (!source.Any())
@@ -2615,7 +2616,7 @@ namespace WebApplications.Utilities
             [NotNull] IEnumerable<TSource> second,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
-            Contract.Requires(second != null);
+            if (second == null) throw new ArgumentNullException("second");
             return UnionSingleIterator(first, second, comparer ?? EqualityComparer<TSource>.Default);
         }
 
@@ -2650,7 +2651,7 @@ namespace WebApplications.Utilities
             [CanBeNull] TSource last,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
-            Contract.Requires(first != null);
+            if (first == null) throw new ArgumentNullException("first");
             return UnionSingleIterator(first, last, comparer ?? EqualityComparer<TSource>.Default);
         }
 
@@ -2683,7 +2684,7 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource first)
         {
-            Contract.Requires(sequence != null);
+            if (sequence == null) throw new ArgumentNullException("sequence");
 
             return PrependIterator(sequence, first);
         }
@@ -2704,7 +2705,7 @@ namespace WebApplications.Utilities
             [CanBeNull] this TSource first,
             [NotNull] IEnumerable<TSource> sequence)
         {
-            Contract.Requires(sequence != null);
+            if (sequence == null) throw new ArgumentNullException("sequence");
 
             return PrependIterator(sequence, first);
         }
@@ -2736,7 +2737,7 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource last)
         {
-            Contract.Requires(sequence != null);
+            if (sequence == null) throw new ArgumentNullException("sequence");
 
 
             return AppendIterator(sequence, last);
@@ -2758,7 +2759,7 @@ namespace WebApplications.Utilities
             [CanBeNull] this TSource last,
             [NotNull] IEnumerable<TSource> sequence)
         {
-            Contract.Requires(sequence != null);
+            if (sequence == null) throw new ArgumentNullException("sequence");
 
             return AppendIterator(sequence, last);
         }
@@ -2787,8 +2788,8 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<TSource> first,
             [NotNull] params TSource[] second)
         {
-            Contract.Requires(first != null);
-            Contract.Requires(second != null);
+            if (first == null) throw new ArgumentNullException("first");
+            if (second == null) throw new ArgumentNullException("second");
             return ConcatIterator(first, second);
         }
 
@@ -2813,8 +2814,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool HasAtLeast<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(count > 0);
+            if (source == null) throw new ArgumentNullException("source");
+            if (count < 1) throw new ArgumentOutOfRangeException("count");
 
             ICollection<TSource> collection1 = source as ICollection<TSource>;
             if (collection1 != null)
@@ -2847,9 +2848,9 @@ namespace WebApplications.Utilities
             int count,
             [NotNull] [InstantHandle] Func<TSource, bool> predicate)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(count > 0);
-            Contract.Requires(predicate != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (count < 1) throw new ArgumentOutOfRangeException("count");
+            if (predicate == null) throw new ArgumentNullException("predicate");
 
             ICollection<TSource> collection1 = source as ICollection<TSource>;
             if (collection1 != null &&
@@ -2881,8 +2882,8 @@ namespace WebApplications.Utilities
         [Annotations.Pure]
         public static bool HasExact<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(count > 0);
+            if (source == null) throw new ArgumentNullException("source");
+            if (count < 1) throw new ArgumentOutOfRangeException("count");
 
             ICollection<TSource> collection1 = source as ICollection<TSource>;
             if (collection1 != null)
@@ -2915,8 +2916,8 @@ namespace WebApplications.Utilities
             int count,
             [NotNull] [InstantHandle] Func<TSource, bool> predicate)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(count > 0);
+            if (source == null) throw new ArgumentNullException("source");
+            if (count < 1) throw new ArgumentOutOfRangeException("count");
 
             ICollection<TSource> collection1 = source as ICollection<TSource>;
             if (collection1 != null &&
@@ -3243,8 +3244,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependants)
         {
-            Contract.Requires(enumerable != null);
-            Contract.Requires(getDependants != null);
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            if (getDependants == null) throw new ArgumentNullException("getDependants");
 
             enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
@@ -3278,8 +3279,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependencies)
         {
-            Contract.Requires(enumerable != null);
-            Contract.Requires(getDependencies != null);
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            if (getDependencies == null) throw new ArgumentNullException("getDependencies");
 
             enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
@@ -3354,16 +3355,16 @@ namespace WebApplications.Utilities
                 if (!dependants.TryGetValue(t, out dependentsOfLastYield)) continue;
                 dependants.Remove(t);
 
-                Contract.Assert(dependentsOfLastYield != null);
+                Debug.Assert(dependentsOfLastYield != null);
 
                 foreach (T dependant in dependentsOfLastYield)
                 {
-                    Contract.Assert(dependant != null);
+                    Debug.Assert(dependant != null);
 
                     // Check the dependant was actually included in enumerable
                     List<T> deps;
                     if (!dependencies.TryGetValue(dependant, out deps)) continue;
-                    Contract.Assert(deps != null);
+                    Debug.Assert(deps != null);
 
                     // Remove dependency
                     deps.Remove(t);
@@ -3404,12 +3405,11 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static SemanticVersion SemanticVersion([NotNull] this Assembly assembly)
         {
-            Contract.Requires(assembly != null);
-            Contract.Ensures(Contract.Result<SemanticVersion>() != null);
+            if (assembly == null) throw new ArgumentNullException("assembly");
 
             // Get the assembly version.
             Version version = assembly.GetName().Version;
-            Contract.Assert(version != null);
+            Debug.Assert(version != null);
 
             // Get the semantic version attribute.
             AssemblySemanticVersionAttribute attribute = assembly.GetCustomAttribute<AssemblySemanticVersionAttribute>();
@@ -3449,7 +3449,7 @@ namespace WebApplications.Utilities
             [NotNull] this Type elementType,
             [CanBeNull] [InstantHandle] IEnumerable values = null)
         {
-            Contract.Requires(elementType != null);
+            if (elementType == null) throw new ArgumentNullException("elementType");
             // ReSharper disable once AssignNullToNotNullAttribute, PossibleNullReferenceException
             return _hashCollectionCreators.GetOrAdd(
                 elementType,
@@ -3462,7 +3462,7 @@ namespace WebApplications.Utilities
                     MethodInfo addMethod = hashCollectionType.GetMethod(
                         "Add",
                         BindingFlags.Public | BindingFlags.Instance);
-                    Contract.Assert(addMethod != null);
+                    Debug.Assert(addMethod != null);
 
                     ParameterExpression valuesParameter = Expression.Parameter(typeof(IEnumerable), "values");
                     ParameterExpression strongEnumerable = Expression.Variable(
@@ -3514,7 +3514,7 @@ namespace WebApplications.Utilities
         [CanBeNull]
         public static T Choose<T>([NotNull] [InstantHandle] this IEnumerable<T> enumerable)
         {
-            Contract.Requires(enumerable != null);
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
 
             IList<T> list = enumerable as IList<T> ?? enumerable.ToArray();
             return list.Count > 0
@@ -3536,8 +3536,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, double> getWeightFunc)
         {
-            Contract.Requires(enumerable != null);
-            Contract.Requires(getWeightFunc != null);
+            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            if (getWeightFunc == null) throw new ArgumentNullException("getWeightFunc");
             // Get the weights total weight whilst building a list to prevent multiple enumerations.
             double totalWeight = 0D;
             List<T, double> list = new List<T, double>();
@@ -3561,7 +3561,7 @@ namespace WebApplications.Utilities
             // Pick a connection string
             foreach (Tuple<T, double> item in list)
             {
-                Contract.Assert(item != null);
+                Debug.Assert(item != null);
                 next -= item.Item2;
                 if (next <= 0)
                     return item.Item1;
@@ -3635,7 +3635,7 @@ namespace WebApplications.Utilities
             [NotNull] Func<Exception, TException> convert)
             where TException : Exception
         {
-            Contract.Requires(convert != null);
+            if (convert == null) throw new ArgumentNullException("convert");
 
             if (exception == null) yield break;
 
@@ -3700,12 +3700,12 @@ namespace WebApplications.Utilities
 
             while (true)
             {
-                Contract.Assert(exception != null);
+                Debug.Assert(exception != null);
 
                 AggregateException aggregate = exception as AggregateException;
                 if (aggregate != null)
                 {
-                    Contract.Assert(aggregate.InnerExceptions != null);
+                    Debug.Assert(aggregate.InnerExceptions != null);
                     if (aggregate.InnerExceptions.Count == 1)
                     {
                         exception = aggregate.InnerException;
@@ -3753,7 +3753,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool TryPop<T>([NotNull] this Stack<T> stack, out T value)
         {
-            Contract.Requires(stack != null);
+            if (stack == null) throw new ArgumentNullException("stack");
             if (stack.Count < 1)
             {
                 value = default(T);
@@ -3774,7 +3774,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool TryPeek<T>([NotNull] this Stack<T> stack, out T value)
         {
-            Contract.Requires(stack != null);
+            if (stack == null) throw new ArgumentNullException("stack");
             if (stack.Count < 1)
             {
                 value = default(T);
@@ -3795,7 +3795,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool TryDequeue<T>([NotNull] this Queue<T> queue, out T value)
         {
-            Contract.Requires(queue != null);
+            if (queue == null) throw new ArgumentNullException("queue");
             if (queue.Count < 1)
             {
                 value = default(T);
@@ -3816,7 +3816,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static bool TryPeek<T>([NotNull] this Queue<T> queue, out T value)
         {
-            Contract.Requires(queue != null);
+            if (queue == null) throw new ArgumentNullException("queue");
             if (queue.Count < 1)
             {
                 value = default(T);
@@ -3838,8 +3838,8 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<T> Do<T>([NotNull] this IEnumerable<T> sequence, [NotNull] Action<T> action)
         {
-            Contract.Requires(sequence != null);
-            Contract.Requires(action != null);
+            if (sequence == null) throw new ArgumentNullException("sequence");
+            if (action == null) throw new ArgumentNullException("action");
 
             return DoEnumerator(sequence, action);
         }
@@ -3869,8 +3869,8 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<T1> enumerable1,
             [NotNull] IEnumerable<T2> enumerable2)
         {
-            Contract.Requires(enumerable1 != null);
-            Contract.Requires(enumerable2 != null);
+            if (enumerable1 == null) throw new ArgumentNullException("enumerable1");
+            if (enumerable2 == null) throw new ArgumentNullException("enumerable2");
             return CrossIterator(enumerable1, enumerable2);
         }
 
@@ -3918,9 +3918,9 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEnumerable<T> SkipTake<T>([NotNull] this IEnumerable<T> source, int skipCount, int takeCount)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(skipCount >= 0);
-            Contract.Requires(takeCount > 0);
+            if (source == null) throw new ArgumentNullException("source");
+            if (skipCount < 0) throw new ArgumentOutOfRangeException("skipCount");
+            if (takeCount < 1) throw new ArgumentOutOfRangeException("takeCount");
 
             return SkipTakeIterator(source, skipCount, takeCount);
         }
@@ -3969,9 +3969,9 @@ namespace WebApplications.Utilities
             int takeCount,
             bool includeFirst = true)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(skipPredicate != null);
-            Contract.Requires(takeCount > 0);
+            if (source == null) throw new ArgumentNullException("source");
+            if (skipPredicate == null) throw new ArgumentNullException("skipPredicate");
+            if (takeCount < 1) throw new ArgumentOutOfRangeException("takeCount");
 
             return SkipWhileTakeIterator(source, skipPredicate, takeCount, includeFirst);
         }
@@ -4027,9 +4027,9 @@ namespace WebApplications.Utilities
             int takeCount,
             bool includeFirst = true)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(skipPredicate != null);
-            Contract.Requires(takeCount > 0);
+            if (source == null) throw new ArgumentNullException("source");
+            if (skipPredicate == null) throw new ArgumentNullException("skipPredicate");
+            if (takeCount < 0) throw new ArgumentOutOfRangeException("takeCount");
 
             return SkipWhileTakeLastIterator(source, skipPredicate, takeCount, includeFirst);
         }
@@ -4381,7 +4381,7 @@ namespace WebApplications.Utilities
             [CanBeNull] T value,
             [CanBeNull] IEqualityComparer<T> comparer = null)
         {
-            Contract.Requires(source != null);
+            if (source == null) throw new ArgumentNullException("source");
 
             if (comparer == null) comparer = EqualityComparer<T>.Default;
 
@@ -4414,16 +4414,16 @@ namespace WebApplications.Utilities
         public static int IndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
-            [NotNull] [InstantHandle] EqualityComparison<T> @equals)
+            [NotNull] [InstantHandle] EqualityComparison<T> equals)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(@equals != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (equals == null) throw new ArgumentNullException("equals");
 
             int index = 0;
 
             foreach (T item in source)
             {
-                if (@equals(item, value))
+                if (equals(item, value))
                     return index;
                 index++;
                 if (index < 0)
@@ -4450,7 +4450,7 @@ namespace WebApplications.Utilities
             [CanBeNull] T value,
             [CanBeNull] IEqualityComparer<T> comparer = null)
         {
-            Contract.Requires(source != null);
+            if (source == null) throw new ArgumentNullException("source");
 
             if (comparer == null) comparer = EqualityComparer<T>.Default;
 
@@ -4484,17 +4484,17 @@ namespace WebApplications.Utilities
         public static int LastIndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
-            [NotNull] [InstantHandle] EqualityComparison<T> @equals)
+            [NotNull] [InstantHandle] EqualityComparison<T> equals)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(@equals != null);
+            if (source == null) throw new ArgumentNullException("source");
+            if (equals == null) throw new ArgumentNullException("equals");
 
             int result = -1;
             int index = 0;
 
             foreach (T item in source)
             {
-                if (@equals(item, value))
+                if (equals(item, value))
                     result = index;
                 index++;
                 if (index < 0)
@@ -4514,7 +4514,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IEqualityComparer<T> ToGenericComparer<T>([NotNull] this IEqualityComparer comparer)
         {
-            Contract.Requires(comparer != null, "Parameter_Null");
+            if (comparer == null) throw new ArgumentNullException("comparer");
             return comparer as IEqualityComparer<T> ?? new WrappedEqualityComparer<T>(comparer);
         }
 
@@ -4528,7 +4528,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static IComparer<T> ToGenericComparer<T>([NotNull] this IComparer comparer)
         {
-            Contract.Requires(comparer != null, "Parameter_Null");
+            if (comparer == null) throw new ArgumentNullException("comparer");
             return comparer as IComparer<T> ?? new WrappedComparer<T>(comparer);
         }
 

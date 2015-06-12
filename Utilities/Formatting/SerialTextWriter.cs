@@ -26,8 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -65,7 +63,7 @@ namespace WebApplications.Utilities.Formatting
         internal SerialTextWriter([NotNull] TextWriter writer)
             : base(writer.FormatProvider)
         {
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
             // Sanity check, we shouldn't normally create a serial text writer on a serialized text writer,
             // but it can happen (for example when initializing ConsoleTextWriter to use TraceTextWriter).
             ISerialTextWriter stw = writer as ISerialTextWriter;
@@ -184,9 +182,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="buffer">The character array to write data from.</param>
         /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
         /// <param name="count">The number of characters to write.</param>
-        [SuppressMessage("Microsoft.Contracts", "CC1055")]
         // Skip extra error checking to avoid *potential* AppCompat problems.
-        // ReSharper disable once CodeAnnotationAnalyzer
         public override void Write(char[] buffer, int index, int count)
         {
             Context.Invoke(() => _writer.Write(buffer, index, count));

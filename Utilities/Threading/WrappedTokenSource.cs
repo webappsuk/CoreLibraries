@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
 
@@ -80,7 +80,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="source">The source.</param>
         public WrappedTokenSource([NotNull] CancellationTokenSource source)
         {
-            Contract.Requires(source != null);
+            Debug.Assert(source != null);
             _source = source;
         }
 
@@ -100,8 +100,8 @@ namespace WebApplications.Utilities.Threading
         /// <param name="tokens">The tokens.</param>
         public WrappedTokenSource([NotNull] params CancellationToken[] tokens)
         {
-            Contract.Requires(tokens != null);
-            Contract.Requires(tokens.Length > 0);
+            Debug.Assert(tokens != null);
+            Debug.Assert(tokens.Length > 0);
 
             _source = CancellationTokenSource.CreateLinkedTokenSource(tokens);
         }

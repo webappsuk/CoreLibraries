@@ -69,14 +69,17 @@ for (int i = 0; i < maxParameters; i++) { #>
         /// <remarks></remarks>
         [PublicAPI]
         public static Task<TResult> FromAsync<#= typeParams #>TResult>(
-            [NotNull]this Func<#= typeParams #>AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,<#= paramsWithType #>
+            [NotNull] this Func<#= typeParams #>AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,<#= paramsWithType #>
             object asyncState = null,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
+            [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (beginMethod == null) throw new ArgumentNullException("beginMethod");
+            if (endMethod == null) throw new ArgumentNullException("endMethod");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return beginMethod<#= paramsWithoutType #>null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
