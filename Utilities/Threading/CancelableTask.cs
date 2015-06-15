@@ -656,7 +656,6 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// Creates a <see cref="CancelableTask{TResult}" /> that's completed successfully with the specified result.
         /// </summary>
-        /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
         /// <param name="result">The result to store into the completed task.</param>
         /// <returns>
         /// The successfully completed task.

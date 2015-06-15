@@ -224,7 +224,7 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Performs a deep copy of the child chunks from <paramref name="source"/> to <see cref="destination"/>.
+        /// Performs a deep copy of the child chunks from <paramref name="source"/> to <paramref name="destination"/>.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="destination">The destination.</param>

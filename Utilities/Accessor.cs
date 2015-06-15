@@ -805,7 +805,7 @@ namespace WebApplications.Utilities
         #endregion
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="T" /> to <see cref="Accessor{T}" />.
+        /// Performs an implicit conversion from <typeparamref name="T" /> to <see cref="Accessor{T}" />.
         /// </summary>
         /// <param name="instance">The instance.</param>
         /// <returns>The result of the conversion.</returns>
@@ -815,7 +815,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Accessor{T}" /> to <see cref="T" />.
+        /// Performs an explicit conversion from <see cref="Accessor{T}" /> to <typeparamref name="T" />.
         /// </summary>
         /// <param name="accessor">The accessor.</param>
         /// <returns>The result of the conversion.</returns>

@@ -258,7 +258,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Initializes a new instance of the <see cref="SemanticVersion" /> class from a <see cref="System.Version" />.
         /// A version of 1.2.3.4 will become <c>1.2.3[-preRelease]+build.4</c>, where <c>[-preRelease]</c> will be the
-        /// <paramref cref="preRelease"/> if it was specified and not null.
+        /// <paramref name="preRelease"/> if it was specified and not null.
         /// </summary>
         /// <param name="version">The system version.</param>
         /// <param name="preRelease">The optional preRelease version.</param>

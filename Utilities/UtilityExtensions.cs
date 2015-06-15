@@ -2724,11 +2724,11 @@ namespace WebApplications.Utilities
 
         #region HasAtLeast/HasExact
         /// <summary>
-        /// Determines whether a sequence contains at least <paramref cref="count" /> elements.
+        /// Determines whether a sequence contains at least <paramref name="count" /> elements.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
-        /// <param name="count">The minimum number of elements the <paramref cref="source"/> needs.</param>
+        /// <param name="count">The minimum number of elements the <paramref name="source"/> needs.</param>
         /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
         public static bool HasAtLeast<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
@@ -2753,11 +2753,11 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Determines whether a sequence contains at least <paramref cref="count" /> elements that satisfies a condition.
+        /// Determines whether a sequence contains at least <paramref name="count" /> elements that satisfies a condition.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
-        /// <param name="count">The minimum number of elements the <paramref cref="source"/> needs.</param>
+        /// <param name="count">The minimum number of elements the <paramref name="source"/> needs.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
         public static bool HasAtLeast<TSource>(
@@ -2789,11 +2789,11 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Determines whether a sequence contains exactly <paramref cref="count" /> elements.
+        /// Determines whether a sequence contains exactly <paramref name="count" /> elements.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
-        /// <param name="count">The exact number of elements the <paramref cref="source"/> needs.</param>
+        /// <param name="count">The exact number of elements the <paramref name="source"/> needs.</param>
         /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
         [Pure]
         public static bool HasExact<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
@@ -2819,11 +2819,11 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Determines whether a sequence contains exactly <paramref cref="count" /> elements that satisfies a condition.
+        /// Determines whether a sequence contains exactly <paramref name="count" /> elements that satisfies a condition.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
         /// <param name="source">The source <see cref="IEnumerable{T}" />.</param>
-        /// <param name="count">The exact number of elements the <paramref cref="source" /> needs.</param>
+        /// <param name="count">The exact number of elements the <paramref name="source" /> needs.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
         public static bool HasExact<TSource>(

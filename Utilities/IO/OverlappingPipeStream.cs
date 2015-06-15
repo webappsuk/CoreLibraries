@@ -62,6 +62,9 @@ namespace WebApplications.Utilities.IO
         private const int ErrorIoPending = 997;
         #endregion
 
+        /// <summary>
+        /// The underlaying stream.
+        /// </summary>
         protected PipeStream Stream;
 
         [NotNull]
