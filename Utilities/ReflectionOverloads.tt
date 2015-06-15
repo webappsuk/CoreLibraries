@@ -72,13 +72,7 @@ for (int i = 0; i < maxParameters; i++) {
         [PublicAPI]
         public static Func<#= typeParams #>TResult> Func<#= typeParams #>TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<#= typeParams #>TResult>) GetFunc(methodBase, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
         }
@@ -96,13 +90,7 @@ for (int i = 0; i < maxParameters; i++) {
         [PublicAPI]
         public static Func<#= typeParams #>TResult> ConstructorFunc<#= typeParams #>TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<#= typeParams #>TResult>) GetConstructorFunc(type, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
         }
@@ -119,13 +107,7 @@ for (int i = 0; i < maxParameters; i++) {
         [PublicAPI]
         public static Action<#= aTypeParams #> Action<#= aTypeParams #>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<#= aTypeParams #>) GetAction(methodInfo, checkParameterAssignability<#= typeOfs #>);
         }

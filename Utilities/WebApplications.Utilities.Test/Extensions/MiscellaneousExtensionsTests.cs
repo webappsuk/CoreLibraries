@@ -986,10 +986,10 @@ namespace WebApplications.Utilities.Test.Extensions
             Assert.AreEqual(wrappedObject, wrapped.Unwrap<string>());
         }
 
-        [ExpectedException(typeof (InvalidCastException))]
+        [ExpectedException(typeof(ArgumentException))]
         [TestMethod]
         public void
-            UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputtedThenUnwrappingOutput_ThrowsInvalidCastException
+            UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputtedThenUnwrappingOutput_ThrowsArgumentException
             ()
         {
             string wrappedObject = Random.RandomString(10);

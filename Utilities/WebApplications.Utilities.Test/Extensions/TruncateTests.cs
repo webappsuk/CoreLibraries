@@ -287,9 +287,9 @@ namespace WebApplications.Utilities.Test.Extensions
         #endregion
 
         #region Exceptions tests
-        [ExpectedException(typeof (NullReferenceException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
-        public void Truncate_NullEllipsisString_ThrowsNullReferenceException()
+        public void Truncate_NullEllipsisString_ThrowsArgumentNullException()
         {
             // Need to have the string to be truncated long enough for it to not be immediately returned
             int maxLength = Random.Next(5, 100);
@@ -297,9 +297,9 @@ namespace WebApplications.Utilities.Test.Extensions
             String result = sentence.Truncate(maxLength, TruncateOptions.IncludeEllipsis, null);
         }
 
-        [ExpectedException(typeof (NullReferenceException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
-        public void Truncate_NullEllipsisStringButNoEllipsisFlag_ThrowsNullReferenceException()
+        public void Truncate_NullEllipsisStringButNoEllipsisFlag_ThrowsArgumentNullException()
         {
             // Need to have the string to be truncated long enough for it to not be immediately returned
             int maxLength = Random.Next(5, 100);

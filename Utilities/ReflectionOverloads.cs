@@ -52,13 +52,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<TResult> Func<TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<TResult>) GetFunc(methodBase, checkParameterAssignability, typeof (TResult));
         }
@@ -76,13 +70,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<TResult> ConstructorFunc<TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof (TResult));
         }
@@ -99,13 +87,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action Action(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action) GetAction(methodInfo, checkParameterAssignability);
         }
@@ -126,13 +108,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, TResult> Func<T1, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof (TResult));
         }
@@ -151,13 +127,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, TResult> ConstructorFunc<T1, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof (TResult));
         }
@@ -175,13 +145,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1> Action<T1>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1>) GetAction(methodInfo, checkParameterAssignability, typeof(T1));
         }
@@ -203,13 +167,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, TResult> Func<T1, T2, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof (TResult));
         }
@@ -229,13 +187,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, TResult> ConstructorFunc<T1, T2, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof (TResult));
         }
@@ -254,13 +206,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2> Action<T1, T2>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2));
         }
@@ -283,13 +229,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, TResult> Func<T1, T2, T3, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof (TResult));
         }
@@ -310,13 +250,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, TResult> ConstructorFunc<T1, T2, T3, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof (TResult));
         }
@@ -336,13 +270,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3> Action<T1, T2, T3>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3));
         }
@@ -366,13 +294,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, TResult> Func<T1, T2, T3, T4, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof (TResult));
         }
@@ -394,13 +316,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, TResult> ConstructorFunc<T1, T2, T3, T4, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof (TResult));
         }
@@ -421,13 +337,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4> Action<T1, T2, T3, T4>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4));
         }
@@ -452,13 +362,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, TResult> Func<T1, T2, T3, T4, T5, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof (TResult));
         }
@@ -481,13 +385,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, TResult> ConstructorFunc<T1, T2, T3, T4, T5, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof (TResult));
         }
@@ -509,13 +407,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5> Action<T1, T2, T3, T4, T5>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
         }
@@ -541,13 +433,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, TResult> Func<T1, T2, T3, T4, T5, T6, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof (TResult));
         }
@@ -571,13 +457,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof (TResult));
         }
@@ -600,13 +480,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6> Action<T1, T2, T3, T4, T5, T6>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6));
         }
@@ -633,13 +507,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Func<T1, T2, T3, T4, T5, T6, T7, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof (TResult));
         }
@@ -664,13 +532,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof (TResult));
         }
@@ -694,13 +556,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7> Action<T1, T2, T3, T4, T5, T6, T7>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7));
         }
@@ -728,13 +584,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof (TResult));
         }
@@ -760,13 +610,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof (TResult));
         }
@@ -791,13 +635,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8> Action<T1, T2, T3, T4, T5, T6, T7, T8>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8));
         }
@@ -826,13 +664,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof (TResult));
         }
@@ -859,13 +691,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof (TResult));
         }
@@ -891,13 +717,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9));
         }
@@ -927,13 +747,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof (TResult));
         }
@@ -961,13 +775,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof (TResult));
         }
@@ -994,13 +802,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10));
         }
@@ -1031,13 +833,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof (TResult));
         }
@@ -1066,13 +862,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof (TResult));
         }
@@ -1100,13 +890,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11));
         }
@@ -1138,13 +922,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof (TResult));
         }
@@ -1174,13 +952,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof (TResult));
         }
@@ -1209,13 +981,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12));
         }
@@ -1248,13 +1014,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof (TResult));
         }
@@ -1285,13 +1045,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof (TResult));
         }
@@ -1321,13 +1075,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13));
         }
@@ -1361,13 +1109,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof (TResult));
         }
@@ -1399,13 +1141,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof (TResult));
         }
@@ -1436,13 +1172,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14));
         }
@@ -1477,13 +1207,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             [NotNull] this MethodBase methodBase,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>) GetFunc(methodBase, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof (TResult));
         }
@@ -1516,13 +1240,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             [NotNull] this Type type,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>) GetConstructorFunc(type, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof (TResult));
         }
@@ -1554,13 +1272,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             [NotNull] this MethodInfo methodInfo,
-            bool checkParameterAssignability =
-#if DEBUG
-                true
-#else
-                false
-#endif
-            )
+            bool checkParameterAssignability = false)
         {
             return (Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>) GetAction(methodInfo, checkParameterAssignability, typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15));
         }

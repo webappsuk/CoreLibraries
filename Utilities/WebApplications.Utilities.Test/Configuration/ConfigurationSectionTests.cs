@@ -278,7 +278,7 @@ namespace WebApplications.Utilities.Test.Configuration
         }
 
         [TestMethod]
-        public void Changed_ActiveSetToNewForFirstTimeEverButAfterGettingActive_EventNotCalled()
+        public void Changed_ActiveSetToNewForFirstTimeEverButAfterGettingActive_EventCalled()
         {
             ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods3> active =
                 ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods3>.Active;
@@ -286,9 +286,9 @@ namespace WebApplications.Utilities.Test.Configuration
                 new ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods3>();
             ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods3>.ResetChangedEventCalledFlag();
             ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods3>.Active = configurationSection;
-            Assert.IsFalse(
+            Assert.IsTrue(
                 ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods3>.ChangedEventCalled,
-                "When the Active property is set for the first time, the Changed event should be not be called.");
+                "When the Active property is set for the first time, the Changed event should be be called.");
         }
 
         [TestMethod]

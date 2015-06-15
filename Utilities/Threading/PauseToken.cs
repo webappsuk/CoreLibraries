@@ -101,7 +101,6 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         [NotNull]
         [Pure]
-        [System.Diagnostics.Contracts.Pure]
         public Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {
             return _source != null && _source.IsPaused

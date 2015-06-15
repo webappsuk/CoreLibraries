@@ -85,7 +85,6 @@ namespace WebApplications.Utilities.Threading
         [PublicAPI]
         [NotNull]
         [Pure]
-        [System.Diagnostics.Contracts.Pure]
         internal Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {
             TaskCompletionSource<bool> cur = _paused;

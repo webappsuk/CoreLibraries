@@ -190,7 +190,7 @@ namespace WebApplications.Utilities
         /// The URI for the current AppDomains <see cref="AppDomain.BaseDirectory"/>.
         /// </summary>
         [NotNull]
-        public static readonly Uri AppDomainBaseUri = new Uri(AppDomain.CurrentDomain.BaseDirectory);
+        public static readonly Uri AppDomainBaseUri = new Uri(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\') + "\\");
 
         /// <summary>
         ///   Gets the ordinal representation of an <see cref="int">integer</see> ('1st', '2nd', etc.) as a <see cref="string"/>.
@@ -532,7 +532,7 @@ namespace WebApplications.Utilities
                     // ReSharper restore PossibleNullReferenceException
                     Debug.Assert(equalsMethod != null);
 
-                    return equalsMethod.Func<object, object, bool>(false);
+                    return equalsMethod.Func<object, object, bool>();
                 });
         }
 
@@ -4373,8 +4373,7 @@ namespace WebApplications.Utilities
         /// <param name="comparer">The comparer to use, or <see langword="null"/> to use the default comparer for the type.</param>
         /// <returns>The index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         [PublicAPI]
         public static int IndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
@@ -4408,8 +4407,7 @@ namespace WebApplications.Utilities
         /// <param name="equals">The equality comparison method to use.</param>
         /// <returns>The index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         [PublicAPI]
         public static int IndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
@@ -4442,8 +4440,7 @@ namespace WebApplications.Utilities
         /// <param name="comparer">The comparer to use, or <see langword="null"/> to use the default comparer for the type.</param>
         /// <returns>The last index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         [PublicAPI]
         public static int LastIndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
@@ -4478,8 +4475,7 @@ namespace WebApplications.Utilities
         /// <param name="equals">The equality comparison method to use.</param>
         /// <returns>The last index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         [PublicAPI]
         public static int LastIndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,

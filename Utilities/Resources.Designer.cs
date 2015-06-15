@@ -61,6 +61,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Result is the wrong type.
+        /// </summary>
+        internal static string ApmWrap_Unwrap_ResultWrongType {
+            get {
+                return ResourceManager.GetString("ApmWrap_Unwrap_ResultWrongType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duration cannot be negative.
         /// </summary>
         internal static string AsyncDebounced_DurationNegative {

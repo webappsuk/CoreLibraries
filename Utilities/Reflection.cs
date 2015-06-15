@@ -1615,8 +1615,7 @@ namespace WebApplications.Utilities
         /// <param name="baseType">Type of the base.</param> 
         /// <returns></returns> 
         /// <remarks></remarks> 
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static bool DescendsFrom([NotNull] this Type sourceType, [NotNull] Type baseType)
         {
             if (sourceType == null) throw new ArgumentNullException("sourceType");
@@ -1644,8 +1643,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TBase">The type of the base.</typeparam>
         /// <param name="sourceType">Type of the source.</param>
         /// <returns></returns>
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static bool DescendsFrom<TBase>([NotNull] this Type sourceType)
         {
             Type baseType = typeof(TBase);
@@ -1666,8 +1664,7 @@ namespace WebApplications.Utilities
         /// <param name="type">The type to check.</param>
         /// <param name="interfaceType">The type of the interface.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         [PublicAPI]
         public static bool ImplementsInterface([NotNull] this Type type, [NotNull] Type interfaceType)
         {
@@ -1704,8 +1701,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TInterface">The type of the interface.</typeparam>
         /// <param name="type">The type to check.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         [PublicAPI]
         public static bool ImplementsInterface<TInterface>([NotNull] this Type type)
         {

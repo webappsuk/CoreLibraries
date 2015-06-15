@@ -224,7 +224,7 @@ namespace WebApplications.Utilities
             path = path ?? UtilityConfiguration.Active.TimeZoneDB;
             if (!string.IsNullOrWhiteSpace(path))
             {
-                Uri uri = new Uri(path, UriKind.RelativeOrAbsolute);
+                Uri uri = new Uri(path.TrimStart('\\', '/'), UriKind.RelativeOrAbsolute);
                 if (!uri.IsAbsoluteUri)
                     uri = new Uri(UtilityExtensions.AppDomainBaseUri, uri);
 
@@ -290,8 +290,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static double TotalMilliseconds(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerMillisecond;
@@ -304,8 +303,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static int Milliseconds(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerMillisecond) % 1000;
@@ -318,8 +316,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static double TotalSeconds(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerSecond;
@@ -332,8 +329,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static int Seconds(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerSecond) % 60;
@@ -346,8 +342,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static double TotalMinutes(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerMinute;
@@ -360,8 +355,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static int Minutes(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerMinute) % 60;
@@ -374,8 +368,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static double TotalHours(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerHour;
@@ -388,8 +381,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static int Hours(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerHour) % 24;
@@ -402,8 +394,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static double TotalStandardDays(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerStandardDay;
@@ -416,8 +407,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static int StandardDays(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerStandardDay);
@@ -430,8 +420,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static double TotalStandardWeeks(this Duration duration)
         {
             return (double)duration.Ticks / NodaConstants.TicksPerStandardWeek;
@@ -444,8 +433,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Double.</returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static int StandardWeeks(this Duration duration)
         {
             return (int)(duration.Ticks / NodaConstants.TicksPerStandardWeek);
@@ -460,8 +448,7 @@ namespace WebApplications.Utilities
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static Instant FloorSecond(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerSecond) * NodaConstants.TicksPerSecond);
@@ -474,8 +461,7 @@ namespace WebApplications.Utilities
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static Instant CeilingSecond(this Instant instant)
         {
             return new Instant(
@@ -490,8 +476,7 @@ namespace WebApplications.Utilities
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static Instant FloorMinute(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerMinute) * NodaConstants.TicksPerMinute);
@@ -504,8 +489,7 @@ namespace WebApplications.Utilities
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static Instant CeilingMinute(this Instant instant)
         {
             return new Instant(
@@ -520,8 +504,7 @@ namespace WebApplications.Utilities
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static Instant FloorHour(this Instant instant)
         {
             return new Instant((instant.Ticks / NodaConstants.TicksPerHour) * NodaConstants.TicksPerHour);
@@ -534,8 +517,7 @@ namespace WebApplications.Utilities
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static Instant CeilingHour(this Instant instant)
         {
             return new Instant(
@@ -574,8 +556,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
         {
             if (period == null) throw new ArgumentNullException("period");
@@ -591,8 +572,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
         {
             if (period == null) throw new ArgumentNullException("period");
@@ -608,8 +588,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDate local)
         {
             if (period == null) throw new ArgumentNullException("period");
@@ -625,8 +604,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [System.Diagnostics.Contracts.Pure]
-        [Annotations.Pure]
+        [Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDate local)
         {
             if (period == null) throw new ArgumentNullException("period");

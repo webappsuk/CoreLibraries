@@ -244,7 +244,7 @@ namespace WebApplications.Utilities.Globalization
             if (string.IsNullOrWhiteSpace(path))
                 return Empty;
 
-            Uri uri = new Uri(path, UriKind.RelativeOrAbsolute);
+            Uri uri = new Uri(path.TrimStart('\\', '/'), UriKind.RelativeOrAbsolute);
             if (!uri.IsAbsoluteUri)
                 uri = new Uri(UtilityExtensions.AppDomainBaseUri, uri);
 

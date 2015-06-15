@@ -534,4 +534,7 @@
   <data name="AsyncDebounced_MinimumGapNegative" xml:space="preserve">
     <value>Minimum gap cannot be negative</value>
   </data>
+  <data name="ApmWrap_Unwrap_ResultWrongType" xml:space="preserve">
+    <value>Result is the wrong type</value>
+  </data>
 </root>

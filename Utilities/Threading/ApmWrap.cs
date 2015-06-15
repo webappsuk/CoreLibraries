@@ -188,7 +188,7 @@ namespace WebApplications.Utilities.Threading
         public static T Unwrap([NotNull] ref IAsyncResult result)
         {
             ApmWrapper apmWrap = result as ApmWrapper;
-            if (apmWrap == null) throw new ArgumentException();
+            if (apmWrap == null) throw new ArgumentException(Resources.ApmWrap_Unwrap_ResultWrongType, "result");
 
             Debug.Assert(apmWrap.AsyncResult != null);
             result = apmWrap.AsyncResult;
