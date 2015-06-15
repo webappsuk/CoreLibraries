@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -32,68 +32,84 @@ using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Cryptography
 {
+    /// <summary>
+    /// Extensions for hashing algorithms.
+    /// </summary>
+    [PublicAPI]
     public static class HashAlgorithmExtensions
     {
         #region Static HashAlgorithms
         /// <summary>
         /// The Sha1Managed hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha1Managed = new SHA1Managed();
+        [NotNull]
+        public static readonly HashAlgorithm Sha1Managed = new SHA1Managed();
 
         /// <summary>
         /// The SHA1Cng hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha1Cng = new SHA1Cng();
+        [NotNull]
+        public static readonly HashAlgorithm Sha1Cng = new SHA1Cng();
 
         /// <summary>
         /// The Sha1Crypto hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha1Crypto = new SHA1CryptoServiceProvider();
+        [NotNull]
+        public static readonly HashAlgorithm Sha1Crypto = new SHA1CryptoServiceProvider();
 
         /// <summary>
         /// The Sha256Managed hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha256Managed = new SHA256Managed();
+        [NotNull]
+        public static readonly HashAlgorithm Sha256Managed = new SHA256Managed();
 
         /// <summary>
         /// The Sha256Cng hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha256Cng = new SHA256Cng();
+        [NotNull]
+        public static readonly HashAlgorithm Sha256Cng = new SHA256Cng();
 
         /// <summary>
         /// The Sha256Crypto hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha256Crypto = new SHA256CryptoServiceProvider();
+        [NotNull]
+        public static readonly HashAlgorithm Sha256Crypto = new SHA256CryptoServiceProvider();
 
         /// <summary>
         /// The Sha384Managed hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha384Managed = new SHA384Managed();
+        [NotNull]
+        public static readonly HashAlgorithm Sha384Managed = new SHA384Managed();
 
         /// <summary>
         /// The Sha384Cng hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha384Cng = new SHA384Cng();
+        [NotNull]
+        public static readonly HashAlgorithm Sha384Cng = new SHA384Cng();
 
         /// <summary>
         /// The Sha384Crypto hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha384Crypto = new SHA384CryptoServiceProvider();
+        [NotNull]
+        public static readonly HashAlgorithm Sha384Crypto = new SHA384CryptoServiceProvider();
 
         /// <summary>
         /// The Sha512Managed hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha512Managed = new SHA512Managed();
+        [NotNull]
+        public static readonly HashAlgorithm Sha512Managed = new SHA512Managed();
 
         /// <summary>
         /// The Sha512Cng hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha512Cng = new SHA512Cng();
+        [NotNull]
+        public static readonly HashAlgorithm Sha512Cng = new SHA512Cng();
 
         /// <summary>
         /// The Sha512Crypto hash algorithm.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly HashAlgorithm Sha512Crypto = new SHA512CryptoServiceProvider();
+        [NotNull]
+        public static readonly HashAlgorithm Sha512Crypto = new SHA512CryptoServiceProvider();
         #endregion
 
         #region HashExtensions
@@ -105,7 +121,6 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
-        [UsedImplicitly]
         public static string GetHash([NotNull] this string input, [NotNull] HashAlgorithm hashAlgorithm)
         {
             if (string.IsNullOrEmpty(input))
@@ -123,7 +138,6 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
-        [UsedImplicitly]
         public static byte[] GetHashBytes([NotNull] this string input, [NotNull] HashAlgorithm hashAlgorithm)
         {
             if (string.IsNullOrEmpty(input))
@@ -139,7 +153,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static string GetHash([NotNull] this string input)
         {
             return GetHash(input, input.Length < 427 ? Sha1Managed : Sha1Crypto);
@@ -150,7 +163,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value in raw bytes</returns>
         [NotNull]
-        [UsedImplicitly]
         public static byte[] GetHashBytes([NotNull] this string input)
         {
             return GetHashBytes(input, input.Length < 427 ? Sha1Managed : Sha1Crypto);
@@ -161,7 +173,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static string GetHashSHA256([NotNull] this string input)
         {
             return GetHash(input, input.Length < 110 ? Sha256Managed : Sha256Cng);
@@ -172,7 +183,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static byte[] GetHashBytesSHA256([NotNull] this string input)
         {
             return GetHashBytes(input, input.Length < 110 ? Sha256Managed : Sha256Cng);
@@ -183,7 +193,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static string GetHashSHA384([NotNull] this string input)
         {
             return GetHash(input, Sha384Cng);
@@ -194,7 +203,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static byte[] GetHashBytesSHA384([NotNull] this string input)
         {
             return GetHashBytes(input, Sha384Cng);
@@ -205,7 +213,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static string GetHashSHA512([NotNull] this string input)
         {
             return GetHash(input, Sha512Cng);
@@ -216,7 +223,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static byte[] GetHashBytesSHA512([NotNull] this string input)
         {
             return GetHashBytes(input, Sha512Cng);
@@ -228,7 +234,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value as a base64 string</returns>
         [NotNull]
-        [UsedImplicitly]
         public static string GetHashMD5([NotNull] this string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -245,7 +250,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <returns>The hash value in raw bytes</returns>
         [NotNull]
-        [UsedImplicitly]
         public static byte[] GetHashBytesMD5([NotNull] this string input)
         {
             if (string.IsNullOrEmpty(input))

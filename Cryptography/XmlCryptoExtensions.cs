@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -38,6 +39,7 @@ namespace WebApplications.Utilities.Cryptography
     /// <summary>
     /// Extensions for Xml cryptography.
     /// </summary>
+    [PublicAPI]
     public static class XmlCryptoExtensions
     {
         /// <summary>
@@ -50,10 +52,15 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// The upmost <see cref="XElement"/> that was decrypted.
         /// </returns>
-        [UsedImplicitly]
-        public static bool TryDecrypt([NotNull] this XNode inputNode, IEncryptorDecryptor encryptorDecryptor,
-                                      out XElement decryptedXml, out bool? isLatestKey)
+        public static bool TryDecrypt(
+            [NotNull] this XNode inputNode,
+            [NotNull] IEncryptorDecryptor encryptorDecryptor,
+            out XElement decryptedXml,
+            out bool? isLatestKey)
         {
+            if (inputNode == null) throw new ArgumentNullException("inputNode");
+            if (encryptorDecryptor == null) throw new ArgumentNullException("encryptorDecryptor");
+
             decryptedXml = null;
             isLatestKey = null;
             try
@@ -79,10 +86,15 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// The upmost <see cref="XmlElement"/> that was decrypted.
         /// </returns>
-        [UsedImplicitly]
-        public static bool TryDecrypt([NotNull] XmlNode inputNode, IEncryptorDecryptor encryptorDecryptor,
-                                      out XmlElement decryptedXml, out bool? isLatestKey)
+        public static bool TryDecrypt(
+            [NotNull] XmlNode inputNode,
+            [NotNull] IEncryptorDecryptor encryptorDecryptor,
+            out XmlElement decryptedXml,
+            out bool? isLatestKey)
         {
+            if (inputNode == null) throw new ArgumentNullException("inputNode");
+            if (encryptorDecryptor == null) throw new ArgumentNullException("encryptorDecryptor");
+
             decryptedXml = null;
             isLatestKey = null;
             try
@@ -107,11 +119,15 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// The upmost <see cref="XElement"/> that was decrypted.
         /// </returns>
-        [UsedImplicitly]
         [CanBeNull]
-        public static XElement Decrypt(this XNode inputNode, IEncryptorDecryptor encryptorDecryptor,
-                                       out bool isLatestKey)
+        public static XElement Decrypt(
+            [NotNull] this XNode inputNode,
+            [NotNull] IEncryptorDecryptor encryptorDecryptor,
+            out bool isLatestKey)
         {
+            if (inputNode == null) throw new ArgumentNullException("inputNode");
+            if (encryptorDecryptor == null) throw new ArgumentNullException("encryptorDecryptor");
+
             XElement element;
             XDocument ownerDocument;
             isLatestKey = true;
@@ -130,7 +146,7 @@ namespace WebApplications.Utilities.Cryptography
                     element = ownerDocument.Root;
                     break;
 
-                    /* 
+                /* 
              * TODO WE COULD SUPPORT THE FOLLOWING TYPES
             case XmlNodeType.DocumentFragment:
             case XmlNodeType.Attribute:
@@ -139,10 +155,12 @@ namespace WebApplications.Utilities.Cryptography
             case XmlNodeType.Comment:
              */
                 default:
-                    throw new ArgumentOutOfRangeException("inputNode",
-                                                          string.Format(
-                                                              Resources.Cryptographer_Decrypt_CannotDecryptNode,
-                                                              inputNode.NodeType));
+                    throw new ArgumentOutOfRangeException(
+                        "inputNode",
+                        string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.Cryptographer_Decrypt_CannotDecryptNode,
+                            inputNode.NodeType));
             }
 
             // If we don't have an element and an owner document nothing to do!
@@ -154,6 +172,7 @@ namespace WebApplications.Utilities.Cryptography
             while (encryptedElements.Count > 0)
             {
                 element = encryptedElements.Pop();
+                Debug.Assert(element != null);
 
                 // This will always be true, unless an unencrypted element is passed in initially.
                 if (element.Name == "Encrypted")
@@ -188,11 +207,15 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// The upmost <see cref="XmlElement"/> that was decrypted.
         /// </returns>
-        [UsedImplicitly]
         [CanBeNull]
-        public static XmlElement Decrypt([NotNull] this XmlNode inputNode, IEncryptorDecryptor encryptorDecryptor,
-                                         out bool isLatestKey)
+        public static XmlElement Decrypt(
+            [NotNull] this XmlNode inputNode,
+            [NotNull] IEncryptorDecryptor encryptorDecryptor,
+            out bool isLatestKey)
         {
+            if (inputNode == null) throw new ArgumentNullException("inputNode");
+            if (encryptorDecryptor == null) throw new ArgumentNullException("encryptorDecryptor");
+
             XmlElement element;
             XmlDocument ownerDocument;
             isLatestKey = true;
@@ -211,7 +234,7 @@ namespace WebApplications.Utilities.Cryptography
                     element = ownerDocument.DocumentElement;
                     break;
 
-                    /* 
+                /* 
              * TODO WE COULD SUPPORT THE FOLLOWING TYPES
             case XmlNodeType.DocumentFragment:
             case XmlNodeType.Attribute:
@@ -220,10 +243,12 @@ namespace WebApplications.Utilities.Cryptography
             case XmlNodeType.Comment:
              */
                 default:
-                    throw new ArgumentOutOfRangeException("inputNode",
-                                                          string.Format(
-                                                              Resources.Cryptographer_Decrypt_CannotDecryptNode,
-                                                              inputNode.NodeType));
+                    throw new ArgumentOutOfRangeException(
+                        "inputNode",
+                        string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.Cryptographer_Decrypt_CannotDecryptNode,
+                            inputNode.NodeType));
             }
 
             // If we don't have an element and an owner document nothing to do!
@@ -235,6 +260,7 @@ namespace WebApplications.Utilities.Cryptography
 
             // Set up XPath Navigator
             XPathNavigator xPathNavigator = ownerDocument.CreateNavigator();
+            // ReSharper disable once AssignNullToNotNullAttribute
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(xPathNavigator.NameTable);
             namespaceManager.AddNamespace("b", ownerDocument.NamespaceURI);
 
@@ -243,6 +269,7 @@ namespace WebApplications.Utilities.Cryptography
             while (encryptedElements.Count > 0)
             {
                 element = encryptedElements.Pop();
+                Debug.Assert(element != null);
 
                 // Check we have a parent node, if we don't we're not part of a document.
                 XmlNode parentNode = element.ParentNode;
@@ -287,13 +314,10 @@ namespace WebApplications.Utilities.Cryptography
                     continue;
 
                 // Push encrypted nodes onto stack.
-                foreach (
-                    XmlElement e in
-                        from XmlNode eNode in encryptedChildNodes
-                        select eNode as XmlElement
-                        into e
-                        where e.LocalName == "Encrypted"
-                        select e)
+                foreach (XmlElement e in encryptedChildNodes.Cast<XmlNode>()
+                    .Select(eNode => eNode as XmlElement)
+                    // ReSharper disable once PossibleNullReferenceException
+                    .Where(e => e.LocalName == "Encrypted"))
                     encryptedElements.Push(e);
             }
             return element;
@@ -307,10 +331,12 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// The upmost <see cref="XElement"/> that was encrypted.
         /// </returns>
-        [UsedImplicitly]
         [CanBeNull]
-        public static XElement Encrypt([NotNull] this XNode inputNode, IEncryptorDecryptor encryptorDecryptor)
+        public static XElement Encrypt([NotNull] this XNode inputNode, [NotNull] IEncryptorDecryptor encryptorDecryptor)
         {
+            if (inputNode == null) throw new ArgumentNullException("inputNode");
+            if (encryptorDecryptor == null) throw new ArgumentNullException("encryptorDecryptor");
+
             XElement element;
             XDocument ownerDocument;
             switch (inputNode.NodeType)
@@ -328,7 +354,7 @@ namespace WebApplications.Utilities.Cryptography
                     element = ownerDocument.Root;
                     break;
 
-                    /* 
+                /* 
              * TODO WE COULD SUPPORT THE FOLLOWING TYPES
             case XmlNodeType.DocumentFragment:
             case XmlNodeType.Attribute:
@@ -337,10 +363,12 @@ namespace WebApplications.Utilities.Cryptography
             case XmlNodeType.Comment:
              */
                 default:
-                    throw new ArgumentOutOfRangeException("inputNode",
-                                                          string.Format(
-                                                              Resources.Cryptographer_Encrypt_CannotEncryptNode,
-                                                              inputNode.NodeType));
+                    throw new ArgumentOutOfRangeException(
+                        "inputNode",
+                        string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.Cryptographer_Encrypt_CannotEncryptNode,
+                            inputNode.NodeType));
             }
 
             // If we don't have an element and an owner document nothing to do!
@@ -361,10 +389,14 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// The upmost <see cref="XmlElement"/> that was encrypted.
         /// </returns>
-        [UsedImplicitly]
         [CanBeNull]
-        public static XmlElement Encrypt([NotNull] this XmlNode inputNode, IEncryptorDecryptor encryptorDecryptor)
+        public static XmlElement Encrypt(
+            [NotNull] this XmlNode inputNode,
+            [NotNull] IEncryptorDecryptor encryptorDecryptor)
         {
+            if (inputNode == null) throw new ArgumentNullException("inputNode");
+            if (encryptorDecryptor == null) throw new ArgumentNullException("encryptorDecryptor");
+
             XmlElement element;
             XmlDocument ownerDocument;
             switch (inputNode.NodeType)
@@ -382,7 +414,7 @@ namespace WebApplications.Utilities.Cryptography
                     element = ownerDocument.DocumentElement;
                     break;
 
-                    /* 
+                /* 
              * TODO WE COULD SUPPORT THE FOLLOWING TYPES
             case XmlNodeType.DocumentFragment:
             case XmlNodeType.Attribute:
@@ -391,10 +423,12 @@ namespace WebApplications.Utilities.Cryptography
             case XmlNodeType.Comment:
              */
                 default:
-                    throw new ArgumentOutOfRangeException("inputNode",
-                                                          string.Format(
-                                                              Resources.Cryptographer_Encrypt_CannotEncryptNode,
-                                                              inputNode.NodeType));
+                    throw new ArgumentOutOfRangeException(
+                        "inputNode",
+                        string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.Cryptographer_Encrypt_CannotEncryptNode,
+                            inputNode.NodeType));
             }
 
             // If we don't have an element and an owner document nothing to do!

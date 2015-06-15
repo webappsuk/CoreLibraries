@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,13 +29,27 @@ using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Cryptography.Configuration
 {
+    /// <summary>
+    /// A collection of <see cref="KeyElement">crypto provider key elements</see>.
+    /// </summary>
     public class KeyCollection : ConfigurationElementCollection<string, KeyElement>
     {
+        /// <summary>
+        /// Gets the element key.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <returns></returns>
         protected override string GetElementKey(KeyElement element)
         {
             return element.Value;
         }
 
+        /// <summary>
+        /// Indicates whether the <see cref="T:System.Configuration.ConfigurationElementCollection" /> object is read only.
+        /// </summary>
+        /// <returns>
+        /// true if the <see cref="T:System.Configuration.ConfigurationElementCollection" /> object is read only; otherwise, false.
+        /// </returns>
         public override bool IsReadOnly()
         {
             return false;

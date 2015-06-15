@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,37 @@ using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Cryptography
 {
+    /// <summary>
+    /// Interface to an object that can encrypt and decrypt a string.
+    /// </summary>
     public interface IEncryptorDecryptor
     {
-        [CanBeNull]
-        string Encrypt([CanBeNull]string input);
-        [CanBeNull]
-        string Decrypt([CanBeNull]string input, out bool isLatestKey);
-        bool TryDecrypt([CanBeNull]string input, [CanBeNull]out string result, [CanBeNull]out bool? isLatestKey);
+        /// <summary>
+        /// Encrypts the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        [ContractAnnotation("null=>null;notnull=>notnull")]
+        string Encrypt([CanBeNull] string input);
+
+        /// <summary>
+        /// Decrypts the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="isLatestKey">if set to <see langword="true" /> the input was encrypted using the latest key.</param>
+        /// <returns></returns>
+        [ContractAnnotation("input:null=>null;input:notnull=>notnull")]
+        string Decrypt([CanBeNull] string input, out bool isLatestKey);
+
+        /// <summary>
+        /// Attempts to decrypt the input given.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="result">The result.</param>
+        /// <param name="isLatestKey">If set to <see langword="true" /> the input was encrypted using the latest key. Will be <see langword="null" /> if the operation failed.</param>
+        /// <returns>
+        ///   <see langword="true" /> if successful; otherwise <see langword="false" />.
+        /// </returns>
+        bool TryDecrypt([CanBeNull] string input, [CanBeNull] out string result, [CanBeNull] out bool? isLatestKey);
     }
 }

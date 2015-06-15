@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,12 +26,41 @@
 #endregion
 
 using System;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Cryptography
 {
+    /// <summary>
+    /// An encryption key.
+    /// </summary>
     internal class Key
     {
-        public string Value { get; set; }
-        public DateTime Expiry { get; set; }
+        /// <summary>
+        /// Gets or sets the value of the key.
+        /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
+        [NotNull]
+        public readonly string Value;
+
+        /// <summary>
+        /// Gets or sets the key expiry.
+        /// </summary>
+        /// <value>
+        /// The expiry.
+        /// </value>
+        public readonly DateTime Expiry;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Key"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="expiry">The expiry.</param>
+        public Key([NotNull] string value, DateTime expiry)
+        {
+            Value = value;
+            Expiry = expiry;
+        }
     }
 }

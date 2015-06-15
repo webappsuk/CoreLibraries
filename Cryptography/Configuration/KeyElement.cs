@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,37 @@
 
 using System;
 using System.Configuration;
+using WebApplications.Utilities.Annotations;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
 namespace WebApplications.Utilities.Cryptography.Configuration
 {
+    /// <summary>
+    /// A crypto provider key element.
+    /// </summary>
     public class KeyElement : ConfigurationElement
     {
+        /// <summary>
+        /// Gets or sets the value of the key.
+        /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
         [ConfigurationProperty("value", IsRequired = true)]
+        [NotNull]
         public string Value
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("value"); }
             set { this["value"] = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the key expiry.
+        /// </summary>
+        /// <value>
+        /// The expiry.
+        /// </value>
         [ConfigurationProperty("expiry", IsRequired = true)]
         public DateTime Expiry
         {

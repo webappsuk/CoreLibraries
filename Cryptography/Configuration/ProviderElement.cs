@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -33,25 +33,49 @@ using ConfigurationElement = WebApplications.Utilities.Configuration.Configurati
 
 namespace WebApplications.Utilities.Cryptography.Configuration
 {
+    /// <summary>
+    /// A crypto provider element.
+    /// </summary>
+    [PublicAPI]
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class ProviderElement : ConfigurationElement
     {
+        /// <summary>
+        /// Gets or sets the provider ID.
+        /// </summary>
+        /// <value>
+        /// The provider ID.
+        /// </value>
         [ConfigurationProperty("id", IsRequired = true, IsKey = true)]
         [NotNull]
         public string Id
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("id"); }
             set { SetProperty("id", value); }
         }
 
+        /// <summary>
+        /// Gets or sets the type of the provider.
+        /// </summary>
+        /// <value>
+        /// The type.
+        /// </value>
         [ConfigurationProperty("type")]
-        [TypeConverter(typeof (TypeNameConverter))]
-        [SubclassTypeValidator(typeof (IEncryptorDecryptor))]
+        [TypeConverter(typeof(TypeNameConverter))]
+        [SubclassTypeValidator(typeof(IEncryptorDecryptor))]
         public Type Type
         {
             get { return GetProperty<Type>("type"); }
             set { SetProperty("type", value); }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this provider is enabled.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> if this provider is enabled; otherwise, <see langword="false" />.
+        /// </value>
         [ConfigurationProperty("enabled", DefaultValue = true, IsRequired = false)]
         public bool IsEnabled
         {
@@ -59,14 +83,27 @@ namespace WebApplications.Utilities.Cryptography.Configuration
             set { SetProperty("enabled", value); }
         }
 
+        /// <summary>
+        /// Gets or sets the provider name.
+        /// </summary>
+        /// <value>
+        /// The provider name.
+        /// </value>
         [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
         [NotNull]
         public string Name
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("name"); }
             set { SetProperty("name", value); }
         }
 
+        /// <summary>
+        /// Gets or sets the life of the key in days.
+        /// </summary>
+        /// <value>
+        /// The key life in days.
+        /// </value>
         [ConfigurationProperty("keyLifeInDays", IsRequired = false, DefaultValue = 7)]
         public int KeyLifeInDays
         {
@@ -74,17 +111,30 @@ namespace WebApplications.Utilities.Cryptography.Configuration
             set { this["keyLifeInDays"] = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the keys for this provider.
+        /// </summary>
+        /// <value>
+        /// The keys.
+        /// </value>
         [ConfigurationProperty("keys", IsRequired = false, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof (KeyCollection),
+        [ConfigurationCollection(typeof(KeyCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
         [NotNull]
-        [UsedImplicitly]
+        [ItemNotNull]
         public virtual KeyCollection Keys
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<KeyCollection>("keys"); }
             set { this["keys"] = value; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="T:System.Configuration.ConfigurationElement" /> object is read-only.
+        /// </summary>
+        /// <returns>
+        /// true if the <see cref="T:System.Configuration.ConfigurationElement" /> object is read-only; otherwise, false.
+        /// </returns>
         public override bool IsReadOnly()
         {
             return false;

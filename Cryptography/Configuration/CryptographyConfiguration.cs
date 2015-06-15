@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,29 @@
 #endregion
 
 using System.Configuration;
-using System.Linq;
+using System.Diagnostics;
 using System.Text;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Cryptography.Configuration
 {
+    /// <summary>
+    /// Configuration section for cryptography
+    /// </summary>
     public class CryptographyConfiguration : ConfigurationSection<CryptographyConfiguration>
     {
         /// <summary>
         /// Gets or sets the <see cref="ProviderCollection">providers</see>.
         /// </summary>
         [ConfigurationProperty("providers", IsRequired = true, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof (ProviderCollection),
+        [ConfigurationCollection(typeof(ProviderCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
         [NotNull]
+        [ItemNotNull]
         public ProviderCollection Providers
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<ProviderCollection>("providers"); }
             set { SetProperty("providers", value); }
         }
@@ -59,6 +64,9 @@ namespace WebApplications.Utilities.Cryptography.Configuration
 
                 foreach (ProviderElement provider in Providers)
                 {
+                    Debug.Assert(provider != null);
+                    Debug.Assert(provider.Type != null);
+
                     xml.Append("<add name=\"")
                         .Append(provider.Name)
                         .Append("\" type=\"")
@@ -73,12 +81,16 @@ namespace WebApplications.Utilities.Cryptography.Configuration
                     if (provider.Keys.Count > 0)
                     {
                         xml.Append("><keys>");
-                        foreach (var key in provider.Keys)
+                        foreach (KeyElement key in provider.Keys)
+                        {
+                            Debug.Assert(key != null);
+
                             xml.Append("<add value=\"")
                                 .Append(key.Value)
                                 .Append("\" expiry=\"")
                                 .Append(key.Expiry.ToString("yyyy-MM-dd HH:mm:ss"))
                                 .Append("\"/>");
+                        }
 
                         xml.Append("</keys></add>");
                     }

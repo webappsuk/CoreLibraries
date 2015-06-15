@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -38,6 +39,9 @@ using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
+    /// <summary>
+    /// Allows encryption and decryption using RSA.
+    /// </summary>
     internal class RSACryptographer : IEncryptorDecryptor
     {
         /// <summary>
@@ -48,6 +52,8 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// These are ordered by the expiry date descending.
         /// </summary>
+        [NotNull]
+        [ItemNotNull]
         private List<Key> _rsaEncryptionKeys = new List<Key>();
 
         /// <summary>
@@ -59,12 +65,10 @@ namespace WebApplications.Utilities.Cryptography
             if (keys == null)
                 return;
 
-            foreach (Key key in keys)
-            {
-                _rsaEncryptionKeys.Add(key);
-            }
-
-            _rsaEncryptionKeys = _rsaEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
+            _rsaEncryptionKeys.AddRange(keys);
+            // ReSharper disable PossibleNullReferenceException
+            _rsaEncryptionKeys.Sort((a, b) => b.Expiry.CompareTo(a.Expiry));
+            // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
@@ -72,6 +76,7 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="provider">The provider element.</param>
         /// <param name="keys">The keys to add to this provider.</param>
+        [UsedImplicitly]
         internal RSACryptographer(ProviderElement provider, IEnumerable<Key> keys = null)
         {
             _provider = provider;
@@ -79,12 +84,10 @@ namespace WebApplications.Utilities.Cryptography
             if (keys == null)
                 return;
 
-            foreach (Key key in keys)
-            {
-                _rsaEncryptionKeys.Add(key);
-            }
-
-            _rsaEncryptionKeys = _rsaEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
+            _rsaEncryptionKeys.AddRange(keys);
+            // ReSharper disable PossibleNullReferenceException
+            _rsaEncryptionKeys.Sort((a, b) => b.Expiry.CompareTo(a.Expiry));
+            // ReSharper restore PossibleNullReferenceException
         }
 
         #region IEncryptorDecryptor Members
@@ -102,8 +105,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// <see langword="true"/> if the decryption was successful; otherwise <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
-        public bool TryDecrypt([CanBeNull] string inputStr, [CanBeNull] out string decryptedString, [CanBeNull] out bool? isLatestKey)
+        public bool TryDecrypt(string inputStr, out string decryptedString, out bool? isLatestKey)
         {
             decryptedString = null;
             isLatestKey = null;
@@ -136,9 +138,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="CryptographicException">
         /// None of the keys stored resulted in a successful decryption.
         /// </exception>
-        [CanBeNull]
-        [UsedImplicitly]
-        public string Decrypt([CanBeNull] string input, out bool isLatestKey)
+        public string Decrypt(string input, out bool isLatestKey)
         {
             isLatestKey = false;
             if (string.IsNullOrEmpty(input))
@@ -149,7 +149,7 @@ namespace WebApplications.Utilities.Cryptography
                 int startPosition = 0;
 
                 // The end of each block is padded with an =.
-                int endPosition = input.IndexOf("=", startPosition);
+                int endPosition = input.IndexOf("=", startPosition, StringComparison.Ordinal);
 
                 string decrypted = string.Empty;
 
@@ -157,7 +157,7 @@ namespace WebApplications.Utilities.Cryptography
                 {
                     string block = input.Substring(startPosition, endPosition - startPosition + 1);
 
-                    CspParameters keyContainer = new CspParameters {KeyContainerName = key.Value};
+                    CspParameters keyContainer = new CspParameters { KeyContainerName = key.Value };
                     RSACryptoServiceProvider provider = new RSACryptoServiceProvider(keyContainer);
 
                     byte[] byteArray;
@@ -170,17 +170,19 @@ namespace WebApplications.Utilities.Cryptography
                         endPosition = -1;
                         continue;
                     }
+                    Debug.Assert(byteArray != null);
 
                     decrypted += Encoding.Unicode.GetString(byteArray);
                     startPosition = endPosition + 1;
 
                     // If no = is found -1 is returned, this is the last block.
-                    endPosition = input.IndexOf("=", startPosition);
+                    endPosition = input.IndexOf("=", startPosition, StringComparison.Ordinal);
                 }
 
                 if (decrypted != string.Empty)
                 {
-                    if (key.Value == _rsaEncryptionKeys.First().Value)
+                    Debug.Assert(_rsaEncryptionKeys[0] != null);
+                    if (key.Value == _rsaEncryptionKeys[0].Value)
                         isLatestKey = true;
 
                     return decrypted.TrimEnd('\0');
@@ -199,9 +201,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="ArgumentNullException">
         /// <paramref name="input"/> was <see langword="null"/>.
         /// </exception>
-        [CanBeNull]
-        [UsedImplicitly]
-        public string Encrypt([CanBeNull] string input)
+        public string Encrypt(string input)
         {
             if (string.IsNullOrEmpty(input))
                 return input;
@@ -210,30 +210,27 @@ namespace WebApplications.Utilities.Cryptography
 
             const int blockSize = 32;
             string resultString = string.Empty;
-            int numberOfBlocks = (input.Length/blockSize) + 1;
+            int numberOfBlocks = (input.Length / blockSize) + 1;
 
             for (int i = 0; i < numberOfBlocks; i++)
             {
-                byte[] byteArray = new byte[blockSize*2];
+                byte[] byteArray = new byte[blockSize * 2];
 
                 // The amount of characters to read in for the current block.
                 int readSize;
 
                 if (i == numberOfBlocks - 1)
-                {
                     // Get the remaining characters for the final block.
-                    readSize = (input.Length%blockSize);
-                }
+                    readSize = (input.Length % blockSize);
                 else
-                {
                     readSize = blockSize;
-                }
 
                 // Get the bytes for the current block.
-                Encoding.Unicode.GetBytes(input, blockSize*i, readSize, byteArray, 0);
+                Encoding.Unicode.GetBytes(input, blockSize * i, readSize, byteArray, 0);
 
                 // Encrypt the current block.
                 byteArray = encryptionProvider.Encrypt(byteArray, false);
+                Debug.Assert(byteArray != null);
 
                 resultString += Convert.ToBase64String(byteArray);
             }
@@ -248,6 +245,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// The <see cref="RSACryptoServiceProvider"/> containing the encryption key information.
         /// </returns>
+        [NotNull]
         private RSACryptoServiceProvider InitialiseCryptoServiceProvider()
         {
             RSACryptoServiceProvider encryptionProvider = new RSACryptoServiceProvider();
@@ -260,9 +258,10 @@ namespace WebApplications.Utilities.Cryptography
 
                 if (nonExpiredKeysFound)
                 {
-                    Key key = _rsaEncryptionKeys.First();
+                    Key key = _rsaEncryptionKeys[0];
+                    Debug.Assert(key != null);
 
-                    CspParameters keyContainer = new CspParameters {KeyContainerName = key.Value};
+                    CspParameters keyContainer = new CspParameters { KeyContainerName = key.Value };
                     encryptionProvider = new RSACryptoServiceProvider(keyContainer);
 
                     addNewKey = false;
@@ -275,18 +274,18 @@ namespace WebApplications.Utilities.Cryptography
 
                 // Create the new key container name using a Guid identifier.
                 string keyContainerName = CombGuid.NewCombGuid().ToString("N");
-                Key key = new Key
-                              {
-                                  Value = keyContainerName,
-                                  Expiry = DateTime.Now.Add(
-                                      TimeSpan.FromDays(_provider != null
-                                                            ? _provider.KeyLifeInDays
-                                                            : defaultKeyLifeInDays))
-                              };
+                Debug.Assert(keyContainerName != null);
+                Key key = new Key(
+                    keyContainerName,
+                    DateTime.Now.Add(
+                        TimeSpan.FromDays(
+                            _provider != null
+                                ? _provider.KeyLifeInDays
+                                : defaultKeyLifeInDays)));
 
                 WriteEncryptionKeyToConfiguration(key);
 
-                CspParameters keyContainer = new CspParameters {KeyContainerName = keyContainerName};
+                CspParameters keyContainer = new CspParameters { KeyContainerName = keyContainerName };
                 encryptionProvider = new RSACryptoServiceProvider(keyContainer);
             }
 
@@ -297,7 +296,7 @@ namespace WebApplications.Utilities.Cryptography
         /// Writes the encryption keys to the configuration.
         /// </summary>
         /// <param name="newKey">The new key to add to the configuration.</param>
-        private void WriteEncryptionKeyToConfiguration(Key newKey)
+        private void WriteEncryptionKeyToConfiguration([NotNull] Key newKey)
         {
             _rsaEncryptionKeys.Add(newKey);
             _rsaEncryptionKeys = _rsaEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
@@ -308,10 +307,10 @@ namespace WebApplications.Utilities.Cryptography
 
             // Create a key element to add to the provider element.
             KeyElement newKeyElement = new KeyElement
-                                           {
-                                               Value = newKey.Value,
-                                               Expiry = newKey.Expiry
-                                           };
+            {
+                Value = newKey.Value,
+                Expiry = newKey.Expiry
+            };
 
             _provider.Keys.Add(newKeyElement);
 
@@ -323,22 +322,14 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         private static void SaveConfiguration()
         {
-            System.Configuration.Configuration configurationObject;
-
-            if (HttpContext.Current == null)
-            {
-                // Get the configuration object with the purpose of saving the new XML to the configuration file.
-                configurationObject = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            }
-            else
-            {
-                // Get the configuration object with the purpose of saving the new XML to the configuration file.
-                configurationObject =
-                    WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
-            }
+            // Get the configuration object with the purpose of saving the new XML to the configuration file.
+            System.Configuration.Configuration configurationObject = HttpContext.Current == null
+                ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+                : WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
 
             // Get the <cryptography> section and set the raw XML.
             ConfigurationSection cryptographySection = configurationObject.GetSection("cryptography");
+            Debug.Assert(cryptographySection != null);
             cryptographySection.SectionInformation.SetRawXml(CryptographyConfiguration.Active.RawXml);
 
             configurationObject.Save(ConfigurationSaveMode.Minimal);

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -38,19 +38,25 @@ namespace WebApplications.Utilities.Cryptography
     /// Wraps together encrypted and unencrypted versions of a string, only encrypting/decrypting when necessary.
     /// </summary>
     [Serializable]
-    [UsedImplicitly]
+    [PublicAPI]
     public class EncryptedString : ISerializable, IEquatable<string>, IEquatable<EncryptedString>
     {
         /// <summary>
         /// Serialization tag.
         /// </summary>
-        private const string TAG_HIDDEN = "Hidden";
+        private const string TagID = "ID";
 
         /// <summary>
         /// Serialization tag.
         /// </summary>
-        private const string TAG_VALUE = "Value";
+        private const string TagHidden = "Hidden";
 
+        /// <summary>
+        /// Serialization tag.
+        /// </summary>
+        private const string TagValue = "Value";
+
+        [NotNull]
         private readonly CryptoProviderWrapper _cryptoProviderWrapper;
 
         /// <summary>
@@ -75,9 +81,14 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="value">The value.</param>
         /// <param name="isEncrypted">if set to <see langword="true"/> is encrypted.</param>
         /// <param name="isHidden">if set to <see langword="true"/> is hidden.</param>
-        public EncryptedString(CryptoProviderWrapper cryptoProviderWrapper, string value = null,
-                               bool isEncrypted = false, bool isHidden = false)
+        public EncryptedString(
+            [NotNull] CryptoProviderWrapper cryptoProviderWrapper,
+            string value = null,
+            bool isEncrypted = false,
+            bool isHidden = false)
         {
+            if (cryptoProviderWrapper == null) throw new ArgumentNullException("cryptoProviderWrapper");
+
             _cryptoProviderWrapper = cryptoProviderWrapper;
             if (isEncrypted)
                 Encrypted = value;
@@ -93,8 +104,9 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="context">The context.</param>
         private EncryptedString([NotNull] SerializationInfo info, StreamingContext context)
         {
-            Encrypted = info.GetString(TAG_VALUE);
-            Hidden = info.GetBoolean(TAG_HIDDEN);
+            _cryptoProviderWrapper = new CryptoProviderWrapper(info.GetString(TagID));
+            Encrypted = info.GetString(TagValue);
+            Hidden = info.GetBoolean(TagHidden);
         }
 
         /// <summary>
@@ -105,14 +117,12 @@ namespace WebApplications.Utilities.Cryptography
         /// <value>
         /// 	<see langword="true"/> if hidden; otherwise, <see langword="false"/>.
         /// </value>
-        [UsedImplicitly]
         public bool Hidden { get; set; }
 
         /// <summary>
         /// Gets or sets the encrypted version of the string.
         /// </summary>
         /// <value>The encrypted version of the string.</value>
-        [UsedImplicitly]
         public string Encrypted
         {
             get
@@ -120,8 +130,8 @@ namespace WebApplications.Utilities.Cryptography
                 if (_dirty == Dirty.Encrypted)
                 {
                     _encrypted = !string.IsNullOrEmpty(_unencrypted)
-                                     ? _cryptoProviderWrapper.Encrypt(_unencrypted)
-                                     : _unencrypted;
+                        ? _cryptoProviderWrapper.Encrypt(_unencrypted)
+                        : _unencrypted;
                     _dirty = Dirty.Neither;
                 }
                 return _encrypted;
@@ -146,7 +156,6 @@ namespace WebApplications.Utilities.Cryptography
         /// Gets or sets the unencrypted version of the string.
         /// </summary>
         /// <value>The unencrypted version of the string.</value>
-        [UsedImplicitly]
         public string Unencrypted
         {
             get
@@ -155,8 +164,8 @@ namespace WebApplications.Utilities.Cryptography
                 {
                     bool latestKey;
                     _unencrypted = !string.IsNullOrEmpty(_encrypted)
-                                       ? _cryptoProviderWrapper.Decrypt(_encrypted, out latestKey)
-                                       : _encrypted;
+                        ? _cryptoProviderWrapper.Decrypt(_encrypted, out latestKey)
+                        : _encrypted;
                     _dirty = Dirty.Neither;
                 }
                 return _unencrypted;
@@ -190,10 +199,9 @@ namespace WebApplications.Utilities.Cryptography
         {
             if (other == null)
                 return false;
-            if ((_dirty != other._dirty) || (_dirty != Dirty.Encrypted))
-            {
+            if ((_dirty != other._dirty) ||
+                (_dirty != Dirty.Encrypted))
                 return Equals(other.Unencrypted);
-            }
             return Equals(_encrypted, other._encrypted);
         }
         #endregion
@@ -210,7 +218,7 @@ namespace WebApplications.Utilities.Cryptography
         ///                 </param>
         public bool Equals([CanBeNull] string other)
         {
-            return Unencrypted.Equals(other);
+            return Equals(Unencrypted, other);
         }
         #endregion
 
@@ -229,8 +237,9 @@ namespace WebApplications.Utilities.Cryptography
         ///                 </exception>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(TAG_VALUE, Encrypted);
-            info.AddValue(TAG_HIDDEN, Hidden);
+            info.AddValue(TagID, _cryptoProviderWrapper.ID);
+            info.AddValue(TagValue, Encrypted);
+            info.AddValue(TagHidden, Hidden);
         }
         #endregion
 
