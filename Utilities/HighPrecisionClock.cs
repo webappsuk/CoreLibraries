@@ -50,16 +50,12 @@ namespace WebApplications.Utilities
         [DllImport("Kernel32.dll", CallingConvention = CallingConvention.Winapi)]
         private static extern void GetSystemTimePreciseAsFileTime(out long filetime);
 
+        private static readonly bool _getSysTimeAvailable;
+
         private static readonly Instant _startedTime;
         private static readonly long _startedTicks;
 
         private static readonly decimal _swToTicks = 10000000M / Stopwatch.Frequency;
-
-        [NotNull]
-        private static readonly Func<Instant> _nowFunc;
-
-        [NotNull]
-        private static readonly Func<long> _nowTicksFunc;
 
         /// <summary>
         /// Initializes the <see cref="HighPrecisionClock"/> class.
@@ -68,41 +64,18 @@ namespace WebApplications.Utilities
         {
             try
             {
-                long tmp;
-                GetSystemTimePreciseAsFileTime(out tmp);
-
-                _nowFunc = () =>
-                {
-                    long time;
-                    GetSystemTimePreciseAsFileTime(out time);
-                    return TimeHelpers.FileTimeEpoch.PlusTicks(time);
-                };
-                _nowTicksFunc = () =>
-                {
-                    long time;
-                    GetSystemTimePreciseAsFileTime(out time);
-                    return TimeHelpers.FileTimeEpoch.Ticks + time;
-                };
+                long time;
+                GetSystemTimePreciseAsFileTime(out time);
+                _getSysTimeAvailable = true;
             }
             catch (Exception)
             {
+                _getSysTimeAvailable = false;
                 if (Stopwatch.IsHighResolution)
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     _startedTime = SystemClock.Instance.Now;
                     _startedTicks = Stopwatch.GetTimestamp();
-
-                    _nowFunc =
-                        () => _startedTime.PlusTicks((long)((Stopwatch.GetTimestamp() - _startedTicks) * _swToTicks));
-                    _nowTicksFunc =
-                        () => _startedTime.Ticks + (long)((Stopwatch.GetTimestamp() - _startedTicks) * _swToTicks);
-                }
-                else
-                {
-                    // ReSharper disable PossibleNullReferenceException
-                    _nowFunc = () => SystemClock.Instance.Now;
-                    _nowTicksFunc = () => SystemClock.Instance.Now.Ticks;
-                    // ReSharper restore PossibleNullReferenceException
                 }
             }
         }
@@ -119,7 +92,21 @@ namespace WebApplications.Utilities
         /// </summary>
         public Instant Now
         {
-            get { return _nowFunc(); }
+            get
+            {
+                if (_getSysTimeAvailable)
+                {
+                    long time;
+                    GetSystemTimePreciseAsFileTime(out time);
+                    return TimeHelpers.FileTimeEpoch.PlusTicks(time);
+                }
+
+                if (Stopwatch.IsHighResolution)
+                    return _startedTime.PlusTicks((long)((Stopwatch.GetTimestamp() - _startedTicks) * _swToTicks));
+
+                // ReSharper disable once PossibleNullReferenceException
+                return SystemClock.Instance.Now;
+            }
         }
 
         /// <summary>
@@ -127,7 +114,21 @@ namespace WebApplications.Utilities
         /// </summary>
         public long NowTicks
         {
-            get { return _nowTicksFunc(); }
+            get
+            {
+                if (_getSysTimeAvailable)
+                {
+                    long time;
+                    GetSystemTimePreciseAsFileTime(out time);
+                    return TimeHelpers.FileTimeEpoch.Ticks + time;
+                }
+
+                if (Stopwatch.IsHighResolution)
+                    return _startedTime.Ticks + (long)((Stopwatch.GetTimestamp() - _startedTicks) * _swToTicks);
+
+                // ReSharper disable once PossibleNullReferenceException
+                return SystemClock.Instance.Now.Ticks;
+            }
         }
     }
 }
