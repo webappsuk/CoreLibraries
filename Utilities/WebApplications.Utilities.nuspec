@@ -14,8 +14,6 @@
     <references>
       <group targetFramework="net452">
         <reference file="$id$.dll" />
-        <reference file="$id$.pdb" />
-        <reference file="$id$.xml" />
       </group>
     </references>
   </metadata>
