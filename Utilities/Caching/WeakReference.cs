@@ -66,7 +66,6 @@ namespace WebApplications.Utilities.Caching
         ///   Returns a <see cref="bool"/> indicating whether or not we're tracking objects until they're collected
         ///   (<see langword="true"/>) or just until they're finalized (<see langword="false"/>).
         /// </summary>
-        [PublicAPI]
         public bool TrackResurrection
         {
             get { return _weakReference.TrackResurrection; }
@@ -78,7 +77,6 @@ namespace WebApplications.Utilities.Caching
         /// <remarks>
         ///   If this is <see langword="true"/> then the instance has not yet been garbage collected, meaning it's still accessible.
         /// </remarks>
-        [PublicAPI]
         public bool IsAlive
         {
             get { return _weakReference.IsAlive; }
@@ -87,7 +85,6 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Gets or sets the target, which is the underlying object being referenced.
         /// </summary>
-        [PublicAPI]
         public T Target
         {
             get { return (T)_weakReference.Target; }
@@ -102,7 +99,6 @@ namespace WebApplications.Utilities.Caching
         ///   Returns <see langword="true"/> if the reference is still alive meaning the target object can be retrieved;
         ///   otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         [ContractAnnotation("=>true,target:notnull; =>false,target:null")]
         public bool TryGetTarget(out T target)
         {

@@ -40,6 +40,7 @@ namespace WebApplications.Utilities.Reflect
     ///   Wraps the constructor information with accessors for retrieving parameters.
     /// </summary>
     [DebuggerDisplay("{Info} [Extended]")]
+    [PublicAPI]
     public class Constructor : ISignature
     {
         /// <summary>
@@ -78,7 +79,6 @@ namespace WebApplications.Utilities.Reflect
         ///   The parameters.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<ParameterInfo> Parameters
         {
             get
@@ -92,7 +92,6 @@ namespace WebApplications.Utilities.Reflect
         /// Gets the parameters count.
         /// </summary>
         /// <remarks></remarks>
-        [PublicAPI]
         public int ParametersCount
         {
             get
@@ -181,7 +180,6 @@ namespace WebApplications.Utilities.Reflect
         /// <para>The closure arrays are ordered and contain the same number of elements as their corresponding
         /// generic arguments.  Where elements are <see langword="null"/> a closure is not required.</para></remarks>
         [CanBeNull]
-        [PublicAPI]
         public Constructor Close([NotNull] Type[] typeClosures)
         {
             if (typeClosures == null) throw new ArgumentNullException("typeClosures");
@@ -246,7 +244,6 @@ namespace WebApplications.Utilities.Reflect
         ///   <exception cref="InvalidOperationException">No parameter/return types specified.</exception>
         /// <remarks></remarks>
         [CanBeNull]
-        [UsedImplicitly]
         public object GetFunc([NotNull] params Type[] funcTypes)
         {
             // Can't construct statics or open types.

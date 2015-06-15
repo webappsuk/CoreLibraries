@@ -39,6 +39,7 @@ namespace WebApplications.Utilities
     /// <remarks>
     /// This is used for setting optional properties.
     /// </remarks>
+    [PublicAPI]
     public struct Optional<T> :
         IOptional<T>,
         IEquatable<Optional<T>>,
@@ -66,8 +67,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the optional indicating a value is assigned to it's default value.
         /// </summary>
-        [UsedImplicitly]
-        public static readonly Optional<T> DefaultAssigned = new Optional<T>(default(T), isAssigned: true);
+        public static readonly Optional<T> DefaultAssigned = new Optional<T>(default(T), true);
 
         private readonly bool _isAssigned;
 
@@ -93,7 +93,6 @@ namespace WebApplications.Utilities
         /// has been set
         /// </summary>
         /// <param name="value">The value to for the optional item.</param>
-        [UsedImplicitly]
         public Optional(T value)
             : this(value, true)
         {
@@ -294,7 +293,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [UsedImplicitly]
         public static Optional<T> AssignIfNotNull(T value)
         {
             return ReferenceEquals(value, null) ? Unassigned : new Optional<T>(value, true);

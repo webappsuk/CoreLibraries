@@ -39,7 +39,7 @@ namespace WebApplications.Utilities
     ///   Provides additional information and accessors for a <see cref="Tuple"/>.
     /// </summary>
     /// <typeparam name="T">The tuple type.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public sealed class ExtendedTuple<T> : IEnumerable
         where T : class, IStructuralEquatable, IStructuralComparable, IComparable
     {
@@ -47,7 +47,6 @@ namespace WebApplications.Utilities
         ///   Accepts a <see cref="Tuple"/> and an index and returns the item at that index.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly Func<T, int, object> Indexer;
 
         /// <summary>
@@ -60,7 +59,6 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Accepts a <see cref="Tuple"/> and returns its size (the number of items).
         /// </summary>
-        [UsedImplicitly]
         // ReSharper disable once StaticMemberInGenericType
         public static readonly int Size;
 
@@ -68,7 +66,6 @@ namespace WebApplications.Utilities
         ///   Holds the instance of the extended <see cref="Tuple"/>.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public readonly T Tuple;
 
         /// <summary>

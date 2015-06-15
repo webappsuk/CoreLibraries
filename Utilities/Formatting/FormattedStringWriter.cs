@@ -503,7 +503,6 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the specified builder.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        [PublicAPI]
         public void Write([CanBeNull] FormatBuilder builder)
         {
             if (!_isOpen)
@@ -516,7 +515,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="builder">The builder.</param>
         [NotNull]
-        [PublicAPI]
         public Task WriteAsync([CanBeNull] FormatBuilder builder)
         {
             if (!_isOpen)
@@ -552,7 +550,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
             return _builder.ToString(null, formatProvider);

@@ -35,6 +35,7 @@ namespace WebApplications.Utilities
     ///   Extension methods for <see cref="Enum"/>s.
     /// </summary>
     /// <seealso cref="T:WebApplications.Utilities.ExtendedEnum`1"/>
+    [PublicAPI]
     public static class ExtendedEnum
     {
         #region ToEnum overloads
@@ -53,7 +54,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this sbyte value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -75,7 +75,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this byte value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -97,7 +96,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this ushort value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -119,7 +117,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this short value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -141,7 +138,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this uint value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -163,7 +159,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this int value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -185,7 +180,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this ulong value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -207,7 +201,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum ToEnum<TEnum>(this long value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -243,7 +236,6 @@ namespace WebApplications.Utilities
         ///   Console.WriteLine(Days.Weekend.IsCombinationFlag());    // Outputs true
         /// </code>
         /// </example>
-        [UsedImplicitly]
         public static bool IsCombinationFlag<TEnum>(this TEnum value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -276,7 +268,6 @@ namespace WebApplications.Utilities
         ///   Console.WriteLine(Days.Fri.NumberOfFlags());        // Outputs 1
         /// </code>
         /// </example>
-        [UsedImplicitly]
         public static int NumberOfFlags<TEnum>(this TEnum value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -310,7 +301,6 @@ namespace WebApplications.Utilities
         ///   Console.WriteLine((Days.Fri | Days.Sat | Days.Sun).IsAll());    // Outputs true
         /// </code>
         /// </example>
-        [UsedImplicitly]
         public static bool IsAll<TEnum>(this TEnum value)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -328,7 +318,6 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   Flag enums should contain a zero value constant that represents no flags being set.
         /// </remarks>
-        [UsedImplicitly]
         public static bool IsNone<TEnum>(this TEnum value)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -364,7 +353,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static ExtendedEnum<TEnum>.ValueDetail GetValueDetail<TEnum>(
             this TEnum value,
             bool includeImplicit = false)
@@ -389,7 +377,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the <paramref name="valueDetail"/> was found; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool TryGetValueDetail<TEnum>(
             this TEnum value,
             out ExtendedEnum<TEnum>.ValueDetail valueDetail,
@@ -410,7 +397,6 @@ namespace WebApplications.Utilities
         /// <returns>
         /// Returns <see langword="true" /> if the <paramref name="value" /> was found; otherwise returns <see langword="false" />.
         /// </returns>
-        [UsedImplicitly]
         public static bool TryGetLong<TEnum>(this TEnum value, out long vLong, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -427,7 +413,6 @@ namespace WebApplications.Utilities
         ///   <para>By default this is set to <see langword="false"/>.</para>
         /// </param>
         /// <returns>A <see cref="string"/> containing the enum's name.</returns>
-        [UsedImplicitly]
         [NotNull]
         public static string GetName<TEnum>(this TEnum value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -451,7 +436,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the name was found; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool TryGetName<TEnum>(this TEnum value, out string name, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -483,7 +467,6 @@ namespace WebApplications.Utilities
         ///   If more than one enum of the same type has the same integral value all of their descriptions will
         ///   be concatenated into a single result, each on a new line.
         /// </remarks>
-        [UsedImplicitly]
         [NotNull]
         public static string GetDescription<TEnum>(this TEnum value)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -507,7 +490,6 @@ namespace WebApplications.Utilities
         ///   If more than one enum of the same type has the same integral value all of their descriptions will
         ///   be concatenated into a single result, each on a new line.
         /// </remarks>
-        [UsedImplicitly]
         public static bool TryGetDescription<TEnum>(this TEnum value, out string name)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -544,7 +526,6 @@ namespace WebApplications.Utilities
         ///   Console.WriteLine(Days.Weekend.AreSet(Days.Fri));             // True
         /// </code>
         /// </example>
-        [UsedImplicitly]
         public static bool AreSet<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -583,7 +564,6 @@ namespace WebApplications.Utilities
         ///   Console.WriteLine(Days.Weekend.AreClear(Days.Sun | Days.None));   // True
         /// </code>
         /// </example>
-        [UsedImplicitly]
         public static bool AreClear<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
@@ -609,7 +589,6 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
-        [UsedImplicitly]
         [Pure]
         public static TEnum Set<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -633,7 +612,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the flags can be set; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         [Pure]
         public static bool TrySet<TEnum>(this TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -662,7 +640,6 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
-        [UsedImplicitly]
         [Pure]
         public static TEnum Clear<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -686,7 +663,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the flags can be cleared; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         [Pure]
         public static bool TryClear<TEnum>(
             this TEnum value,
@@ -719,7 +695,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The <paramref name="value"/> type could not be intersected with the <paramref name="flags"/> specified.
         /// </exception>
-        [UsedImplicitly]
         [Pure]
         public static TEnum Intersect<TEnum>(this TEnum value, TEnum flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -741,7 +716,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the flags can be intersected; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         [Pure]
         public static bool TryIntersect<TEnum>(
             this TEnum value,
@@ -788,7 +762,6 @@ namespace WebApplications.Utilities
         ///   Console.WriteLine(ExtendedEnum&lt;Days&gt;.Invert(Days.Weekend));   // Outputs Sun
         /// </code>
         /// </example>
-        [UsedImplicitly]
         [Pure]
         public static TEnum Invert<TEnum>(this TEnum value, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -811,7 +784,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         [Pure]
         public static bool TryInvert<TEnum>(this TEnum value, out TEnum result, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -837,7 +809,6 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
-        [UsedImplicitly]
         [Pure]
         public static TEnum Combine<TEnum>([NotNull] this IEnumerable<TEnum> flags, bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
@@ -861,7 +832,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         [Pure]
         public static bool TryCombine<TEnum>(
             [NotNull] this IEnumerable<TEnum> flags,
@@ -894,7 +864,6 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<TEnum> SplitFlags<TEnum>(
             this TEnum flags,
@@ -925,7 +894,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the flags can be split successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool TrySplitFlags<TEnum>(
             this TEnum flags,
             out IEnumerable<TEnum> result,

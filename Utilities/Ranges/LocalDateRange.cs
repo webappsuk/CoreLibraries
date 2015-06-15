@@ -140,7 +140,6 @@ namespace WebApplications.Utilities.Ranges
         /// <remarks>
         /// This is always the same as <see cref="Nights"/> + 1.
         /// </remarks>
-        [PublicAPI]
         public int Days
         {
             get
@@ -157,7 +156,6 @@ namespace WebApplications.Utilities.Ranges
         /// <remarks>
         /// This is always the same as <see cref="Days"/> - 1.
         /// </remarks>
-        [PublicAPI]
         public int Nights
         {
             get
@@ -176,7 +174,6 @@ namespace WebApplications.Utilities.Ranges
         /// Period.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Period AutoStep(LocalDate start, LocalDate end)
         {
             CheckStartGreaterThanEnd(start, end);
@@ -195,7 +192,6 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <param name="time">The time.</param>
         [NotNull]
-        [PublicAPI]
         public LocalDateTimeRange At(LocalTime time)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -208,7 +204,6 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="startTime">The start time.</param>
         /// <param name="endTime">The end time.</param>
         [NotNull]
-        [PublicAPI]
         public LocalDateTimeRange At(LocalTime startTime, LocalTime endTime)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -219,7 +214,6 @@ namespace WebApplications.Utilities.Ranges
         /// Gets a <see cref="LocalDateTimeRange" /> at midnight on the dates represented by this local date range.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public LocalDateTimeRange AtMidnight()
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -230,7 +224,6 @@ namespace WebApplications.Utilities.Ranges
         /// Converts this range to a <see cref="DateRange"/> with a <see cref="DateTime.Kind" /> of <see cref="DateTimeKind.Unspecified"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public DateRange ToDateRangeUnspecified()
         {
             return new DateRange(

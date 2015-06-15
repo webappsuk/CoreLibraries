@@ -38,6 +38,7 @@ namespace WebApplications.Utilities
     /// <remarks>
     ///   An initialised singleton performs the majority of work after construction.
     /// </remarks>
+    [PublicAPI]
     public abstract class InitialisedSingleton<TKey, TSingleton> : Singleton<TKey, TSingleton>
         where TSingleton : InitialisedSingleton<TKey, TSingleton>
     {
@@ -62,7 +63,6 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Returns a <see cref="bool"/> value that indicates whether or not this singleton has been initialised yet.
         /// </summary>
-        [UsedImplicitly]
         protected bool IsInitialised { get; private set; }
 
         /// <summary>

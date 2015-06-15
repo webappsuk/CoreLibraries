@@ -75,7 +75,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2)
@@ -88,7 +87,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2)
@@ -104,7 +102,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2)
@@ -121,7 +118,6 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2)
@@ -145,7 +141,6 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2)
@@ -201,7 +196,6 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -216,7 +210,6 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -235,7 +228,6 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -255,7 +247,6 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -283,7 +274,6 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -344,7 +334,6 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -361,7 +350,6 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -383,7 +371,6 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -406,7 +393,6 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -438,7 +424,6 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -504,7 +489,6 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -523,7 +507,6 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -548,7 +531,6 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -574,7 +556,6 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -610,7 +591,6 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -681,7 +661,6 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -702,7 +681,6 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -730,7 +708,6 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -759,7 +736,6 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -799,7 +775,6 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -875,7 +850,6 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -898,7 +872,6 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -929,7 +902,6 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -961,7 +933,6 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -1005,7 +976,6 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -1086,7 +1056,6 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1111,7 +1080,6 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1147,7 +1115,6 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1184,7 +1151,6 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -1234,7 +1200,6 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -1322,7 +1287,6 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1349,7 +1313,6 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1388,7 +1351,6 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1428,7 +1390,6 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -1482,7 +1443,6 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -1575,7 +1535,6 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1604,7 +1563,6 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1646,7 +1604,6 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1689,7 +1646,6 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -1747,7 +1703,6 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -1845,7 +1800,6 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1876,7 +1830,6 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1921,7 +1874,6 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1967,7 +1919,6 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -2029,7 +1980,6 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -2132,7 +2082,6 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2165,7 +2114,6 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -2213,7 +2161,6 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -2262,7 +2209,6 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -2328,7 +2274,6 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -2436,7 +2381,6 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2471,7 +2415,6 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -2522,7 +2465,6 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -2574,7 +2516,6 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -2644,7 +2585,6 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -2757,7 +2697,6 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2794,7 +2733,6 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -2848,7 +2786,6 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -2903,7 +2840,6 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -2977,7 +2913,6 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -3095,7 +3030,6 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -3134,7 +3068,6 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -3191,7 +3124,6 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -3249,7 +3181,6 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -3327,7 +3258,6 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -3450,7 +3380,6 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -3491,7 +3420,6 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -3551,7 +3479,6 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -3612,7 +3539,6 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -3694,7 +3620,6 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -3822,7 +3747,6 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -3865,7 +3789,6 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -3928,7 +3851,6 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -3992,7 +3914,6 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -4078,7 +3999,6 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -4211,7 +4131,6 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -4256,7 +4175,6 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -4322,7 +4240,6 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -4389,7 +4306,6 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -4479,7 +4395,6 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -4617,7 +4532,6 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -4664,7 +4578,6 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -4733,7 +4646,6 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -4803,7 +4715,6 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -4897,7 +4808,6 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -5040,7 +4950,6 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -5089,7 +4998,6 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -5161,7 +5069,6 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -5234,7 +5141,6 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -5332,7 +5238,6 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -5480,7 +5385,6 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -5531,7 +5435,6 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -5606,7 +5509,6 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -5682,7 +5584,6 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -5784,7 +5685,6 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -5937,7 +5837,6 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -5990,7 +5889,6 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -6068,7 +5966,6 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -6147,7 +6044,6 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -6253,7 +6149,6 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -6411,7 +6306,6 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -6466,7 +6360,6 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -6547,7 +6440,6 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -6629,7 +6521,6 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -6739,7 +6630,6 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -6902,7 +6792,6 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -6959,7 +6848,6 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -7043,7 +6931,6 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -7128,7 +7015,6 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -7242,7 +7128,6 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -7410,7 +7295,6 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -7469,7 +7353,6 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -7556,7 +7439,6 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -7644,7 +7526,6 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -7762,7 +7643,6 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -7935,7 +7815,6 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -7996,7 +7875,6 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -8086,7 +7964,6 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -8177,7 +8054,6 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -8299,7 +8175,6 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -8477,7 +8352,6 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -8540,7 +8414,6 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -8633,7 +8506,6 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -8727,7 +8599,6 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -8853,7 +8724,6 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -9036,7 +8906,6 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -9101,7 +8970,6 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -9197,7 +9065,6 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -9294,7 +9161,6 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -9424,7 +9290,6 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -9612,7 +9477,6 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -9679,7 +9543,6 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -9778,7 +9641,6 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -9878,7 +9740,6 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -10012,7 +9873,6 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -10205,7 +10065,6 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -10274,7 +10133,6 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -10376,7 +10234,6 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -10479,7 +10336,6 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -10617,7 +10473,6 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -10815,7 +10670,6 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -10886,7 +10740,6 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -10991,7 +10844,6 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -11097,7 +10949,6 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -11239,7 +11090,6 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -11442,7 +11292,6 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -11515,7 +11364,6 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -11623,7 +11471,6 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -11732,7 +11579,6 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -11878,7 +11724,6 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -12086,7 +11931,6 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -12161,7 +12005,6 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -12272,7 +12115,6 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -12384,7 +12226,6 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -12534,7 +12375,6 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -12747,7 +12587,6 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -12824,7 +12663,6 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -12938,7 +12776,6 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -13053,7 +12890,6 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -13207,7 +13043,6 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,
@@ -13425,7 +13260,6 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
-        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -13504,7 +13338,6 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
-        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -13621,7 +13454,6 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
-        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -13739,7 +13571,6 @@ namespace WebApplications.Utilities
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(
             out T1 item1,
             out T2 item2,
@@ -13897,7 +13728,6 @@ namespace WebApplications.Utilities
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(
             out T1 item1,
             out T2 item2,

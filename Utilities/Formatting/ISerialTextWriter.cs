@@ -35,13 +35,13 @@ namespace WebApplications.Utilities.Formatting
     /// Indicates the <see cref="TextWriter"/> is synchronized with a <see cref="SerializingSynchronizationContext"/>, making it easier to group multiple writes in
     /// a block that won't be interrupted from another thread.
     /// </summary>
+    [PublicAPI]
     public interface ISerialTextWriter : ITextWriter
     {
         /// <summary>
         /// The serializing synchronization context.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         SerializingSynchronizationContext Context { get; }
 
         /// <summary>
@@ -49,7 +49,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The writer.</value>
         [NotNull]
-        [PublicAPI]
         TextWriter Writer { get; }
     }
 }

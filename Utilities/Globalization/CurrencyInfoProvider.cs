@@ -151,7 +151,6 @@ namespace WebApplications.Utilities.Globalization
         /// <summary>
         /// The empty currency provider has no currencies.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly ICurrencyInfoProvider Empty;
 
@@ -173,7 +172,6 @@ namespace WebApplications.Utilities.Globalization
         /// The provider.
         /// </value>
         [NotNull]
-        [PublicAPI]
         public static ICurrencyInfoProvider Current
         {
             get { return _current; }
@@ -221,7 +219,6 @@ namespace WebApplications.Utilities.Globalization
         /// Sets the current provider.
         /// </summary>
         /// <param name="path">The path.</param>
-        [PublicAPI]
         public static void SetCurrentProvider(string path = null)
         {
             _current = LoadCurrencies(path);
@@ -237,7 +234,6 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="System.IO.FileLoadException">An exception was thrown while loading the currency information from the ISO 4217 file.</exception>
         /// <exception cref="System.IO.InvalidDataException">The data in the ISO 4217 file was invalid.</exception>
         [NotNull]
-        [PublicAPI]
         public static ICurrencyInfoProvider LoadCurrencies(string path = null)
         {
             path = path ?? UtilityConfiguration.Active.ISO4217;
@@ -318,7 +314,6 @@ namespace WebApplications.Utilities.Globalization
         /// <summary>
         /// The date this file was published.
         /// </summary>
-        [PublicAPI]
         public DateTime Published
         {
             get { return _published; }
@@ -328,7 +323,6 @@ namespace WebApplications.Utilities.Globalization
         /// The currencies in the file.
         /// </summary>
         [ItemNotNull]
-        [PublicAPI]
         public IEnumerable<CurrencyInfo> All
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -382,7 +376,6 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="leaveOpen">if set to <see langword="true" /> the <paramref name="stream"/> will be left open.</param>
         /// <returns></returns>
         [CanBeNull]
-        [PublicAPI]
         public static CurrencyInfoProvider Load([NotNull] Stream stream, bool leaveOpen = false)
         {
             PeekableStream peekable = stream as PeekableStream ?? new PeekableStream(stream);
@@ -414,7 +407,6 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="reader">The reader.</param>
         /// <returns></returns>
         [CanBeNull]
-        [PublicAPI]
         public static CurrencyInfoProvider LoadFromXml([NotNull] TextReader reader)
         {
             if (reader == null) throw new ArgumentNullException("reader");
@@ -506,7 +498,6 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="stream">The binary stream to load from.</param>
         /// <param name="leaveOpen">if set to <see langword="true" /> the <paramref name="stream"/> will be left open.</param>
         /// <returns></returns>
-        [PublicAPI]
         [NotNull]
         public static CurrencyInfoProvider LoadFromBinary([NotNull] Stream stream, bool leaveOpen = false)
         {
@@ -557,7 +548,6 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="currencyCode"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public CurrencyInfo Get(string currencyCode)
         {
             CurrencyInfo currencyInfo;

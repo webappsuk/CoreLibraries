@@ -44,7 +44,6 @@ namespace WebApplications.Utilities.IO
         /// <summary>
         /// The read mode.
         /// </summary>
-        [PublicAPI]
         public readonly PipeTransmissionMode ReadMode;
 
         /// <summary>
@@ -79,7 +78,6 @@ namespace WebApplications.Utilities.IO
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
-        [PublicAPI]
         public Task Connect(CancellationToken token)
         {
             NamedPipeClientStream stream = Stream as NamedPipeClientStream;

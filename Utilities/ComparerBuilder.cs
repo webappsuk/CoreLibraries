@@ -44,7 +44,6 @@ namespace WebApplications.Utilities
         ///   The function used to provide comparisons.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Func<T, T, int> CompareFunction;
 
         /// <summary>

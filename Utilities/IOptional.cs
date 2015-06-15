@@ -44,14 +44,12 @@ namespace WebApplications.Utilities
         /// <value>
         ///     <see langword="true" /> if this instance is assigned; otherwise, <see langword="false" />.
         /// </value>
-        [UsedImplicitly]
         bool IsAssigned { get; }
 
         /// <summary>
         /// Gets the value.
         /// </summary>
         /// <value>The value.</value>
-        [UsedImplicitly]
         [CanBeNull]
         object Value { get; }
     }
@@ -69,8 +67,8 @@ namespace WebApplications.Utilities
         /// Gets the value.
         /// </summary>
         /// <value>The value.</value>
-        [UsedImplicitly]
         [CanBeNull]
+        [UsedImplicitly]
         new T Value { get; }
     }
 }

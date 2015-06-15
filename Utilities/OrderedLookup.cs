@@ -39,6 +39,7 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TElement">The element type.</typeparam>
+    [PublicAPI]
     public class OrderedLookup<TKey, TElement> : IOrderedLookup<TKey, TElement>, IReadOnlyLookup<TKey, TElement>
     {
         /// <summary>
@@ -111,7 +112,6 @@ namespace WebApplications.Utilities
         /// Gets the values count.
         /// </summary>
         /// <value>The values count.</value>
-        [PublicAPI]
         public int ValuesCount
         {
             get { return _valuesCount; }
@@ -156,7 +156,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="element">The element.</param>
-        [PublicAPI]
         public void Add([NotNull] TKey key, TElement element)
         {
             if (key == null) throw new ArgumentNullException("key");
@@ -182,7 +181,6 @@ namespace WebApplications.Utilities
         /// Adds the specified key value pair.
         /// </summary>
         /// <param name="keyValuePair">The key value pair.</param>
-        [PublicAPI]
         public void Add(KeyValuePair<TKey, TElement> keyValuePair)
         {
             // ReSharper disable once AssignNullToNotNullAttribute - Let the other overload throw
@@ -194,7 +192,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="elements">The elements.</param>
-        [PublicAPI]
         public void AddRange([NotNull] TKey key, [NotNull] IEnumerable<TElement> elements)
         {
             if (key == null) throw new ArgumentNullException("key");
@@ -220,7 +217,6 @@ namespace WebApplications.Utilities
         /// Adds the specified values.
         /// </summary>
         /// <param name="elements">The elements.</param>
-        [PublicAPI]
         public void AddRange([NotNull] IEnumerable<KeyValuePair<TKey, TElement>> elements)
         {
             if (elements == null) throw new ArgumentNullException("elements");

@@ -41,19 +41,16 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <summary>
         ///   Sets the default absolute expiration.
         /// </summary>
-        [PublicAPI]
         TimeSpan DefaultAbsoluteExpiration { get; set; }
 
         /// <summary>
         ///   Sets the default sliding expiration.
         /// </summary>
-        [PublicAPI]
         TimeSpan DefaultSlidingExpiration { get; set; }
 
         /// <summary>
         /// Clears the cache.
         /// </summary>
-        [PublicAPI]
         void Clear();
 
         /// <summary>
@@ -64,7 +61,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Returns <see langword="true"/> if the cache contains an entry with the same key value as
         ///   <paramref name="key"/>; otherwise <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         bool ContainsKey(TKey key);
 
         /// <summary>
@@ -77,7 +73,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Either the inserted or retrieved value depending on whether there's already an existing
         ///   entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue GetOrAdd(TKey key, TValue value);
 
         /// <summary>
@@ -91,7 +86,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Either the inserted or retrieved value depending on whether there's already an existing
         ///   entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue GetOrAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration);
 
         /// <summary>
@@ -107,7 +101,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Either the inserted or retrieved value depending on whether there's already an existing
         ///   entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue GetOrAdd(TKey key, TValue value, TimeSpan slidingExpiration);
 
         /// <summary>
@@ -120,7 +113,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Either the inserted or retrieved value depending on whether there's already an existing
         ///   entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory);
 
         /// <summary>
@@ -134,7 +126,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Either the inserted or retrieved value depending on whether there's already an existing
         ///   entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory, DateTimeOffset absoluteExpiration);
 
         /// <summary>
@@ -149,7 +140,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory, TimeSpan slidingExpiration);
 
         /// <summary>
@@ -161,7 +151,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue AddOrUpdate(TKey key, TValue value);
 
         /// <summary>
@@ -174,7 +163,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue AddOrUpdate(TKey key, TValue value, DateTimeOffset absoluteExpiration);
 
         /// <summary>
@@ -189,7 +177,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue AddOrUpdate(TKey key, TValue value, TimeSpan slidingExpiration);
 
         /// <summary>
@@ -202,7 +189,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory);
 
         /// <summary>
@@ -216,7 +202,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether or not there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         TValue AddOrUpdate(
             TKey key,
             Func<TKey, TValue> addValueFactory,
@@ -237,7 +222,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Either the inserted or updated value depending on whether or not there's already an existing
         ///   entry in the cache with the same key as <paramref name="key"/>.
         /// </returns>
-        [PublicAPI]
         TValue AddOrUpdate(
             TKey key,
             Func<TKey, TValue> addValueFactory,
@@ -253,7 +237,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Returns <see langword="true"/> if the corresponding <paramref name="key"/> exists and the value was
         ///   successfully retrieved; otherwise <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         bool TryGetValue(TKey key, out TValue value);
 
         /// <summary>
@@ -265,7 +248,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         ///   Returns <see langword="true"/> if the corresponding <paramref name="key"/> exists and the value was
         ///   successfully removed; otherwise <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         bool TryRemove(TKey key, out TValue value);
 
         /// <summary>
@@ -276,7 +258,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         bool TryAdd(TKey key, TValue value);
 
         /// <summary>
@@ -288,7 +269,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         /// Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         bool TryAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration);
 
         /// <summary>
@@ -302,7 +282,6 @@ namespace WebApplications.Utilities.Interfaces.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         bool TryAdd(TKey key, TValue value, TimeSpan slidingExpiration);
     }
 }

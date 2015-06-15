@@ -42,6 +42,7 @@ namespace WebApplications.Utilities
     /// <summary>
     /// Writes an <see cref="Expression"/> tree to C# like code.
     /// </summary>
+    [PublicAPI]
     public class CSharpExpressionWriter : ExpressionVisitor
     {
         private const int Tab = 4;
@@ -56,7 +57,6 @@ namespace WebApplications.Utilities
         /// A <see cref="System.String" /> that represents the <paramref name="expression"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static string ToString([NotNull] Expression expression, bool fullTypeNames = false)
         {
             PreVisitor preVisitor = new PreVisitor(fullTypeNames);
@@ -1995,7 +1995,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [PublicAPI]
         [NotNull]
         private string ConstantString([NotNull] object value)
         {

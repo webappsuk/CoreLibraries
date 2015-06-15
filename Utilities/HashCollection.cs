@@ -39,6 +39,7 @@ namespace WebApplications.Utilities
     /// information.
     /// </summary>
     /// <typeparam name="T">The object type.</typeparam>
+    [PublicAPI]
     public class HashCollection<T> : HashSet<T>, ISet, IEquatable<HashCollection<T>>, IEquatable<IEnumerable<T>>
     {
         /// <summary>
@@ -351,7 +352,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>HashCollection.</returns>
         [NotNull]
-        [PublicAPI]
         public HashCollection<T> Clone()
         {
             return new HashCollection<T>(this);

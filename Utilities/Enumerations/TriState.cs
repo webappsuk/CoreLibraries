@@ -33,6 +33,7 @@ namespace WebApplications.Utilities.Enumerations
     /// <summary>
     ///   Handy tristate, useful where bools are just not enough!
     /// </summary>
+    [PublicAPI]
     public struct TriState : IFormattable
     {
         #region Style enum
@@ -61,55 +62,46 @@ namespace WebApplications.Utilities.Enumerations
         /// <summary>
         ///   State: No.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState No = new TriState(255);
 
         /// <summary>
         ///   State: False.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState False = No;
 
         /// <summary>
         ///   State: Negative.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState Negative = No;
 
         /// <summary>
         ///   State: Unknown.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState Unknown = new TriState(0);
 
         /// <summary>
         ///   State: Undefined.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState Undefined = Unknown;
 
         /// <summary>
         ///   State: Equal.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState Equal = Unknown;
 
         /// <summary>
         ///   State: Yes.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState Yes = new TriState(1);
 
         /// <summary>
         ///   State: True.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState True = Yes;
 
         /// <summary>
         ///   State: Positive.
         /// </summary>
-        [UsedImplicitly]
         public static readonly TriState Positive = Yes;
 
         /// <summary>
@@ -201,7 +193,6 @@ namespace WebApplications.Utilities.Enumerations
         ///   The <paramref name="style"/> specified is invalid.
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public string ToString(Style style)
         {
             switch (style)

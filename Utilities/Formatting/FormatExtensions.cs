@@ -36,6 +36,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Formattign extension methods.
     /// </summary>
+    [PublicAPI]
     public static class FormatExtensions
     {
         /// <summary>
@@ -47,7 +48,6 @@ namespace WebApplications.Utilities.Formatting
         /// Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.
         /// </returns>
         [CanBeNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static string SafeFormat([CanBeNull] this string format, [CanBeNull] params object[] parameters)
         {
@@ -67,7 +67,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="parameters">The values used in the format string.</param>
         /// <returns>Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.</returns>
         [CanBeNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static string SafeFormat(
             [CanBeNull] this string format,
@@ -89,7 +88,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <returns>A synchronized TextWriter.</returns>
         [NotNull]
-        [PublicAPI]
         public static TextWriter Serialize([NotNull] this TextWriter writer)
         {
             if (writer == null) throw new ArgumentNullException("writer");
@@ -108,7 +106,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="startPosition">The start position.</param>
         /// <returns>A laid out TextWriter.</returns>
         [NotNull]
-        [PublicAPI]
         public static FormatTextWriter Format(
             [NotNull] this TextWriter writer,
             [CanBeNull] Layout layout = null,
@@ -143,7 +140,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="startPosition">The start position.</param>
         /// <returns>A laid out TextWriter.</returns>
         [NotNull]
-        [PublicAPI]
         public static FormatTextWriter Format(
             [NotNull] this TextWriter writer,
             Optional<int> width,

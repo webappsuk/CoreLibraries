@@ -50,7 +50,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The encoding.</value>
         /// <returns>The character encoding in which the output is written.</returns>
-        [PublicAPI]
         Encoding Encoding { get; }
 
         /// <summary>
@@ -58,7 +57,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The format provider.</value>
         /// <returns>An <see cref="T:System.IFormatProvider" /> object for a specific culture, or the formatting of the current culture if no other culture is specified.</returns>
-        [PublicAPI]
         IFormatProvider FormatProvider { get; }
 
         /// <summary>
@@ -66,33 +64,28 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The new line.</value>
         /// <returns>The line terminator string for the current TextWriter.</returns>
-        [PublicAPI]
         String NewLine { get; set; }
 
         /// <summary>
         /// Closes the current writer and releases any system resources associated with the writer.
         /// </summary>
-        [PublicAPI]
         void Close();
 
         /// <summary>
         /// Clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
         /// </summary>
-        [PublicAPI]
         void Flush();
 
         /// <summary>
         /// Writes a character to the text string or stream.
         /// </summary>
         /// <param name="value">The character to write to the text stream.</param>
-        [PublicAPI]
         void Write(char value);
 
         /// <summary>
         /// Writes a character array to the text string or stream.
         /// </summary>
         /// <param name="buffer">The character array to write to the text stream.</param>
-        [PublicAPI]
         void Write(char[] buffer);
 
         /// <summary>
@@ -102,7 +95,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
         /// <param name="count">The number of characters to write.</param>
         [SuppressMessage("Microsoft.Contracts", "CC1055")]
-        [PublicAPI]
         // Skip extra error checking to avoid *potential* AppCompat problems.
         void Write(char[] buffer, int index, int count);
 
@@ -110,70 +102,60 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the text representation of a Boolean value to the text string or stream.
         /// </summary>
         /// <param name="value">The Boolean value to write.</param>
-        [PublicAPI]
         void Write(bool value);
 
         /// <summary>
         /// Writes the text representation of a 4-byte signed integer to the text string or stream.
         /// </summary>
         /// <param name="value">The 4-byte signed integer to write.</param>
-        [PublicAPI]
         void Write(int value);
 
         /// <summary>
         /// Writes the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
-        [PublicAPI]
         void Write(uint value);
 
         /// <summary>
         /// Writes the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
-        [PublicAPI]
         void Write(long value);
 
         /// <summary>
         /// Writes the text representation of an 8-byte unsigned integer to the text string or stream.
         /// </summary>
         /// <param name="value">The 8-byte unsigned integer to write.</param>
-        [PublicAPI]
         void Write(ulong value);
 
         /// <summary>
         /// Writes the text representation of a 4-byte floating-point value to the text string or stream.
         /// </summary>
         /// <param name="value">The 4-byte floating-point value to write.</param>
-        [PublicAPI]
         void Write(float value);
 
         /// <summary>
         /// Writes the text representation of an 8-byte floating-point value to the text string or stream.
         /// </summary>
         /// <param name="value">The 8-byte floating-point value to write.</param>
-        [PublicAPI]
         void Write(double value);
 
         /// <summary>
         /// Writes the text representation of a decimal value to the text string or stream.
         /// </summary>
         /// <param name="value">The decimal value to write.</param>
-        [PublicAPI]
         void Write(Decimal value);
 
         /// <summary>
         /// Writes a string to the text string or stream.
         /// </summary>
         /// <param name="value">The string to write.</param>
-        [PublicAPI]
         void Write(String value);
 
         /// <summary>
         /// Writes the text representation of an object to the text string or stream by calling the ToString method on that object.
         /// </summary>
         /// <param name="value">The object to write.</param>
-        [PublicAPI]
         void Write(Object value);
 
         /// <summary>
@@ -181,7 +163,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The object to format and write.</param>
-        [PublicAPI]
         void Write(String format, Object arg0);
 
         /// <summary>
@@ -190,7 +171,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
-        [PublicAPI]
         void Write(String format, Object arg0, Object arg1);
 
         /// <summary>
@@ -200,7 +180,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
         /// <param name="arg2">The third object to format and write.</param>
-        [PublicAPI]
         void Write(String format, Object arg0, Object arg1, Object arg2);
 
         /// <summary>
@@ -208,34 +187,29 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
-        [PublicAPI]
         void Write(String format, params Object[] arg);
 
         /// <summary>
         /// Writes a line terminator to the text string or stream.
         /// </summary>
-        [PublicAPI]
         void WriteLine();
 
         /// <summary>
         /// Writes a character followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The character to write to the text stream.</param>
-        [PublicAPI]
         void WriteLine(char value);
 
         /// <summary>
         /// Writes the text representation of a decimal value followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The decimal value to write.</param>
-        [PublicAPI]
         void WriteLine(decimal value);
 
         /// <summary>
         /// Writes an array of characters followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="buffer">The character array from which data is read.</param>
-        [PublicAPI]
         void WriteLine(char[] buffer);
 
         /// <summary>
@@ -244,70 +218,60 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="buffer">The character array from which data is read.</param>
         /// <param name="index">The character position in <paramref name="buffer" /> at which to start reading data.</param>
         /// <param name="count">The maximum number of characters to write.</param>
-        [PublicAPI]
         void WriteLine(char[] buffer, int index, int count);
 
         /// <summary>
         /// Writes the text representation of a Boolean value followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The Boolean value to write.</param>
-        [PublicAPI]
         void WriteLine(bool value);
 
         /// <summary>
         /// Writes the text representation of a 4-byte signed integer followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The 4-byte signed integer to write.</param>
-        [PublicAPI]
         void WriteLine(int value);
 
         /// <summary>
         /// Writes the text representation of a 4-byte unsigned integer followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The 4-byte unsigned integer to write.</param>
-        [PublicAPI]
         void WriteLine(uint value);
 
         /// <summary>
         /// Writes the text representation of an 8-byte signed integer followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The 8-byte signed integer to write.</param>
-        [PublicAPI]
         void WriteLine(long value);
 
         /// <summary>
         /// Writes the text representation of an 8-byte unsigned integer followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The 8-byte unsigned integer to write.</param>
-        [PublicAPI]
         void WriteLine(ulong value);
 
         /// <summary>
         /// Writes the text representation of a 4-byte floating-point value followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The 4-byte floating-point value to write.</param>
-        [PublicAPI]
         void WriteLine(float value);
 
         /// <summary>
         /// Writes the text representation of a 8-byte floating-point value followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The 8-byte floating-point value to write.</param>
-        [PublicAPI]
         void WriteLine(double value);
 
         /// <summary>
         /// Writes a string followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        [PublicAPI]
         void WriteLine([NotNull] String value);
 
         /// <summary>
         /// Writes the text representation of an object by calling the ToString method on that object, followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The object to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        [PublicAPI]
         void WriteLine([NotNull] Object value);
 
         /// <summary>
@@ -315,7 +279,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The object to format and write.</param>
-        [PublicAPI]
         void WriteLine([NotNull] String format, [NotNull] Object arg0);
 
         /// <summary>
@@ -324,7 +287,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
-        [PublicAPI]
         void WriteLine([NotNull] String format, [NotNull] Object arg0, [NotNull] Object arg1);
 
         /// <summary>
@@ -334,7 +296,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
         /// <param name="arg2">The third object to format and write.</param>
-        [PublicAPI]
         void WriteLine([NotNull] String format, [NotNull] Object arg0, [NotNull] Object arg1, [NotNull] Object arg2);
 
         /// <summary>
@@ -342,7 +303,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
-        [PublicAPI]
         void WriteLine([NotNull] String format, [NotNull] params Object[] arg);
 
         /// <summary>
@@ -352,7 +312,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        [PublicAPI]
         Task WriteAsync(char value);
 
         /// <summary>
@@ -362,7 +321,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        [PublicAPI]
         Task WriteAsync([NotNull] String value);
 
         /// <summary>
@@ -374,7 +332,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        [PublicAPI]
         Task WriteAsync([NotNull] char[] buffer, int index, int count);
 
         /// <summary>
@@ -384,7 +341,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        [PublicAPI]
         Task WriteLineAsync(char value);
 
         /// <summary>
@@ -394,7 +350,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        [PublicAPI]
         Task WriteLineAsync([NotNull] String value);
 
         /// <summary>
@@ -406,7 +361,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        [PublicAPI]
         Task WriteLineAsync([NotNull] char[] buffer, int index, int count);
 
         /// <summary>
@@ -415,7 +369,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous flush operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        [PublicAPI]
         Task FlushAsync();
 
         /// <summary>
@@ -425,7 +378,6 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         Task WriteLineAsync();
     }
 }

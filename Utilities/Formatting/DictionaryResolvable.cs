@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Formatting
     /// </summary>
     /// <typeparam name="TValue">The type of the t value.</typeparam>
     [Serializable]
+    [PublicAPI]
     public class DictionaryResolvable<TValue> : Resolvable, ICollection<KeyValuePair<string, TValue>>
     {
         [NotNull]
@@ -85,7 +86,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="tag">The tag.</param>
         /// <param name="value">The value.</param>
-        [PublicAPI]
         public void Add([NotNull] string tag, [CanBeNull] TValue value)
         {
             if (tag == null) throw new ArgumentNullException("tag");
@@ -96,7 +96,6 @@ namespace WebApplications.Utilities.Formatting
         /// Removes the specified tag.
         /// </summary>
         /// <param name="tag">The tag.</param>
-        [PublicAPI]
         public bool Remove([NotNull] string tag)
         {
             if (tag == null) throw new ArgumentNullException("tag");

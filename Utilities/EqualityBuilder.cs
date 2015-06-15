@@ -37,13 +37,13 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="T">The type to compare.</typeparam>
     /// <seealso cref="T:System.Collections.Generic.EqualityComparer`1"/>
+    [PublicAPI]
     public class EqualityBuilder<T> : EqualityComparer<T>
     {
         /// <summary>
         ///   Stores the default GetHashCode function call <see cref="System.Object.GetHashCode"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         // ReSharper disable PossibleNullReferenceException - Let it throw
         public static readonly Func<T, int> DefaultGetHashCodeFunction = o => o.GetHashCode();
 
@@ -53,14 +53,12 @@ namespace WebApplications.Utilities
         ///   The function used to calculate equality between two <see cref="object"/>s.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Func<T, T, bool> EqualsFunction;
 
         /// <summary>
         ///   The function used to generate a hash code.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Func<T, int> GetHashCodeFunction;
 
         /// <summary>

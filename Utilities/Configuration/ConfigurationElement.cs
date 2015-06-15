@@ -32,6 +32,7 @@ namespace WebApplications.Utilities.Configuration
     /// <summary>
     ///   Represents a configuration element in a configuration file.
     /// </summary>
+    [PublicAPI]
     public class ConfigurationElement : System.Configuration.ConfigurationElement
     {
         /// <summary>
@@ -43,7 +44,6 @@ namespace WebApplications.Utilities.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [UsedImplicitly]
         protected T GetProperty<T>(string propertyName)
         {
             return (T)base[propertyName];
@@ -58,7 +58,6 @@ namespace WebApplications.Utilities.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [UsedImplicitly]
         protected void SetProperty<T>(string propertyName, T value)
         {
             base[propertyName] = value;

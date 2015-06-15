@@ -39,6 +39,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// A format chunk, holds information about a chunk of formatted Value.
     /// </summary>
+    [PublicAPI]
     public class FormatChunk : IFormattable, IWriteable
     {
         /// <summary>
@@ -56,7 +57,6 @@ namespace WebApplications.Utilities.Formatting
         /// Any resolver that should be used to resolve this chunk (and any nested chunks).
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public readonly IResolvable Resolver;
 
         /// <summary>
@@ -69,40 +69,34 @@ namespace WebApplications.Utilities.Formatting
         /// The tag, if this is a formatting chunk, if any; otherwise <see langword="null"/>. (e.g. '0' for '{0,-3:G}')
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public readonly string Tag;
 
         /// <summary>
         /// The alignment, if any; otherwise 0. (e.g. -3 for '{0,-3:G}'
         /// </summary>
-        [PublicAPI]
         public readonly int Alignment;
 
         /// <summary>
         /// The format, if this is a formatting chunk and a format was specified, if any; otherwise <see langword="null"/>. (e.g. 'G' for '{0,-3:G}')
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public readonly string Format;
 
         /// <summary>
         /// The chunk Value, if any (will always be <see langword="null"/> if <see cref="IsResolved"/> is <see langword="true"/>).
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public readonly object Value;
 
         /// <summary>
         /// Gets a value indicating whether this instance is resolved.
         /// </summary>
         /// <value><see langword="true" /> if this instance is resolved; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public readonly bool IsResolved;
 
         /// <summary>
         /// The child chunks.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         internal List<FormatChunk> ChildrenInternal;
 
@@ -110,7 +104,6 @@ namespace WebApplications.Utilities.Formatting
         /// Gets the children (if any).
         /// </summary>
         /// <value>The children.</value>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<FormatChunk> Children
         {
@@ -290,7 +283,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>An enumeration of <see cref="FormatChunk"/>.</returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<FormatChunk> Parse([NotNull] string value, [CanBeNull] IResolvable resolver = null)
         {
             if (value == null) throw new ArgumentNullException("value");
@@ -309,11 +301,10 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>FormatChunk.</returns>
         [NotNull]
-        [PublicAPI]
         internal FormatChunk Append([NotNull] string value, [CanBeNull] IResolvable resolver = null)
         {
             if (value == null) throw new ArgumentNullException("value");
-            
+
             string tag = null;
             string alignment = null;
             string format = null;
@@ -688,7 +679,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<FormatChunk> AllChildren
         {
             get

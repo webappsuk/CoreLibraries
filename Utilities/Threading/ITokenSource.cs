@@ -43,14 +43,12 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         /// The <see cref="CancellationToken"/> associated with this <see cref="ITokenSource"/>.
         /// </value>
-        [PublicAPI]
         CancellationToken Token { get; }
 
         /// <summary>
         /// Gets whether cancellation has been requested for this token source.
         /// </summary>
         /// <value>Whether cancellation has been requested for this token source.</value>
-        [PublicAPI]
         bool IsCancellationRequested { get; }
     }
 }

@@ -43,18 +43,17 @@ namespace WebApplications.Utilities.Threading
     /// <summary>
     /// Provides a mechanism for executing an asynchronous method at specified intervals.
     /// </summary>
+    [PublicAPI]
     public sealed class AsyncTimer : IDisposable
     {
         /// <summary>
         /// The minimum period (in milliseconds), prevents the timer thrashing too quickly.
         /// </summary>
-        [PublicAPI]
         public const int MinimumPeriodMs = 50;
 
         /// <summary>
         /// The minimum period, prevents the timer thrashing too quickly.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration MinimumPeriod = Duration.FromMilliseconds(MinimumPeriodMs);
 
         /// <summary>
@@ -538,7 +537,6 @@ namespace WebApplications.Utilities.Threading
         /// <para>This makes it easy to programmatically trigger the execution of a task that normally runs on a timer.</para>
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             CancellationTokenSource timeOutsChanged = _timeOutsChanged;
@@ -574,7 +572,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="period">The optional minimum gap (in milliseconds) between the start of the task invocation and the start of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
         /// <param name="dueTime">The optional due time (in milliseconds) between the last time the timeouts were changed and the start of the task invocation; use <see langword="null"/> to leave the value unchanged.</param>
         /// <param name="minimumGap">The optional minimum gap (in milliseconds) between the start of the task invocation and the end of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
-        [PublicAPI]
         public void Change(int? period = null, int? dueTime = null, int? minimumGap = null)
         {
             Change(
@@ -589,7 +586,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="period">The optional minimum gap between the start of the task invocation and the start of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
         /// <param name="dueTime">The optional due time between the last time the timeouts were changed and the start of the task invocation; use <see langword="null"/> to leave the value unchanged.</param>
         /// <param name="minimumGap">The optional minimum gap between the start of the task invocation and the end of the previous task invocation; use <see langword="null"/> to leave the value unchanged.</param>
-        [PublicAPI]
         public void Change(Duration? period = null, Duration? dueTime = null, Duration? minimumGap = null)
         {
             long timeStamp = HighPrecisionClock.Instance.NowTicks;
@@ -649,7 +645,6 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         /// The due time.
         /// </value>
-        [PublicAPI]
         public Duration DueTime
         {
             get
@@ -667,7 +662,6 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         /// The minimum gap.
         /// </value>
-        [PublicAPI]
         public Duration MinimumGap
         {
             get
@@ -685,7 +679,6 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         /// The period.
         /// </value>
-        [PublicAPI]
         public Duration Period
         {
             get

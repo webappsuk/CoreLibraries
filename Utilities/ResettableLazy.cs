@@ -59,6 +59,7 @@ namespace WebApplications.Utilities
     /// <para>This code is based off the source code for the <see cref="Lazy{T}"/> class.</para>
     /// </remarks>
     [Serializable]
+    [PublicAPI]
     [ComVisible(false)]
     [DebuggerDisplay(
         "ThreadSafetyMode={Mode}, IsValueCreated={IsValueCreated}, IsValueFaulted={IsValueFaulted}, Value={ValueForDebugDisplay}"
@@ -324,7 +325,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Gets a value indicating whether this instance may be used concurrently from multiple threads.
         /// </summary>
-        [PublicAPI]
         internal LazyThreadSafetyMode Mode
         {
             get
@@ -339,7 +339,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Gets whether the value creation is faulted or not
         /// </summary>
-        [PublicAPI]
         internal bool IsValueFaulted
         {
             get { return _boxed is ExceptionDispatchInfo; }
@@ -358,7 +357,6 @@ namespace WebApplications.Utilities
         /// a value being produced or an exception being thrown.  If an exception goes unhandled during initialization,
         /// <see cref="IsValueCreated" /> will return <see langword="false"/>.
         /// </remarks>
-        [PublicAPI]
         public bool IsValueCreated
         {
             get { return _boxed is Boxed; }
@@ -384,7 +382,6 @@ namespace WebApplications.Utilities
         /// from initialization delegate.
         /// </remarks>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [PublicAPI]
         public T Value
         {
             get
@@ -503,7 +500,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Resets the value of this <see cref="ResettableLazy{T}"/> to not created.
         /// </summary>
-        [PublicAPI]
         public void Reset()
         {
             LazyThreadSafetyMode mode = Mode;

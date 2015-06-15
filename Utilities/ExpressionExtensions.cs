@@ -41,6 +41,7 @@ namespace WebApplications.Utilities
     /// <summary>
     /// <see cref="Expression"/> extension methods.
     /// </summary>
+    [PublicAPI]
     public static partial class ExpressionExtensions
     {
         /// <summary>
@@ -84,7 +85,6 @@ namespace WebApplications.Utilities
         /// </returns>
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
-        [PublicAPI]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
             [NotNull] [InstantHandle] Func<Expression, Expression> getBody,
@@ -111,7 +111,6 @@ namespace WebApplications.Utilities
         /// </returns>
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
-        [PublicAPI]
         public static Expression ForEach(
             [NotNull] this Expression sourceEnumerable,
             [NotNull] [InstantHandle] Func<Expression, IEnumerable<Expression>> getBody,
@@ -189,7 +188,6 @@ namespace WebApplications.Utilities
         /// <param name="locals">The locals.</param>
         /// <returns>A single expression</returns>
         [NotNull]
-        [PublicAPI]
         public static Expression Blockify(
             [CanBeNull] this IEnumerable<Expression> expressions,
             [NotNull] IEnumerable<ParameterExpression> locals)
@@ -205,7 +203,6 @@ namespace WebApplications.Utilities
         /// <param name="locals">The locals.</param>
         /// <returns>A single expression</returns>
         [NotNull]
-        [PublicAPI]
         public static Expression Blockify(
             [CanBeNull] this IEnumerable<Expression> expressions,
             [CanBeNull] params ParameterExpression[] locals)
@@ -231,7 +228,6 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <returns>IEnumerable{Expression}.</returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<Expression> UnBlockify([NotNull] this Expression expression)
         {
@@ -273,7 +269,6 @@ namespace WebApplications.Utilities
         /// IEnumerable{Expression}.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<Expression> UnBlockify(
             [NotNull] this Expression expression,
             [NotNull] out IEnumerable<ParameterExpression> variables)
@@ -300,7 +295,6 @@ namespace WebApplications.Utilities
         /// <param name="variables">The variables.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
-        [PublicAPI]
         public static Expression AddVariables(
             [NotNull] this Expression block,
             [NotNull] IEnumerable<ParameterExpression> variables)
@@ -318,7 +312,6 @@ namespace WebApplications.Utilities
         /// <param name="variables">The variables.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
-        [PublicAPI]
         public static Expression AddVariables(
             [NotNull] this Expression block,
             [NotNull] params ParameterExpression[] variables)
@@ -345,7 +338,6 @@ namespace WebApplications.Utilities
         /// <param name="expressions">The expressions.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
-        [PublicAPI]
         public static Expression AddExpressions(
             [NotNull] this Expression block,
             [NotNull] IEnumerable<Expression> expressions)
@@ -363,7 +355,6 @@ namespace WebApplications.Utilities
         /// <param name="expressions">The expressions.</param>
         /// <returns>BlockExpression.</returns>
         [NotNull]
-        [PublicAPI]
         public static Expression AddExpressions(
             [NotNull] this Expression block,
             [NotNull] params Expression[] expressions)
@@ -389,10 +380,10 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <exception cref="System.ArgumentOutOfRangeException">expression;The expression does not have the same number of parameters as the delegate.</exception>
         [NotNull]
-        [PublicAPI]
         public static Expression<TDelegate> GetDelegateExpression<TDelegate>([NotNull] this LambdaExpression expression)
         {
-            if (!typeof(TDelegate).DescendsFrom(typeof(Delegate))) throw new ArgumentException(Resources.ExpressionExtensions_GetDelegateExpression_TypeMustBeDelegate);
+            if (!typeof(TDelegate).DescendsFrom(typeof(Delegate)))
+                throw new ArgumentException(Resources.ExpressionExtensions_GetDelegateExpression_TypeMustBeDelegate);
             if (expression == null) throw new ArgumentNullException("expression");
 
             Type delegateType = typeof(TDelegate);
@@ -434,7 +425,6 @@ namespace WebApplications.Utilities
         /// <param name="parameters">The replacement parameters.</param>
         /// <returns>Expression.</returns>
         [NotNull]
-        [PublicAPI]
         public static Expression Inline(
             [NotNull] this LambdaExpression expression,
             [NotNull] params Expression[] parameters)
@@ -531,7 +521,6 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <returns>The debug view for the expression.</returns>
         [NotNull]
-        [PublicAPI]
         public static string GetDebugView([NotNull] this Expression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -546,7 +535,6 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static string GetCSharpView([NotNull] this Expression expression)
         {
             return CSharpExpressionWriter.ToString(expression);
@@ -558,7 +546,6 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static ParameterUsageVisitor GetParameterUsage([NotNull] this Expression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -571,7 +558,6 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <param name="subExpression">The sub expression.</param>
         /// <returns><see langword="true"/> if found; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool Contains(this Expression expression, Expression subExpression)
         {
             if (ReferenceEquals(expression, subExpression)) return true;
@@ -588,7 +574,6 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <param name="subExpression">The sub expression.</param>
         /// <returns><see langword="true"/> if found; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool Uses(this LambdaExpression expression, Expression subExpression)
         {
             if (ReferenceEquals(expression, subExpression)) return true;

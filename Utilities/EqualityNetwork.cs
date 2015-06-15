@@ -77,7 +77,6 @@ namespace WebApplications.Utilities
         /// Adds a set of values that have to be equal to each other.
         /// </summary>
         /// <param name="values">The values.</param>
-        [PublicAPI]
         public void Add([NotNull] IEnumerable<T> values)
         {
             Add(values.ToArray());
@@ -87,7 +86,6 @@ namespace WebApplications.Utilities
         /// Adds a set of values that have to be equal to each other.
         /// </summary>
         /// <param name="values">The values.</param>
-        [PublicAPI]
         public void Add([NotNull] params T[] values)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -130,7 +128,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <param name="target">The target.</param>
         /// <returns><c>true</c> if an equality was found, <c>false</c> otherwise</returns>
-        [PublicAPI]
         public bool TryGetEquivalent([NotNull] T value, out T target)
         {
             if (ReferenceEquals(value, null)) throw new ArgumentNullException("value");
@@ -154,7 +151,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <returns>The equivalent value.</returns>
         [NotNull]
-        [PublicAPI]
         public T GetEquivalent([NotNull] T value)
         {
             if (ReferenceEquals(value, null)) throw new ArgumentNullException("value");
@@ -182,7 +178,6 @@ namespace WebApplications.Utilities
         /// <param name="a">One object</param>
         /// <param name="b">The other object</param>
         /// <returns>true if they are equal, false otherwise.</returns>
-        [PublicAPI]
         public bool AreEqual([NotNull] T a, [NotNull] T b)
         {
             if (ReferenceEquals(a, null)) throw new ArgumentNullException("a");

@@ -36,6 +36,7 @@ namespace WebApplications.Utilities
     /// Represents a first-in, first-out collection of objects. As the size exceeds <see cref="CyclicQueue{T}.Capacity"/> the queue automatically throws away head items.
     /// </summary>
     /// <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
+    [PublicAPI]
     public class CyclicQueue<T> : IReadOnlyCollection<T>
     {
         [NotNull]
@@ -59,7 +60,6 @@ namespace WebApplications.Utilities
         /// Gets the maximum number of elements in the collection.
         /// </summary>
         /// <returns>The maximum number of elements in the collection. </returns>
-        [PublicAPI]
         public int Capacity
         {
             get { return _array.Length; }
@@ -69,7 +69,6 @@ namespace WebApplications.Utilities
         /// Gets the number of elements in the collection.
         /// </summary>
         /// <returns>The number of elements in the collection. </returns>
-        [PublicAPI]
         public int Count
         {
             get { return _size; }
@@ -78,7 +77,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Removes all objects from the <see cref="CyclicQueue{T}" />.
         /// </summary>
-        [PublicAPI]
         public void Clear()
         {
             if (_head < _tail)
@@ -99,7 +97,6 @@ namespace WebApplications.Utilities
         /// Adds an object to the end of the <see cref="CyclicQueue{T}" />.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="CyclicQueue{T}" />.</param>
-        [PublicAPI]
         public void Enqueue(T item)
         {
             if (_size == _array.Length)
@@ -120,7 +117,6 @@ namespace WebApplications.Utilities
         /// <returns>
         /// The object that is removed from the beginning of the <see cref="CyclicQueue{T}" />.
         /// </returns>
-        [PublicAPI]
         public T Dequeue()
         {
             if (Count < 1) throw new InvalidOperationException(Resources.CyclicQueue_QueueEmpty);
@@ -139,7 +135,6 @@ namespace WebApplications.Utilities
         /// <returns>
         /// The object at the beginning of the <see cref="CyclicQueue{T}" />.
         /// </returns>
-        [PublicAPI]
         public T Peek()
         {
             if (Count < 1) throw new InvalidOperationException(Resources.CyclicQueue_QueueEmpty);

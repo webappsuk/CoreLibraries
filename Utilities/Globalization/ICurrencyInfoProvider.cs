@@ -35,18 +35,17 @@ namespace WebApplications.Utilities.Globalization
     /// <summary>
     /// Interface to an object that provides <see cref="CurrencyInfo"/>.
     /// </summary>
+    [PublicAPI]
     public interface ICurrencyInfoProvider
     {
         /// <summary>
         /// The date this provider was published.
         /// </summary>
-        [PublicAPI]
         DateTime Published { get; }
 
         /// <summary>
         /// The currencies in the provider.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         [ItemNotNull]
         IEnumerable<CurrencyInfo> All { get; }
@@ -74,7 +73,6 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="currencyCode"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         [CanBeNull]
         CurrencyInfo Get([NotNull] string currencyCode);
 
@@ -83,7 +81,6 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="regionInfo">The region information.</param>
         /// <returns>The associated <see cref="CurrencyInfo"/> if found; otherwise <see langword="null"/>.</returns>
-        [PublicAPI]
         [CanBeNull]
         CurrencyInfo Get([NotNull] RegionInfo regionInfo);
 
@@ -94,7 +91,6 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         /// The associated <see cref="CurrencyInfo" /> if found; otherwise <see langword="null" />.
         /// </returns>
-        [PublicAPI]
         [CanBeNull]
         CurrencyInfo Get([NotNull] CultureInfo cultureInfo);
 
@@ -105,7 +101,6 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         /// The associated <see cref="CurrencyInfo" /> if found; otherwise <see langword="null" />.
         /// </returns>
-        [PublicAPI]
         [CanBeNull]
         CurrencyInfo Get([NotNull] ExtendedCultureInfo cultureInfo);
     }

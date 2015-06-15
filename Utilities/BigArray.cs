@@ -53,7 +53,6 @@ namespace WebApplications.Utilities
         /// The block size, if creating arrays smaller than the block size, consider using
         /// standard arrays.
         /// </summary>
-        [PublicAPI]
         public const int BlockSize = 262144;
 
         private const int BlockSizeLog2 = 18;
@@ -104,7 +103,6 @@ namespace WebApplications.Utilities
         /// Gets the length.
         /// </summary>
         /// <remarks></remarks>
-        [PublicAPI]
         public ulong Length
         {
             get { return _length; }
@@ -120,7 +118,6 @@ namespace WebApplications.Utilities
         ///   
         /// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.IList"/> is read-only. </exception>
         /// <remarks></remarks>
-        [PublicAPI]
         public T this[ulong index]
         {
             get
@@ -149,7 +146,6 @@ namespace WebApplications.Utilities
         ///   
         /// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.IList"/> is read-only. </exception>
         /// <remarks></remarks>
-        [PublicAPI]
         public T this[int index]
         {
             get
@@ -381,7 +377,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <returns>The long index of the value; otherwise <see cref="ulong.MaxValue"/>.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public ulong LongIndexOf(T value)
         {
             ulong offset = 0UL;

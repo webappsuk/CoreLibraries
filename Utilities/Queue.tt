@@ -165,7 +165,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Inserts an object at the beginning of the <see cref="Queue{<#= typeParams #>}" />.
         /// </summary><#= paramsComments #>
-        [PublicAPI]
         public void Enqueue(<#= paramsWithType #>)
         {
             Enqueue(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
@@ -174,7 +173,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Removes and returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/>.
         /// </summary><#= paramsComments #>
-        [PublicAPI]
         public void Dequeue(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Dequeue();
@@ -184,7 +182,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/> without removing it.
         /// </summary><#= paramsComments #>
-        [PublicAPI]
         public void Peek(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Peek();
@@ -195,7 +192,6 @@ namespace WebApplications.Utilities
         /// Removes and returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/>.
         /// </summary><#= paramsComments #>
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryDequeue(<#= outParamsWithType #>)
         {
             if (Count < 1) 
@@ -211,7 +207,6 @@ namespace WebApplications.Utilities
         /// Returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/> without removing it.
         /// </summary><#= paramsComments #>
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(<#= outParamsWithType #>)
         {
             if (Count < 1) 

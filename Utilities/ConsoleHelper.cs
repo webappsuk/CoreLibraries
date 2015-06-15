@@ -48,7 +48,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Whether the current application is running in a console.
         /// </summary>
-        [PublicAPI]
         public static readonly bool IsConsole;
 
         /// <summary>
@@ -107,12 +106,12 @@ namespace WebApplications.Utilities
         /// Represents a coordinate
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
+        [PublicAPI]
         private struct Coord
         {
-            [PublicAPI]
             public short X;
 
-            [PublicAPI]
+
             public short Y;
         }
 
@@ -120,18 +119,18 @@ namespace WebApplications.Utilities
         /// Represents a small rectangle.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
+        [PublicAPI]
         private struct SmallRect
         {
-            [PublicAPI]
             public short Left;
 
-            [PublicAPI]
+
             public short Top;
 
-            [PublicAPI]
+
             public short Right;
 
-            [PublicAPI]
+
             public short Bottom;
         }
 
@@ -139,24 +138,24 @@ namespace WebApplications.Utilities
         /// Represents an RGB color
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
+        [PublicAPI]
         private struct ColorRef
         {
-            [PublicAPI]
             public uint ColorDWORD;
 
-            [PublicAPI]
+
             public ColorRef(Color color)
             {
                 ColorDWORD = color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
             }
 
-            [PublicAPI]
+
             public ColorRef(uint r, uint g, uint b)
             {
                 ColorDWORD = r + (g << 8) + (b << 16);
             }
 
-            [PublicAPI]
+
             public Color GetColor()
             {
                 return Color.FromArgb(
@@ -166,7 +165,7 @@ namespace WebApplications.Utilities
             }
 
             /* For future use, we can technically set the colors and update the console window.
-            [PublicAPI]
+    
             public void SetColor(Color color)
             {
                 ColorDWORD = color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
@@ -178,30 +177,30 @@ namespace WebApplications.Utilities
         /// Holds information about the Console's screen buffer.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
+        [PublicAPI]
         private struct ConsoleScreenBufferInfoEx
         {
-            [PublicAPI]
             public int BufferSize;
 
-            [PublicAPI]
+
             public Coord WindowSize;
 
-            [PublicAPI]
+
             public Coord CursorPosition;
 
-            [PublicAPI]
+
             public ushort Attributes;
 
-            [PublicAPI]
+
             public SmallRect Window;
 
-            [PublicAPI]
+
             public Coord MaximumWindowSize;
 
-            [PublicAPI]
+
             public ushort PopupAttributes;
 
-            [PublicAPI]
+
             public bool FullscreenSupported;
 
             /*
@@ -228,7 +227,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Maximises the console window.
         /// </summary>
-        [PublicAPI]
         public static void Maximise()
         {
             if (!IsConsole) return;
@@ -394,7 +392,6 @@ namespace WebApplications.Utilities
         /// <param name="mask">a <c>char</c> representing your choice of console mask</param>
         /// <returns>the string the user typed in</returns>
         [NotNull]
-        [PublicAPI]
         public static string ReadPassword(char mask = '*')
         {
             LinkedList<char> pass = new LinkedList<char>();

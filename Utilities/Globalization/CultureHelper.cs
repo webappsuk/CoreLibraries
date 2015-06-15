@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Globalization
     /// <summary>
     ///   Helps map cultures, regions and currencies.
     /// </summary>
+    [PublicAPI]
     public static class CultureHelper
     {
         /// <summary>
@@ -66,7 +67,6 @@ namespace WebApplications.Utilities.Globalization
         ///   The invariant culture LCID.
         /// </summary>
         /// <seealso cref="System.Globalization.CultureInfo.InvariantCulture"/>
-        [PublicAPI]
         public static readonly int InvariantLCID;
 
         /// <summary>
@@ -127,7 +127,6 @@ namespace WebApplications.Utilities.Globalization
         /// <remarks>
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<string> CultureNames
         {
@@ -140,7 +139,6 @@ namespace WebApplications.Utilities.Globalization
         /// <remarks>
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<string> RegionNames
         {
@@ -153,7 +151,6 @@ namespace WebApplications.Utilities.Globalization
         /// <remarks>
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<string> CurrencyNames
         {
@@ -165,7 +162,6 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
-        [PublicAPI]
         public static CultureInfo GetCultureInfo([NotNull] string name)
         {
             if (name == null) throw new ArgumentNullException("name");
@@ -178,7 +174,6 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
-        [PublicAPI]
         public static RegionInfo GetRegionInfo([NotNull] string name)
         {
             if (name == null) throw new ArgumentNullException("name");
@@ -203,10 +198,10 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static RegionInfo RegionInfo([NotNull] this CultureInfo cultureInfo)
         {
-            if (cultureInfo == null) throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
+            if (cultureInfo == null)
+                throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
 
             return new RegionInfo(cultureInfo.LCID);
         }
@@ -227,10 +222,10 @@ namespace WebApplications.Utilities.Globalization
         /// </exception>
         /// <seealso cref="Globalization.CurrencyInfo"/>
         [CanBeNull]
-        [PublicAPI]
         public static CurrencyInfo CurrencyInfo([NotNull] this RegionInfo regionInfo)
         {
-            if (regionInfo == null) throw new ArgumentNullException("regionInfo", Resources.CultureHelper_RegionInfoCannotBeNull);
+            if (regionInfo == null)
+                throw new ArgumentNullException("regionInfo", Resources.CultureHelper_RegionInfoCannotBeNull);
 
             return CurrencyInfoProvider.Current.Get(regionInfo.ISOCurrencySymbol);
         }
@@ -248,10 +243,10 @@ namespace WebApplications.Utilities.Globalization
         /// </remarks>
         /// <seealso cref="Globalization.CurrencyInfo"/>
         [CanBeNull]
-        [PublicAPI]
         public static CurrencyInfo CurrencyInfo([NotNull] this CultureInfo cultureInfo)
         {
-            if (cultureInfo == null) throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
+            if (cultureInfo == null)
+                throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
 
             return CurrencyInfoProvider.Current.Get(cultureInfo);
         }
@@ -268,10 +263,10 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="isoCode"/> cannot be null.
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<CultureInfo> CultureInfoFromCurrencyISO([NotNull] string isoCode)
         {
-            if (isoCode == null) throw new ArgumentNullException("isoCode", Resources.CultureHelper_RegionInfoCannotBeNull);
+            if (isoCode == null)
+                throw new ArgumentNullException("isoCode", Resources.CultureHelper_RegionInfoCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<CultureInfo>(0);
@@ -294,10 +289,10 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="isoCode"/> cannot be null.
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<RegionInfo> RegionInfoFromCurrencyISO([NotNull] string isoCode)
         {
-            if (isoCode == null) throw new ArgumentNullException("isoCode", Resources.CultureHelper_IsoCodeCannotBeNull);
+            if (isoCode == null)
+                throw new ArgumentNullException("isoCode", Resources.CultureHelper_IsoCodeCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<RegionInfo>(0);
@@ -326,13 +321,13 @@ namespace WebApplications.Utilities.Globalization
         /// <seealso cref="CultureInfo"/>
         /// <seealso cref="System.Globalization.RegionInfo"/>
         [NotNull]
-        [PublicAPI]
         public static string FormatCurrency(
             decimal amount,
             [NotNull] string currencyISO,
             [CanBeNull] string countryISO = null)
         {
-            if (currencyISO == null) throw new ArgumentNullException("currencyISO", Resources.CultureHelper_CurrencyIsoCannotBeNull);
+            if (currencyISO == null)
+                throw new ArgumentNullException("currencyISO", Resources.CultureHelper_CurrencyIsoCannotBeNull);
 
             CultureInfo[] c = null;
 
@@ -382,7 +377,6 @@ namespace WebApplications.Utilities.Globalization
         ///   A formatted <see cref="string"/> in the correct currency format.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static string FormatCurrency(decimal amount, [CanBeNull] CultureInfo cultureInfo = null)
         {
             cultureInfo = cultureInfo ?? Thread.CurrentThread.CurrentUICulture;
@@ -404,7 +398,6 @@ namespace WebApplications.Utilities.Globalization
         /// <seealso cref="CultureInfo"/>
         /// <seealso cref="System.Globalization.RegionInfo.DisplayName"/>
         [CanBeNull]
-        [PublicAPI]
         public static RegionInfo FindRegionFromName([NotNull] string name)
         {
             if (name == null) throw new ArgumentNullException("name", Resources.CultureHelper_NameCannotBeNull);
@@ -439,7 +432,6 @@ namespace WebApplications.Utilities.Globalization
         ///   <paramref name="name"/> cannot be null.
         /// </remarks>
         [CanBeNull]
-        [PublicAPI]
         public static RegionInfo FindRegion([NotNull] string name)
         {
             if (name == null) throw new ArgumentNullException("name", Resources.CultureHelper_NameCannotBeNull);
@@ -471,7 +463,6 @@ namespace WebApplications.Utilities.Globalization
         ///   The invariant culture is culture-insensitive, it is useful for when culture-specific presentation isn't required/needed.
         /// </remarks>
         /// <seealso cref="System.Globalization.CultureInfo.InvariantCulture"/>
-        [PublicAPI]
         public static bool IsInvariant(this CultureInfo cultureInfo)
         {
             return cultureInfo != null && cultureInfo.LCID == InvariantLCID;

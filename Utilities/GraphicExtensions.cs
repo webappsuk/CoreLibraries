@@ -35,6 +35,7 @@ namespace WebApplications.Utilities
     /// <summary>
     /// Extension methods for Graphics.
     /// </summary>
+    [PublicAPI]
     public static class GraphicExtensions
     {
         /// <summary>
@@ -81,7 +82,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>ImageFormat.</returns>
-        [PublicAPI]
         public static GraphicFormat ToGraphicFormat([NotNull] this ImageFormat format)
         {
             GraphicFormat graphicFormat;
@@ -97,7 +97,6 @@ namespace WebApplications.Utilities
         /// <param name="format">The format.</param>
         /// <returns>System.Drawing.Imaging.ImageFormat.</returns>
         [NotNull]
-        [PublicAPI]
         public static ImageFormat ToImageFormat(this GraphicFormat format)
         {
             // ReSharper disable once AssignNullToNotNullAttribute

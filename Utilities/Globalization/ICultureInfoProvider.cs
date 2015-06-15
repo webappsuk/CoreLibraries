@@ -35,18 +35,17 @@ namespace WebApplications.Utilities.Globalization
     /// <summary>
     /// Interface to an object that provides <see cref="CultureInfo"/>.
     /// </summary>
+    [PublicAPI]
     public interface ICultureInfoProvider
     {
         /// <summary>
         /// The date this provider was published.
         /// </summary>
-        [PublicAPI]
         DateTime Published { get; }
 
         /// <summary>
         /// The cultures in the provider.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         [ItemNotNull]
         IEnumerable<ExtendedCultureInfo> All { get; }
@@ -57,7 +56,6 @@ namespace WebApplications.Utilities.Globalization
         /// <value>
         /// The count.
         /// </value>
-        [PublicAPI]
         int Count { get; }
 
         /// <summary>
@@ -75,7 +73,6 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="cultureName"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         [CanBeNull]
         ExtendedCultureInfo Get([NotNull] string cultureName);
 
@@ -94,7 +91,6 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         [CanBeNull]
         ExtendedCultureInfo Get([NotNull] CultureInfo cultureInfo);
 
@@ -103,7 +99,6 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="currencyInfo">The currency information.</param>
         /// <returns>The cultures that us the specified currency.</returns>
-        [PublicAPI]
         [NotNull]
         IEnumerable<ExtendedCultureInfo> FindByCurrency([NotNull] CurrencyInfo currencyInfo);
     }

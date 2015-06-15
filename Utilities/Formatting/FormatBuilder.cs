@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Formatting
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
     [TypeConverter(typeof(FormatBuilderConverter))]
+    [PublicAPI]
     public sealed partial class FormatBuilder : IFormattable, IWriteable, IEquatable<FormatBuilder>,
         IEnumerable<FormatChunk>
     {
@@ -74,7 +75,6 @@ namespace WebApplications.Utilities.Formatting
         /// The root chunk.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly FormatChunk RootChunk = new FormatChunk(null);
 
         /// <summary>
@@ -89,7 +89,6 @@ namespace WebApplications.Utilities.Formatting
         /// The initial layout.
         /// </value>
         [NotNull]
-        [PublicAPI]
         public Layout InitialLayout { get; set; }
 
         #region Constructor overloads
@@ -203,7 +202,6 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Clears this instance.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public FormatBuilder Clear()
         {
@@ -215,7 +213,6 @@ namespace WebApplications.Utilities.Formatting
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
         /// <value><see langword="true" /> if this instance is empty; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsEmpty
         {
             get { return RootChunk.ChildrenInternal == null || RootChunk.ChildrenInternal.Count < 1; }
@@ -228,7 +225,6 @@ namespace WebApplications.Utilities.Formatting
         /// <see langword="true" /> if this builder is read only; otherwise, <see langword="false" />.
         /// </value>
         /// <remarks>A read only builder cannot have any more chunks appended, but fill points can still be resolved.</remarks>
-        [PublicAPI]
         public bool IsReadOnly
         {
             get { return _isReadOnly; }
@@ -237,7 +233,6 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Makes this builder read only.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public FormatBuilder MakeReadOnly()
         {
@@ -253,7 +248,6 @@ namespace WebApplications.Utilities.Formatting
         /// A shallow copy of this builder.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Clone(bool readOnly = false)
         {
             if (_isReadOnly && readOnly)
@@ -279,7 +273,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(bool value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -293,7 +286,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(sbyte value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -307,7 +299,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(byte value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -321,7 +312,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(char value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -335,7 +325,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(short value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -349,7 +338,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(int value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -363,7 +351,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(long value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -377,7 +364,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(float value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -391,7 +377,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(double value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -405,7 +390,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(decimal value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -419,7 +403,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(ushort value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -433,7 +416,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(uint value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -447,7 +429,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(ulong value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -461,7 +442,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append([CanBeNull] object value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -502,7 +482,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -520,7 +499,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="charCount">The character count.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value, int startIndex, int charCount)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -543,7 +521,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="repeatCount">The repeat count.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append(char value, int repeatCount)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -558,7 +535,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append([CanBeNull] string value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -573,7 +549,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunk">The chunk.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append([CanBeNull] FormatChunk chunk)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -588,7 +563,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunks">The chunks.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -609,7 +583,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="builder">The builder.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Append([CanBeNull] FormatBuilder builder)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -636,7 +609,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine()
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -650,7 +622,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(bool value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -665,7 +636,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(sbyte value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -680,7 +650,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(byte value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -695,7 +664,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(char value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -710,7 +678,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(short value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -725,7 +692,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(int value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -740,7 +706,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(long value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -755,7 +720,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(float value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -770,7 +734,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(double value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -785,7 +748,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(decimal value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -800,7 +762,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(ushort value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -815,7 +776,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(uint value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -830,7 +790,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(ulong value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -845,7 +804,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] object value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -894,7 +852,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -914,7 +871,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="charCount">The character count.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value, int startIndex, int charCount)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -939,7 +895,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="repeatCount">The repeat count.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine(char value, int repeatCount)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -955,7 +910,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] string value)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -971,7 +925,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunk">The chunk.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] FormatChunk chunk)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -987,7 +940,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunks">The chunks.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -1010,7 +962,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="builder">The builder.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] FormatBuilder builder)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -1040,7 +991,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="args">The arguments.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] params object[] args)
         {
@@ -1059,7 +1009,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatInstance<T>([CanBeNull] string format, [CanBeNull] T instance)
         {
@@ -1090,7 +1039,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> the keys are case sensitive.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
@@ -1113,7 +1061,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
@@ -1133,7 +1080,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendFormatLine()
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -1148,7 +1094,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="args">The arguments.</param>
         /// <returns>This instance.</returns>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine([CanBeNull] string format, [CanBeNull] params object[] args)
         {
@@ -1168,7 +1113,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLineInstance<T>([CanBeNull] string format, [CanBeNull] T instance)
         {
@@ -1202,7 +1146,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
@@ -1230,7 +1173,6 @@ namespace WebApplications.Utilities.Formatting
         /// This instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
@@ -1256,7 +1198,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         // ReSharper disable once CodeAnnotationAnalyzer
         public FormatBuilder AppendControl(
@@ -1292,7 +1233,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder ResolveInstance<T>([CanBeNull] T instance)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -1318,7 +1258,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Resolve(
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive = false)
@@ -1343,7 +1282,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Resolve(
             [CanBeNull] ResolveDelegate resolver,
             bool isCaseSensitive = false,
@@ -1381,7 +1319,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToStringInstance<T>([CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter())
@@ -1398,7 +1335,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString([CanBeNull] Layout layout, ref int position)
         {
             using (StringWriter writer = new StringWriter())
@@ -1416,7 +1352,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="instance">The istance.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToStringInstance<T>([CanBeNull] Layout layout, ref int position, [CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter())
@@ -1436,7 +1371,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive = false,
@@ -1459,7 +1393,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1485,7 +1418,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
@@ -1505,7 +1437,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString([CanBeNull] IResolvable resolver)
         {
             using (StringWriter writer = new StringWriter())
@@ -1526,7 +1457,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1558,7 +1488,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1585,7 +1514,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToStringInstance<T>([CanBeNull] IFormatProvider formatProvider, [CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
@@ -1604,7 +1532,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="instance">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToStringInstance<T>(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1629,7 +1556,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
@@ -1654,7 +1580,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1676,7 +1601,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
@@ -1698,7 +1622,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
@@ -1720,7 +1643,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IResolvable resolver)
@@ -1744,7 +1666,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1778,7 +1699,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1809,7 +1729,6 @@ namespace WebApplications.Utilities.Formatting
         /// </list></param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance. </returns>
-        [PublicAPI]
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
@@ -1829,7 +1748,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1852,7 +1770,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToStringInstance<T>(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -1876,7 +1793,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="instance">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToStringInstance<T>(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1909,7 +1825,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -1937,7 +1852,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -1973,7 +1887,6 @@ namespace WebApplications.Utilities.Formatting
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -1998,7 +1911,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -2025,7 +1937,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -2062,7 +1973,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
@@ -2087,7 +1997,6 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Writes the builder to the console.
         /// </summary>
-        [PublicAPI]
         public void WriteToConsole()
         {
             if (IsEmpty) return;
@@ -2099,7 +2008,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
-        [PublicAPI]
         public void WriteToConsoleInstance<T>(
             [CanBeNull] string format,
             [CanBeNull] T values)
@@ -2112,7 +2020,6 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the console.
         /// </summary>
         /// <param name="values">The values.</param>
-        [PublicAPI]
         public void WriteToConsoleInstance<T>(
             [CanBeNull] T values)
         {
@@ -2127,7 +2034,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
@@ -2146,7 +2052,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
@@ -2163,7 +2068,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
-        [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] IResolvable resolver)
@@ -2178,7 +2082,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive = false,
@@ -2195,7 +2098,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
@@ -2210,7 +2112,6 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the console.
         /// </summary>
         /// <param name="resolver">The resolver.</param>
-        [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] [InstantHandle] IResolvable resolver)
         {
@@ -2223,7 +2124,6 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Writes the builder to the trace.
         /// </summary>
-        [PublicAPI]
         public void WriteToTrace()
         {
             if (IsEmpty) return;
@@ -2235,7 +2135,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
-        [PublicAPI]
         public void WriteToTraceInstance<T>(
             [CanBeNull] string format,
             [CanBeNull] T values)
@@ -2248,7 +2147,6 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the trace.
         /// </summary>
         /// <param name="values">The values.</param>
-        [PublicAPI]
         public void WriteToTraceInstance<T>(
             [CanBeNull] T values)
         {
@@ -2263,7 +2161,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
@@ -2282,7 +2179,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
@@ -2299,7 +2195,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
-        [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] IResolvable resolver)
@@ -2314,7 +2209,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive = false,
@@ -2331,7 +2225,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
@@ -2346,7 +2239,6 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the trace.
         /// </summary>
         /// <param name="resolver">The resolver.</param>
-        [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] IResolvable resolver)
         {
@@ -2363,7 +2255,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The start position.</param>
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo([CanBeNull] TextWriter writer, [CanBeNull] Layout layout = null, int position = 0)
         {
             if (writer == null || IsEmpty) return position;
@@ -2385,7 +2276,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public void WriteTo([CanBeNull] TextWriter writer, string format)
         {
             if (writer == null || IsEmpty) return;
@@ -2409,7 +2299,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="instance">The instance.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteToInstance<T>(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
@@ -2448,7 +2337,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2477,7 +2365,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="instance">The values.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteToInstance<T>(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2519,7 +2406,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
@@ -2553,7 +2439,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2586,7 +2471,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
@@ -2618,7 +2502,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2652,7 +2535,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
@@ -2683,7 +2565,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
@@ -2714,7 +2595,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2749,7 +2629,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2779,7 +2658,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
@@ -2808,7 +2686,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] IResolvable resolver)
@@ -2837,7 +2714,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2870,7 +2746,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The start position.</param>
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
-        [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2902,7 +2777,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="position">The position.</param>
         /// <returns>The final position.</returns>
-        [PublicAPI]
         private static int WriteTo(
             [NotNull] FormatChunk rootChunk,
             [NotNull] TextWriter writer,
@@ -2944,28 +2818,24 @@ namespace WebApplications.Utilities.Formatting
         /// The items tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string ItemsTag = "<items>";
 
         /// <summary>
         /// The item tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string ItemTag = "<item>";
 
         /// <summary>
         /// The index tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string IndexTag = "<index>";
 
         /// <summary>
         /// The join tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string JoinTag = "<join>";
 
         /// <summary>
@@ -3011,7 +2881,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             vStr = formattable.ToString(format, formatProvider);
                         }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             vStr = value.ToString();
@@ -3172,7 +3042,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="position">The position.</param>
         /// <returns>The final position.</returns>
-        [PublicAPI]
         [StringFormatMethod("format")]
         private static int DoWrite(
             [NotNull] FormatChunk rootChunk,
@@ -3514,7 +3383,7 @@ namespace WebApplications.Utilities.Formatting
                                                                 {
                                                                     // ReSharper disable PossibleNullReferenceException
                                                                     switch (c.Tag.ToLowerInvariant())
-                                                                    // ReSharper restore PossibleNullReferenceException
+                                                                        // ReSharper restore PossibleNullReferenceException
                                                                     {
                                                                         case IndexTag:
                                                                             return value;
@@ -3599,7 +3468,7 @@ namespace WebApplications.Utilities.Formatting
                     else if (chunk.Value == null)
                         continue;
                     else
-                        // We have a value chunk.
+                    // We have a value chunk.
                         chunkStr = GetChunkString(
                             chunk.Value,
                             chunk.Alignment,
@@ -4088,35 +3957,30 @@ namespace WebApplications.Utilities.Formatting
         /// The reset colors control tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string ResetColorsTag = "!resetcolors";
 
         /// <summary>
         /// The reset colors chunk.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatChunk ResetColorsChunk = new FormatChunk(null, ResetColorsTag, 0, null);
 
         /// <summary>
         /// The foreground color control tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string ForegroundColorTag = "!fgcolor";
 
         /// <summary>
         /// The background color control tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string BackgroundColorTag = "!bgcolor";
 
         /// <summary>
         /// The reset foreground color chunk.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatChunk ResetForegroundColorChunk = new FormatChunk(
             null,
             ForegroundColorTag,
@@ -4127,7 +3991,6 @@ namespace WebApplications.Utilities.Formatting
         /// The reset background color chunk.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatChunk ResetBackgroundColorChunk = new FormatChunk(
             null,
             BackgroundColorTag,
@@ -4139,7 +4002,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendResetColors()
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4153,7 +4015,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendResetForegroundColor()
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4167,7 +4028,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendResetBackgroundColor()
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4182,7 +4042,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="color">The color.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendForegroundColor(ConsoleColor color)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4198,7 +4057,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="color">The color.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendForegroundColor(Color color)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4213,7 +4071,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="color">The color.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendForegroundColor([CanBeNull] string color)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4229,7 +4086,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="color">The color.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendBackgroundColor(ConsoleColor color)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4245,7 +4101,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="color">The color.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendBackgroundColor(Color color)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4260,7 +4115,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="color">The color.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendBackgroundColor([CanBeNull] string color)
         {
             if (_isReadOnly) throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -4276,21 +4130,18 @@ namespace WebApplications.Utilities.Formatting
         /// The layout control tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string LayoutTag = "!layout";
 
         /// <summary>
         /// The pop layout chunk.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatChunk PopLayoutChunk = new FormatChunk(null, LayoutTag, 0, null);
 
         /// <summary>
         /// The new line chunk
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatChunk NewLineChunk = new FormatChunk(Environment.NewLine);
 
         /// <summary>
@@ -4298,7 +4149,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendPopLayout()
         {
             RootChunk.AppendChunk(PopLayoutChunk);
@@ -4311,7 +4161,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="layout">The layout.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLayout([CanBeNull] Layout layout)
         {
             if (layout == null) return this;
@@ -4337,7 +4186,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="wrapMode">The line wrap mode.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder AppendLayout(
             Optional<int> width = default(Optional<int>),
             Optional<int> indentSize = default(Optional<int>),
@@ -4354,19 +4202,19 @@ namespace WebApplications.Utilities.Formatting
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
             Layout layout = new Layout(
-    width,
-    indentSize,
-    rightMarginSize,
-    indentChar,
-    firstLineIndentSize,
-    tabStops,
-    tabSize,
-    tabChar,
-    alignment,
-    splitLength,
-    hyphenate,
-    hyphenChar,
-    wrapMode);
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitLength,
+                hyphenate,
+                hyphenChar,
+                wrapMode);
             return Append(new FormatChunk(null, LayoutTag, 0, layout.ToString("f"), layout));
         }
         #endregion

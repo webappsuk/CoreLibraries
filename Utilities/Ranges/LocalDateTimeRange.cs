@@ -102,7 +102,6 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         [NotNull]
-        [PublicAPI]
         public static Period AutoStep(LocalDateTime start, LocalDateTime end)
         {
             CheckStartGreaterThanEnd(start, end);
@@ -133,7 +132,6 @@ namespace WebApplications.Utilities.Ranges
         /// Converts this range to a <see cref="DateTimeRange"/> with a <see cref="DateTime.Kind" /> of <see cref="DateTimeKind.Unspecified"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public DateTimeRange ToDateTimeRangeUnspecified()
         {
             return new DateTimeRange(
@@ -151,7 +149,6 @@ namespace WebApplications.Utilities.Ranges
         /// The date range.
         /// </value>
         [NotNull]
-        [PublicAPI]
         public LocalDateRange DateRange
         {
             get { return new LocalDateRange(Start.Date, End.Date, DateStep()); }

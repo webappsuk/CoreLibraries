@@ -63,7 +63,6 @@ namespace WebApplications.Utilities.Formatting
         /// Gets or sets the current horizontal position.
         /// </summary>
         /// <value>The position.</value>
-        [PublicAPI]
         public int Position
         {
             get { return _writer.Position; }
@@ -83,7 +82,6 @@ namespace WebApplications.Utilities.Formatting
         /// Gets the current Layout.
         /// </summary>
         /// <value>The Layout.</value>
-        [PublicAPI]
         [NotNull]
         public Layout Layout
         {
@@ -181,7 +179,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="newLayout">The new layout.</param>
         /// <returns>An awaitable task that returns the existing layout.</returns>
-        [PublicAPI]
         [NotNull]
         public Layout ApplyLayout([CanBeNull] Layout newLayout)
         {
@@ -229,7 +226,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="hyphenChar">The hyphenation character.</param>
         /// <param name="wrapMode">The line wrap mode.</param>
         /// <returns>An awaitable task that returns the existing layout.</returns>
-        [PublicAPI]
         [NotNull]
         public Layout ApplyLayout(
             Optional<int> width = default(Optional<int>),
@@ -292,7 +288,6 @@ namespace WebApplications.Utilities.Formatting
         /// <remarks>
         /// This is not inherently thread safe, to make thread safe use a synchronization wrapper.
         /// </remarks>
-        [PublicAPI]
         private sealed class UnderlyingFormatTextWriter : TextWriter, ILayoutTextWriter
         {
             /// <summary>

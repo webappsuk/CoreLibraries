@@ -44,6 +44,7 @@ namespace WebApplications.Utilities.Caching
     /// </summary>
     /// <typeparam name="TKey">The type of the keys.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
+    [PublicAPI]
     public class CachingDictionary<TKey, TValue> : CachingDictionaryBase<TKey, TValue>, IDictionary<TKey, TValue>,
         IDictionary
     {
@@ -72,7 +73,6 @@ namespace WebApplications.Utilities.Caching
         ///   Initializes a new instance of the <see cref="CachingDictionary&lt;TKey, TValue&gt;"/> class.
         /// </summary>
         /// <param name="cacheName">The name of the cache.</param>
-        [UsedImplicitly]
         public CachingDictionary(string cacheName = null)
         {
             _keys = new ConcurrentDictionary<TKey, string>();
@@ -86,7 +86,6 @@ namespace WebApplications.Utilities.Caching
         /// <param name="concurrencyLevel">The estimated number of threads that will update the lookup concurrently.</param>
         /// <param name="capacity">The initial number of elements that the dictionary can contain.</param>
         /// <param name="cacheName">The name of the cache.</param>
-        [UsedImplicitly]
         public CachingDictionary(int concurrencyLevel, int capacity, string cacheName = null)
         {
             _keys = new ConcurrentDictionary<TKey, string>(concurrencyLevel, capacity);
@@ -99,7 +98,6 @@ namespace WebApplications.Utilities.Caching
         /// </summary>
         /// <param name="comparer">The comparer to use when comparing keys.</param>
         /// <param name="cacheName">The name of the cache.</param>
-        [UsedImplicitly]
         public CachingDictionary([NotNull] IEqualityComparer<TKey> comparer, string cacheName = null)
         {
             if (comparer == null) throw new ArgumentNullException("comparer");
@@ -114,7 +112,6 @@ namespace WebApplications.Utilities.Caching
         /// </summary>
         /// <param name="collection">The collection to copy into the dictionary.</param>
         /// <param name="cacheName">The name of the cache.</param>
-        [UsedImplicitly]
         public CachingDictionary([NotNull] IEnumerable<KeyValuePair<TKey, TValue>> collection, string cacheName = null)
         {
             if (collection == null) throw new ArgumentNullException("collection");
@@ -133,7 +130,6 @@ namespace WebApplications.Utilities.Caching
         /// <param name="collection">The collection to copy into the dictionary.</param>
         /// <param name="comparer">The comparer to use when comparing keys.</param>
         /// <param name="cacheName">The name of the cache.</param>
-        [UsedImplicitly]
         public CachingDictionary(
             [NotNull] IEnumerable<KeyValuePair<TKey, TValue>> collection,
             [NotNull] IEqualityComparer<TKey> comparer,
@@ -157,7 +153,6 @@ namespace WebApplications.Utilities.Caching
         /// <param name="capacity">The initial number of elements that the dictionary can contain.</param>
         /// <param name="comparer">The comparer to use when comparing keys.</param>
         /// <param name="cacheName">The name of the cache.</param>
-        [UsedImplicitly]
         public CachingDictionary(
             int concurrencyLevel,
             int capacity,

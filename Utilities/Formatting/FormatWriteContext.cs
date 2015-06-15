@@ -34,70 +34,61 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Holds current context of the format writer during resolution.
     /// </summary>
+    [PublicAPI]
     public class FormatWriteContext
     {
         /// <summary>
         /// The writer width (if any); otherwise <see cref="int.MaxValue"/>.
         /// </summary>
-        [PublicAPI]
         public readonly int WriterWidth;
 
         /// <summary>
         /// Whether the underlying writer supports color.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsColorSupported;
 
         /// <summary>
         /// Whether the underlying writer supports custom control characters.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsControllableWriter;
 
         /// <summary>
         /// Whether the underlying writer auto wraps.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsAutoWrapping;
 
         /// <summary>
         /// An object that controls formatting.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly IFormatProvider FormatProvider;
 
         /// <summary>
         /// The character encoding in which the output is written.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Encoding Encoding;
 
         /// <summary>
         /// The line terminator string.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string NewLine;
 
         /// <summary>
         /// The current <see cref="LineType"/>.
         /// </summary>
-        [PublicAPI]
         public LineType LineType { get; internal set; }
 
         /// <summary>
         /// The layout.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public Layout Layout { get; internal set; }
 
         /// <summary>
         /// The horizontal position, before any alignment has taken place.
         /// </summary>
-        [PublicAPI]
         public int Position { get; internal set; }
 
         /// <summary>

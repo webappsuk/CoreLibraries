@@ -36,6 +36,7 @@ namespace WebApplications.Utilities.Threading
     /// Allows awaiting for a synchronization context, and runs that the continuation on the context.
     /// </summary>
     /// <remarks>Do not use with ConfigureAwait(false), as this can result in the continuation running outside the context.</remarks>
+    [PublicAPI]
     public struct SynchronizationContextAwaiter : INotifyCompletion
     {
         [NotNull]
@@ -60,7 +61,6 @@ namespace WebApplications.Utilities.Threading
         /// Gets a value indicating whether this instance is completed.
         /// </summary>
         /// <value><see langword="true" /> if this instance is completed; otherwise, <see langword="false" />.</value>
-        [UsedImplicitly]
         public bool IsCompleted
         {
             get { return false; }
@@ -78,7 +78,6 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// Gets the result.
         /// </summary>
-        [UsedImplicitly]
         public void GetResult()
         {
         }

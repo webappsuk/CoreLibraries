@@ -75,7 +75,6 @@ namespace WebApplications.Utilities.IO
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
-        [PublicAPI]
         public Task Connect(CancellationToken token)
         {
             NamedPipeServerStream stream = Stream as NamedPipeServerStream;

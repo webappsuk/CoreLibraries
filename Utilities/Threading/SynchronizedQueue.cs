@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Threading
     /// <summary>
     /// Allows queuing of work to run exclusively, or concurrently.
     /// </summary>
+    [PublicAPI]
     public class SynchronizedQueue
     {
         /// <summary>
@@ -67,7 +68,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="token">The cancellation token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public Task Do([CanBeNull] Action action, CancellationToken token = default(CancellationToken))
         {
             return action == null
@@ -83,7 +83,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="token">The cancellation token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public Task DoConcurrent([CanBeNull] Action action, CancellationToken token = default(CancellationToken))
         {
             return action == null
@@ -100,7 +99,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public Task<TResult> Do<TResult>(
             [CanBeNull] Func<TResult> function,
             CancellationToken token = default(CancellationToken))
@@ -124,7 +122,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public Task<TResult> DoConcurrent<TResult>(
             [CanBeNull] Func<TResult> function,
             CancellationToken token = default(CancellationToken))

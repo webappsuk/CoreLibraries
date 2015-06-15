@@ -40,7 +40,6 @@ namespace WebApplications.Utilities.Formatting
         /// Called when a control chunk is encountered.
         /// </summary>
         /// <param name="chunk">The chunk.</param>
-        [PublicAPI]
         void OnControlChunk([NotNull] FormatChunk chunk);
     }
 }

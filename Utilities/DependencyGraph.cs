@@ -77,7 +77,6 @@ namespace WebApplications.Utilities
         /// Gets all the objects in the graph, unordered.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> All
         {
             get { return _all; }
@@ -87,7 +86,6 @@ namespace WebApplications.Utilities
         /// Gets all the objects in the graph, top down.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> AllTopDown
         {
             get { return GetAllIterator(_dependencies, TopLeaves); }
@@ -97,7 +95,6 @@ namespace WebApplications.Utilities
         /// Gets all the objects in the graph, bottom up.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> AllBottomUp
         {
             get { return GetAllIterator(_dependsOn, BottomLeaves); }
@@ -109,7 +106,6 @@ namespace WebApplications.Utilities
         /// <value>
         /// The number of objects in the graph.
         /// </value>
-        [PublicAPI]
         public int Count
         {
             get { return _all.Count; }
@@ -134,7 +130,6 @@ namespace WebApplications.Utilities
         /// The leaf vertices that do not depend on anything.
         /// </value>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> TopLeaves
         {
             // ReSharper disable once PossibleNullReferenceException
@@ -148,7 +143,6 @@ namespace WebApplications.Utilities
         /// The leaf vertices that do not have any dependencies.
         /// </value>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> BottomLeaves
         {
             // ReSharper disable once PossibleNullReferenceException
@@ -160,7 +154,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="obj">The object to add.</param>
         /// <returns><see langword="true"/> if the object was added; <see langword="false"/> if the graph already contained the object.</returns>
-        [PublicAPI]
         public bool Add([NotNull] T obj)
         {
             if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
@@ -179,7 +172,6 @@ namespace WebApplications.Utilities
         /// <param name="a">The object that has a dependency.</param>
         /// <param name="b">The object that <paramref name="a" /> depends on.</param>
         /// <exception cref="System.InvalidOperationException">Cannot add the dependency as this would cause a cycle</exception>
-        [PublicAPI]
         public void Add([NotNull] T a, [NotNull] T b)
         {
             if (ReferenceEquals(a, null)) throw new ArgumentNullException("a");
@@ -208,7 +200,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns><see langword="true"/> if the graph contains the specified object; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool Contains([NotNull] T obj)
         {
             if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
@@ -223,7 +214,6 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <exception cref="System.ArgumentOutOfRangeException">value;The value given is not in the graph</exception>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> GetDependencies([NotNull] T obj)
         {
             if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
@@ -242,7 +232,6 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <exception cref="System.ArgumentOutOfRangeException">value;The value given is not in the graph</exception>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<T> GetAllDependencies([NotNull] T obj)
         {
@@ -322,7 +311,6 @@ namespace WebApplications.Utilities
         /// <param name="action">The action that is called for each object. The action is passed the current object and all the objects that it depends on.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> TraverseTopDown([NotNull] [InstantHandle] Action<T, IEnumerable<T>> action)
         {
             if (action == null) throw new ArgumentNullException("action");
@@ -335,7 +323,6 @@ namespace WebApplications.Utilities
         /// <param name="action">The action that is called for each object. The action is passed the current object and all the objects that depend on it.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<T> TraverseBottomUp([NotNull] [InstantHandle] Action<T, IEnumerable<T>> action)
         {
             if (action == null) throw new ArgumentNullException("action");
@@ -352,7 +339,6 @@ namespace WebApplications.Utilities
         /// <param name="down">The next values down the graph (towards <paramref name="bottom"/>) from each value.</param>
         /// <returns><paramref name="bottom"/></returns>
         [NotNull]
-        [PublicAPI]
         private IEnumerable<T> TraverseInternal(
             [NotNull] [InstantHandle] Action<T, IEnumerable<T>> action,
             [NotNull] [InstantHandle] IEnumerable<T> top,

@@ -44,7 +44,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <param name="range">The range.</param>
         /// <returns>The incremented result.</returns>
-        [PublicAPI]
         public static int Increment(ref int value, [NotNull] IntRange range)
         {
             if (range == null) throw new ArgumentNullException("range");
@@ -58,7 +57,6 @@ namespace WebApplications.Utilities
         /// <param name="start">The start of the range (inclusive).</param>
         /// <param name="end">The end of the range (inclusive).</param>
         /// <returns>The incremented result.</returns>
-        [PublicAPI]
         public static int Increment(ref int value, int start, int end)
         {
             SpinWait spinWait = new SpinWait();
@@ -78,7 +76,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <param name="range">The range.</param>
         /// <returns>The decremented result.</returns>
-        [PublicAPI]
         public static int Decrement(ref int value, [NotNull] IntRange range)
         {
             if (range == null) throw new ArgumentNullException("range");
@@ -92,7 +89,6 @@ namespace WebApplications.Utilities
         /// <param name="start">The start of the range (inclusive).</param>
         /// <param name="end">The end of the range (inclusive).</param>
         /// <returns>The decremented result.</returns>
-        [PublicAPI]
         public static int Decrement(ref int value, int start, int end)
         {
             SpinWait spinWait = new SpinWait();

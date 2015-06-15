@@ -45,12 +45,12 @@ namespace WebApplications.Utilities
     /// <summary>
     ///   Extensions to the <see cref="System.Reflection">reflection namespace</see>.
     /// </summary>
+    [PublicAPI]
     public static partial class Reflection
     {
         /// <summary>
         ///   Binding flags for returning all fields/properties from a type.
         /// </summary>
-        [PublicAPI]
         public const BindingFlags AccessorBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.FlattenHierarchy;
@@ -83,7 +83,6 @@ namespace WebApplications.Utilities
         /// <param name="name">The name of the field or property whose getter we want to retrieve.</param>
         /// <returns>A function that takes an object of the type T and returns the value of the property or field.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [CanBeNull]
         public static Func<TValue> GetGetter<TValue>([NotNull] this Type type, [NotNull] string name)
         {
@@ -105,7 +104,6 @@ namespace WebApplications.Utilities
         /// <param name="name">The name of the field or property whose getter we want to retrieve.</param>
         /// <returns>A function that takes an object of the type T and returns the value of the property or field.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [CanBeNull]
         public static Func<T, TValue> GetGetter<T, TValue>([NotNull] this Type type, [NotNull] string name)
         {
@@ -126,7 +124,6 @@ namespace WebApplications.Utilities
         /// <param name="name">The name of the field or property whose setter we want to retrieve.</param>
         /// <returns>A function that takes an object of the declaring type as well as a value and sets the field or property to that value.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [CanBeNull]
         public static Action<TValue> GetSetter<TValue>([NotNull] this Type type, [NotNull] string name)
         {
@@ -148,7 +145,6 @@ namespace WebApplications.Utilities
         /// <param name="name">The name of the field or property whose setter we want to retrieve.</param>
         /// <returns>A function that takes an object of the declaring type as well as a value and sets the field or property to that value.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [CanBeNull]
         public static Action<T, TValue> GetSetter<T, TValue>([NotNull] this Type type, [NotNull] string name)
         {
@@ -190,7 +186,6 @@ namespace WebApplications.Utilities
         /// </exception>
         /// <exception cref="InvalidOperationException">No parameter/return types specified.</exception>
         [NotNull]
-        [PublicAPI]
         public static object GetFunc(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability,
@@ -358,7 +353,6 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The parameter type is not assignable to the type specified.</para>
         /// </exception>
-        [PublicAPI]
         [NotNull]
         public static object GetAction(
             [NotNull] this MethodInfo methodInfo,
@@ -453,7 +447,6 @@ namespace WebApplications.Utilities
         ///   <paramref name="type"/> is a <see langword="null"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static object GetConstructorFunc(
             [NotNull] this Type type,
             bool checkParameterAssignability,
@@ -485,7 +478,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the specified property is automatic; otherwise <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public static bool IsAutomatic([NotNull] this PropertyInfo property)
         {
             Property p = property;
@@ -500,7 +492,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns the field info if the property is automatic; otherwise returns null.
         /// </returns>
-        [PublicAPI]
         [CanBeNull]
         public static Field GetAutomaticFieldInfo([NotNull] this PropertyInfo property)
         {
@@ -517,7 +508,6 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   Conversions are cached, which saves a conversion being recomputed if it's requested more than once.
         /// </remarks>
-        [PublicAPI]
         public static Func<TIn, TOut> GetConversion<TIn, TOut>()
         {
             return GetConversion<TIn, TOut>(typeof(TIn));
@@ -530,7 +520,6 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   Conversions are cached, which saves a conversion being recomputed if it's requested more than once.
         /// </remarks>
-        [PublicAPI]
         public static Func<object, object> GetConversion()
         {
             return GetConversion<object, object>(typeof(object));
@@ -545,7 +534,6 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   Conversions are cached, which saves a conversion being recomputed if it's requested more than once.
         /// </remarks>
-        [PublicAPI]
         public static Func<object, object> GetConversion([NotNull] this Type inputType, Type outputType = null)
         {
             if (inputType == null) throw new ArgumentNullException("inputType");
@@ -563,7 +551,6 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   Conversions are cached, which saves a conversion being recomputed if it's requested more than once.
         /// </remarks>
-        [PublicAPI]
         public static Func<TIn, TOut> GetConversion<TIn, TOut>([NotNull] this Type inputType, Type outputType = null)
         {
             if (inputType == null) throw new ArgumentNullException("inputType");
@@ -604,7 +591,6 @@ namespace WebApplications.Utilities
         /// </remarks>
         /// <exception cref="InvalidOperationException">The conversion is not supported.</exception>
         [NotNull]
-        [PublicAPI]
         public static Expression Convert([NotNull] this Expression expression, [NotNull] Type outputType)
         {
             Expression outputExpression;
@@ -631,7 +617,6 @@ namespace WebApplications.Utilities
         ///   This version is more powerful than the Expression.Convert CLR method in that it supports
         ///   ToString() conversion, IConvertible and TypeConverters. It also prevents exceptions being thrown.
         /// </remarks>
-        [PublicAPI]
         public static bool TryConvert(
             [NotNull] this Expression expression,
             [NotNull] Type outputType,
@@ -658,7 +643,6 @@ namespace WebApplications.Utilities
         ///   Returns the <see cref="MethodInfo"/> (if any); otherwise returns a <see langword="null"/>.
         /// </returns>
         [CanBeNull]
-        [PublicAPI]
         public static MethodInfo GetCastMethod(
             [NotNull] this Type type,
             [NotNull] Type destinationType,
@@ -696,7 +680,6 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the types are the same or if <paramref name="type"/> can be implicitly cast
         ///   to <paramref name="destinationType"/>; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public static bool ImplicitlyCastsTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
             return (type == destinationType) ||
@@ -714,7 +697,6 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the types are the same or if <paramref name="type"/> can be explicitly cast
         ///   to <paramref name="destinationType"/>; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public static bool ExplicitlyCastsTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
             return (type != destinationType) &&
@@ -731,7 +713,6 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the types are the same or if <paramref name="type"/> can be cast
         ///   to <paramref name="destinationType"/>; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public static bool CastsTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
             return (type == destinationType) ||
@@ -747,7 +728,6 @@ namespace WebApplications.Utilities
         /// <param name="destinationType">Type of the destination.</param>
         /// <returns><see langword="true" /> if this types can convert to the specified destination type; otherwise, <see langword="false" />.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool CanConvertTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
             // ReSharper disable once PossibleNullReferenceException
@@ -763,7 +743,6 @@ namespace WebApplications.Utilities
         ///   Returns the equivalent method. If the <paramref name="declaringType"/> is equal to the
         ///   <paramref name="methodInfo"/> declaring type then <paramref name="methodInfo"/> is returned. 
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static MethodInfo GetEquivalent([NotNull] this MethodInfo methodInfo, [NotNull] Type declaringType)
         {
@@ -788,7 +767,6 @@ namespace WebApplications.Utilities
         ///   If the CLR fails to grab a raw default value then this will return the default value for the type instead.
         /// </remarks>
         /// <seealso cref="System.Reflection.ParameterInfo.RawDefaultValue"/>
-        [PublicAPI]
         [CanBeNull]
         public static object RawDefaultValueSafe([NotNull] this ParameterInfo parameter)
         {
@@ -814,7 +792,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The default instance for the specified type.</returns>
-        [PublicAPI]
         [CanBeNull]
         public static object Default([NotNull] this Type type)
         {
@@ -845,7 +822,6 @@ namespace WebApplications.Utilities
         /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string SimplifiedTypeFullName(
             [NotNull] string typeAssemblyQualifiedName,
             [CanBeNull] params string[] excludedAssemblies)
@@ -946,7 +922,6 @@ namespace WebApplications.Utilities
         /// <param name="isOutputType">if set to <see langword="true" /> then the type is an output so casts are performed to the search type, rather than from the search type..</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(
             this Type type,
             TypeSearch typeSearch,
@@ -991,7 +966,6 @@ namespace WebApplications.Utilities
         /// <param name="isOutputType">if set to <see langword="true" /> then the type is an output so casts are performed to the search type, rather than from the search type..</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(
             this Type type,
             TypeSearch typeSearch,
@@ -1090,7 +1064,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(this ISignature signature, params TypeSearch[] types)
         {
             return Matches(signature, true, true, true, 0, types);
@@ -1104,7 +1077,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(this ISignature signature, int genericArguments, params TypeSearch[] types)
         {
             return Matches(signature, true, true, true, genericArguments, types);
@@ -1120,7 +1092,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(
             this ISignature signature,
             bool allowCasts,
@@ -1142,7 +1113,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(
             this ISignature signature,
             bool allowCasts,
@@ -1178,7 +1148,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(
             this ISignature signature,
             [NotNull] out bool[] castsRequired,
@@ -1200,7 +1169,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static bool Matches(
             this ISignature signature,
             [NotNull] out bool[] castsRequired,
@@ -1410,7 +1378,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static ISignature BestMatch(this IEnumerable<ISignature> signatures, params TypeSearch[] types)
         {
             bool[] castsRequired;
@@ -1425,7 +1392,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static ISignature BestMatch(
             this IEnumerable<ISignature> signatures,
             int genericArguments,
@@ -1444,7 +1410,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static ISignature BestMatch(
             this IEnumerable<ISignature> signatures,
             bool allowClosure,
@@ -1465,7 +1430,6 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static ISignature BestMatch(
             this IEnumerable<ISignature> signatures,
             int genericArguments,
@@ -1665,7 +1629,6 @@ namespace WebApplications.Utilities
         /// <param name="interfaceType">The type of the interface.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
         [Pure]
-        [PublicAPI]
         public static bool ImplementsInterface([NotNull] this Type type, [NotNull] Type interfaceType)
         {
             if (type == null) throw new ArgumentNullException("type");
@@ -1702,7 +1665,6 @@ namespace WebApplications.Utilities
         /// <param name="type">The type to check.</param>
         /// <returns><see langword="true"/> if the type implements the interface; otherwise <see langword="false"/>.</returns>
         [Pure]
-        [PublicAPI]
         public static bool ImplementsInterface<TInterface>([NotNull] this Type type)
         {
             if (type == null) throw new ArgumentNullException("type");
@@ -1719,7 +1681,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <typeparam name="T">The type of parameters to add.</typeparam>
         /// <returns>An addition function.</returns>
-        [PublicAPI]
         public static Func<T, T, T> AddFunc<T>()
         {
             Type type = typeof(T);
@@ -1773,7 +1734,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="type">The actual type.</param>
         /// <returns>An addition function.</returns>
-        [PublicAPI]
         public static Func<TParam, TParam, TResult> AddFunc<TParam, TResult>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
@@ -1792,7 +1752,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the addition.</param>
         /// <param name="typeRHS">The actual type of the RHS of the addition.</param>
         /// <returns>An addition function.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, TResult> AddFunc<TLHS, TRHS, TResult>(
             [NotNull] this Type typeLHS,
             [NotNull] Type typeRHS)
@@ -1829,7 +1788,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="type">The actual type.</param>
         /// <returns>A subtraction function.</returns>
-        [PublicAPI]
         public static Func<TParam, TParam, TResult> SubtractFunc<TParam, TResult>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
@@ -1848,7 +1806,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the subtraction.</param>
         /// <param name="typeRHS">The actual type of the RHS of the subtraction.</param>
         /// <returns>A subtraction function.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, TResult> SubtractFunc<TLHS, TRHS, TResult>(
             [NotNull] this Type typeLHS,
             [NotNull] Type typeRHS)
@@ -1892,7 +1849,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS of the comparison.</param>
         /// <returns>A less than comparison function.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, bool> LessThanFunc<TLHS, TRHS>(
             [NotNull] this Type typeLHS,
             [NotNull] Type typeRHS)
@@ -1905,7 +1861,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <typeparam name="T">The type of parameters to evaluate.</typeparam>
         /// <returns>A less than or equal comparison function.</returns>
-        [PublicAPI]
         public static Func<T, T, bool> LessThanOrEqualFunc<T>()
         {
             return ExpressionFunc<T, T, bool>(Expression.LessThanOrEqual, typeof(T), typeof(T));
@@ -1917,7 +1872,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T">The type of parameters to evaluate.</typeparam>
         /// <param name="type">The actual type.</param>
         /// <returns>A less than or equal comparison function.</returns>
-        [PublicAPI]
         public static Func<T, T, bool> LessThanOrEqualFunc<T>([NotNull] this Type type)
         {
             return ExpressionFunc<T, T, bool>(Expression.LessThanOrEqual, type, type);
@@ -1931,7 +1885,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS of the comparison.</param>
         /// <returns>A less than or equal comparison function.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, bool> LessThanOrEqualFunc<TLHS, TRHS>(
             [NotNull] this Type typeLHS,
             [NotNull] Type typeRHS)
@@ -1944,7 +1897,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <typeparam name="T">The type of parameters to evaluate.</typeparam>
         /// <returns>A greater than comparison function.</returns>
-        [PublicAPI]
         public static Func<T, T, bool> GreaterThanFunc<T>()
         {
             return ExpressionFunc<T, T, bool>(Expression.GreaterThan, typeof(T), typeof(T));
@@ -1969,7 +1921,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS for the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS for the comparison.</param>
         /// <returns>A greater than comparison function.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, bool> GreaterThanFunc<TLHS, TRHS>(
             [NotNull] this Type typeLHS,
             [NotNull] Type typeRHS)
@@ -2006,7 +1957,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS for the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS for the comparison.</param>
         /// <returns>A greater than or equal comparison function.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, bool> GreaterThanOrEqualFunc<TLHS, TRHS>(
             [NotNull] this Type typeLHS,
             [NotNull] Type typeRHS)
@@ -2019,7 +1969,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <typeparam name="T">The type of parameters to evaluate.</typeparam>
         /// <returns>A conditional AND operator function that only evaluates the second operand if the first operand evaluates true.</returns>
-        [PublicAPI]
         public static Func<T, T, bool> AndAlsoFunc<T>()
         {
             return ExpressionFunc<T, T, bool>(Expression.AndAlso, typeof(T), typeof(T));
@@ -2031,7 +1980,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T">The type of parameters to evaluate.</typeparam>
         /// <param name="type">The actual type.</param>
         /// <returns>A conditional AND operator function that only evaluates the second operand if the first operand evaluates true.</returns>
-        [PublicAPI]
         public static Func<T, T, bool> AndAlsoFunc<T>([NotNull] this Type type)
         {
             return ExpressionFunc<T, T, bool>(Expression.AndAlso, type, type);
@@ -2045,7 +1993,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS for the conditional operation.</param>
         /// <param name="typeRHS">The actual type of the RHS for the conditional operation.</param>
         /// <returns>A conditional AND operator function that only evaluates the second operand if the first operand evaluates true.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, bool> AndAlsoFunc<TLHS, TRHS>(
             [NotNull] this Type typeLHS,
             [NotNull] Type typeRHS)
@@ -2058,7 +2005,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <typeparam name="T">The type of parameters to evaluate.</typeparam>
         /// <returns>A conditional OR operator function that only evaluates the second operand if the first operand evaluates false.</returns>
-        [PublicAPI]
         public static Func<T, T, bool> OrElseFunc<T>()
         {
             return ExpressionFunc<T, T, bool>(Expression.OrElse, typeof(T), typeof(T));
@@ -2083,7 +2029,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS for the conditional operation.</param>
         /// <param name="typeRHS">The actual type of the RHS for the conditional operation.</param>
         /// <returns>A conditional OR operator function that only evaluates the second operand if the first operand evaluates false.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, bool> OrElseFunc<TLHS, TRHS>([NotNull] this Type typeLHS, [NotNull] Type typeRHS)
         {
             return ExpressionFunc<TLHS, TRHS, bool>(Expression.OrElse, typeLHS, typeRHS);
@@ -2099,7 +2044,6 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the addition.</param>
         /// <param name="typeRHS">The actual type of the RHS of the addition.</param>
         /// <returns>An addition function.</returns>
-        [PublicAPI]
         public static Func<TLHS, TRHS, TResult> ExpressionFunc<TLHS, TRHS, TResult>(
             [NotNull] this Func<Expression, Expression, Expression> binaryFunc,
             [NotNull] Type typeLHS,
@@ -2141,7 +2085,6 @@ namespace WebApplications.Utilities
         ///     <see langword="true" /> if the specified type is <see cref="Optional{T}" />; otherwise, <see langword="false" />.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static bool IsOptional([NotNull] this Type type)
         {
             if (type == null) throw new ArgumentNullException("type");
@@ -2154,7 +2097,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><see langword="true" /> if the specified type is <see cref="Optional{T}" />; otherwise, <see langword="false" />.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsOptional(this object value)
         {
@@ -2168,7 +2110,6 @@ namespace WebApplications.Utilities
         /// <param name="type">The type.</param>
         /// <returns>Type.</returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetNonOptionalType([NotNull] this Type type)
         {
@@ -2186,7 +2127,6 @@ namespace WebApplications.Utilities
         /// <param name="type">The type.</param>
         /// <returns>Type.</returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetOptionalType([NotNull] this Type type)
         {
@@ -2254,7 +2194,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>System.Object.</returns>
-        [PublicAPI]
         public static Optional<object> ToOptional(this object value)
         {
             IOptional o = value as IOptional;
@@ -2276,7 +2215,6 @@ namespace WebApplications.Utilities
         ///     <see langword="true" /> if the specified value can accept <see langword="null" />; otherwise,
         ///     <see langword="false" />.
         /// </returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullable([NotNull] this Type type)
         {
@@ -2310,7 +2248,6 @@ namespace WebApplications.Utilities
         /// <param name="type">The type.</param>
         /// <returns>Type.</returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetNullableType([NotNull] this Type type)
         {
@@ -2330,7 +2267,6 @@ namespace WebApplications.Utilities
         /// <param name="type">The type.</param>
         /// <returns>Type.</returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type GetNonNullableType([NotNull] this Type type)
         {
@@ -2396,7 +2332,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="member">The member.</param>
         /// <returns></returns>
-        [PublicAPI]
         public static bool IsCompilerGenerated(
             [NotNull] this MemberInfo member)
         {

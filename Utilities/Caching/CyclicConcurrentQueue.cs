@@ -45,6 +45,7 @@ namespace WebApplications.Utilities.Caching
     [ComVisible(false)]
     [DebuggerDisplay("Count = {Count}, Capacity = {Capacity}")]
     [Serializable]
+    [PublicAPI]
     [HostProtection(SecurityAction.LinkDemand, ExternalThreading = true, Synchronization = true)]
     public class CyclicConcurrentQueue<T> : IProducerConsumerCollection<T>
     {
@@ -56,7 +57,6 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         /// The maximum capacity of the queue.  As items are queued beyond the capacity, items are dequeued automatically.
         /// </summary>
-        [PublicAPI]
         public readonly long Capacity;
 
         /// <summary>
@@ -173,7 +173,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         /// true if the <see cref="CyclicConcurrentQueue{T}"/> is empty; otherwise, false.
         /// </returns>
-        [PublicAPI]
         public bool IsEmpty
         {
             get { return _head == _tail; }

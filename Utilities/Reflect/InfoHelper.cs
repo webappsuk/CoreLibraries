@@ -43,13 +43,11 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// A temporary field that can be used to help get <see cref="MemberInfo"/> for a method with reference or output parameters.
         /// </summary>
-        [PublicAPI]
         public static T RefOrOut;
 
         /// <summary>
         /// A secondary temporary field that can be used to help get a <see cref="ParameterInfo"/> of a reference/output parameter for a method with multiple reference/ouput parameters.
         /// </summary>
-        [PublicAPI]
         public static T Parameter;
 
         /// <summary>
@@ -92,7 +90,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetMethodInfo(() =&gt; TypeOrInstance.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static MethodInfo GetMethodInfo([NotNull] Expression<Action> exp, bool throwIfNotFound = false)
         {
             if (exp == null) throw new ArgumentNullException("exp");
@@ -114,7 +111,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetMethodInfo&lt;Type&gt;(i => i.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static MethodInfo GetMethodInfo<TInstance>(
             [NotNull] Expression<Action<TInstance>> exp,
             bool throwIfNotFound = false)
@@ -139,7 +135,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>instance.GetMethodInfo(i => i.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static MethodInfo GetMethodInfo<TInstance>(
             this TInstance instance,
             [NotNull] Expression<Action<TInstance>> exp,
@@ -164,7 +159,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetMethodInfo(() => TypeOrInstance.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static MethodInfo GetMethodInfo([NotNull] Expression<Func<object>> exp, bool throwIfNotFound = false)
         {
             if (exp == null) throw new ArgumentNullException("exp");
@@ -190,7 +184,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetMethodInfo&lt;Type&gt;(i => i.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static MethodInfo GetMethodInfo<TInstance>(
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
@@ -219,7 +212,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>instance.GetMethodInfo(i => i.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static MethodInfo GetMethodInfo<TInstance>(
             this TInstance instance,
             [NotNull] Expression<Func<TInstance, object>> exp,
@@ -248,7 +240,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetConstructorInfo(() => new Type(parameter));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static ConstructorInfo GetConstructorInfo<TInstance>(
             [NotNull] Expression<Func<TInstance>> exp,
             bool throwIfNotFound = false)
@@ -272,7 +263,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetPropertyInfo&lt;Type&gt;(i => i.Property);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static PropertyInfo GetPropertyInfo<TInstance>(
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
@@ -300,7 +290,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetPropertyInfo(() => TypeOrInstance.Property);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static PropertyInfo GetPropertyInfo<TResult>(
             [NotNull] Expression<Func<TResult>> exp,
             bool throwIfNotFound = false)
@@ -325,7 +314,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetPropertyInfo&lt;Type,PropertyType&gt;(i => i.Property);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static PropertyInfo GetPropertyInfo<TInstance, TResult>(
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
@@ -351,7 +339,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>instance.GetPropertyInfo(i => i.Property);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static PropertyInfo GetPropertyInfo<TInstance, TResult>(
             this TInstance instance,
             [NotNull] Expression<Func<TInstance, TResult>> exp,
@@ -376,7 +363,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetFieldInfo&lt;Type&gt;(i => i.Field);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static FieldInfo GetFieldInfo<TInstance>(
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
@@ -404,7 +390,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetFieldInfo(() => TypeOrInstance.Field);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static FieldInfo GetFieldInfo<TResult>(
             [NotNull] Expression<Func<TResult>> exp,
             bool throwIfNotFound = false)
@@ -429,7 +414,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetFieldInfo&lt;Type,FieldType&gt;(i => i.Field);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static FieldInfo GetFieldInfo<TInstance, TResult>(
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
@@ -455,7 +439,6 @@ namespace WebApplications.Utilities.Reflect
         /// <code>instance.GetFieldInfo(i => i.Field);</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static FieldInfo GetFieldInfo<TInstance, TResult>(
             this TInstance instance,
             [NotNull] Expression<Func<TInstance, TResult>> exp,
@@ -484,7 +467,6 @@ namespace WebApplications.Utilities.Reflect
         /// </remarks>
         /// <exception cref="System.ArgumentException">Multiple parameters specified</exception>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static ParameterInfo GetParameterInfo<TParam>(
             [NotNull] Expression<Action<TParam>> exp,
             bool throwIfNotFound = false)
@@ -519,7 +501,6 @@ namespace WebApplications.Utilities.Reflect
         /// </remarks>
         /// <exception cref="System.ArgumentException">Multiple parameters specified</exception>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        [PublicAPI]
         public static ParameterInfo GetParameterInfo<TInstance, TParam>(
             [NotNull] Expression<Action<TInstance, TParam>> exp,
             bool throwIfNotFound = false)

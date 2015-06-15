@@ -180,7 +180,6 @@ namespace WebApplications.Utilities
         ///   The default split characters for splitting strings.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly char[] DefaultSplitChars = { ' ', ',', '\t', '\r', '\n', '|' };
 
         [NotNull]
@@ -190,7 +189,8 @@ namespace WebApplications.Utilities
         /// The URI for the current AppDomains <see cref="AppDomain.BaseDirectory"/>.
         /// </summary>
         [NotNull]
-        public static readonly Uri AppDomainBaseUri = new Uri(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\') + "\\");
+        public static readonly Uri AppDomainBaseUri =
+            new Uri(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\') + "\\");
 
         /// <summary>
         ///   Gets the ordinal representation of an <see cref="int">integer</see> ('1st', '2nd', etc.) as a <see cref="string"/>.
@@ -198,7 +198,6 @@ namespace WebApplications.Utilities
         /// <param name="number">The number to add the suffix to.</param>
         /// <returns>The <paramref name="number"/> + the correct suffix.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToOrdinal(this int number)
         {
             string suf = "th";
@@ -224,7 +223,6 @@ namespace WebApplications.Utilities
         /// <param name="number">The number.</param>
         /// <returns>The ordinal (suffix) for the <paramref name="number"/> specified.</returns>
         [NotNull]
-        [PublicAPI]
         public static string GetOrdinal(this int number)
         {
             string suf = "th";
@@ -251,7 +249,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   The textual equivalent of <paramref name="number"/> specified.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static string ToEnglish(this int number)
         {
@@ -269,7 +266,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   The textual equivalent of <paramref name="number"/> specified.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static string ToEnglish(this double number)
         {
@@ -287,7 +283,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   The textual equivalent of <paramref name="number"/> specified.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static string ToEnglish(this long number)
         {
@@ -304,7 +299,6 @@ namespace WebApplications.Utilities
         /// <param name="builder">The builder.</param>
         /// <param name="number">The number to convert.</param>
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
-        [PublicAPI]
         public static void AppendEnglish([NotNull] this StringBuilder builder, double number)
         {
             if (builder == null) throw new ArgumentNullException("builder");
@@ -318,7 +312,6 @@ namespace WebApplications.Utilities
         /// <param name="builder">The builder.</param>
         /// <param name="number">The number to convert.</param>
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
-        [PublicAPI]
         public static void AppendEnglish([NotNull] this StringBuilder builder, int number)
         {
             if (builder == null) throw new ArgumentNullException("builder");
@@ -332,7 +325,6 @@ namespace WebApplications.Utilities
         /// <param name="builder">The builder.</param>
         /// <param name="number">The number to convert.</param>
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
-        [PublicAPI]
         public static void AppendEnglish([NotNull] this StringBuilder builder, long number)
         {
             if (builder == null) throw new ArgumentNullException("builder");
@@ -346,7 +338,6 @@ namespace WebApplications.Utilities
         /// <param name="writer">The writer.</param>
         /// <param name="number">The number to convert.</param>
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
-        [PublicAPI]
         public static void WriteEnglish([NotNull] this TextWriter writer, double number)
         {
             if (writer == null) throw new ArgumentNullException("writer");
@@ -382,7 +373,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="number">The number.</param>
-        [PublicAPI]
         public static void WriteEnglish([NotNull] this TextWriter writer, long number)
         {
             if (writer == null) throw new ArgumentNullException("writer");
@@ -553,7 +543,6 @@ namespace WebApplications.Utilities
         /// <para>If the list does not contain duplicate items use DeepEqualsSimple.</para>
         /// <para>If the lists are sorted then use <see cref="System.Linq.Enumerable" />'s Sequence Equal.</para>
         /// </remarks>
-        [PublicAPI]
         public static bool DeepEquals<T>(
             [CanBeNull] [InstantHandle] this IEnumerable<T> enumerableA,
             [CanBeNull] [InstantHandle] IEnumerable<T> enumerableB,
@@ -647,7 +636,6 @@ namespace WebApplications.Utilities
         ///   enumerables that do not contain duplicates.</para>
         ///   <para>If the lists are sorted then use <see cref="System.Linq.Enumerable"/>'s Sequence Equal.</para>
         /// </remarks>
-        [PublicAPI]
         public static bool DeepEqualsSimple<T>(
             [CanBeNull] [InstantHandle] this IEnumerable<T> enumerableA,
             [CanBeNull] [InstantHandle] IEnumerable<T> enumerableB,
@@ -673,7 +661,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="collection"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         [NotNull]
         public static Dictionary<string, string> ToDictionary([NotNull] this NameValueCollection collection)
         {
@@ -694,7 +681,6 @@ namespace WebApplications.Utilities
         /// <param name="source">An <see cref="IEnumerable{KeyValuePair}"/> to create a <see cref="Dictionary{TKey,TValue}"/> from.</param>
         /// <param name="comparer">An <see cref="IEqualityComparer{TKey}"/> to compare keys.</param>
         [NotNull]
-        [PublicAPI]
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
             [NotNull] [InstantHandle] this IEnumerable<KeyValuePair<TKey, TValue>> source,
             [CanBeNull] IEqualityComparer<TKey> comparer = null)
@@ -717,7 +703,6 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static string ToJSON([CanBeNull] this string input)
         {
             if (input == null)
@@ -735,7 +720,6 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static StringBuilder AppendJSON([NotNull] this StringBuilder stringBuilder, [CanBeNull] string input)
         {
             if (stringBuilder == null) throw new ArgumentNullException("stringBuilder");
@@ -771,7 +755,6 @@ namespace WebApplications.Utilities
         ///   Can be used with other enumerable objects such as Queues, Stacks, etc.
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public static string ToJSON([CanBeNull] [InstantHandle] this IEnumerable<string> list)
         {
             if (list == null)
@@ -810,7 +793,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexLower(this byte value)
         {
@@ -823,7 +805,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexLower(this byte[] value)
         {
@@ -844,7 +825,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexUpper(this byte value)
         {
@@ -857,7 +837,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexUpper([NotNull] this byte[] value)
         {
@@ -890,7 +869,6 @@ namespace WebApplications.Utilities
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> GetObjectsById<T>(
             [NotNull] this string integers,
             [NotNull] [InstantHandle] Func<int, T> getObject,
@@ -940,7 +918,6 @@ namespace WebApplications.Utilities
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> GetObjectsById16<T>(
             [NotNull] this string integers,
             [NotNull] [InstantHandle] Func<short, T> getObject,
@@ -989,7 +966,6 @@ namespace WebApplications.Utilities
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> GetObjectsById64<T>(
             [NotNull] this string integers,
             [NotNull] [InstantHandle] Func<long, T> getObject,
@@ -1029,7 +1005,6 @@ namespace WebApplications.Utilities
         /// <returns>The escaped <see cref="string"/>.</returns>
         [CanBeNull]
         [ContractAnnotation("raw:null => null; raw:notnull => notnull")]
-        [PublicAPI]
         public static string XmlEscape([CanBeNull] this string raw)
         {
             string stripped = String.IsNullOrEmpty(raw)
@@ -1044,7 +1019,6 @@ namespace WebApplications.Utilities
         /// <param name="raw">The object containing the raw value.</param>
         /// <returns>The escaped <see cref="string"/>.</returns>
         [NotNull]
-        [PublicAPI]
         public static string XmlEscape([NotNull] this object raw)
         {
             if (raw == null) throw new ArgumentNullException("raw");
@@ -1062,7 +1036,6 @@ namespace WebApplications.Utilities
         /// <para>See http://www.w3.org/TR/xml/#charsets for further info.</para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static bool IsValidXmlCharStrict(this char c)
         {
             return (c >= 0x20 && c <= 0xD7FF) ||
@@ -1085,7 +1058,6 @@ namespace WebApplications.Utilities
         /// <para>See http://www.w3.org/TR/xml/#charsets for further info.</para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static bool IsValidXmlChar(this char c)
         {
             return (c >= 0x20 && c <= 0x7E) ||
@@ -1115,7 +1087,6 @@ namespace WebApplications.Utilities
         ///   Couldn't load the embedded resource from the specified <paramref name="assembly"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static XDocument GetEmbeddedXml([NotNull] this Assembly assembly, [NotNull] string filename)
         {
             try
@@ -1172,7 +1143,6 @@ namespace WebApplications.Utilities
         ///   Couldn't load the embedded resource from the specified <paramref name="assembly"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static XmlSchemaSet GetEmbeddedXmlSchemaSet(
             [NotNull] this Assembly assembly,
             [NotNull] string filename,
@@ -1230,7 +1200,6 @@ namespace WebApplications.Utilities
         ///   This is the best way to pass a date time to JavaScript because it ensures that the time will parse successfully
         ///   regardless of the <see cref="DateTime">date</see>'s localisation/format.
         /// </remarks>
-        [PublicAPI]
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
             return (Int64)(dateTime - EpochStart).TotalMilliseconds;
@@ -1248,7 +1217,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The result was either less than <see cref="DateTime.MinValue"/> or greater than <see cref="DateTime.MaxValue"/>.
         /// </exception>
-        [PublicAPI]
         public static DateTime GetDateTime(Int64 epochTime)
         {
             return EpochStart.AddMilliseconds(epochTime);
@@ -1265,7 +1233,6 @@ namespace WebApplications.Utilities
         ///   <paramref name="input"/> was <see langword="null"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static string StripHTML([NotNull] this string input)
         {
             if (input == null) throw new ArgumentNullException("input");
@@ -1304,7 +1271,6 @@ namespace WebApplications.Utilities
         ///   <paramref name="maxLength"/> is less than the <paramref name="ellipsisLength"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static string Truncate(
             [CanBeNull] this string valueToTruncate,
             int maxLength,
@@ -1366,7 +1332,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="d">The value in degrees to convert.</param>
         /// <returns>The value (<paramref name="d"/>) in radians.</returns>
-        [PublicAPI]
         public static double ToRadians(this double d)
         {
             return (Math.PI / 180) * d;
@@ -1377,7 +1342,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="r">The value in radians to convert.</param>
         /// <returns>The value (<paramref name="r"/>) in degrees.</returns>
-        [PublicAPI]
         public static double ToDegrees(this double r)
         {
             return r * (180.0 / Math.PI);
@@ -1387,7 +1351,6 @@ namespace WebApplications.Utilities
         /// The lower-case hexadecimal digits.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly char[] HexDigitsLower = "0123456789abcdef".ToCharArray();
 
         /// <summary>
@@ -1396,7 +1359,6 @@ namespace WebApplications.Utilities
         /// <param name="str">The string.</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string Unescape([CanBeNull] this string str)
         {
             if (String.IsNullOrEmpty(str)) return str ?? String.Empty;
@@ -1411,7 +1373,6 @@ namespace WebApplications.Utilities
         /// <param name="str">The string.</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string Escape([CanBeNull] this string str)
         {
             if (String.IsNullOrEmpty(str)) return str ?? String.Empty;
@@ -1425,7 +1386,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="str">The string.</param>
-        [PublicAPI]
         public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             if (builder == null) throw new ArgumentNullException("builder");
@@ -1544,7 +1504,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="str">The string.</param>
-        [PublicAPI]
         public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             if (builder == null) throw new ArgumentNullException("builder");
@@ -1607,7 +1566,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="guid">The Guid.</param>
         /// <returns>The <see cref="System.Guid"/>'s creation <see cref="DateTime"/>.</returns>
-        [PublicAPI]
         public static DateTime GetDateTime(this Guid guid)
         {
             return CombGuid.GetDateTime(guid);
@@ -1623,7 +1581,6 @@ namespace WebApplications.Utilities
         /// <returns>The wrapped result.</returns>
         [Obsolete("Consider using TPL or Async.")]
         [NotNull]
-        [PublicAPI]
         public static IAsyncResult Wrap<T>([NotNull] this IAsyncResult result, T data)
         {
             return ApmWrap<T>.Wrap(result, data);
@@ -1637,7 +1594,6 @@ namespace WebApplications.Utilities
         /// <returns>The embedded data.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [Obsolete("Consider using TPL or Async.")]
-        [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result)
         {
             if (result == null) throw new ArgumentNullException("result");
@@ -1653,7 +1609,6 @@ namespace WebApplications.Utilities
         /// <returns>The embedded data.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [Obsolete("Consider using TPL or Async.")]
-        [PublicAPI]
         public static T Unwrap<T>([NotNull] this IAsyncResult result, out IAsyncResult unwrappedResult)
         {
             if (result == null) throw new ArgumentNullException("result");
@@ -1672,7 +1627,6 @@ namespace WebApplications.Utilities
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [Obsolete("Consider using TPL or Async.")]
         [NotNull]
-        [PublicAPI]
         public static AsyncCallback WrapCallback<T>(
             [NotNull] this AsyncCallback callback,
             [CanBeNull] T data,
@@ -1691,7 +1645,6 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
-        [PublicAPI]
         public static T[][] Split<T>([NotNull] this T[] array, [NotNull] params int[] indices)
         {
             if (array == null) throw new ArgumentNullException("array");
@@ -1740,7 +1693,6 @@ namespace WebApplications.Utilities
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        [PublicAPI]
         public static string Join(
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
@@ -1758,7 +1710,6 @@ namespace WebApplications.Utilities
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        [PublicAPI]
         public static string JoinNotNull(
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
@@ -1787,7 +1738,6 @@ namespace WebApplications.Utilities
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        [PublicAPI]
         public static string JoinNotNullOrEmpty(
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
@@ -1816,7 +1766,6 @@ namespace WebApplications.Utilities
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        [PublicAPI]
         public static string JoinNotNullOrWhiteSpace(
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
@@ -1844,7 +1793,6 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<string> SplitLines([NotNull] this string input)
         {
             if (input == null) throw new ArgumentNullException("input");
@@ -1857,7 +1805,6 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static string LowerCaseFirstLetter([NotNull] this string input)
         {
             if (input == null) throw new ArgumentNullException("input");
@@ -1872,7 +1819,6 @@ namespace WebApplications.Utilities
         /// <param name="number">The number.</param>
         /// <param name="increaseByPercent">Percentage to increase by.</param>
         /// <returns>The number increased by given percentage.</returns>
-        [PublicAPI]
         public static double AddPercentage(this double number, double increaseByPercent)
         {
             return number + (number * increaseByPercent) / 100;
@@ -1887,7 +1833,6 @@ namespace WebApplications.Utilities
         /// <para>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</para>
         /// </remarks>
         [CanBeNull]
-        [PublicAPI]
         public static byte[] GetAllBytes([CanBeNull] this IPAddress ipAddress)
         {
             if (ipAddress == null) return null;
@@ -1919,7 +1864,6 @@ namespace WebApplications.Utilities
         /// <returns>A byte[] that fully encodes an IPAddress.</returns>
         /// <remarks>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</remarks>
         [CanBeNull]
-        [PublicAPI]
         public static IPAddress GetFullIPAddress([CanBeNull] this byte[] bytes)
         {
             if (bytes == null) return null;
@@ -1948,7 +1892,6 @@ namespace WebApplications.Utilities
         /// <param name="enumerable">The enumerable.</param>
         /// <param name="equalityComparer">The equality comparer.</param>
         /// <returns><see langword="true" /> if all the elements of the enumerable are distinct, <see langword="false" /> otherwise.</returns>
-        [PublicAPI]
         public static bool AreDistinct<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [CanBeNull] IEqualityComparer<T> equalityComparer = null)
@@ -1969,7 +1912,6 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static TValue GetOrAdd<TKey, TValue>(
             [NotNull] this Dictionary<TKey, TValue> dict,
             [NotNull] TKey key,
@@ -1994,7 +1936,6 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static TValue GetOrAdd<TKey, TValue>(
             [NotNull] this Dictionary<TKey, TValue> dict,
             [NotNull] TKey key,
@@ -2015,7 +1956,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="values">The values.</param>
         /// <returns>The standard deviation.</returns>
-        [PublicAPI]
         public static double StdDev([CanBeNull] [InstantHandle] this IEnumerable<double> values)
         {
             if (values == null) return 0;
@@ -2039,7 +1979,6 @@ namespace WebApplications.Utilities
         /// <param name="values">The values.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>The standard deviation.</returns>
-        [PublicAPI]
         public static double StdDev<T>(
             [CanBeNull] [InstantHandle] this IEnumerable<T> values,
             [NotNull] [InstantHandle] Func<T, double> selector)
@@ -2078,7 +2017,6 @@ namespace WebApplications.Utilities
         /// <returns>The maximal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MaxBy<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2107,7 +2045,6 @@ namespace WebApplications.Utilities
         /// <returns>The maximal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MaxByOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2138,7 +2075,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MaxBy<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2186,7 +2122,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MaxByOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2232,7 +2167,6 @@ namespace WebApplications.Utilities
         /// <returns>The minimal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MinBy<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2261,7 +2195,6 @@ namespace WebApplications.Utilities
         /// <returns>The minimal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MinByOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2292,7 +2225,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MinBy<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2340,7 +2272,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TSource MinByOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2383,7 +2314,6 @@ namespace WebApplications.Utilities
         /// <returns>The maximal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TKey MaxOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2412,7 +2342,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TKey MaxOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2452,7 +2381,6 @@ namespace WebApplications.Utilities
         /// <returns>The minimal element, according to the projection.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="selector"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TKey MinOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2482,7 +2410,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-        [PublicAPI]
         [CanBeNull]
         public static TKey MinOrDefault<TSource, TKey>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
@@ -2515,7 +2442,6 @@ namespace WebApplications.Utilities
         /// <param name="source">The source.</param>
         /// <param name="comparer">The comparer.</param>
         /// <returns>``0.</returns>
-        [PublicAPI]
         [CanBeNull]
         public static T Min<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
@@ -2559,7 +2485,6 @@ namespace WebApplications.Utilities
         /// <param name="source">The source.</param>
         /// <param name="comparer">The comparer.</param>
         /// <returns>``0.</returns>
-        [PublicAPI]
         [CanBeNull]
         public static T Max<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
@@ -2609,7 +2534,6 @@ namespace WebApplications.Utilities
         /// <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> to compare values.</param>
         /// <typeparam name="TSource">The type of the elements of the input sequences.</typeparam>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> UnionSingle<TSource>(
             [CanBeNull] this TSource first,
@@ -2644,7 +2568,6 @@ namespace WebApplications.Utilities
         /// An <see cref="T:System.Collections.Generic.IEnumerable`1" /> that contains the elements from both input sequences, excluding duplicates.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> UnionSingle<TSource>(
             [NotNull] this IEnumerable<TSource> first,
@@ -2678,7 +2601,6 @@ namespace WebApplications.Utilities
         /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the first item followed by the elements of the sequence.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> Prepend<TSource>(
             [NotNull] this IEnumerable<TSource> sequence,
@@ -2699,7 +2621,6 @@ namespace WebApplications.Utilities
         /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the first item followed by the elements of the sequence.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> PrependTo<TSource>(
             [CanBeNull] this TSource first,
@@ -2731,7 +2652,6 @@ namespace WebApplications.Utilities
         /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the elements of the sequence followed by the last item.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> Append<TSource>(
             [NotNull] this IEnumerable<TSource> sequence,
@@ -2753,7 +2673,6 @@ namespace WebApplications.Utilities
         /// An <see cref="T:System.Collections.Generic.IEnumerable`1"/> that contains the elements of the sequence followed by the last item.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TSource> AppendTo<TSource>(
             [CanBeNull] this TSource last,
@@ -2811,7 +2730,6 @@ namespace WebApplications.Utilities
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
         /// <param name="count">The minimum number of elements the <paramref cref="source"/> needs.</param>
         /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool HasAtLeast<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
             if (source == null) throw new ArgumentNullException("source");
@@ -2842,7 +2760,6 @@ namespace WebApplications.Utilities
         /// <param name="count">The minimum number of elements the <paramref cref="source"/> needs.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool HasAtLeast<TSource>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             int count,
@@ -2878,8 +2795,7 @@ namespace WebApplications.Utilities
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
         /// <param name="count">The exact number of elements the <paramref cref="source"/> needs.</param>
         /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
-        [Annotations.Pure]
+        [Pure]
         public static bool HasExact<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
             if (source == null) throw new ArgumentNullException("source");
@@ -2910,7 +2826,6 @@ namespace WebApplications.Utilities
         /// <param name="count">The exact number of elements the <paramref cref="source" /> needs.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns><see langword="true"/> if the sequence has exactly <paramref name="count"/> items that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool HasExact<TSource>(
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             int count,
@@ -2964,7 +2879,6 @@ namespace WebApplications.Utilities
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToMemorySize(
             this short bytes,
             bool longUnits = false,
@@ -2983,7 +2897,6 @@ namespace WebApplications.Utilities
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToMemorySize(
             this ushort bytes,
             bool longUnits = false,
@@ -3002,7 +2915,6 @@ namespace WebApplications.Utilities
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToMemorySize(
             this int bytes,
             bool longUnits = false,
@@ -3021,7 +2933,6 @@ namespace WebApplications.Utilities
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToMemorySize(
             this uint bytes,
             bool longUnits = false,
@@ -3040,7 +2951,6 @@ namespace WebApplications.Utilities
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToMemorySize(
             this long bytes,
             bool longUnits = false,
@@ -3059,7 +2969,6 @@ namespace WebApplications.Utilities
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToMemorySize(
             this ulong bytes,
             bool longUnits = false,
@@ -3078,7 +2987,6 @@ namespace WebApplications.Utilities
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        [PublicAPI]
         public static string ToMemorySize(
             this double bytes,
             bool longUnits = false,
@@ -3147,7 +3055,6 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static short Mod(this short value, short modulus)
         {
             int mod = value % modulus;
@@ -3162,7 +3069,6 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static ushort Mod(this ushort value, ushort modulus)
         {
             return (ushort)(value % modulus);
@@ -3175,7 +3081,6 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static int Mod(this int value, int modulus)
         {
             int mod = value % modulus;
@@ -3190,7 +3095,6 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static uint Mod(this uint value, uint modulus)
         {
             return value % modulus;
@@ -3203,7 +3107,6 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static long Mod(this long value, long modulus)
         {
             long mod = value % modulus;
@@ -3218,7 +3121,6 @@ namespace WebApplications.Utilities
         /// <param name="modulus">The modulus.</param>
         /// <returns>The modulus.</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static ulong Mod(this ulong value, ulong modulus)
         {
             return value % modulus;
@@ -3239,7 +3141,6 @@ namespace WebApplications.Utilities
         /// </returns>
         /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> TopologicalSortDependants<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependants)
@@ -3274,7 +3175,6 @@ namespace WebApplications.Utilities
         ///   <para><paramref name="getDependencies"/> is <see langword="null"/>.</para>
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public static IEnumerable<T> TopologicalSortDependencies<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependencies)
@@ -3303,7 +3203,6 @@ namespace WebApplications.Utilities
         /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
         /// <exception cref="ArgumentException">There are duplicates in <paramref name="enumerable"/>.</exception>
         [NotNull]
-        [UsedImplicitly]
         public static IEnumerable<T> TopologicalSortEdges<T>(
             [NotNull] [InstantHandle] [ItemNotNull] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] IEnumerable<KeyValuePair<T, T>> edges)
@@ -3389,7 +3288,6 @@ namespace WebApplications.Utilities
         /// <param name="source">The source.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyCollection<T> Enumerate<T>([NotNull] [InstantHandle] this IEnumerable<T> source)
         {
@@ -3402,7 +3300,6 @@ namespace WebApplications.Utilities
         /// <param name="assembly">The assembly.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static SemanticVersion SemanticVersion([NotNull] this Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException("assembly");
@@ -3444,7 +3341,6 @@ namespace WebApplications.Utilities
         /// <param name="values">The values.</param>
         /// <returns>A hash set of the values.</returns>
         [NotNull]
-        [PublicAPI]
         public static ISet CreateSet(
             [NotNull] this Type elementType,
             [CanBeNull] [InstantHandle] IEnumerable values = null)
@@ -3510,7 +3406,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="enumerable">The enumerable.</param>
         /// <returns>A random item.</returns>
-        [PublicAPI]
         [CanBeNull]
         public static T Choose<T>([NotNull] [InstantHandle] this IEnumerable<T> enumerable)
         {
@@ -3530,7 +3425,6 @@ namespace WebApplications.Utilities
         /// <param name="enumerable">The enumerable.</param>
         /// <param name="getWeightFunc">The get weight function, any item with a weight &lt;= 0 will be ignored.</param>
         /// <returns>A random item.</returns>
-        [PublicAPI]
         [CanBeNull]
         public static T Choose<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
@@ -3579,7 +3473,6 @@ namespace WebApplications.Utilities
         /// <param name="exception">The exception.</param>
         /// <remarks>Unwraps <see cref="TargetInvocationException"/> and <see cref="AggregateException"/> automatically.</remarks>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<Exception> Flatten([CanBeNull] this Exception exception)
         {
             if (exception == null) yield break;
@@ -3629,7 +3522,6 @@ namespace WebApplications.Utilities
         /// <returns>An enumeration of <typeparamref name="TException"/></returns>
         /// <remarks>Unwraps <see cref="TargetInvocationException"/> and <see cref="AggregateException"/> automatically.</remarks>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<TException> Flatten<TException>(
             [CanBeNull] this Exception exception,
             [NotNull] Func<Exception, TException> convert)
@@ -3732,7 +3624,6 @@ namespace WebApplications.Utilities
         /// Re-throws the exception with the original stack trace.
         /// </summary>
         /// <param name="exception">The exception.</param>
-        [PublicAPI]
         [ContractAnnotation("=>halt")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ReThrow([NotNull] this Exception exception)
@@ -3750,7 +3641,6 @@ namespace WebApplications.Utilities
         /// <param name="stack">The stack to pop.</param>
         /// <param name="value">The value at the top of the stack, or <see langword="default{T}"/> if the stack is empty.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool TryPop<T>([NotNull] this Stack<T> stack, out T value)
         {
             if (stack == null) throw new ArgumentNullException("stack");
@@ -3771,7 +3661,6 @@ namespace WebApplications.Utilities
         /// <param name="stack">The stack to peek.</param>
         /// <param name="value">The value at the top of the stack, or <see langword="default{T}"/> if the stack is empty.</param>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool TryPeek<T>([NotNull] this Stack<T> stack, out T value)
         {
             if (stack == null) throw new ArgumentNullException("stack");
@@ -3792,7 +3681,6 @@ namespace WebApplications.Utilities
         /// <param name="queue">The queue to dequeue.</param>
         /// <param name="value">The value at the beginning of the queue, or <see langword="default{T}"/> if the queue is empty.</param>
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool TryDequeue<T>([NotNull] this Queue<T> queue, out T value)
         {
             if (queue == null) throw new ArgumentNullException("queue");
@@ -3813,7 +3701,6 @@ namespace WebApplications.Utilities
         /// <param name="queue">The queue to peek.</param>
         /// <param name="value">The value at the beginning of the queue, or <see langword="default{T}"/> if the queue is empty.</param>
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public static bool TryPeek<T>([NotNull] this Queue<T> queue, out T value)
         {
             if (queue == null) throw new ArgumentNullException("queue");
@@ -3835,7 +3722,6 @@ namespace WebApplications.Utilities
         /// <param name="action">The action to perform on each element.</param>
         /// <returns>The sequence.</returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> Do<T>([NotNull] this IEnumerable<T> sequence, [NotNull] Action<T> action)
         {
             if (sequence == null) throw new ArgumentNullException("sequence");
@@ -3864,7 +3750,6 @@ namespace WebApplications.Utilities
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Tuple{T1, T2}"/> containing all possible pairs of the elements in the two enumerables.</returns>
         /// <remarks>The order of the elements of the enumerables will be maintained.</remarks>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<Tuple<T1, T2>> Cross<T1, T2>(
             [NotNull] this IEnumerable<T1> enumerable1,
             [NotNull] IEnumerable<T2> enumerable2)
@@ -3915,7 +3800,6 @@ namespace WebApplications.Utilities
         /// <param name="takeCount">The number of elements to return.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> that contains the specified number of elements elements that occur after the specified index in the input sequence.</returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> SkipTake<T>([NotNull] this IEnumerable<T> source, int skipCount, int takeCount)
         {
             if (source == null) throw new ArgumentNullException("source");
@@ -3962,7 +3846,6 @@ namespace WebApplications.Utilities
         /// first element in the linear series that does not pass the test specified by <paramref name="skipPredicate" />.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> SkipWhileTake<T>(
             [NotNull] this IEnumerable<T> source,
             [NotNull] Func<T, bool> skipPredicate,
@@ -4020,7 +3903,6 @@ namespace WebApplications.Utilities
         /// first element in the linear series that does not pass the test specified by <paramref name="skipPredicate" />.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> SkipWhileTakeLast<T>(
             [NotNull] this IEnumerable<T> source,
             [NotNull] Func<T, bool> skipPredicate,
@@ -4074,7 +3956,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> Yield<T>(this T value)
         {
             return new SingleEnumerable<T>(value);
@@ -4374,7 +4255,6 @@ namespace WebApplications.Utilities
         /// <returns>The index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
         [Pure]
-        [PublicAPI]
         public static int IndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
@@ -4408,7 +4288,6 @@ namespace WebApplications.Utilities
         /// <returns>The index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
         [Pure]
-        [PublicAPI]
         public static int IndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
@@ -4441,7 +4320,6 @@ namespace WebApplications.Utilities
         /// <returns>The last index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
         [Pure]
-        [PublicAPI]
         public static int LastIndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
@@ -4476,7 +4354,6 @@ namespace WebApplications.Utilities
         /// <returns>The last index of the value if found; otherwise -1.</returns>
         /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
         [Pure]
-        [PublicAPI]
         public static int LastIndexOf<T>(
             [NotNull] [InstantHandle] this IEnumerable<T> source,
             [CanBeNull] T value,
@@ -4507,7 +4384,6 @@ namespace WebApplications.Utilities
         /// <param name="comparer">The comparer.</param>
         /// <returns>If the <paramref name="comparer"/> is already generic, then it is just returned; otherwise it is wrapped in a generic comparer.</returns>
         [NotNull]
-        [PublicAPI]
         public static IEqualityComparer<T> ToGenericComparer<T>([NotNull] this IEqualityComparer comparer)
         {
             if (comparer == null) throw new ArgumentNullException("comparer");
@@ -4521,7 +4397,6 @@ namespace WebApplications.Utilities
         /// <param name="comparer">The comparer.</param>
         /// <returns>If the <paramref name="comparer"/> is already generic, then it is just returned; otherwise it is wrapped in a generic comparer.</returns>
         [NotNull]
-        [PublicAPI]
         public static IComparer<T> ToGenericComparer<T>([NotNull] this IComparer comparer)
         {
             if (comparer == null) throw new ArgumentNullException("comparer");

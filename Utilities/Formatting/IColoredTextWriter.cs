@@ -34,38 +34,34 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Interface that indicates a <see cref="TextWriter"/> supports color.
     /// </summary>
+    [PublicAPI]
     public interface IColoredTextWriter : ITextWriter
     {
         /// <summary>
         /// Resets the foreground and background colors of the writer.
         /// </summary>
-        [PublicAPI]
         void ResetColors();
 
         /// <summary>
         /// Resets the foreground color of the writer.
         /// </summary>
-        [PublicAPI]
         void ResetForegroundColor();
 
         /// <summary>
         /// Sets the foreground color of the writer.
         /// </summary>
         /// <param name="color">The color.</param>
-        [PublicAPI]
         void SetForegroundColor(Color color);
 
         /// <summary>
         /// Sets the background color of the writer.
         /// </summary>
-        [PublicAPI]
         void ResetBackgroundColor();
 
         /// <summary>
         /// Sets the background color of the writer.
         /// </summary>
         /// <param name="color">The color.</param>
-        [PublicAPI]
         void SetBackgroundColor(Color color);
     }
 }

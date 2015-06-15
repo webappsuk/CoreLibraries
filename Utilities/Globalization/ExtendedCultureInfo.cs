@@ -34,6 +34,7 @@ namespace WebApplications.Utilities.Globalization
     /// <summary>
     /// Provides extended information about a specific culture.
     /// </summary>
+    [PublicAPI]
     public class ExtendedCultureInfo : CultureInfo
     {
         /// <summary>
@@ -42,7 +43,6 @@ namespace WebApplications.Utilities.Globalization
         /// <value>
         /// The region information.
         /// </value>
-        [PublicAPI]
         [CanBeNull]
         public readonly RegionInfo RegionInfo;
 
@@ -54,7 +54,6 @@ namespace WebApplications.Utilities.Globalization
         /// The three-character ISO 4217 currency symbol associated with the cultures region,
         /// or <see langword="null"/> if the culture does not have a region.
         /// </value>
-        [PublicAPI]
         [CanBeNull]
         public string ISOCurrencySymbol
         {

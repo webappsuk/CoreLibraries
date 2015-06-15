@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Formatting
     /// Base class for creating a resolvable writer for use with <see cref="FormatBuilder"/>.
     /// </summary>
     [Serializable]
+    [PublicAPI]
     public abstract class ResolvableWriteable : Resolvable, IFormattable, IWriteable
     {
         /// <summary>
@@ -42,7 +43,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The default format.</value>
         [NotNull]
-        [PublicAPI]
         public abstract FormatBuilder DefaultFormat { get; }
 
         /// <summary>
@@ -95,7 +95,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString([CanBeNull] FormatBuilder format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             using (TextWriter writer = new StringWriter(formatProvider))
@@ -123,7 +122,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void WriteTo([NotNull] TextWriter writer, [CanBeNull] FormatBuilder format = null)
         {

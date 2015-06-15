@@ -43,7 +43,6 @@ namespace WebApplications.Utilities
         /// Gets the values count.
         /// </summary>
         /// <value>The values count.</value>
-        [PublicAPI]
         int ValuesCount { get; }
 
         /// <summary>
@@ -53,7 +52,6 @@ namespace WebApplications.Utilities
         /// <param name="values">The values.</param>
         /// <returns><see langword="true" /> if the key was found, <see langword="false" /> otherwise.</returns>
         [ContractAnnotation("=>values:notnull")]
-        [PublicAPI]
         bool TryGetValues([NotNull] TKey key, out IEnumerable<TElement> values);
     }
 }

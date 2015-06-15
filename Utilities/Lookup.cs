@@ -38,6 +38,7 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The type of the T key.</typeparam>
     /// <typeparam name="TElement">The type of the T element.</typeparam>
+    [PublicAPI]
     public class Lookup<TKey, TElement> : IReadOnlyLookup<TKey, TElement>
     {
         /// <summary>
@@ -152,7 +153,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="element">The element.</param>
-        [PublicAPI]
         public void Add([NotNull] TKey key, TElement element)
         {
             if (key == null) throw new ArgumentNullException("key");
@@ -169,7 +169,6 @@ namespace WebApplications.Utilities
         /// Adds the specified key value pair.
         /// </summary>
         /// <param name="keyValuePair">The key value pair.</param>
-        [PublicAPI]
         public void Add(KeyValuePair<TKey, TElement> keyValuePair)
         {
             // ReSharper disable once AssignNullToNotNullAttribute - Let Add throw
@@ -181,7 +180,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="elements">The elements.</param>
-        [PublicAPI]
         public void AddRange([NotNull] TKey key, [InstantHandle] [NotNull] IEnumerable<TElement> elements)
         {
             if (key == null) throw new ArgumentNullException("key");
@@ -199,7 +197,6 @@ namespace WebApplications.Utilities
         /// Adds the specified values.
         /// </summary>
         /// <param name="elements">The elements.</param>
-        [PublicAPI]
         public void AddRange([InstantHandle] [NotNull] IEnumerable<KeyValuePair<TKey, TElement>> elements)
         {
             if (elements == null) throw new ArgumentNullException("elements");
@@ -211,7 +208,6 @@ namespace WebApplications.Utilities
         /// Removes all elements corresponding to a given key.
         /// </summary>
         /// <param name="key">The key</param>
-        [PublicAPI]
         public bool Remove([NotNull] TKey key)
         {
             List<TElement> list;
@@ -229,7 +225,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key</param>
         /// <param name="element">The element</param>
-        [PublicAPI]
         public bool Remove([NotNull] TKey key, [NotNull] TElement element)
         {
             List<TElement> list;
@@ -249,7 +244,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Removes all the keys and values from the lookup.
         /// </summary>
-        [PublicAPI]
         public void Clear()
         {
             _data.Clear();

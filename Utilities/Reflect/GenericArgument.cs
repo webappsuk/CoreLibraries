@@ -42,20 +42,17 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The arguments location.
         /// </summary>
-        [PublicAPI]
         public readonly GenericArgumentLocation Location;
 
         /// <summary>
         /// The arguments position.
         /// </summary>
-        [PublicAPI]
         public readonly int Position;
 
         /// <summary>
         /// The argument type.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Type Type;
 
         /// <summary>

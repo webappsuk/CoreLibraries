@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Reflect
     ///   Wraps the method information with accessors for retrieving parameters.
     /// </summary>
     [DebuggerDisplay("{Info} [Extended]")]
+    [PublicAPI]
     public class Method : ISignature
     {
         /// <summary>
@@ -103,7 +104,6 @@ namespace WebApplications.Utilities.Reflect
         ///   The parameters.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<ParameterInfo> Parameters
         {
             get
@@ -177,7 +177,6 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>The closed <see cref="Method"/> if the generic types supplied are sufficient for closure; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         [CanBeNull]
-        [PublicAPI]
         public Method Close([NotNull] Type[] typeClosures, [NotNull] Type[] signatureClosures)
         {
             if (typeClosures == null) throw new ArgumentNullException("typeClosures");
@@ -298,7 +297,6 @@ namespace WebApplications.Utilities.Reflect
         ///   <exception cref="InvalidOperationException">No parameter/return types specified.</exception>
         /// <remarks></remarks>
         [CanBeNull]
-        [UsedImplicitly]
         public object GetAction([NotNull] params Type[] funcTypes)
         {
             // If the method is not closed or doesn't have return type, were' done.
@@ -417,7 +415,6 @@ namespace WebApplications.Utilities.Reflect
         ///   <exception cref="InvalidOperationException">No parameter/return types specified.</exception>
         /// <remarks></remarks>
         [CanBeNull]
-        [UsedImplicitly]
         public object GetFunc([NotNull] params Type[] funcTypes)
         {
             // If the method is not closed or doesn't have return type, were' done.

@@ -78,7 +78,6 @@ namespace WebApplications.Utilities.IO
         /// <returns>
         /// The unsigned byte cast to an Int32, or -1 if at the end of the stream.
         /// </returns>
-        [PublicAPI]
         public int PeekByte()
         {
             if (_nextByte.HasValue)

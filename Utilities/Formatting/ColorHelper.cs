@@ -37,6 +37,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Used to manipulate <see cref="Color"/> more easily, and supports custom naming for colors.
     /// </summary>
+    [PublicAPI]
     public static class ColorHelper
     {
         /// <summary>
@@ -68,7 +69,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The known names.</value>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<string> KnownNames
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -80,7 +80,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The known names.</value>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<KeyValuePair<string, Color>> NamedColors
         {
             get { return _namedColors.Union(_builtInNamedColors).Distinct(KeyComparer<string, Color>.Default); }
@@ -91,7 +90,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="color">The color.</param>
         /// <param name="name">The name.</param>
-        [PublicAPI]
         public static void SetName(this Color color, [NotNull] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -108,7 +106,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>The previous <see cref="Color"/>; otherwise <see cref="Optional{Color}.Unassigned"/>.</returns>
-        [PublicAPI]
         public static Optional<Color> RemoveName([NotNull] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -134,7 +131,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="Color"/>.</returns>
-        [PublicAPI]
         public static Optional<Color> GetColor([NotNull] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -163,7 +159,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="color">The color.</param>
         /// <returns>The <see cref="Color" />.</returns>
         [NotNull]
-        [PublicAPI]
         public static string GetName(this Color color)
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -182,7 +177,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The equivalent <see cref="Color"/>.</returns>
-        [PublicAPI]
         public static Color ToColor(this ConsoleColor color)
         {
             return ConsoleHelper.ToColor(color);
@@ -193,7 +187,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The closest <see cref="ConsoleColor"/>.</returns>
-        [PublicAPI]
         public static ConsoleColor ToConsoleColor(this Color color)
         {
             return ConsoleHelper.ToConsoleColor(color);

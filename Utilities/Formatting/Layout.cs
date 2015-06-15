@@ -36,6 +36,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Defines a layout for use with a <see cref="FormatBuilder"/>.
     /// </summary>
+    [PublicAPI]
     public class Layout : IFormattable, IEquatable<Layout>
     {
         /// <summary>
@@ -61,61 +62,51 @@ namespace WebApplications.Utilities.Formatting
         /// The empty layout makes no changes.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Layout Empty = new Layout();
 
         /// <summary>
         /// The layout width.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<int> Width;
 
         /// <summary>
         /// The indent size.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<int> IndentSize;
 
         /// <summary>
         /// The size of any right margin.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<int> RightMarginSize;
 
         /// <summary>
         /// The indent character (is repeated <see cref="IndentSize"/> times).
         /// </summary>
-        [PublicAPI]
         public readonly Optional<char> IndentChar;
 
         /// <summary>
         /// The first line indent size.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<int> FirstLineIndentSize;
 
         /// <summary>
         /// The tab stops, only valid for <see cref="T:AlignmentChar.Left"/> and <see cref="T:AlignmentChar.None"/>.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<IEnumerable<int>> TabStops;
 
         /// <summary>
         /// The tab size, used to produce tabs when the layout doesn't support tab stops.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<byte> TabSize;
 
         /// <summary>
         /// The tab character is used to fill to next tab stop.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<char> TabChar;
 
         /// <summary>
         /// The alignment.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<Alignment> Alignment;
 
         /// <summary>
@@ -123,32 +114,27 @@ namespace WebApplications.Utilities.Formatting
         /// only be split at a point that has at least this number of character's on either side of the split (recommended value is 3,
         /// to handle splitting of words with apostrophes).
         /// </summary>
-        [PublicAPI]
         public readonly Optional<byte> SplitLength;
 
         /// <summary>
         /// Whether to add a hyphen when splitting words.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<bool> Hyphenate;
 
         /// <summary>
         /// The hyphenation character is used to split words.
         /// </summary>
-        [PublicAPI]
         public readonly Optional<char> HyphenChar;
 
         /// <summary>
         /// The line wrap mode
         /// </summary>
-        [PublicAPI]
         public readonly Optional<LayoutWrapMode> WrapMode;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Layout"/> is complete.
         /// </summary>
         /// <value><see langword="true" /> if full; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsFull
         {
             get
@@ -174,7 +160,6 @@ namespace WebApplications.Utilities.Formatting
         /// Gets a value indicating whether this <see cref="Layout"/> is totally incomplete.
         /// </summary>
         /// <value><see langword="true" /> if empty; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsEmpty
         {
             get
@@ -315,7 +300,6 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>
         /// Layout.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public Layout Apply(
             Optional<int> width = default(Optional<int>),
@@ -421,7 +405,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="layout">The layout.</param>
         /// <returns>Layout.</returns>
-        [PublicAPI]
         [NotNull]
         public Layout Apply([CanBeNull] Layout layout)
         {
@@ -448,7 +431,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>A <see cref="Layout"/> if valid; otherwise <see langword="null"/>.</returns>
-        [PublicAPI]
         [CanBeNull]
         public static Layout Parse([CanBeNull] string input)
         {
@@ -462,7 +444,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="input">The input.</param>
         /// <param name="layout">A <see cref="Layout" /> if valid; otherwise <see langword="null" />.</param>
         /// <returns><see langword="true" /> if parse succeeded, <see langword="false" /> otherwise.</returns>
-        [PublicAPI]
         public static bool TryParse([CanBeNull] string input, out Layout layout)
         {
             if (input == null)
@@ -637,7 +618,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public string ToString([CanBeNull] string format)
         {

@@ -34,66 +34,58 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// A resolution, is used to resolve tags in a <see cref="FormatBuilder"/>.
     /// </summary>
+    [PublicAPI]
     public struct Resolution : IFormattable
     {
         /// <summary>
         /// The tag is unknown (cached).
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly object Unknown = default(Resolution);
 
         /// <summary>
         /// The tag is not yet known (not cached).
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly object UnknownYet = new Resolution(false, true);
 
         /// <summary>
         /// The tag's value is Null.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly object Null = new Resolution(null);
 
         /// <summary>
         /// The tag's value is currently null, but may change.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly object CurrentlyNull = new Resolution(null, true);
 
         /// <summary>
         /// The tag's value is <see cref="string.Empty"/>.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly object Empty = new Resolution(string.Empty);
 
         /// <summary>
         /// The tag's value is currently <see cref="string.Empty"/>, but may change.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly object CurrentlyEmpty = new Resolution(string.Empty, true);
 
         /// <summary>
         /// Whether this resolution should be cached.
         /// </summary>
-        [PublicAPI]
         public readonly bool NoCache;
 
         /// <summary>
         /// <see langword="true"/> is the value represents a resolution; otherwise <see langword="false"/> to indicate the original tag was unknown.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsResolved;
 
         /// <summary>
         /// The resolved value if <see cref="IsResolved"/> is <see langword="true"/>.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         public readonly object Value;
 

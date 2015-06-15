@@ -39,6 +39,7 @@ namespace WebApplications.Utilities.Globalization
     /// <summary>
     /// Provides extension methods for <see cref="CurrencyInfo"/>.
     /// </summary>
+    [PublicAPI]
     public static class GlobalizationExtensions
     {
         /// <summary>
@@ -47,7 +48,6 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="currencyInfoProvider">The currency information provider.</param>
         /// <param name="stream">The binary stream to save to.</param>
         /// <param name="leaveOpen">if set to <see langword="true" /> the <paramref name="stream" /> will be left open.</param>
-        [PublicAPI]
         public static void ToBinary(
             [NotNull] this ICurrencyInfoProvider currencyInfoProvider,
             [NotNull] Stream stream,
@@ -82,7 +82,6 @@ namespace WebApplications.Utilities.Globalization
         /// Converts this <see cref="CurrencyInfoProvider"/> to XML.
         /// </summary>
         /// <returns>An XML string containing the contents of this <see cref="CurrencyInfoProvider"/>.</returns>
-        [PublicAPI]
         [NotNull]
         public static string ToXml([NotNull] this ICurrencyInfoProvider currencyInfoProvider)
         {
@@ -122,7 +121,6 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="second">The second provider.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static ICurrencyInfoProvider Merge(
             [NotNull] this ICurrencyInfoProvider first,
             [NotNull] ICurrencyInfoProvider second)

@@ -45,49 +45,54 @@ namespace WebApplications.Utilities.Threading
         /// The completed result.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask Completed = new CancelableTask(TaskResult.Completed, null);
 
         /// <summary>
         /// A cancelable task that returns a <see langword="true"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask<bool> True = new CancelableTask<bool>(TaskResult.True, null);
 
         /// <summary>
         /// A cancelable task that returns a <see langword="false"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask<bool> False = new CancelableTask<bool>(TaskResult.False, null);
 
         /// <summary>
         /// A cancelable task that returns a <c>0</c>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask<int> Zero = new CancelableTask<int>(TaskResult.Zero, null);
+
+        /// <summary>
+        /// A cancelable task that returns a <c>1</c>.
+        /// </summary>
+        [NotNull]
+        public static readonly CancelableTask<int> One = new CancelableTask<int>(TaskResult.One, null);
+
+        /// <summary>
+        /// A cancelable task that returns a <c>-1</c>.
+        /// </summary>
+        [NotNull]
+        public static readonly CancelableTask<int> MinusOne = new CancelableTask<int>(TaskResult.MinusOne, null);
 
         /// <summary>
         /// A cancelable task that returns <see cref="System.Int32.MinValue"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask<int> MinInt = new CancelableTask<int>(TaskResult.MinInt, null);
 
         /// <summary>
         /// A cancelable task that returns <see cref="System.Int32.MaxValue"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask<int> MaxInt = new CancelableTask<int>(TaskResult.MaxInt, null);
 
         /// <summary>
         /// The cancelled task.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask Cancelled = new CancelableTask(TaskResult.Cancelled, null);
 
         /// <summary>
@@ -98,7 +103,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         /// The successfully completed task.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask<TResult> FromResult<TResult>(TResult result)
         {
@@ -113,7 +117,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         /// The faulted task.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask FromException(Exception exception)
         {
@@ -129,7 +132,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         /// The faulted task.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask<TResult> FromException<TResult>(Exception exception)
         {
@@ -221,7 +223,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="action">The work to execute asynchronously.</param>
         /// <param name="token">A cancellation token that should be used to cancel the work.</param>
         /// <returns>A <see cref="CancelableTask"/> that represents the work queued to execute in the ThreadPool.</returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask Run(
             [NotNull] Action<CancellationToken> action,
@@ -236,7 +237,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="action">The work to execute asynchronously.</param>
         /// <param name="token">A cancellation token that should be used to cancel the work.</param>
         /// <returns>A <see cref="CancelableTask"/> that represents the work queued to execute in the ThreadPool.</returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask Run(
             [NotNull] Func<CancellationToken, Task> action,
@@ -251,7 +251,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="function">The work to execute asynchronously.</param>
         /// <param name="token">A cancellation token that should be used to cancel the work.</param>
         /// <returns>A <see cref="CancelableTask{TResult}"/> that represents the work queued to execute in the ThreadPool.</returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask<TResult> Run<TResult>(
             [NotNull] Func<CancellationToken, TResult> function,
@@ -266,7 +265,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="function">The work to execute asynchronously.</param>
         /// <param name="token">A cancellation token that should be used to cancel the work.</param>
         /// <returns>A <see cref="CancelableTask{TResult}"/> that represents the work queued to execute in the ThreadPool.</returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask<TResult> Run<TResult>(
             [NotNull] Func<CancellationToken, Task<TResult>> function,
@@ -438,7 +436,6 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// Gets an awaiter used to await this <see cref="CancelableTask"/>.
         /// </summary>
-        [PublicAPI]
         public TaskAwaiter GetAwaiter()
         {
             return _task.GetAwaiter();
@@ -457,7 +454,6 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="continueOnCapturedContext"><see langword="true" /> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false" />.</param>
         /// <returns></returns>
-        [PublicAPI]
         public ConfiguredTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)
         {
             return _task.ConfigureAwait(continueOnCapturedContext);
@@ -471,7 +467,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Action<CancelableTask, CancellationToken> continuationAction,
             CancellationToken token = default(CancellationToken),
@@ -498,7 +493,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask<TResult> ContinueWith<TResult>(
             [NotNull] Func<CancelableTask, CancellationToken, TResult> continuationAction,
             CancellationToken token = default(CancellationToken),
@@ -529,7 +523,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Func<CancelableTask, CancellationToken, Task> continuationAction,
             CancellationToken token = default(CancellationToken),
@@ -558,7 +551,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask<TResult> ContinueWith<TResult>(
             [NotNull] Func<CancelableTask, CancellationToken, Task<TResult>> continuationAction,
             CancellationToken token = default(CancellationToken),
@@ -650,7 +642,6 @@ namespace WebApplications.Utilities.Threading
         /// A cancelable task that returns the <see langword="default"/> value for the type <typeparamref name="TResult"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask<TResult> Default = new CancelableTask<TResult>(
             TaskResult<TResult>.Default,
             null);
@@ -659,7 +650,6 @@ namespace WebApplications.Utilities.Threading
         /// The cancelled task.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly CancelableTask<TResult> Cancelled =
             new CancelableTask<TResult>(TaskResult<TResult>.Cancelled, null);
 
@@ -671,7 +661,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         /// The successfully completed task.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask<TResult> FromResult(TResult result)
         {
@@ -688,7 +677,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         /// The faulted task.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static CancelableTask<TResult> FromException(Exception exception)
         {
@@ -714,7 +702,6 @@ namespace WebApplications.Utilities.Threading
         /// Gets the underlaying task that can be cancelled.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public Task<TResult> Task
         {
             get { return _task; }
@@ -790,7 +777,6 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         /// The result.
         /// </value>
-        [PublicAPI]
         public TResult Result
         {
             get { return _task.Result; }
@@ -963,7 +949,6 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// Gets an awaiter used to await this <see cref="CancelableTask{T}"/>.
         /// </summary>
-        [PublicAPI]
         public TaskAwaiter<TResult> GetAwaiter()
         {
             return _task.GetAwaiter();
@@ -982,7 +967,6 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="continueOnCapturedContext"><see langword="true" /> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false" />.</param>
         /// <returns></returns>
-        [PublicAPI]
         public ConfiguredTaskAwaitable<TResult> ConfigureAwait(bool continueOnCapturedContext)
         {
             return _task.ConfigureAwait(continueOnCapturedContext);
@@ -996,7 +980,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Action<CancelableTask<TResult>, CancellationToken> continuationAction,
             CancellationToken token = default(CancellationToken),
@@ -1023,7 +1006,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask<TNewResult> ContinueWith<TNewResult>(
             [NotNull] Func<CancelableTask<TResult>, CancellationToken, TNewResult> continuationAction,
             CancellationToken token = default(CancellationToken),
@@ -1054,7 +1036,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask ContinueWith(
             [NotNull] Func<CancelableTask<TResult>, CancellationToken, Task> continuationAction,
             CancellationToken token = default(CancellationToken),
@@ -1083,7 +1064,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="options">Options for when the continuation is scheduled and how it behaves.</param>
         /// <param name="scheduler">The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.</param>
         /// <returns>A new continuation <see cref="CancelableTask"/>.</returns>
-        [PublicAPI]
         public CancelableTask<TNewResult> ContinueWith<TNewResult>(
             [NotNull] Func<CancelableTask<TResult>, CancellationToken, Task<TNewResult>> continuationAction,
             CancellationToken token = default(CancellationToken),

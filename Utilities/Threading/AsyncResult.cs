@@ -72,7 +72,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="state">
         ///   The object that can be obtained via the <see cref="AsyncResult.AsyncState"/> property.
         /// </param>
-        [PublicAPI]
         public AsyncResult(AsyncCallback asyncCallback, object state)
         {
             _asyncCallback = asyncCallback;
@@ -88,7 +87,6 @@ namespace WebApplications.Utilities.Threading
         ///   <para>The object that is initiating the asynchronous operation.</para>
         ///   <para>This is stored in the <see cref="WebApplications.Utilities.Threading.AsyncResult.InitiatingObject"/> property.</para>
         /// </param>
-        [PublicAPI]
         public AsyncResult(AsyncCallback asyncCallback, object state, object initiatingObject)
             : this(asyncCallback, state)
         {
@@ -98,7 +96,6 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         ///   Gets the <see cref="object"/> that was used to initiate the asynchronous operation.
         /// </summary>
-        [PublicAPI]
         public object InitiatingObject
         {
             get { return _initiatingObject; }
@@ -110,7 +107,6 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         ///   Returns <see langword="true"/> if the operation is cancelled; otherwise returns <see langword="false"/>.
         /// </value>
-        [PublicAPI]
         public bool IsCancelled
         {
             get { return (Thread.VolatileRead(ref _completedState) == StateCancelled); }
@@ -186,7 +182,6 @@ namespace WebApplications.Utilities.Threading
         ///   Returns the <see cref="IAsyncResult">status</see> of an operation that was queued to the thread pool.
         /// </summary>
         /// <returns>The IAsyncResult.</returns>
-        [PublicAPI]
         protected IAsyncResult BeginInvokeOnWorkerThread()
         {
             ThreadPool.QueueUserWorkItem(_waitCallbackHelper, this);
@@ -230,7 +225,6 @@ namespace WebApplications.Utilities.Threading
         ///   Frees up the resources used by the asynchronous operation.
         ///   If the asynchronous operation failed then this method throws the exception.
         /// </summary>
-        [PublicAPI]
         public void EndInvoke()
         {
             if (!IsCompleted ||
@@ -250,7 +244,6 @@ namespace WebApplications.Utilities.Threading
         ///   the desired <see cref="AsyncCallback"/>
         /// </summary>
         /// <returns>The <see langword="static"/> delegate.</returns>
-        [PublicAPI]
         protected static AsyncCallback GetAsyncCallbackHelper()
         {
             return _asyncCallbackHelper;
@@ -262,7 +255,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="result">
         ///   The <see cref="IAsyncResult"/> object identifying that the asynchronous operation that has completed.
         /// </param>
-        [PublicAPI]
+
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         protected virtual void OnCompleteOperation(IAsyncResult result)
         {
@@ -276,7 +269,6 @@ namespace WebApplications.Utilities.Threading
         /// </param>
         /// <param name="completedSynchronously">Indicates whether the operation completed synchronously or asynchronously.</param>
         /// <exception cref="InvalidOperationException">The operation result has already been set previously.</exception>
-        [PublicAPI]
         public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)
         {
             ExceptionDispatchInfo exceptionInfo = exception != null
@@ -303,7 +295,6 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         ///   Set the status of the asynchronous operation to cancelled.
         /// </summary>
-        [PublicAPI]
         public void SetAsCancelled()
         {
             // Set the state to completed asynchronously, you can do this even if already completed as you
@@ -384,7 +375,6 @@ namespace WebApplications.Utilities.Threading
         ///   Returns an <see cref="IAsyncResult"/> for an operation that was queued to the thread pool.
         /// </summary>
         /// <returns>The <see cref="IAsyncResult"/>.</returns>
-        [PublicAPI]
         protected new IAsyncResult BeginInvokeOnWorkerThread()
         {
             ThreadPool.QueueUserWorkItem(_waitCallbackHelper, this);
@@ -421,7 +411,6 @@ namespace WebApplications.Utilities.Threading
         ///   If the asynchronous operation failed then this method throws the exception.
         /// </summary>
         /// <returns>The value calculated by the asynchronous operation.</returns>
-        [PublicAPI]
         public new TResult EndInvoke()
         {
             base.EndInvoke();
@@ -433,7 +422,6 @@ namespace WebApplications.Utilities.Threading
         ///   the desired <see cref="AsyncCallback"/>.
         /// </summary>
         /// <returns>The single static delegate.</returns>
-        [PublicAPI]
         protected new static AsyncCallback GetAsyncCallbackHelper()
         {
             return _asyncCallbackHelper;
@@ -446,7 +434,6 @@ namespace WebApplications.Utilities.Threading
         ///   The object identifying the asynchronous operation that has completed.
         /// </param>
         /// <returns>The value computed by the asynchronous operation.</returns>
-        [PublicAPI]
         protected new virtual TResult OnCompleteOperation(IAsyncResult result)
         {
             return default(TResult);
@@ -459,7 +446,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="completedSynchronously">
         ///   Indicates whether the operation completed synchronously or asynchronously.
         /// </param>
-        [PublicAPI]
         public void SetAsCompleted(TResult result, bool completedSynchronously = false)
         {
             _result = result;

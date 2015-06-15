@@ -35,6 +35,7 @@ namespace WebApplications.Utilities
     /// <summary>
     /// Contains useful information on the current Thread.
     /// </summary>
+    [PublicAPI]
     public static class ThreadLocal
     {
         /// <summary>
@@ -47,7 +48,6 @@ namespace WebApplications.Utilities
         /// Gets the random number generator unique to this thread..
         /// </summary>
         /// <value>The random number generator.</value>
-        [PublicAPI]
         [NotNull]
         // ReSharper disable once AssignNullToNotNullAttribute
         public static Random Random

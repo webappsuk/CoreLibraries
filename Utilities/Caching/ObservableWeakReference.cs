@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Caching
     /// <remarks>
     ///   Article explaining object resurrection: (http://blogs.msdn.com/b/clyon/archive/2006/04/25/583698.aspx)
     /// </remarks>
-    [UsedImplicitly]
+    [PublicAPI]
     public sealed class ObservableWeakReference<T> : WeakReference<T>
         where T : class
     {
@@ -50,13 +50,11 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Whether the type is actually observable.
         /// </summary>
-        [UsedImplicitly]
         public static readonly bool ObservableFinalize;
 
         /// <summary>
         ///   Whether the type is disposable.
         /// </summary>
-        [UsedImplicitly]
         public static readonly bool Disposable;
 
         // ReSharper restore StaticFieldInGenericType

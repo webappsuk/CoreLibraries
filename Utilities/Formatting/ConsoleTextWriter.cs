@@ -58,13 +58,11 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// The default foreground color.
         /// </summary>
-        [PublicAPI]
         public static ConsoleColor DefaultForeColor { get; private set; }
 
         /// <summary>
         /// The default background color.
         /// </summary>
-        [PublicAPI]
         public static ConsoleColor DefaultBackColor { get; private set; }
 
         /// <summary>
@@ -90,7 +88,6 @@ namespace WebApplications.Utilities.Formatting
         /// <value>
         /// The width of the console.
         /// </value>
-        [PublicAPI]
         public int Width
         {
             get
@@ -109,7 +106,6 @@ namespace WebApplications.Utilities.Formatting
         /// Gets or sets the current horizontal position.
         /// </summary>
         /// <value>The position.</value>
-        [PublicAPI]
         public int Position
         {
             get

@@ -34,7 +34,7 @@ namespace WebApplications.Utilities.Caching
     /// <summary>
     ///   A dictionary enumerator wraps the normal enumerator.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class DictionaryEnumerator<TKey, TValue> : IDictionaryEnumerator
     {
         /// <summary>

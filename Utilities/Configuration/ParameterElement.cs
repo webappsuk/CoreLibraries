@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Configuration
     /// <summary>
     ///   Holds a parameter used for object construction.
     /// </summary>
+    [PublicAPI]
     public class ParameterElement : ConfigurationElement
     {
         /// <summary>
@@ -45,7 +46,6 @@ namespace WebApplications.Utilities.Configuration
         /// </exception>
         [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
         [NotNull]
-        [PublicAPI]
         public string Name
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -61,7 +61,6 @@ namespace WebApplications.Utilities.Configuration
         /// </exception>
         [ConfigurationProperty("value", IsRequired = false)]
         [CanBeNull]
-        [PublicAPI]
         public string Value
         {
             get { return (string)this["value"]; }
@@ -75,7 +74,6 @@ namespace WebApplications.Utilities.Configuration
         ///   The configuration property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("required", DefaultValue = true, IsRequired = false)]
-        [PublicAPI]
         public bool IsRequired
         {
             // ReSharper disable once PossibleNullReferenceException
@@ -92,7 +90,6 @@ namespace WebApplications.Utilities.Configuration
         [ConfigurationProperty("type", IsRequired = false)]
         [TypeConverter(typeof(TypeNameConverter))]
         [CanBeNull]
-        [PublicAPI]
         public Type Type
         {
             get { return (Type)this["type"]; }
@@ -110,7 +107,6 @@ namespace WebApplications.Utilities.Configuration
         [TypeConverter(typeof(TypeNameConverter))]
         [SubclassTypeValidator(typeof(TypeConverter))]
         [CanBeNull]
-        [PublicAPI]
         public Type TypeConverter
         {
             get { return (Type)this["typeConverter"]; }

@@ -46,7 +46,6 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <returns>A tuple with 1 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1> Create<T1>(
             T1 item1)
@@ -63,7 +62,6 @@ namespace WebApplications.Utilities
         /// <param name="func1">Function that returns item 1 of the tuple.</param>
         /// <returns>A tuple with 1 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1>> ToTuple<TInput, T1>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -83,7 +81,6 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <returns>A tuple with 2 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2> Create<T1, T2>(
             T1 item1,
@@ -103,7 +100,6 @@ namespace WebApplications.Utilities
         /// <param name="func2">Function that returns item 2 of the tuple.</param>
         /// <returns>A tuple with 2 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2>> ToTuple<TInput, T1, T2>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -126,7 +122,6 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <returns>A tuple with 3 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3> Create<T1, T2, T3>(
             T1 item1,
@@ -149,7 +144,6 @@ namespace WebApplications.Utilities
         /// <param name="func3">Function that returns item 3 of the tuple.</param>
         /// <returns>A tuple with 3 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3>> ToTuple<TInput, T1, T2, T3>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -175,7 +169,6 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <returns>A tuple with 4 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4> Create<T1, T2, T3, T4>(
             T1 item1,
@@ -201,7 +194,6 @@ namespace WebApplications.Utilities
         /// <param name="func4">Function that returns item 4 of the tuple.</param>
         /// <returns>A tuple with 4 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4>> ToTuple<TInput, T1, T2, T3, T4>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -230,7 +222,6 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <returns>A tuple with 5 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5> Create<T1, T2, T3, T4, T5>(
             T1 item1,
@@ -259,7 +250,6 @@ namespace WebApplications.Utilities
         /// <param name="func5">Function that returns item 5 of the tuple.</param>
         /// <returns>A tuple with 5 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5>> ToTuple<TInput, T1, T2, T3, T4, T5>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -291,7 +281,6 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <returns>A tuple with 6 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6> Create<T1, T2, T3, T4, T5, T6>(
             T1 item1,
@@ -323,7 +312,6 @@ namespace WebApplications.Utilities
         /// <param name="func6">Function that returns item 6 of the tuple.</param>
         /// <returns>A tuple with 6 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6>> ToTuple<TInput, T1, T2, T3, T4, T5, T6>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -358,7 +346,6 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <returns>A tuple with 7 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7> Create<T1, T2, T3, T4, T5, T6, T7>(
             T1 item1,
@@ -393,7 +380,6 @@ namespace WebApplications.Utilities
         /// <param name="func7">Function that returns item 7 of the tuple.</param>
         /// <returns>A tuple with 7 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -431,7 +417,6 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <returns>A tuple with 8 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> Create<T1, T2, T3, T4, T5, T6, T7, T8>(
             T1 item1,
@@ -469,7 +454,6 @@ namespace WebApplications.Utilities
         /// <param name="func8">Function that returns item 8 of the tuple.</param>
         /// <returns>A tuple with 8 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -510,7 +494,6 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <returns>A tuple with 9 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             T1 item1,
@@ -551,7 +534,6 @@ namespace WebApplications.Utilities
         /// <param name="func9">Function that returns item 9 of the tuple.</param>
         /// <returns>A tuple with 9 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -595,7 +577,6 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <returns>A tuple with 10 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             T1 item1,
@@ -639,7 +620,6 @@ namespace WebApplications.Utilities
         /// <param name="func10">Function that returns item 10 of the tuple.</param>
         /// <returns>A tuple with 10 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -686,7 +666,6 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <returns>A tuple with 11 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             T1 item1,
@@ -733,7 +712,6 @@ namespace WebApplications.Utilities
         /// <param name="func11">Function that returns item 11 of the tuple.</param>
         /// <returns>A tuple with 11 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -783,7 +761,6 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <returns>A tuple with 12 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             T1 item1,
@@ -833,7 +810,6 @@ namespace WebApplications.Utilities
         /// <param name="func12">Function that returns item 12 of the tuple.</param>
         /// <returns>A tuple with 12 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -886,7 +862,6 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <returns>A tuple with 13 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             T1 item1,
@@ -939,7 +914,6 @@ namespace WebApplications.Utilities
         /// <param name="func13">Function that returns item 13 of the tuple.</param>
         /// <returns>A tuple with 13 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -995,7 +969,6 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <returns>A tuple with 14 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             T1 item1,
@@ -1051,7 +1024,6 @@ namespace WebApplications.Utilities
         /// <param name="func14">Function that returns item 14 of the tuple.</param>
         /// <returns>A tuple with 14 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -1110,7 +1082,6 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <returns>A tuple with 15 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             T1 item1,
@@ -1169,7 +1140,6 @@ namespace WebApplications.Utilities
         /// <param name="func15">Function that returns item 15 of the tuple.</param>
         /// <returns>A tuple with 15 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -1231,7 +1201,6 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <returns>A tuple with 16 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
             T1 item1,
@@ -1293,7 +1262,6 @@ namespace WebApplications.Utilities
         /// <param name="func16">Function that returns item 16 of the tuple.</param>
         /// <returns>A tuple with 16 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -1358,7 +1326,6 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <returns>A tuple with 17 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(
             T1 item1,
@@ -1423,7 +1390,6 @@ namespace WebApplications.Utilities
         /// <param name="func17">Function that returns item 17 of the tuple.</param>
         /// <returns>A tuple with 17 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -1491,7 +1457,6 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <returns>A tuple with 18 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(
             T1 item1,
@@ -1559,7 +1524,6 @@ namespace WebApplications.Utilities
         /// <param name="func18">Function that returns item 18 of the tuple.</param>
         /// <returns>A tuple with 18 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -1630,7 +1594,6 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <returns>A tuple with 19 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
             T1 item1,
@@ -1701,7 +1664,6 @@ namespace WebApplications.Utilities
         /// <param name="func19">Function that returns item 19 of the tuple.</param>
         /// <returns>A tuple with 19 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -1775,7 +1737,6 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <returns>A tuple with 20 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(
             T1 item1,
@@ -1849,7 +1810,6 @@ namespace WebApplications.Utilities
         /// <param name="func20">Function that returns item 20 of the tuple.</param>
         /// <returns>A tuple with 20 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -1926,7 +1886,6 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <returns>A tuple with 21 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(
             T1 item1,
@@ -2003,7 +1962,6 @@ namespace WebApplications.Utilities
         /// <param name="func21">Function that returns item 21 of the tuple.</param>
         /// <returns>A tuple with 21 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -2083,7 +2041,6 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <returns>A tuple with 22 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(
             T1 item1,
@@ -2163,7 +2120,6 @@ namespace WebApplications.Utilities
         /// <param name="func22">Function that returns item 22 of the tuple.</param>
         /// <returns>A tuple with 22 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -2246,7 +2202,6 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <returns>A tuple with 23 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(
             T1 item1,
@@ -2329,7 +2284,6 @@ namespace WebApplications.Utilities
         /// <param name="func23">Function that returns item 23 of the tuple.</param>
         /// <returns>A tuple with 23 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -2415,7 +2369,6 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <returns>A tuple with 24 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(
             T1 item1,
@@ -2501,7 +2454,6 @@ namespace WebApplications.Utilities
         /// <param name="func24">Function that returns item 24 of the tuple.</param>
         /// <returns>A tuple with 24 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -2590,7 +2542,6 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <returns>A tuple with 25 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(
             T1 item1,
@@ -2679,7 +2630,6 @@ namespace WebApplications.Utilities
         /// <param name="func25">Function that returns item 25 of the tuple.</param>
         /// <returns>A tuple with 25 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -2771,7 +2721,6 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <returns>A tuple with 26 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
             T1 item1,
@@ -2863,7 +2812,6 @@ namespace WebApplications.Utilities
         /// <param name="func26">Function that returns item 26 of the tuple.</param>
         /// <returns>A tuple with 26 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -2958,7 +2906,6 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <returns>A tuple with 27 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(
             T1 item1,
@@ -3053,7 +3000,6 @@ namespace WebApplications.Utilities
         /// <param name="func27">Function that returns item 27 of the tuple.</param>
         /// <returns>A tuple with 27 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -3151,7 +3097,6 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <returns>A tuple with 28 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(
             T1 item1,
@@ -3249,7 +3194,6 @@ namespace WebApplications.Utilities
         /// <param name="func28">Function that returns item 28 of the tuple.</param>
         /// <returns>A tuple with 28 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -3350,7 +3294,6 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <returns>A tuple with 29 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(
             T1 item1,
@@ -3451,7 +3394,6 @@ namespace WebApplications.Utilities
         /// <param name="func29">Function that returns item 29 of the tuple.</param>
         /// <returns>A tuple with 29 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -3555,7 +3497,6 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <returns>A tuple with 30 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(
             T1 item1,
@@ -3659,7 +3600,6 @@ namespace WebApplications.Utilities
         /// <param name="func30">Function that returns item 30 of the tuple.</param>
         /// <returns>A tuple with 30 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -3766,7 +3706,6 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <returns>A tuple with 31 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(
             T1 item1,
@@ -3873,7 +3812,6 @@ namespace WebApplications.Utilities
         /// <param name="func31">Function that returns item 31 of the tuple.</param>
         /// <returns>A tuple with 31 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -3983,7 +3921,6 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <returns>A tuple with 32 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(
             T1 item1,
@@ -4093,7 +4030,6 @@ namespace WebApplications.Utilities
         /// <param name="func32">Function that returns item 32 of the tuple.</param>
         /// <returns>A tuple with 32 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -4206,7 +4142,6 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <returns>A tuple with 33 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(
             T1 item1,
@@ -4319,7 +4254,6 @@ namespace WebApplications.Utilities
         /// <param name="func33">Function that returns item 33 of the tuple.</param>
         /// <returns>A tuple with 33 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -4435,7 +4369,6 @@ namespace WebApplications.Utilities
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <returns>A tuple with 34 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(
             T1 item1,
@@ -4551,7 +4484,6 @@ namespace WebApplications.Utilities
         /// <param name="func34">Function that returns item 34 of the tuple.</param>
         /// <returns>A tuple with 34 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,
@@ -4670,7 +4602,6 @@ namespace WebApplications.Utilities
         /// <param name="item35">Item 35 of the tuple.</param>
         /// <returns>A tuple with 35 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(
             T1 item1,
@@ -4789,7 +4720,6 @@ namespace WebApplications.Utilities
         /// <param name="func35">Function that returns item 35 of the tuple.</param>
         /// <returns>A tuple with 35 items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>> ToTuple<TInput, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,

@@ -97,7 +97,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func<#= funcReturnTypeComment #>"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<#= funcTypeParams #>> GetFuncExpression<#= funcTypeParams #>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -120,7 +119,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action<#= actionReturnTypeComment #>"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<#= actionTypeParams #>> GetActionExpression<#= actionTypeParams #>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -141,7 +139,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<#= funcTypeParams #>> Lambda<#= funcTypeParams #>(
             [NotNull] Expression<Func<#= funcTypeParams #>> expression)
         {
@@ -158,7 +155,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<#= actionTypeParams #>> Lambda<#= actionTypeParams #>(
             [NotNull] Expression<Action<#= actionTypeParams #>> expression)
         {

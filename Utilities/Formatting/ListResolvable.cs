@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Formatting
     /// </summary>
     /// <typeparam name="TValue">The type of the t value.</typeparam>
     [Serializable]
+    [PublicAPI]
     public class ListResolvable<TValue> : Resolvable, ICollection<TValue>
     {
         [NotNull]
@@ -91,7 +92,6 @@ namespace WebApplications.Utilities.Formatting
         /// Adds the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
-        [PublicAPI]
         public void Add([CanBeNull] TValue value)
         {
             _values.Add(value);
@@ -102,7 +102,6 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><see langword="true" /> if value removed, <see langword="false" /> otherwise.</returns>
-        [PublicAPI]
         public bool Remove([CanBeNull] TValue value)
         {
             return _values.Remove(value);

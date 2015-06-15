@@ -47,6 +47,7 @@ namespace WebApplications.Utilities.Globalization
     ///     <item><description>Associated <see cref="CultureInfo">cultures</see>.</description></item>
     ///   </list>
     /// </remarks>
+    [PublicAPI]
     public class CurrencyInfo
     {
         /// <summary>
@@ -84,33 +85,28 @@ namespace WebApplications.Utilities.Globalization
         ///   Gets the ISO Code.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string Code;
 
         /// <summary>
         ///   Gets the ISO Number.
         /// </summary>
-        [PublicAPI]
         public readonly int ISONumber;
 
         /// <summary>
         ///   Gets the exponent, which is the number of decimals available in the currency.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public readonly int? Exponent;
 
         /// <summary>
         ///   Gets the currency's full name.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string FullName;
 
         /// <summary>
         /// Indicates that this currency appears in the latest official ISO 4217 list.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsLatest;
 
 #if !BUILD_TASKS

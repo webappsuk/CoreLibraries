@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Caching
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class ConcurrentLookup<TKey, TValue> : ILookup<TKey, TValue>
     {
         /// <summary>
@@ -191,7 +191,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
         public bool TryGet([NotNull] TKey key, out IGrouping<TKey, TValue> value)
         {
             Grouping grouping;
@@ -214,7 +213,6 @@ namespace WebApplications.Utilities.Caching
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<TValue> Add([NotNull] TKey key, [NotNull] TValue value)
         {
             // ReSharper disable PossibleNullReferenceException
@@ -233,7 +231,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
         public bool Remove([NotNull] TKey key)
         {
             Grouping grouping;
@@ -251,7 +248,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
         public bool Remove([NotNull] TKey key, [NotNull] TValue value)
         {
             Grouping grouping;
@@ -359,7 +355,6 @@ namespace WebApplications.Utilities.Caching
             /// <returns>
             ///   Returns <see langword="true"/> if the value was successfully removed; otherwise returns <see langword="false"/>.
             /// </returns>
-            [UsedImplicitly]
             public bool Remove(TValue value)
             {
                 foreach (KeyValuePair<Guid, TValue> kvp in _dictionary)

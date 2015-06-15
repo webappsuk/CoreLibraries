@@ -82,7 +82,6 @@ namespace WebApplications.Utilities
         /// Returns an empty <see cref="IEnumerable{<#= typeParams #>}"/> that has the specified type arguments.
         /// </summary><#= typeComments #>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<<#= typeParams #>> Empty<<#= typeParams #>>()
         {
             return Enumerable<<#= typeParams #>>.Empty;
@@ -92,7 +91,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{<#= typeParams #>}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<<#= typeParams #>> AsTupleEnumerable<<#= typeParams #>>([CanBeNull] this IEnumerable<Tuple<<#= t #>>> enumerable)
         {
             if (enumerable == null)

@@ -126,7 +126,6 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance is empty.
         /// </summary>
-        [PublicAPI]
         public bool IsEmpty
         {
             get
@@ -495,7 +494,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public bool TryAdd([NotNull] TKey key, TValue value)
         {
             return _dictionary.TryAdd(key, Wrap(key, value));
@@ -512,7 +510,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public bool TryRemove([NotNull] TKey key, out TValue value)
         {
             WeakReference<TValue> weakReference;
@@ -537,7 +534,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the value was updated; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public bool TryUpdate([NotNull] TKey key, TValue newValue, TValue comparisonValue)
         {
             WeakReference<TValue> newWeakReference = Wrap(key, newValue, false);
@@ -553,7 +549,6 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Copies the dictionary entries to an <see cref="Array"/>.
         /// </summary>
-        [PublicAPI]
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
             return ((IEnumerable<KeyValuePair<TKey, TValue>>)this).ToArray();
@@ -567,7 +562,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         public TValue GetOrAdd([NotNull] TKey key, [NotNull] Func<TKey, TValue> valueFactory)
         {
             WeakReference<TValue> weakReference = _dictionary.GetOrAdd(key, k => Wrap(key, valueFactory(k)));
@@ -589,7 +583,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         public TValue GetOrAdd([NotNull] TKey key, TValue value)
         {
             return GetOrAdd(key, k => value);
@@ -604,7 +597,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         public TValue AddOrUpdate(
             [NotNull] TKey key,
             [NotNull] Func<TKey, TValue> addValueFactory,
@@ -647,7 +639,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         public TValue AddOrUpdate(
             [NotNull] TKey key,
             TValue addValue,

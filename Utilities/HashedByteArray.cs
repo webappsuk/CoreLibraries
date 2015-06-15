@@ -147,7 +147,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The encoded.</value>
         [NotNull]
-        [PublicAPI]
         public string Encoded
         {
             get
@@ -161,7 +160,6 @@ namespace WebApplications.Utilities
         /// Gets the length.
         /// </summary>
         /// <value>The length.</value>
-        [PublicAPI]
         public int Length
         {
             get { return _data.Length; }
@@ -171,7 +169,6 @@ namespace WebApplications.Utilities
         /// Gets the long length.
         /// </summary>
         /// <value>The length.</value>
-        [PublicAPI]
         public long LongLength
         {
             get { return _data.LongLength; }
@@ -182,7 +179,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        [PublicAPI]
         public byte this[int index]
         {
             get { return _data[index]; }
@@ -262,7 +258,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>A long hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table, provides better seperation that the standard
         /// integer hash code.</returns>
-        [PublicAPI]
         public long HashCode
         {
             get { return _hash; }

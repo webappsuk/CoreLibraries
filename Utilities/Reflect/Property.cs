@@ -41,13 +41,13 @@ namespace WebApplications.Utilities.Reflect
     ///   Wraps a <see cref="System.Reflection.PropertyInfo"/> with accessors.
     /// </summary>
     [DebuggerDisplay("{Info} [Extended]")]
+    [PublicAPI]
     public class Property
     {
         /// <summary>
         /// The extended type.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly ExtendedType ExtendedType;
 
         /// <summary>
@@ -220,7 +220,6 @@ namespace WebApplications.Utilities.Reflect
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        [UsedImplicitly]
         [CanBeNull]
         public Func<TValue> Getter<TValue>()
         {
@@ -264,7 +263,6 @@ namespace WebApplications.Utilities.Reflect
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        [UsedImplicitly]
         [CanBeNull]
         public Func<T, TValue> Getter<T, TValue>()
         {
@@ -314,7 +312,6 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>An action that sets the value of the relevant static field.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        [UsedImplicitly]
         [CanBeNull]
         public Action<TValue> Setter<TValue>()
         {
@@ -363,7 +360,6 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>An action that takes an object of the type T and sets the value of the relevant field.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        [UsedImplicitly]
         [CanBeNull]
         public Action<T, TValue> Setter<T, TValue>()
         {

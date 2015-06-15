@@ -42,6 +42,7 @@ namespace WebApplications.Utilities
     /// <summary>
     ///   Extension methods for <see cref="Task"/> and <see cref="TaskCompletionSource&lt;TResult&gt;"/>.
     /// </summary>
+    [PublicAPI]
     public static partial class TaskExtensions
     {
         /// <summary>
@@ -63,7 +64,6 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The task was not completed.</para>
         /// </exception>
-        [PublicAPI]
         public static void SetFromTask(
             [NotNull] this TaskCompletionSource<bool> tcs,
             [NotNull] Task task)
@@ -113,7 +113,6 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The task was not completed.</para>
         /// </exception>
-        [PublicAPI]
         public static void SetFromTask<TResult>(
             [NotNull] this TaskCompletionSource<TResult> tcs,
             [NotNull] Task<TResult> task)
@@ -157,7 +156,6 @@ namespace WebApplications.Utilities
         ///   <paramref name="task"/> is a <see langword="null"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static Task WithAsyncCallback(
             [NotNull] this Task task,
             [CanBeNull] AsyncCallback callback,
@@ -189,7 +187,6 @@ namespace WebApplications.Utilities
         /// </param>
         /// <returns>The passed in <paramref name="task"/>.</returns>
         [NotNull]
-        [PublicAPI]
         public static Task<TResult> WithAsyncCallback<TResult>(
             [NotNull] this Task<TResult> task,
             [CanBeNull] AsyncCallback callback,
@@ -223,7 +220,6 @@ namespace WebApplications.Utilities
         ///   This is particularly vital for APM where the exception needs to propagate to the end call.
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public static Task Safe([NotNull] this Func<Task> taskCreator)
         {
             if (taskCreator == null) throw new ArgumentNullException("taskCreator");
@@ -256,7 +252,6 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   This is particularly vital for APM where the exception needs to propagate to the end call.
         /// </remarks>
-        [PublicAPI]
         [NotNull]
         public static Task<TResult> Safe<TResult>([NotNull] this Func<Task<TResult>> taskCreator)
         {
@@ -290,7 +285,6 @@ namespace WebApplications.Utilities
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation)
@@ -324,7 +318,6 @@ namespace WebApplications.Utilities
         ///   An exception will be thrown if <paramref name="task"/> is ended prematurely by an exception.
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation,
@@ -389,7 +382,6 @@ namespace WebApplications.Utilities
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static Task<TNewResult> AfterAll<TResult, TNewResult>(
             [CanBeNull] [InstantHandle] this IEnumerable<Task<TResult>> tasks,
             [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult> continuation,
@@ -479,7 +471,6 @@ namespace WebApplications.Utilities
         ///   Useful for quickly passing a <see cref="Task"/>'s
         ///   <see cref="System.Threading.Tasks.TaskCreationOptions">creation options</see> to a continuation.
         /// </remarks>
-        [PublicAPI]
         public static TaskContinuationOptions GetEquivalentContinuationOptions(this TaskCreationOptions creationOptions)
         {
             return (TaskContinuationOptions)creationOptions;
@@ -498,7 +489,6 @@ namespace WebApplications.Utilities
         ///   The caller does not have the required permission.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static WaitHandle WaitAny([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             if (handle == null) throw new ArgumentNullException("handle");
@@ -555,7 +545,6 @@ namespace WebApplications.Utilities
         ///   The caller does not have the required permission.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public static WaitHandle WaitAll([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             if (handle == null) throw new ArgumentNullException("handle");
@@ -626,7 +615,6 @@ namespace WebApplications.Utilities
         ///   <see cref="System.Threading.Tasks.TaskCompletionSource&lt;TResult&gt;">TaskCompletionSource&lt;TResult&gt;</see>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Task<TResult> FromAsync<TResult>(
             [NotNull] this IAsyncResult asyncResult,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -755,7 +743,6 @@ namespace WebApplications.Utilities
         /// <param name="token">The cancellation token.</param>
         /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
         /// <returns> An object used to await the <see cref="CancellationToken" />.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ConfiguredTaskAwaitable ConfigureAwait(
             this CancellationToken token,
@@ -772,7 +759,6 @@ namespace WebApplications.Utilities
         /// <param name="tokenSource">The token source.</param>
         /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
         /// <returns> An object used to await the <see cref="ITokenSource" />.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ConfiguredTaskAwaitable ConfigureAwait(
             this ITokenSource tokenSource,
@@ -791,7 +777,6 @@ namespace WebApplications.Utilities
         /// <returns>
         /// An object used to await the <see cref="CancelableTokenSource" />.
         /// </returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ConfiguredTaskAwaitable ConfigureAwait(
             this CancelableTokenSource tokenSource,
@@ -810,7 +795,6 @@ namespace WebApplications.Utilities
         /// <returns>
         /// An object used to await the <see cref="WaitHandle" />.
         /// </returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ConfiguredTaskAwaitable ConfigureAwait(
             this WaitHandle handle,
@@ -825,7 +809,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="token">The cancellation token.</param>
         /// <returns>The awaiter.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter(this CancellationToken token)
         {
@@ -839,7 +822,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="tokenSource">The token source.</param>
         /// <returns>The awaiter.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter([NotNull] this ITokenSource tokenSource)
         {
@@ -853,7 +835,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="tokenSource">The token source.</param>
         /// <returns>The awaiter.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter([NotNull] this CancellationTokenSource tokenSource)
         {
@@ -867,7 +848,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="handle">The handle to wait on.</param>
         /// <returns>The awaiter.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TaskAwaiter GetAwaiter([NotNull] this WaitHandle handle)
         {
@@ -887,7 +867,6 @@ namespace WebApplications.Utilities
         /// There is a (brief) time delay between when the handle is signaled and when the task is marked as completed.
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public static Task ToTask(
             [NotNull] this WaitHandle handle,
             CancellationToken token = default(CancellationToken))
@@ -933,7 +912,6 @@ namespace WebApplications.Utilities
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
         [NotNull]
-        [PublicAPI]
         public static Task ToTask([NotNull] this Exception exception)
         {
             if (exception == null) throw new ArgumentNullException("exception");
@@ -951,7 +929,6 @@ namespace WebApplications.Utilities
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
         [NotNull]
-        [PublicAPI]
         public static Task<TResult> ToTask<TResult>([NotNull] this Exception exception)
         {
             if (exception == null) throw new ArgumentNullException("exception");
@@ -1060,7 +1037,6 @@ namespace WebApplications.Utilities
         /// <param name="token">The cancellation token.</param>
         /// <param name="timeout">The timeout.</param>
         /// <returns>A token source that will be cancelled after the timeout period has passed.</returns>
-        [PublicAPI]
         [NotNull]
         public static ITokenSource WithTimeout(this CancellationToken token, TimeSpan timeout)
         {
@@ -1082,7 +1058,6 @@ namespace WebApplications.Utilities
         /// <param name="token">The cancellation token.</param>
         /// <param name="timeout">The timeout.</param>
         /// <returns>A token source that will be cancelled after the timeout period has passed.</returns>
-        [PublicAPI]
         [NotNull]
         public static ITokenSource WithTimeout(this CancellationToken token, Duration timeout)
         {
@@ -1104,7 +1079,6 @@ namespace WebApplications.Utilities
         /// <param name="token">The token.</param>
         /// <param name="milliseconds">The timeout in milliseconds.</param>
         /// <returns>A token source that will be cancelled after the timeout period has passed.</returns>
-        [PublicAPI]
         [NotNull]
         public static ITokenSource WithTimeout(this CancellationToken token, int milliseconds)
         {
@@ -1126,7 +1100,6 @@ namespace WebApplications.Utilities
         /// <param name="token1">The first token.</param>
         /// <param name="token2">The second token.</param>
         /// <returns>A token source that will be cancelled when either of the given tokens have been cancelled.</returns>
-        [PublicAPI]
         [NotNull]
         public static ITokenSource CreateLinked(this CancellationToken token1, CancellationToken token2)
         {
@@ -1151,7 +1124,6 @@ namespace WebApplications.Utilities
         /// <param name="token">The first token.</param>
         /// <param name="tokens">The any remaining tokens.</param>
         /// <returns>A token source that will be cancelled when any of the given tokens have been cancelled.</returns>
-        [PublicAPI]
         [NotNull]
         public static ITokenSource CreateLinked(
             this CancellationToken token,
@@ -1183,7 +1155,6 @@ namespace WebApplications.Utilities
         /// <param name="token1">The first token.</param>
         /// <param name="token2">The second token.</param>
         /// <returns>A token source that will be cancelled when either of the given tokens have been cancelled.</returns>
-        [PublicAPI]
         [NotNull]
         public static ICancelableTokenSource CreateCancelableLinked(
             this CancellationToken token1,
@@ -1206,7 +1177,6 @@ namespace WebApplications.Utilities
         /// <param name="token">The first token.</param>
         /// <param name="tokens">The any remaining tokens.</param>
         /// <returns>A token source that will be cancelled when any of the given tokens have been cancelled.</returns>
-        [PublicAPI]
         [NotNull]
         public static ICancelableTokenSource CreateCancelableLinked(
             this CancellationToken token,
@@ -1232,7 +1202,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns>A token source that can be cancelled and will be cancelled if the <paramref name="token"/> is cancelled.</returns>
-        [PublicAPI]
         [NotNull]
         public static ICancelableTokenSource ToCancelable(this CancellationToken token)
         {
@@ -1248,7 +1217,6 @@ namespace WebApplications.Utilities
         /// <returns>
         /// A token source that can be cancelled and will be cancelled if the <paramref name="cts" /> is cancelled.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static ICancelableTokenSource ToCancelable([NotNull] this CancellationTokenSource cts)
         {
@@ -1261,7 +1229,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        [PublicAPI]
         [NotNull]
         public static ITokenSource ToTokenSource(this CancellationToken token)
         {
@@ -1275,7 +1242,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="cts">The CancellationTokenSource.</param>
         /// <returns></returns>
-        [PublicAPI]
         [NotNull]
         public static ITokenSource ToTokenSource([NotNull] this CancellationTokenSource cts)
         {
@@ -1288,7 +1254,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="cts">The <see cref="CancellationTokenSource"/>.</param>
         /// <param name="delay">The duration to wait before canceling this <see cref="CancellationTokenSource" />.</param>
-        [PublicAPI]
         public static void CancelAfter([NotNull] this CancellationTokenSource cts, Duration delay)
         {
             cts.CancelAfter(delay.ToTimeSpan());
@@ -1299,7 +1264,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>SynchronizationContextAwaiter.</returns>
-        [PublicAPI]
         public static SynchronizationContextAwaiter GetAwaiter([NotNull] this SynchronizationContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -1311,7 +1275,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="callback">The callback.</param>
-        [PublicAPI]
         public static void Invoke([NotNull] this SynchronizationContext context, [NotNull] Action callback)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -1326,7 +1289,6 @@ namespace WebApplications.Utilities
         /// <param name="context">The context.</param>
         /// <param name="callback">The callback.</param>
         /// <returns>T.</returns>
-        [PublicAPI]
         public static T Invoke<T>([NotNull] this SynchronizationContext context, [NotNull] Func<T> callback)
         {
             if (context == null) throw new ArgumentNullException("context");

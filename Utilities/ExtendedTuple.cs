@@ -38,6 +38,7 @@ namespace WebApplications.Utilities
     /// <summary>
     ///   Extension methods for <see cref="System.Tuple">tuples</see>.
     /// </summary>
+    [PublicAPI]
     public static partial class ExtendedTuple
     {
         /// <summary>
@@ -95,7 +96,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   A function that takes an index and retrieves the corresponding item from the specified <paramref name="tuple"/>.
         /// </returns>
-        [UsedImplicitly]
         public static Func<int, object> GetTupleIndexer<T>([NotNull] this T tuple)
             where T : class, IStructuralEquatable, IStructuralComparable, IComparable
         {
@@ -115,7 +115,6 @@ namespace WebApplications.Utilities
         ///   <para>The item at index 7 of a tuple of type Tuple&lt;int, int, int, int, int, int, int, <b>string&gt;</b>
         ///   is the equivalent of <b>tuple.Rest</b> and is of type <see cref="string"/>.</para>
         /// </remarks>
-        [UsedImplicitly]
         [NotNull]
         public static Func<object, int, object> GetTupleIndexer([NotNull] this Type tupleType)
         {

@@ -34,13 +34,13 @@ namespace WebApplications.Utilities
     /// Helper class for arrays.
     /// </summary>
     /// <typeparam name="T">The type of the elements of the array.</typeparam>
+    [PublicAPI]
     public static class Array<T>
     {
         /// <summary>
         /// An empty array.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly T[] Empty = Enumerable.Empty<T>() as T[] ?? new T[0];
     }
 }

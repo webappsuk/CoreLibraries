@@ -40,6 +40,7 @@ namespace WebApplications.Utilities.Configuration
     /// <summary>
     ///   A configuration element that is used for object construction.
     /// </summary>
+    [PublicAPI]
     public class ConstructorConfigurationElement : ConfigurationElement
     {
         /// <summary>
@@ -50,7 +51,6 @@ namespace WebApplications.Utilities.Configuration
         [ConfigurationProperty("type", IsRequired = true)]
         [TypeConverter(typeof(TypeNameConverter))]
         [NotNull]
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual Type Type
         {
@@ -73,7 +73,6 @@ namespace WebApplications.Utilities.Configuration
             ClearItemsName = "clear",
             RemoveItemName = "remove")]
         [NotNull]
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual ParameterCollection Parameters
         {
@@ -91,7 +90,6 @@ namespace WebApplications.Utilities.Configuration
         ///   Instead you should use <see cref="GetConstructor{T}"/> where possible and store the resultant
         ///   <see cref="Func{TResult}"/>, which can then be called repeatedly to create new instances.
         /// </remarks>
-        [PublicAPI]
         [NotNull]
         public T GetInstance<T>()
         {
@@ -117,7 +115,6 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>-or-</para>
         ///   <para>The configuration system cannot assign the created type to the return type.</para>
         /// </exception>
-        [PublicAPI]
         [NotNull]
         public Func<T> GetConstructor<T>()
         {

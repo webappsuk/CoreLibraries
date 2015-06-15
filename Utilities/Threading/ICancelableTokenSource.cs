@@ -42,7 +42,6 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <exception cref="T:System.ObjectDisposedException">This <see cref="ICancelableTokenSource"/> has been disposed.</exception>
         /// <exception cref="T:System.AggregateException">An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <see cref="T:System.Threading.CancellationToken"/>.</exception>
-        [PublicAPI]
         void Cancel();
 
         /// <summary>
@@ -51,7 +50,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="throwOnFirstException">true if exceptions should immediately propagate; otherwise, false.</param>
         /// <exception cref="T:System.ObjectDisposedException">This <see cref="ICancelableTokenSource"/> has been disposed.</exception>
         /// <exception cref="T:System.AggregateException">An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <see cref="T:System.Threading.CancellationToken"/>.</exception>
-        [PublicAPI]
         void Cancel(bool throwOnFirstException);
 
         /// <summary>
@@ -60,7 +58,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="delay">The time span to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
         /// <exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="ICancelableTokenSource"/> has been disposed.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.</exception>
-        [PublicAPI]
         void CancelAfter(TimeSpan delay);
 
         /// <summary>
@@ -69,7 +66,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="delay">The duration to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
         /// <exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="ICancelableTokenSource"/> has been disposed.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.</exception>
-        [PublicAPI]
         void CancelAfter(Duration delay);
 
         /// <summary>
@@ -78,7 +74,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="millisecondsDelay">The time span to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
         /// <exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="ICancelableTokenSource"/> has been disposed.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">The exception thrown when <paramref name="millisecondsDelay"/> is less than -1.</exception>
-        [PublicAPI]
         void CancelAfter(int millisecondsDelay);
     }
 }

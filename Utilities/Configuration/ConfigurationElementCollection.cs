@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Configuration
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the elements.</typeparam>
+    [PublicAPI]
     public abstract class ConfigurationElementCollection<TKey, TValue> : ConfigurationElementCollection,
         ICollection<TValue>
         where TValue : ConfigurationElement, new()
@@ -51,7 +52,6 @@ namespace WebApplications.Utilities.Configuration
         ///   <paramref name="key"/> is read-only or locked.
         /// </exception>
         [CanBeNull]
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue this[[NotNull] TKey key]
         {
@@ -82,7 +82,6 @@ namespace WebApplications.Utilities.Configuration
         ///   <paramref name="index"/> is read-only or locked.
         /// </exception>
         [CanBeNull]
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue this[int index]
         {
@@ -113,7 +112,6 @@ namespace WebApplications.Utilities.Configuration
         ///   Adds the specified value to the collection.
         /// </summary>
         /// <param name="value">This is the element to add to the collection.</param>
-        [PublicAPI]
         public virtual void Add([NotNull] TValue value)
         {
             BaseAdd(value);
@@ -183,7 +181,6 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>-or-</para>
         ///   <para>A collection item has been locked in a higher-level configuration.</para>  
         /// </exception>
-        [PublicAPI]
         public virtual void Clear()
         {
             BaseClear();
@@ -209,7 +206,6 @@ namespace WebApplications.Utilities.Configuration
         /// <typeparam name="T">The property type.</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <returns>The specified property, attribute or child element.</returns>
-        [PublicAPI]
         protected T GetProperty<T>(string propertyName)
         {
             return (T)base[propertyName];
@@ -221,7 +217,6 @@ namespace WebApplications.Utilities.Configuration
         /// <typeparam name="T">The property type.</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value to set the property.</param>
-        [PublicAPI]
         protected void SetProperty<T>(string propertyName, T value)
         {
             base[propertyName] = value;
@@ -269,7 +264,6 @@ namespace WebApplications.Utilities.Configuration
         ///    or the element cannot be removed because the collection type is not
         ///   <see cref="System.Configuration.ConfigurationElementCollectionType">AddRemoveClearMap</see>
         /// </exception>
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void Remove([NotNull] TKey key)
         {
@@ -285,7 +279,6 @@ namespace WebApplications.Utilities.Configuration
         ///    or the element cannot be removed because the collection type is not
         ///   <see cref="System.Configuration.ConfigurationElementCollectionType">AddRemoveClearMap</see>
         /// </exception>
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void Remove([NotNull] TValue value)
         {
@@ -305,7 +298,6 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>-or-</para>
         ///   <para>The element has been locked at a higher level.</para>
         /// </exception>
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void RemoveAt(int index)
         {
@@ -325,7 +317,6 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>There is no element at the specified <paramref name="index"/>.</para>
         /// </exception>
         [CanBeNull]
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TKey GetKey(int index)
         {

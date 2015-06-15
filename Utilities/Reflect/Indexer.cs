@@ -40,6 +40,7 @@ namespace WebApplications.Utilities.Reflect
     /// </summary>
     /// <remarks></remarks>
     [DebuggerDisplay("{Info} [Extended]")]
+    [PublicAPI]
     public class Indexer : Property, ISignature
     {
         /// <summary>
@@ -66,7 +67,6 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <remarks></remarks>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<ParameterInfo> IndexParameters
         {
             get
@@ -148,7 +148,6 @@ namespace WebApplications.Utilities.Reflect
         /// <para>The closure arrays are ordered and contain the same number of elements as their corresponding
         /// generic arguments.  Where elements are <see langword="null"/> a closure is not required.</para></remarks>
         [CanBeNull]
-        [PublicAPI]
         public Indexer Close([NotNull] Type[] typeClosures)
         {
             if (typeClosures == null) throw new ArgumentNullException("typeClosures");

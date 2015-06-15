@@ -35,6 +35,7 @@ namespace WebApplications.Utilities
     /// <summary>
     /// Dictionary extension and helper methods.
     /// </summary>
+    [PublicAPI]
     public static class Dictionary
     {
         /// <summary>
@@ -44,7 +45,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>()
         {
             return EmptyDictionary<TKey, TValue>.Instance;

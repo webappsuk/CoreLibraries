@@ -164,7 +164,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{<#= typeParams #>}" />.
         /// </summary><#= paramsComments #>
-        [PublicAPI]
         public void Push(<#= paramsWithType #>)
         {
             Push(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
@@ -173,7 +172,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{<#= typeParams #>}"/>.
         /// </summary><#= paramsComments #>
-        [PublicAPI]
         public void Pop(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Pop();
@@ -183,7 +181,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{<#= typeParams #>}"/> without removing it.
         /// </summary><#= paramsComments #>
-        [PublicAPI]
         public void Peek(<#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = Peek();
@@ -194,7 +191,6 @@ namespace WebApplications.Utilities
         /// Removes and returns the object at the top of the <see cref="Stack{<#= typeParams #>}"/>.
         /// </summary><#= paramsComments #>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPop(<#= outParamsWithType #>)
         {
             if (Count < 1) 
@@ -210,7 +206,6 @@ namespace WebApplications.Utilities
         /// Returns the object at the top of the <see cref="Stack{<#= typeParams #>}"/> without removing it.
         /// </summary><#= paramsComments #>
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         public bool TryPeek(<#= outParamsWithType #>)
         {
             if (Count < 1) 

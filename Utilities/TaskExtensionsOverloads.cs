@@ -49,7 +49,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TResult>(
             [NotNull] this Func<AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -86,7 +85,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TResult>(
             [NotNull] this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -126,7 +124,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TResult>(
             [NotNull] this Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -169,7 +166,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -215,7 +211,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -264,7 +259,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -316,7 +310,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -371,7 +364,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -429,7 +421,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -490,7 +481,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -554,7 +544,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -621,7 +610,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -691,7 +679,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -764,7 +751,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -840,7 +826,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14, TResult>(
             [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -892,7 +877,6 @@ namespace WebApplications.Utilities
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TResult>([NotNull]this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,

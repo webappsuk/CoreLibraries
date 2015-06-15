@@ -43,7 +43,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The instance of the clock.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly HighPrecisionClock Instance = new HighPrecisionClock();
 

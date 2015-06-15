@@ -58,7 +58,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         ///   Returns <see langword="true"/> if <paramref name="value"/> is equal to this instance; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public bool Equals(ApmWrap<T> value)
         {
             return Equals(SyncContext, value.SyncContext);
@@ -115,7 +114,6 @@ namespace WebApplications.Utilities.Threading
         ///   If the SyncContext is a non-null value when creating an ApmWrap object then the ApmWrap object will force the
         ///   operation to complete using the specified <see cref="SynchronizationContext"/>.
         /// </summary>
-        [PublicAPI]
         private SynchronizationContext SyncContext { get; set; }
 
         /// <summary>
@@ -124,7 +122,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="data">The data to embed in the ApmWrap object.</param>
         /// <param name="callback">The callback method that should be invoked when the operation completes.</param>
         /// <returns>An ApmWrap object's completion method.</returns>
-        [PublicAPI]
         [NotNull]
         public AsyncCallback CreateCallback([NotNull] AsyncCallback callback, T data)
         {
@@ -144,7 +141,6 @@ namespace WebApplications.Utilities.Threading
         ///   The internal callback stored within the created ApmWrap object.
         ///   A <see langword="null"/> is returned if the <paramref name="callback"/> is null.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static AsyncCallback WrapCallback(
             [NotNull] AsyncCallback callback,
@@ -170,7 +166,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>
         ///   An ApmWrap object that contains the originally-returned <see cref="IAsyncResult"/> object.
         /// </returns>
-        [PublicAPI]
         [NotNull]
         public static IAsyncResult Wrap([NotNull] IAsyncResult result, T data)
         {
@@ -184,7 +179,6 @@ namespace WebApplications.Utilities.Threading
         ///   The <see langword="ref">reference</see> to the wrapped IAsyncResult object.
         /// </param>
         /// <returns>The embedded data.</returns>
-        [PublicAPI]
         public static T Unwrap([NotNull] ref IAsyncResult result)
         {
             ApmWrapper apmWrap = result as ApmWrapper;
@@ -201,14 +195,6 @@ namespace WebApplications.Utilities.Threading
         [DebuggerStepThrough]
         private sealed class ApmWrapper : IAsyncResult
         {
-            /// <summary>
-            ///   Initializes a new instance of the <see cref="ApmWrapper"/> class.
-            /// </summary>
-            [PublicAPI]
-            internal ApmWrapper()
-            {
-            }
-
             /// <summary>
             ///   Gets or sets the <see cref="AsyncCallback">async callback</see>.
             /// </summary>

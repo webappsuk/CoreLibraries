@@ -43,6 +43,7 @@ namespace WebApplications.Utilities
     /// Stores a semantic version number for a program.
     /// </summary>
     [Serializable]
+    [PublicAPI]
     public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>,
         ISerializable
     {
@@ -62,7 +63,6 @@ namespace WebApplications.Utilities
         /// Version zero
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly SemanticVersion Zero = new SemanticVersion(0, 0, 0, null, null, false);
 
         /// <summary>
@@ -97,9 +97,21 @@ namespace WebApplications.Utilities
             Optional<string> build,
             bool isPartial)
         {
-            if (major.Value < 0) throw new ArgumentOutOfRangeException("major", major, Resources.SemanticVersion_SemanticVersion_MajorNegative);
-            if (minor.Value < 0) throw new ArgumentOutOfRangeException("minor", minor, Resources.SemanticVersion_SemanticVersion_MinorNegative);
-            if (patch.Value < 0) throw new ArgumentOutOfRangeException("patch", patch, Resources.SemanticVersion_SemanticVersion_PatchNegative);
+            if (major.Value < 0)
+                throw new ArgumentOutOfRangeException(
+                    "major",
+                    major,
+                    Resources.SemanticVersion_SemanticVersion_MajorNegative);
+            if (minor.Value < 0)
+                throw new ArgumentOutOfRangeException(
+                    "minor",
+                    minor,
+                    Resources.SemanticVersion_SemanticVersion_MinorNegative);
+            if (patch.Value < 0)
+                throw new ArgumentOutOfRangeException(
+                    "patch",
+                    patch,
+                    Resources.SemanticVersion_SemanticVersion_PatchNegative);
 
             Major = major;
             Minor = minor;
@@ -312,7 +324,6 @@ namespace WebApplications.Utilities
         /// The value of this property is a non-negative integer for the major
         /// version number.
         /// </value>
-        [PublicAPI]
         public readonly Optional<int> Major;
 
         /// <summary>
@@ -322,7 +333,6 @@ namespace WebApplications.Utilities
         /// The value of this property is a non-negative integer for the minor
         /// version number.
         /// </value>
-        [PublicAPI]
         public readonly Optional<int> Minor;
 
         /// <summary>
@@ -332,7 +342,6 @@ namespace WebApplications.Utilities
         /// The value of this property is a non-negative integer for the patch
         /// version number.
         /// </value>
-        [PublicAPI]
         public readonly Optional<int> Patch;
 
         /// <summary>
@@ -342,7 +351,6 @@ namespace WebApplications.Utilities
         /// The value of this property is a string containing the pre-release
         /// identifier.
         /// </value>
-        [PublicAPI]
         public readonly Optional<string> PreRelease;
 
         /// <summary>
@@ -352,7 +360,6 @@ namespace WebApplications.Utilities
         /// The value of this property is a string containing the build
         /// identifier for the version number.
         /// </value>
-        [PublicAPI]
         public readonly Optional<string> Build;
 
         /// <summary>
@@ -887,7 +894,6 @@ namespace WebApplications.Utilities
         /// <param name="version">The semantic version number to be parsed.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">version;The specified semantic version string was not valid.</exception>
         [CanBeNull]
-        [PublicAPI]
         public static SemanticVersion Parse([CanBeNull] string version)
         {
             if (version == null) return null;

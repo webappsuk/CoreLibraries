@@ -146,7 +146,6 @@ namespace WebApplications.Utilities
         /// </summary><#= typeComments #><#= paramsComments #>
         /// <returns>A tuple with <#= i #> items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static Tuple<<#= t #>> Create<<#= typeParams #>>(<#= paramsWithType #>)
         {
@@ -160,7 +159,6 @@ namespace WebApplications.Utilities
         /// <param name="inputEnumeration">The enumeration of inputs.</param><#= paramsFuncComments #>
         /// <returns>A tuple with <#= i #> items (using nested tuples where necessary).</returns>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<Tuple<<#= t #>>> ToTuple<TInput, <#= typeParams #>>(
             [NotNull]this IEnumerable<TInput> inputEnumeration,<#= paramsFuncWithType #>)

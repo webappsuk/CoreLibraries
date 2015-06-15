@@ -58,7 +58,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T1">The type of item 1.</typeparam>
         /// <typeparam name="T2">The type of item 2.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2> Empty<T1, T2>()
         {
             return Enumerable<T1, T2>.Empty;
@@ -68,7 +67,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2> AsTupleEnumerable<T1, T2>([CanBeNull] this IEnumerable<Tuple<T1, T2>> enumerable)
         {
             if (enumerable == null)
@@ -104,7 +102,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T2">The type of item 2.</typeparam>
         /// <typeparam name="T3">The type of item 3.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3> Empty<T1, T2, T3>()
         {
             return Enumerable<T1, T2, T3>.Empty;
@@ -114,7 +111,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3> AsTupleEnumerable<T1, T2, T3>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3>> enumerable)
         {
             if (enumerable == null)
@@ -151,7 +147,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T3">The type of item 3.</typeparam>
         /// <typeparam name="T4">The type of item 4.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4> Empty<T1, T2, T3, T4>()
         {
             return Enumerable<T1, T2, T3, T4>.Empty;
@@ -161,7 +156,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4> AsTupleEnumerable<T1, T2, T3, T4>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4>> enumerable)
         {
             if (enumerable == null)
@@ -199,7 +193,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T4">The type of item 4.</typeparam>
         /// <typeparam name="T5">The type of item 5.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5> Empty<T1, T2, T3, T4, T5>()
         {
             return Enumerable<T1, T2, T3, T4, T5>.Empty;
@@ -209,7 +202,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5> AsTupleEnumerable<T1, T2, T3, T4, T5>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5>> enumerable)
         {
             if (enumerable == null)
@@ -248,7 +240,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T5">The type of item 5.</typeparam>
         /// <typeparam name="T6">The type of item 6.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6> Empty<T1, T2, T3, T4, T5, T6>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6>.Empty;
@@ -258,7 +249,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6> AsTupleEnumerable<T1, T2, T3, T4, T5, T6>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6>> enumerable)
         {
             if (enumerable == null)
@@ -298,7 +288,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T6">The type of item 6.</typeparam>
         /// <typeparam name="T7">The type of item 7.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7> Empty<T1, T2, T3, T4, T5, T6, T7>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7>.Empty;
@@ -308,7 +297,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7>> enumerable)
         {
             if (enumerable == null)
@@ -349,7 +337,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T7">The type of item 7.</typeparam>
         /// <typeparam name="T8">The type of item 8.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8> Empty<T1, T2, T3, T4, T5, T6, T7, T8>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8>.Empty;
@@ -359,7 +346,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>> enumerable)
         {
             if (enumerable == null)
@@ -401,7 +387,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T8">The type of item 8.</typeparam>
         /// <typeparam name="T9">The type of item 9.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>.Empty;
@@ -411,7 +396,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>> enumerable)
         {
             if (enumerable == null)
@@ -454,7 +438,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T9">The type of item 9.</typeparam>
         /// <typeparam name="T10">The type of item 10.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>.Empty;
@@ -464,7 +447,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>> enumerable)
         {
             if (enumerable == null)
@@ -508,7 +490,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T10">The type of item 10.</typeparam>
         /// <typeparam name="T11">The type of item 11.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.Empty;
@@ -518,7 +499,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>> enumerable)
         {
             if (enumerable == null)
@@ -563,7 +543,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T11">The type of item 11.</typeparam>
         /// <typeparam name="T12">The type of item 12.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>.Empty;
@@ -573,7 +552,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>> enumerable)
         {
             if (enumerable == null)
@@ -619,7 +597,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T12">The type of item 12.</typeparam>
         /// <typeparam name="T13">The type of item 13.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>.Empty;
@@ -629,7 +606,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>> enumerable)
         {
             if (enumerable == null)
@@ -676,7 +652,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T13">The type of item 13.</typeparam>
         /// <typeparam name="T14">The type of item 14.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>.Empty;
@@ -686,7 +661,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>> enumerable)
         {
             if (enumerable == null)
@@ -734,7 +708,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T14">The type of item 14.</typeparam>
         /// <typeparam name="T15">The type of item 15.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>.Empty;
@@ -744,7 +717,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>> enumerable)
         {
             if (enumerable == null)
@@ -793,7 +765,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T15">The type of item 15.</typeparam>
         /// <typeparam name="T16">The type of item 16.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>.Empty;
@@ -803,7 +774,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>> enumerable)
         {
             if (enumerable == null)
@@ -853,7 +823,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T16">The type of item 16.</typeparam>
         /// <typeparam name="T17">The type of item 17.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>.Empty;
@@ -863,7 +832,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>> enumerable)
         {
             if (enumerable == null)
@@ -914,7 +882,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T17">The type of item 17.</typeparam>
         /// <typeparam name="T18">The type of item 18.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>.Empty;
@@ -924,7 +891,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>> enumerable)
         {
             if (enumerable == null)
@@ -976,7 +942,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T18">The type of item 18.</typeparam>
         /// <typeparam name="T19">The type of item 19.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>.Empty;
@@ -986,7 +951,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>> enumerable)
         {
             if (enumerable == null)
@@ -1039,7 +1003,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T19">The type of item 19.</typeparam>
         /// <typeparam name="T20">The type of item 20.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>.Empty;
@@ -1049,7 +1012,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>> enumerable)
         {
             if (enumerable == null)
@@ -1103,7 +1065,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T20">The type of item 20.</typeparam>
         /// <typeparam name="T21">The type of item 21.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>.Empty;
@@ -1113,7 +1074,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>> enumerable)
         {
             if (enumerable == null)
@@ -1168,7 +1128,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T21">The type of item 21.</typeparam>
         /// <typeparam name="T22">The type of item 22.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>.Empty;
@@ -1178,7 +1137,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1234,7 +1192,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T22">The type of item 22.</typeparam>
         /// <typeparam name="T23">The type of item 23.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>.Empty;
@@ -1244,7 +1201,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1301,7 +1257,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T23">The type of item 23.</typeparam>
         /// <typeparam name="T24">The type of item 24.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>.Empty;
@@ -1311,7 +1266,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1369,7 +1323,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T24">The type of item 24.</typeparam>
         /// <typeparam name="T25">The type of item 25.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>.Empty;
@@ -1379,7 +1332,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1438,7 +1390,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T25">The type of item 25.</typeparam>
         /// <typeparam name="T26">The type of item 26.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>.Empty;
@@ -1448,7 +1399,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1508,7 +1458,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T26">The type of item 26.</typeparam>
         /// <typeparam name="T27">The type of item 27.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>.Empty;
@@ -1518,7 +1467,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1579,7 +1527,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T27">The type of item 27.</typeparam>
         /// <typeparam name="T28">The type of item 28.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>.Empty;
@@ -1589,7 +1536,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1651,7 +1597,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T28">The type of item 28.</typeparam>
         /// <typeparam name="T29">The type of item 29.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>.Empty;
@@ -1661,7 +1606,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1724,7 +1668,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T29">The type of item 29.</typeparam>
         /// <typeparam name="T30">The type of item 30.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>.Empty;
@@ -1734,7 +1677,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1798,7 +1740,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T30">The type of item 30.</typeparam>
         /// <typeparam name="T31">The type of item 31.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>.Empty;
@@ -1808,7 +1749,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1873,7 +1813,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T31">The type of item 31.</typeparam>
         /// <typeparam name="T32">The type of item 32.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>.Empty;
@@ -1883,7 +1822,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>> enumerable)
         {
             if (enumerable == null)
@@ -1949,7 +1887,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T32">The type of item 32.</typeparam>
         /// <typeparam name="T33">The type of item 33.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>.Empty;
@@ -1959,7 +1896,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>> enumerable)
         {
             if (enumerable == null)
@@ -2026,7 +1962,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T33">The type of item 33.</typeparam>
         /// <typeparam name="T34">The type of item 34.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>.Empty;
@@ -2036,7 +1971,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>> enumerable)
         {
             if (enumerable == null)
@@ -2104,7 +2038,6 @@ namespace WebApplications.Utilities
         /// <typeparam name="T34">The type of item 34.</typeparam>
         /// <typeparam name="T35">The type of item 35.</typeparam>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> Empty<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>()
         {
             return Enumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>.Empty;
@@ -2114,7 +2047,6 @@ namespace WebApplications.Utilities
         /// Returns the input typed as IEnumerable{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> AsTupleEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>([CanBeNull] this IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>> enumerable)
         {
             if (enumerable == null)

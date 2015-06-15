@@ -53,7 +53,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="parameter">The parameter.</param>
         /// <returns></returns>
-        [PublicAPI]
         public bool Contains([NotNull] ParameterExpression parameter)
         {
             return _visitedParameters.Contains(parameter);
@@ -65,7 +64,6 @@ namespace WebApplications.Utilities
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static ParameterUsageVisitor Create([NotNull] Expression expression)
         {
             ParameterUsageVisitor visitor = new ParameterUsageVisitor();

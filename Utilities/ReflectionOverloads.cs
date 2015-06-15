@@ -49,7 +49,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<TResult> Func<TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -67,7 +66,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<TResult> ConstructorFunc<TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -84,7 +82,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action Action(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -105,7 +102,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, TResult> Func<T1, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -124,7 +120,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, TResult> ConstructorFunc<T1, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -142,7 +137,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1> Action<T1>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -164,7 +158,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, TResult> Func<T1, T2, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -184,7 +177,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, TResult> ConstructorFunc<T1, T2, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -203,7 +195,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2> Action<T1, T2>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -226,7 +217,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, TResult> Func<T1, T2, T3, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -247,7 +237,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, TResult> ConstructorFunc<T1, T2, T3, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -267,7 +256,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3> Action<T1, T2, T3>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -291,7 +279,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, TResult> Func<T1, T2, T3, T4, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -313,7 +300,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, TResult> ConstructorFunc<T1, T2, T3, T4, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -334,7 +320,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4> Action<T1, T2, T3, T4>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -359,7 +344,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, TResult> Func<T1, T2, T3, T4, T5, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -382,7 +366,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, TResult> ConstructorFunc<T1, T2, T3, T4, T5, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -404,7 +387,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5> Action<T1, T2, T3, T4, T5>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -430,7 +412,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, TResult> Func<T1, T2, T3, T4, T5, T6, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -454,7 +435,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -477,7 +457,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6> Action<T1, T2, T3, T4, T5, T6>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -504,7 +483,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> Func<T1, T2, T3, T4, T5, T6, T7, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -529,7 +507,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -553,7 +530,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7> Action<T1, T2, T3, T4, T5, T6, T7>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -581,7 +557,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -607,7 +582,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -632,7 +606,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8> Action<T1, T2, T3, T4, T5, T6, T7, T8>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -661,7 +634,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -688,7 +660,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -714,7 +685,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -744,7 +714,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -772,7 +741,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -799,7 +767,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -830,7 +797,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -859,7 +825,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -887,7 +852,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -919,7 +883,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -949,7 +912,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -978,7 +940,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -1011,7 +972,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -1042,7 +1002,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -1072,7 +1031,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -1106,7 +1064,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -1138,7 +1095,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -1169,7 +1125,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)
@@ -1204,7 +1159,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method base.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             [NotNull] this MethodBase methodBase,
             bool checkParameterAssignability = false)
@@ -1237,7 +1191,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a type constructor.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> ConstructorFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             [NotNull] this Type type,
             bool checkParameterAssignability = false)
@@ -1269,7 +1222,6 @@ namespace WebApplications.Utilities
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability = false)

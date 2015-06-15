@@ -55,14 +55,12 @@ namespace WebApplications.Utilities
             /// expense of caching logon information for disconnected operations; therefore, it is inappropriate for 
             /// some client/server applications, such as a mail server.
             /// </summary>
-            [PublicAPI]
             Interactive = 2,
 
             /// <summary>
             /// This logon type is intended for high performance servers to authenticate plaintext passwords. 
             /// Credentials are not cached for this logon type.
             /// </summary>
-            [PublicAPI]
             Network = 3,
 
             /// <summary>
@@ -70,13 +68,11 @@ namespace WebApplications.Utilities
             /// without their direct intervention. This type is also for higher performance servers that process many 
             /// plaintext authentication attempts at a time, such as mail or web servers.
             /// </summary>
-            [PublicAPI]
             Batch = 4,
 
             /// <summary>
             /// Indicates a service-type logon. The account provided must have the service privilege enabled.
             /// </summary>
-            [PublicAPI]
             Service = 5,
 
             /// <summary>
@@ -86,7 +82,6 @@ namespace WebApplications.Utilities
             /// the workstation was unlocked.</para>
             /// </summary>
             [Obsolete("GINAs are no longer supported.")]
-            [PublicAPI]
             Unlock = 7,
 
             /// <summary>
@@ -95,7 +90,6 @@ namespace WebApplications.Utilities
             /// from a client, create an <see cref="Impersonator"/>, verify that the user can access the system across the network, and still 
             /// communicate with other servers.
             /// </summary>
-            [PublicAPI]
             NetworkCleartext = 8,
 
             /// <summary>
@@ -103,7 +97,6 @@ namespace WebApplications.Utilities
             /// The new logon session has the same local identifier but uses different credentials for other network connections.
             /// This logon type is supported only by the <see cref="LogonProvider.WinNT50"/> logon provider.
             /// </summary>
-            [PublicAPI]
             NewCredentials = 9
         }
 
@@ -117,25 +110,21 @@ namespace WebApplications.Utilities
             /// Use the standard logon provider for the system. The default security provider is negotiate, unless you pass 
             /// null for the domain name and the user name is not in UPN format. In this case, the default provider is NTLM.
             /// </summary>
-            [PublicAPI]
             Default = 0,
 
             /// <summary>
             /// Use the NT 3.51 logon provider.
             /// </summary>
-            [PublicAPI]
             WinNT35 = 1,
 
             /// <summary>
             /// Use the NTLM logon provider.
             /// </summary>
-            [PublicAPI]
             WinNT40 = 2,
 
             /// <summary>
             /// Use the negotiate logon provider.
             /// </summary>
-            [PublicAPI]
             WinNT50 = 3
         }
 

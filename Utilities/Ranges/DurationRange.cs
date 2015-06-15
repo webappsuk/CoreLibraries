@@ -63,7 +63,6 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <param name="delta">The delta.</param>
         /// <returns>Duration.</returns>
-        [PublicAPI]
         public static Duration AutoStep(Duration delta)
         {
             if (delta < Duration.Zero) throw new ArgumentOutOfRangeException("delta");

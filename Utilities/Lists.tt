@@ -156,7 +156,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Inserts an object at the beginning of the <see cref="List{<#= typeParams #>}" />.
         /// </summary><#= paramsComments #>
-        [PublicAPI]
         public void Add(<#= paramsWithType #>)
         {
             Add(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
@@ -166,7 +165,6 @@ namespace WebApplications.Utilities
         /// Gets the values of the tuple at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the tuple to get.</param><#= paramsComments #>
-        [PublicAPI]
         public void Get(int index, <#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = this[index];
@@ -177,7 +175,6 @@ namespace WebApplications.Utilities
         /// Sets the values of the tuple at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the tuple to set.</param><#= paramsComments #>
-        [PublicAPI]
         public void Set(int index, <#= paramsWithType #>)
         {
             this[index] = new Tuple<<#= t #>>(<#= paramsWithoutType #>);

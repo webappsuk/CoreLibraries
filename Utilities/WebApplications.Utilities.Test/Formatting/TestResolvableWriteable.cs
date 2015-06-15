@@ -18,13 +18,11 @@ namespace WebApplications.Utilities.Test.Formatting
             /// <summary>
             /// The verbose format
             /// </summary>
-            [PublicAPI]
             [NotNull]
             public static readonly FormatBuilder VerboseFormat = new FormatBuilder("{Key}{Value}");
             /// <summary>
             /// The verbose format
             /// </summary>
-            [PublicAPI]
             [NotNull]
             public static readonly FormatBuilder ReversedFormat = new FormatBuilder("{Value}{Key}");
 

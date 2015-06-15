@@ -116,7 +116,6 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         [NotNull]
-        [PublicAPI]
         public static Period AutoStep(LocalTime start, LocalTime end)
         {
             CheckStartGreaterThanEnd(start, end);
@@ -143,7 +142,6 @@ namespace WebApplications.Utilities.Ranges
         /// Gets a <see cref="LocalDateTimeRange"/> with these local times, on January 1st 1970 in the ISO calendar.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public LocalDateTimeRange LocalDateTimeRange
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -155,7 +153,6 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <param name="date">The date to combine with the times in the range.</param>
         [NotNull]
-        [PublicAPI]
         public LocalDateTimeRange On(LocalDate date)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -168,7 +165,6 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="startDate">The date to combine with the start time.</param>
         /// <param name="endDate">The date to combine with the end time.</param>
         [NotNull]
-        [PublicAPI]
         public LocalDateTimeRange On(LocalDate startDate, LocalDate endDate)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -180,7 +176,6 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public TimeSpanRange ToTimeSpanRange()
         {
             // ReSharper disable once PossibleNullReferenceException

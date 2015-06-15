@@ -37,18 +37,17 @@ namespace WebApplications.Utilities.Threading
     /// </summary>
     /// <remarks>See http://blogs.msdn.com/b/pfxteam/archive/2013/01/13/cooperatively-pausing-async-methods.aspx.
     /// </remarks>
+    [PublicAPI]
     public struct PauseToken
     {
         /// <summary>
         /// The default PauseToken never pauses.
         /// </summary>
-        [PublicAPI]
         public static readonly PauseToken None = default(PauseToken);
 
         /// <summary>
         /// A pause token that is always paused.
         /// </summary>
-        [PublicAPI]
         public static readonly PauseToken Paused;
 
         static PauseToken()
@@ -60,7 +59,6 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// The source <see cref="PauseTokenSource"/>, if any.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         private readonly PauseTokenSource _source;
 
@@ -78,7 +76,6 @@ namespace WebApplications.Utilities.Threading
         /// Gets a value indicating whether this instance can pause.
         /// </summary>
         /// <value><see langword="true" /> if this instance can pause; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool CanPause
         {
             get { return _source != null; }
@@ -88,7 +85,6 @@ namespace WebApplications.Utilities.Threading
         /// Gets a value indicating whether this instance is paused.
         /// </summary>
         /// <value><see langword="true" /> if this instance is paused; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsPaused
         {
             get { return _source != null && _source.IsPaused; }
@@ -98,7 +94,6 @@ namespace WebApplications.Utilities.Threading
         /// Waits the while paused asynchronous.
         /// </summary>
         /// <returns>Task.</returns>
-        [PublicAPI]
         [NotNull]
         [Pure]
         public Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))

@@ -51,7 +51,8 @@ namespace WebApplications.Utilities.Ranges
         {
             if (start == null) throw new ArgumentNullException("start");
             if (end == null) throw new ArgumentNullException("end");
-            if (start.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
+            if (start.Currency != end.Currency)
+                throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
         }
 
         /// <summary>
@@ -68,7 +69,8 @@ namespace WebApplications.Utilities.Ranges
         {
             if (start == null) throw new ArgumentNullException("start");
             if (end == null) throw new ArgumentNullException("end");
-            if (start.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
+            if (start.Currency != end.Currency)
+                throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
         }
 
         /// <summary>
@@ -85,9 +87,12 @@ namespace WebApplications.Utilities.Ranges
         {
             if (start == null) throw new ArgumentNullException("start");
             if (end == null) throw new ArgumentNullException("end");
-            if (start.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
-            if (step.Currency != start.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
-            if (step.Currency != end.Currency) throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
+            if (start.Currency != end.Currency)
+                throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
+            if (step.Currency != start.Currency)
+                throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
+            if (step.Currency != end.Currency)
+                throw new ArgumentException(Resources.FinancialRange_CurrenciesMustMatch);
         }
 
         /// <summary>
@@ -132,7 +137,6 @@ namespace WebApplications.Utilities.Ranges
         /// <summary>
         /// Gets the currency.
         /// </summary>
-        [PublicAPI]
         public CurrencyInfo Currency
         {
             get { return Start.Currency; }
@@ -168,7 +172,6 @@ namespace WebApplications.Utilities.Ranges
         /// A <see cref="System.String"/> that represents this instance.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         [StringFormatMethod("format")]
         public string ToString(string format)
         {

@@ -46,7 +46,6 @@ namespace WebApplications.Utilities
         /// The <see cref="T:System.Collections.Generic.IEnumerable`1"/> sequence of values indexed by the specified key.
         /// </returns>
         /// <param name="key">The key of the desired sequence of values.</param>
-        [PublicAPI]
         [NotNull]
         IEnumerable<TElement> this[int key] { get; }
     }

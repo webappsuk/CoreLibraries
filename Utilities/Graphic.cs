@@ -44,13 +44,11 @@ namespace WebApplications.Utilities
         /// The data.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly HashedByteArray Data;
 
         /// <summary>
         /// The format of the image.
         /// </summary>
-        [PublicAPI]
         public readonly GraphicFormat Format;
 
         /// <summary>
@@ -96,7 +94,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The encoded.</value>
         [NotNull]
-        [PublicAPI]
         public string Encoded
         {
             get { return Data.Encoded; }
@@ -148,7 +145,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>System.Drawing.Image.</returns>
         [NotNull]
-        [PublicAPI]
         public Image GetImage()
         {
             // Note the stream should not be wrapped in a using statement as Image
@@ -171,7 +167,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns></returns>
         [CanBeNull]
-        [PublicAPI]
         public string ToDataUrl()
         {
             StringBuilder builder = new StringBuilder("data:", Encoded.Length + 30);

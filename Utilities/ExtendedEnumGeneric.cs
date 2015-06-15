@@ -44,6 +44,7 @@ namespace WebApplications.Utilities
     /// and its raw values as a <see cref="long"/>.
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
+    [PublicAPI]
     public static class ExtendedEnum<TEnum>
         where TEnum : struct, IComparable, IFormattable, IConvertible
     {
@@ -51,7 +52,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// A <see cref="bool"/> for whether the type is actually an enum.
         /// </summary>
-        [UsedImplicitly]
         public static readonly bool IsEnum;
 
         /// <summary>
@@ -62,13 +62,11 @@ namespace WebApplications.Utilities
         /// enumeration constants don't overlap.
         /// </remarks>
         /// <seealso cref="System.FlagsAttribute"/>
-        [UsedImplicitly]
         public static readonly bool IsFlag;
 
         /// <summary>
         /// The enumerator for all explicitly defined enum values.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static readonly IEnumerable<ValueDetail> ValueDetails;
 
@@ -79,7 +77,6 @@ namespace WebApplications.Utilities
         /// This is used for performance at the cost of a small memory hit, without a pre-reversed collection every time
         /// a build occurred a copy would need to be made by LINQ to reverse.
         /// </remarks>
-        [UsedImplicitly]
         [NotNull]
         public static readonly IEnumerable<ValueDetail> ValueDetailsReversed;
 
@@ -88,7 +85,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The enumerator for all explicitly defined non-combination enum values.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<ValueDetail> IndividualValueDetails
         {
@@ -102,7 +98,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The enumerator for all explicitly defined combination enum values.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<ValueDetail> CombinedValueDetails
         {
@@ -116,7 +111,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The enumerator for all explicitly defined enum values.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<TEnum> Values
         {
@@ -127,7 +121,6 @@ namespace WebApplications.Utilities
         /// <para>The enumerator for all explicitly defined individual enum values.</para>
         /// <para>This is identical to <see cref="Values"/> for a non-flag enum.</para>
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<TEnum> IndividualValues
         {
@@ -138,7 +131,6 @@ namespace WebApplications.Utilities
         /// <para>The enumerator for all explicitly defined combination enum values.</para>
         /// <para>This is empty for a non-flag enum.</para>
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<TEnum> CombinationValues
         {
@@ -148,7 +140,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The enumerator for all explicitly defined enum values (the raw value).
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<long> RawValues
         {
@@ -159,7 +150,6 @@ namespace WebApplications.Utilities
         /// <para>The enumerator for all explicitly defined individual enum values (the raw value).</para>
         /// <para>This is identical to <see cref="RawValues"/> for a non-flag enum.</para>
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<long> IndividualRawValues
         {
@@ -170,7 +160,6 @@ namespace WebApplications.Utilities
         /// <para>The enumerator for all explicitly defined combination enum values (the raw value).</para>
         /// <para>This is empty for a non-flag enum.</para>
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<long> CombinationRawValues
         {
@@ -180,7 +169,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The enumerator for all explicitly defined enum names.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<string> Names
         {
@@ -191,7 +179,6 @@ namespace WebApplications.Utilities
         /// <para>The enumerator for all explicitly defined individual enum names.</para>
         /// <para>This is identical to <see cref="Names"/> for a non-flag enum.</para>
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<string> IndividualNames
         {
@@ -202,7 +189,6 @@ namespace WebApplications.Utilities
         /// <para>The enumerator for all explicitly defined combination enum names.</para>
         /// <para>This is empty for a non-flag enum.</para>
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<string> CombinationNames
         {
@@ -223,7 +209,6 @@ namespace WebApplications.Utilities
         /// Returns the <see cref="ValueDetail"/> that represents no flags set.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static ValueDetail NoneValueDetail
         {
             get
@@ -237,7 +222,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns <see langword="true"/> if the enum is a flag enum and there is an explicit definition for no flags being set.
         /// </summary>
-        [UsedImplicitly]
         public static bool ExplicitNone
         {
             get
@@ -251,7 +235,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the value that represents no flags being set.
         /// </summary>
-        [UsedImplicitly]
         public static TEnum NoneValue
         {
             get
@@ -265,7 +248,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the enum name that represents no flags being set.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static string NoneName
         {
@@ -280,7 +262,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the raw integral value that represents no flags being set.
         /// </summary>
-        [UsedImplicitly]
         public static long NoneRawValue
         {
             get
@@ -302,7 +283,6 @@ namespace WebApplications.Utilities
         /// Returns the <see cref="ValueDetail"/> that represents all of the flags being set.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static ValueDetail AllValueDetails
         {
             get
@@ -316,7 +296,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns <see langword="true"/> if the enum is a flag enum and all the flags are defined explicitly.
         /// </summary>
-        [UsedImplicitly]
         public static bool ExplicitAll
         {
             get
@@ -343,7 +322,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the name of the <see cref="ValueDetail"/> that represents all of the flags being set.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public static string AllName
         {
@@ -358,7 +336,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Returns the raw integral value that represents all of the flags being set.
         /// </summary>
-        [UsedImplicitly]
         public static long AllRawValue
         {
             get
@@ -557,7 +534,6 @@ namespace WebApplications.Utilities
         /// ExtendedEnum&lt;Days&gt;.Check(TriState.Yes);   // Also checks if Days is a flag. If it is NOT a flag or is NOT an enum then an exception will be thrown.
         /// ExtendedEnum&lt;Days&gt;.Check(TriState.No);    // Also checks if Days isn't a flag. If it IS a flag or is NOT an enum then an exception will be thrown.
         /// </code></example>
-        [UsedImplicitly]
         public static void Check(TriState isFlag = default(TriState))
         {
             if (!IsEnum)
@@ -757,7 +733,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the specified value is defined; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool IsDefined(long rawValue, bool includeImplicit = false)
         {
             Check(TriState.Undefined);
@@ -783,7 +758,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the specified name is defined; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool IsDefined([NotNull] string name, bool includeImplicit = false)
         {
             Check(TriState.Undefined);
@@ -799,7 +773,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the specified value is defined; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool IsDefined(TEnum value, bool includeImplicit = false)
         {
             Check(TriState.Undefined);
@@ -819,7 +792,6 @@ namespace WebApplications.Utilities
         /// <returns>The <see cref="ValueDetail"/> that corresponds to the <paramref name="value"/> specified.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain the <paramref name="value"/> specified.</exception>
         [NotNull]
-        [UsedImplicitly]
         public static ValueDetail GetValueDetail(TEnum value, bool includeImplicit = false)
         {
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
@@ -844,7 +816,6 @@ namespace WebApplications.Utilities
         /// <returns>The <see cref="ValueDetail"/> that corresponds to the <paramref name="rawValue"/> specified.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain the <paramref name="rawValue"/> specified.</exception>
         [NotNull]
-        [UsedImplicitly]
         public static ValueDetail GetValueDetail(long rawValue, bool includeImplicit = false)
         {
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
@@ -869,7 +840,6 @@ namespace WebApplications.Utilities
         /// <returns>The <see cref="ValueDetail"/> that corresponds to the <paramref name="name"/> specified.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain the <paramref name="name"/> specified.</exception>
         [NotNull]
-        [UsedImplicitly]
         public static ValueDetail GetValueDetail([NotNull] string name, bool includeImplicit = false)
         {
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
@@ -894,7 +864,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value detail was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetValueDetail(
             TEnum value,
             [NotNull] out ValueDetail valueDetail,
@@ -924,7 +893,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value detail was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetValueDetail(
             long rawValue,
             [NotNull] out ValueDetail valueDetail,
@@ -954,7 +922,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value detail was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetValueDetail(
             [NotNull] string name,
             [NotNull] out ValueDetail valueDetail,
@@ -996,7 +963,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         /// The enum type doesn't contain the <paramref name="value"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static long GetLong(TEnum value, bool includeImplicit = false)
         {
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
@@ -1023,7 +989,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         /// The enum type doesn't contain a value by the <paramref name="name"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static long GetLong([NotNull] string name, bool includeImplicit = false)
         {
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
@@ -1049,7 +1014,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetLong(TEnum value, out long rawValue, bool includeImplicit = false)
         {
             rawValue = 0L;
@@ -1088,7 +1052,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetLong([NotNull] string name, out long rawValue, bool includeImplicit = false)
         {
             rawValue = 0L;
@@ -1121,7 +1084,6 @@ namespace WebApplications.Utilities
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>The name that corresponds to the <paramref name="value"/> specified.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain the <paramref name="value"/> specified.</exception>
-        [UsedImplicitly]
         [NotNull]
         public static string GetName(TEnum value, bool includeImplicit = false)
         {
@@ -1137,7 +1099,6 @@ namespace WebApplications.Utilities
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>The name that corresponds to the <paramref name="rawValue"/> specified.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain the <paramref name="rawValue"/> specified.</exception>
-        [UsedImplicitly]
         [NotNull]
         public static string GetName(long rawValue, bool includeImplicit = false)
         {
@@ -1154,7 +1115,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the name was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetName(TEnum value, [NotNull] out string name, bool includeImplicit = false)
         {
             // We use GetValueDetail under the hood, as it caches and name building is expensive.
@@ -1179,7 +1139,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the name was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetName(long rawValue, [NotNull] out string name, bool includeImplicit = false)
         {
             // We use GetValueDetail under the hood, as it caches and name building is expensive.
@@ -1207,7 +1166,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         /// The enum type doesn't contain a value with the <paramref name="name"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum GetValue([NotNull] string name, bool includeImplicit = false)
         {
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
@@ -1234,7 +1192,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         /// The enum type doesn't contain a value with the <paramref name="rawValue"/> specified.
         /// </exception>
-        [UsedImplicitly]
         public static TEnum GetValue(long rawValue, bool includeImplicit = false)
         {
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
@@ -1260,7 +1217,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetValue([NotNull] string name, out TEnum value, bool includeImplicit = false)
         {
             value = default(TEnum);
@@ -1300,7 +1256,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetValue(long rawValue, out TEnum value, bool includeImplicit = false)
         {
             value = default(TEnum);
@@ -1338,7 +1293,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The enum value.</param>
         /// <returns>The description.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain the <paramref name="value"/> specified.</exception>
-        [UsedImplicitly]
         [NotNull]
         public static string GetDescription(TEnum value)
         {
@@ -1351,7 +1305,6 @@ namespace WebApplications.Utilities
         /// <param name="rawValue">The raw value.</param>
         /// <returns>The description.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain the <paramref name="rawValue"/> specified.</exception>
-        [UsedImplicitly]
         [NotNull]
         public static string GetDescription(long rawValue)
         {
@@ -1364,7 +1317,6 @@ namespace WebApplications.Utilities
         /// <param name="name">The name.</param>
         /// <returns>The description.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The enum type doesn't contain a value with the <paramref name="name"/> specified.</exception>
-        [UsedImplicitly]
         [NotNull]
         public static string GetDescription([NotNull] string name)
         {
@@ -1378,7 +1330,6 @@ namespace WebApplications.Utilities
         /// <param name="description"><para>The description.</para>
         /// <para>If no value is found then the output is an <see cref="System.String.Empty">empty string</see>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetDescription(TEnum value, [NotNull] out string description)
         {
             ValueDetail valueDetail;
@@ -1399,7 +1350,6 @@ namespace WebApplications.Utilities
         /// <param name="description"><para>The description.</para>
         /// <para>If no value is found then the output is an <see cref="System.String.Empty">empty string</see>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetDescription(long rawValue, [NotNull] out string description)
         {
             ValueDetail valueDetail;
@@ -1420,7 +1370,6 @@ namespace WebApplications.Utilities
         /// <param name="description"><para>The description.</para>
         /// <para>If no value is found then the output is an <see cref="System.String.Empty">empty string</see>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value was found; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryGetDescription([NotNull] string name, [NotNull] out string description)
         {
             ValueDetail valueDetail;
@@ -1461,7 +1410,6 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para>The requested name (<paramref name="value"/>) was invalid.</para>
         /// </exception>
-        [UsedImplicitly]
         public static TEnum Parse([NotNull] String value)
         {
             if (!IsEnum)
@@ -1507,7 +1455,6 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para>The requested name (<paramref name="value"/>) was invalid.</para>
         /// </exception>
-        [UsedImplicitly]
         public static TEnum Parse([NotNull] String value, bool ignoreCase)
         {
             if (!IsEnum)
@@ -1536,7 +1483,6 @@ namespace WebApplications.Utilities
         /// <param name="value">The string representation.</param>
         /// <param name="result">The result.</param>
         /// <returns>Returns <see langword="true"/> if parsed successfully; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryParse([NotNull] String value, out TEnum result)
         {
             if (!IsEnum)
@@ -1565,7 +1511,6 @@ namespace WebApplications.Utilities
         /// <param name="ignoreCase">If set to <see langword="true"/> case sensitivity is ignored.</param>
         /// <param name="result">The result.</param>
         /// <returns>Returns <see langword="true"/> if parsed successfully; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryParse([NotNull] String value, bool ignoreCase, out TEnum result)
         {
             if (!IsEnum)
@@ -1598,7 +1543,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the specified flags are set; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool AreSet(TEnum value, TEnum flags, bool includeImplicit = false)
         {
             if (!IsEnum ||
@@ -1623,7 +1567,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the specified flags are set; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool AreClear(TEnum value, TEnum flags, bool includeImplicit = false)
         {
             if (!IsEnum ||
@@ -1656,7 +1599,6 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para>The <paramref name="value"/> type is not an enum.</para>
         /// </exception>
-        [UsedImplicitly]
         public static TEnum Set(TEnum value, TEnum flags, bool includeImplicit = false)
         {
             // Ensure we're a flag enum.
@@ -1695,7 +1637,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be set; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TrySet(TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
@@ -1730,7 +1671,6 @@ namespace WebApplications.Utilities
         /// <para> </para><para>-or-</para><para> </para>
         /// <para>The <paramref name="value"/> type is not an enum.</para>
         /// </exception>
-        [UsedImplicitly]
         public static TEnum Clear(TEnum value, TEnum flags, bool includeImplicit = false)
         {
             // Ensure we're a flag enum.
@@ -1769,7 +1709,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be cleared; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryClear(TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
@@ -1804,7 +1743,6 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para>The <paramref name="value"/> type is not an enum.</para>
         /// </exception>
-        [UsedImplicitly]
         public static TEnum Intersect(TEnum value, TEnum flags, bool includeImplicit = false)
         {
             // Ensure we're a flag enum.
@@ -1843,7 +1781,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be intersected; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryIntersect(TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
@@ -1877,7 +1814,6 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para>The <paramref name="value"/> type is not an enum.</para>
         /// </exception>
-        [UsedImplicitly]
         public static TEnum Invert(TEnum value, bool includeImplicit = false)
         {
             // Ensure we're a flag enum.
@@ -1914,7 +1850,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryInvert(TEnum value, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
@@ -1946,7 +1881,6 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
-        [UsedImplicitly]
         public static TEnum Combine([NotNull] IEnumerable<TEnum> flags, bool includeImplicit = false)
         {
             // Ensure we're a flag enum.
@@ -1983,7 +1917,6 @@ namespace WebApplications.Utilities
         /// <param name="includeImplicit"><para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TryCombine(
             [NotNull] IEnumerable<TEnum> flags,
             out TEnum result,
@@ -2022,7 +1955,6 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para><typeparamref name="TEnum"/> is not a flag enum.</para>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
         public static IEnumerable<TEnum> SplitFlags(
             TEnum flags,
@@ -2066,7 +1998,6 @@ namespace WebApplications.Utilities
         /// <param name="includeCombinations"><para>If set to <see langword="true"/> will split into the minimum number of flags (allows combinations).</para>
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be split successfully; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         public static bool TrySplitFlags(
             TEnum flags,
             out IEnumerable<TEnum> result,
@@ -2136,7 +2067,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Holds details about enum values.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public class ValueDetail : IEnumerable<string>
         {
             /// <summary>
@@ -2145,7 +2076,6 @@ namespace WebApplications.Utilities
             /// <remarks>
             /// If this is a non-flag enum then this value will always be 1.
             /// </remarks>
-            [UsedImplicitly]
             public readonly ushort Flags;
 
             /// <summary>
@@ -2154,26 +2084,22 @@ namespace WebApplications.Utilities
             /// <remarks>
             /// If this is a non-flag enum then this value will always be <see langword="true"/>.
             /// </remarks>
-            [UsedImplicitly]
             public readonly bool IsExplicit;
 
             /// <summary>
             /// The raw value of the enum as a <see cref="long"/>.
             /// </summary>
-            [UsedImplicitly]
             public readonly long RawValue;
 
             /// <summary>
             /// The actual enum value.
             /// </summary>
-            [UsedImplicitly]
             public readonly TEnum Value;
 
             /// <summary>
             /// All known value names.
             /// </summary>
             [NotNull]
-            [UsedImplicitly]
             private readonly List<string> _names;
 
             /// <summary>
@@ -2205,7 +2131,6 @@ namespace WebApplications.Utilities
             /// <summary>
             /// Whether the flag enum is a combination of values.
             /// </summary>
-            [UsedImplicitly]
             public bool IsCombination
             {
                 get { return IsFlag && Flags > 1; }
@@ -2215,7 +2140,6 @@ namespace WebApplications.Utilities
             /// The value name.
             /// </summary>
             [NotNull]
-            [UsedImplicitly]
             // ReSharper disable AssignNullToNotNullAttribute
             public string Name
             {
@@ -2228,7 +2152,6 @@ namespace WebApplications.Utilities
             /// Returns a list of the known names for the value.
             /// </summary>
             [NotNull]
-            [UsedImplicitly]
             public IEnumerable<string> AllNames
             {
                 get { return new List<string>(_names); }
@@ -2237,7 +2160,6 @@ namespace WebApplications.Utilities
             /// <summary>
             /// Returns a count of the value's known names.
             /// </summary>
-            [UsedImplicitly]
             public int Count
             {
                 get { return _names.Count; }
@@ -2247,7 +2169,6 @@ namespace WebApplications.Utilities
             /// The value's description attribute (if any).
             /// </summary>
             [NotNull]
-            [UsedImplicitly]
             public string Description { get; private set; }
 
             #region IEnumerable<string> Members

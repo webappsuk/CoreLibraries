@@ -48,7 +48,6 @@ namespace WebApplications.Utilities.Threading
         /// Gets or sets a value indicating whether this instance is paused.
         /// </summary>
         /// <value><see langword="true" /> if this instance is paused; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsPaused
         {
             get { return _paused != null; }
@@ -72,7 +71,6 @@ namespace WebApplications.Utilities.Threading
         /// Gets the token.
         /// </summary>
         /// <value>The token.</value>
-        [PublicAPI]
         public PauseToken Token
         {
             get { return new PauseToken(this); }
@@ -82,7 +80,6 @@ namespace WebApplications.Utilities.Threading
         /// Used by <see cref="PauseToken"/> to paused.
         /// </summary>
         /// <returns>Task.</returns>
-        [PublicAPI]
         [NotNull]
         [Pure]
         internal Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))

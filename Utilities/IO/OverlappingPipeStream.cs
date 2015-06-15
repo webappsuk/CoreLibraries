@@ -99,7 +99,6 @@ namespace WebApplications.Utilities.IO
         /// Gets a value indicating whether this instance is connected.
         /// </summary>
         /// <value><see langword="true" /> if this instance is connected; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsConnected
         {
             get
@@ -116,7 +115,6 @@ namespace WebApplications.Utilities.IO
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
         [NotNull]
-        [PublicAPI]
         public async Task<bool> WriteAsync([NotNull] byte[] data, CancellationToken token = default(CancellationToken))
         {
             using (await _writeLock.LockAsync(token).ConfigureAwait(false))
@@ -153,7 +151,6 @@ namespace WebApplications.Utilities.IO
         /// An awaitable task that contains the data that was read.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public async Task<byte[]> ReadAsync(CancellationToken token = default(CancellationToken))
         {
             try

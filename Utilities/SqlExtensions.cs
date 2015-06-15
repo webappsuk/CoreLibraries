@@ -59,7 +59,6 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, int ordinal, T value) where T : class
         {
             if (sqlDataRecord == null) throw new ArgumentNullException("sqlDataRecord");
@@ -80,7 +79,6 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, int ordinal, T? value) where T : struct
         {
             if (sqlDataRecord == null) throw new ArgumentNullException("sqlDataRecord");
@@ -105,7 +103,6 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, [NotNull] string columnName, T value)
             where T : class
         {
@@ -132,7 +129,6 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, [NotNull] string columnName, T? value)
             where T : struct
         {
@@ -152,7 +148,6 @@ namespace WebApplications.Utilities
         /// </param>
         /// <param name="name">The name of the parameter.</param>
         /// <param name="value">The value of the parameter to add.</param>
-        [PublicAPI]
         public static void AddWithValueNull<T>(
             [NotNull] this SqlParameterCollection parameters,
             [NotNull] string name,
@@ -173,7 +168,6 @@ namespace WebApplications.Utilities
         /// </param>
         /// <param name="name">The name of the parameter.</param>
         /// <param name="value">The value of the parameter to add.</param>
-        [PublicAPI]
         public static void AddWithValueNull<T>(
             [NotNull] this SqlParameterCollection parameters,
             [NotNull] string name,
@@ -202,7 +196,6 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <paramref name="dataReader"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static T GetValue<T>([NotNull] this IDataReader dataReader, int ordinal, T nullValue = default(T))
         {
             if (dataReader == null) throw new ArgumentNullException("dataReader");
@@ -226,7 +219,6 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <paramref name="dataReader"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static T GetValue<T>(
             [NotNull] this IDataReader dataReader,
             [NotNull] string columnName,
@@ -258,7 +250,6 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <paramref name="dataReader"/> is <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static bool TryGetValue<T>(
             [NotNull] this IDataReader dataReader,
             [NotNull] string columnName,
@@ -303,7 +294,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -336,7 +326,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -369,7 +358,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -408,7 +396,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -441,7 +428,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -473,7 +459,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -505,7 +490,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -537,7 +521,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -569,7 +552,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -601,7 +583,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -633,7 +614,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -665,7 +645,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -703,7 +682,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue<T>(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -746,7 +724,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue<T>(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -795,7 +772,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static SqlParameter AddWithValue<T>(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -824,7 +800,6 @@ namespace WebApplications.Utilities
         /// <param name="enumerable">The enumerable of type <typeparamref name="T"/>.</param>
         /// <param name="sqlMetaData">The SQL meta data describing the column.</param>
         /// <returns>The parameter that was added.</returns>
-        [PublicAPI]
         public static SqlParameter AddWithValue<T>(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -865,7 +840,6 @@ namespace WebApplications.Utilities
         ///   <para>If you do not wish the item to be added to the table then return <see langword="false"/>; otherwise
         ///   <see langword="true"/> should be returned.</para>
         /// </remarks>
-        [PublicAPI]
         public static SqlParameter AddWithValue<T>(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
@@ -904,7 +878,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<Int64> enumerable,
             [NotNull] string columnName = "Value")
@@ -927,7 +900,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<byte[]> enumerable,
             [NotNull] string columnName = "Value")
@@ -950,7 +922,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<bool> enumerable,
             [NotNull] string columnName = "Value")
@@ -977,7 +948,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<string> enumerable,
             int maxLength = -1,
@@ -1001,7 +971,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<DateTime> enumerable,
             [NotNull] string columnName = "Value")
@@ -1024,7 +993,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<Decimal> enumerable,
             [NotNull] string columnName = "Value")
@@ -1047,7 +1015,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<Double> enumerable,
             [NotNull] string columnName = "Value")
@@ -1070,7 +1037,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<int> enumerable,
             [NotNull] string columnName = "Value")
@@ -1093,7 +1059,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<Single> enumerable,
             [NotNull] string columnName = "Value")
@@ -1116,7 +1081,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<Guid> enumerable,
             [NotNull] string columnName = "Value")
@@ -1139,7 +1103,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<Int16> enumerable,
             [NotNull] string columnName = "Value")
@@ -1162,7 +1125,6 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
             [NotNull] this IEnumerable<Byte> enumerable,
             [NotNull] string columnName = "Value")
@@ -1185,7 +1147,6 @@ namespace WebApplications.Utilities
         ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> requiring
         ///   <paramref name="sqlMetaData"/> to not be a <see langword="null"/>.
         /// </remarks>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue<T>(
             [NotNull] this IEnumerable<T> enumerable,
             [NotNull] SqlMetaData sqlMetaData)
@@ -1226,7 +1187,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   The converted <paramref name="enumerable"/> as a <see cref="SqlDataRecord"/>.
         /// </returns>
-        [PublicAPI]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue<T>(
             [NotNull] this IEnumerable<T> enumerable,
             [NotNull] Func<T, SqlDataRecord, bool> convertor,

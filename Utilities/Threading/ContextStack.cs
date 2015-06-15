@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Threading
     ///   thread state at the point the new thread was created.</para>
     /// </remarks>
     /// <typeparam name="T">The type of objects in the stack.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     [Obsolete("Context stacks can cause problems in asynchronous code (particular Rx) and should therefore be avoided.")
     ]
     public class ContextStack<T>
@@ -88,7 +88,6 @@ namespace WebApplications.Utilities.Threading
         ///   Gets the current stack.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<T> CurrentStack
         {
             get
@@ -131,7 +130,6 @@ namespace WebApplications.Utilities.Threading
         ///   Gets the current top of the stack.
         /// </summary>
         [CanBeNull]
-        [UsedImplicitly]
         public T Current
         {
             get { return CurrentStack.LastOrDefault(); }
@@ -142,7 +140,6 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="entry">The entry.</param>
         [NotNull]
-        [UsedImplicitly]
         public IDisposable Region(T entry)
         {
             return new Disposer(this, entry);
@@ -153,7 +150,6 @@ namespace WebApplications.Utilities.Threading
         ///   This is useful for security when passing off to a set of untrusted code.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public IDisposable Clean()
         {
             return new Cleaner(this);

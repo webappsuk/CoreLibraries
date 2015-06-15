@@ -69,7 +69,6 @@ namespace WebApplications.Utilities
         /// in missing accessors so this setting should be used with caution.</param>
         /// <returns>A new <see cref="Accessor{T}" /> of the</returns>
         [NotNull]
-        [PublicAPI]
         public static Accessor Create(
             [CanBeNull] object instance,
             bool includeFields = true,
@@ -129,7 +128,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Whether keys are case sensitive.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsCaseSensitive;
 
         /// <summary>
@@ -173,7 +171,6 @@ namespace WebApplications.Utilities
         /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <param name="all">If set to <see langword="true" /> removes all the items; otherwise only the none field or property items.</param>
-        [PublicAPI]
         public abstract void Clear(bool all);
 
         /// <summary>
@@ -290,7 +287,6 @@ namespace WebApplications.Utilities
         /// Applies the specified snapshot.
         /// </summary>
         /// <param name="snapshot">The snapshot.</param>
-        [PublicAPI]
         public void Apply([CanBeNull] IReadOnlyDictionary<string, object> snapshot)
         {
             if (snapshot == null) return;
@@ -303,7 +299,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>ReadOnlyDictionary&lt;System.String, System.Object&gt;.</returns>
         [NotNull]
-        [PublicAPI]
         public IReadOnlyDictionary<string, object> Snapshot()
         {
             return new Dictionary<string, object>(this);

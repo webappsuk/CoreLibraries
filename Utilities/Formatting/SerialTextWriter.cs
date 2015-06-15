@@ -47,7 +47,6 @@ namespace WebApplications.Utilities.Formatting
         /// The underlying writer.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         private readonly TextWriter _writer;
 
         /// <summary>

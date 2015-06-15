@@ -37,13 +37,13 @@ namespace WebApplications.Utilities.Reflect
     ///   Wraps an <see cref="System.Reflection.EventInfo"/> with accessors.
     /// </summary>
     [DebuggerDisplay("{Info} [Extended]")]
+    [PublicAPI]
     public class Event
     {
         /// <summary>
         /// The extended type.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly ExtendedType ExtendedType;
 
         /// <summary>
@@ -87,7 +87,6 @@ namespace WebApplications.Utilities.Reflect
         ///   Gets the add method.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public MethodInfo AddMethod
         {
             get { return _addMethod.Value; }
@@ -97,7 +96,6 @@ namespace WebApplications.Utilities.Reflect
         ///   Gets the remove method.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public MethodInfo RemoveMethod
         {
             get { return _removeMethod.Value; }

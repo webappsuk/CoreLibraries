@@ -40,7 +40,6 @@ namespace WebApplications.Utilities.Configuration
         /// Gets or sets the file path for the TimeZone DB.
         /// </summary>
         [ConfigurationProperty("timeZoneDB", DefaultValue = null, IsRequired = false)]
-        [PublicAPI]
         [CanBeNull]
         public string TimeZoneDB
         {
@@ -52,7 +51,6 @@ namespace WebApplications.Utilities.Configuration
         /// Gets or sets the file path for the ISO 4217 currency information file.
         /// </summary>
         [ConfigurationProperty("iso4217", DefaultValue = null, IsRequired = false)]
-        [PublicAPI]
         [CanBeNull]
         public string ISO4217
         {

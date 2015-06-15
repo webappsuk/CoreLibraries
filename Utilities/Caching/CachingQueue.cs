@@ -39,13 +39,12 @@ namespace WebApplications.Utilities.Caching
     ///   Implements a thread safe FIFO queue of objects that will only remain present for a specific duration.
     /// </summary>
     /// <typeparam name="T">The type of the queued objects.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class CachingQueue<T> : IProducerConsumerCollection<T>
     {
         /// <summary>
         ///   The time that an element remains in the queue.
         /// </summary>
-        [UsedImplicitly]
         public readonly TimeSpan CacheExpiry;
 
         /// <summary>
@@ -53,13 +52,11 @@ namespace WebApplications.Utilities.Caching
         ///   Normally a queue is only cleaned as it's used.
         ///   <see cref="TimeSpan.Zero"/> indicates the queue is never cleaned out automatically.
         /// </summary>
-        [UsedImplicitly]
         public readonly TimeSpan CleanAfter;
 
         /// <summary>
         ///   The maximum length of the queue.
         /// </summary>
-        [UsedImplicitly]
         public readonly int MaximumEntries;
 
         /// <summary>
@@ -291,7 +288,6 @@ namespace WebApplications.Utilities.Caching
         ///   Enqueues the specified item.
         /// </summary>
         /// <param name="item">The item to add to the queue.</param>
-        [UsedImplicitly]
         public void Enqueue(T item)
         {
             _queue.Enqueue(new Wrapper(item, DateTime.Now.Add(CacheExpiry)));
@@ -318,7 +314,6 @@ namespace WebApplications.Utilities.Caching
         ///   otherwise returns <see langword="false"/>.
         /// </returns>
         /// <remarks>Will also dequeue any expired items at the front of the queue until a non-expired item is found.</remarks>
-        [UsedImplicitly]
         public bool TryDequeue(out T result)
         {
             Wrapper wrapper;
@@ -344,7 +339,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if an object was successfully returned; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public bool TryPeek(out T result)
         {
             Wrapper wrapper;
@@ -368,7 +362,6 @@ namespace WebApplications.Utilities.Caching
         /// <remarks>
         ///   This is called automatically if <see cref="CachingQueue&lt;T&gt;.CleanAfter"/> is greater than <see cref="TimeSpan.Zero"/>.
         /// </remarks>
-        [UsedImplicitly]
         public void Clean()
         {
             // Only one method should gain the lock at a time.

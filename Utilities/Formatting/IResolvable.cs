@@ -40,21 +40,18 @@ namespace WebApplications.Utilities.Formatting
         /// Gets a value indicating whether this instance uses case sensitive tag resolution caching.
         /// </summary>
         /// <value><see langword="true" /> if this instance is case sensitive; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         bool IsCaseSensitive { get; }
 
         /// <summary>
         /// Gets a value indicating whether outer tags should be resolved automatically in formats.
         /// </summary>
         /// <value><see langword="true" /> if the <see cref="FormatBuilder"/> should allow outer tags when resolving formats for this instance; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         bool ResolveOuterTags { get; }
 
         /// <summary>
         /// Gets a value indicating whether control tags should be based to the resolver.
         /// </summary>
         /// <value><see langword="true" /> if the <see cref="FormatBuilder"/> should allow outer tags when resolving formats for this instance; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         bool ResolveControls { get; }
 
         /// <summary>
@@ -63,7 +60,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
         /// <returns>An object that will be cached unless it is a <see cref="Resolution" />.</returns>
-        [PublicAPI]
         [CanBeNull]
         object Resolve([NotNull] FormatWriteContext context, [NotNull] FormatChunk chunk);
     }

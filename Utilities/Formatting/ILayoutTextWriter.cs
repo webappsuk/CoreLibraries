@@ -33,6 +33,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Indicates a <see cref="TextWriter"/> provides positional information for a <see cref="FormatBuilder"/>.
     /// </summary>
+    [PublicAPI]
     public interface ILayoutTextWriter : ITextWriter
     {
         /// <summary>
@@ -41,14 +42,12 @@ namespace WebApplications.Utilities.Formatting
         /// <value>
         /// The width of the console.
         /// </value>
-        [PublicAPI]
         int Width { get; }
 
         /// <summary>
         /// Gets or sets the current horizontal position.
         /// </summary>
         /// <value>The position.</value>
-        [PublicAPI]
         int Position { get; }
 
         /// <summary>

@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Ranges
     /// </summary>
     /// <typeparam name="TValue">The type of the values in the range.</typeparam>
     /// <typeparam name="TStep">The type of the step used to iterate through the collection.</typeparam>
+    [PublicAPI]
     public class Range<TValue, TStep> : IEnumerable<TValue>, IEquatable<Range<TValue, TStep>>
     {
         /// <summary>
@@ -105,7 +106,7 @@ namespace WebApplications.Utilities.Ranges
         /// <exception cref="System.ArgumentOutOfRangeException">start</exception>
         protected static bool CheckStartGreaterThanEnd([NotNull] TValue start, [NotNull] TValue end, bool @throw = true)
         {
-            if (!_lessThan(end, start)) 
+            if (!_lessThan(end, start))
                 return true;
 
             if (@throw)
@@ -248,7 +249,6 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <param name="value">The value to bind.</param>
         /// <returns>The bound value.</returns>
-        [PublicAPI]
         public TValue Bind([NotNull] TValue value)
         {
             if (ReferenceEquals(value, null)) throw new ArgumentNullException("value");
@@ -264,7 +264,6 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains([NotNull] TValue value)
         {
@@ -277,7 +276,6 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         /// <param name="other">The other.</param>
         /// <returns><see langword="true"/> if the range intersects with this range; otherwise <see langword="false"/>.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Intersects([NotNull] Range<TValue, TStep> other)
         {
@@ -294,7 +292,6 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         /// <filterpriority>1</filterpriority>
         [NotNull]
-        [PublicAPI]
         public IEnumerator<TValue> GetEnumerator(TStep step)
         {
             for (TValue loop = _start, next; !_lessThan(_end, loop); loop = next)

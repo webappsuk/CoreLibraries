@@ -37,6 +37,7 @@ namespace WebApplications.Utilities.Globalization
     /// <summary>
     /// Provides <see cref="CultureInfo"/>.
     /// </summary>
+    [PublicAPI]
     public class CultureInfoProvider : ICultureInfoProvider
     {
         /// <summary>
@@ -140,14 +141,12 @@ namespace WebApplications.Utilities.Globalization
         /// <summary>
         /// The empty culture info provider has no cultures.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly ICultureInfoProvider Empty;
 
         /// <summary>
         /// The provider that supplies the BCL <see cref="CultureInfo">cultures</see>.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly BclCultureInfoProvider Bcl;
 
@@ -163,7 +162,6 @@ namespace WebApplications.Utilities.Globalization
         /// <value>
         /// The current.
         /// </value>
-        [PublicAPI]
         [NotNull]
         public static ICultureInfoProvider Current
         {
@@ -206,7 +204,6 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="published">The published date time.</param>
         /// <param name="cultures">The cultures.</param>
-        [PublicAPI]
         public CultureInfoProvider(
             DateTime published,
             [ItemNotNull] [NotNull] IEnumerable<ExtendedCultureInfo> cultures)

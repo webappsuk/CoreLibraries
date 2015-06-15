@@ -39,6 +39,7 @@ namespace WebApplications.Utilities.Threading
     /// <remarks>
     /// http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266988.aspx
     /// </remarks>
+    [PublicAPI]
     public class AsyncReaderWriterLock
     {
         [NotNull]
@@ -75,7 +76,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task{IDisposable}.</returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
         [NotNull]
-        [PublicAPI]
         public Task<IDisposable> ReaderLockAsync(CancellationToken token)
         {
             lock (_waitingWriters)
@@ -101,7 +101,6 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task{IDisposable}.</returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
         [NotNull]
-        [PublicAPI]
         public Task<IDisposable> WriterLockAsync(CancellationToken token)
         {
             lock (_waitingWriters)

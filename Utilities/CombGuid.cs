@@ -50,13 +50,11 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   The empty <see cref="CombGuid"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly CombGuid Empty;
 
         /// <summary>
         ///   The <see cref="System.Guid"/> component of the <see cref="CombGuid"/>.
         /// </summary>
-        [PublicAPI]
         public readonly Guid Guid;
 
         /// <summary>
@@ -191,7 +189,6 @@ namespace WebApplications.Utilities
         /// <exception cref="FormatException">
         ///   <paramref name="input"/> is not in a recognised format.
         /// </exception>
-        [PublicAPI]
         public static CombGuid Parse([NotNull] String input)
         {
             return new CombGuid(Guid.Parse(input));
@@ -208,7 +205,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the parse was successful; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public static bool TryParse(String input, out CombGuid result)
         {
             Guid g;
@@ -251,7 +247,6 @@ namespace WebApplications.Utilities
         ///     <item><description>"X"</description></item>
         ///   </list>
         /// </exception>
-        [PublicAPI]
         public static CombGuid ParseExact([NotNull] String input, [NotNull] String format)
         {
             return new CombGuid(Guid.ParseExact(input, format));
@@ -280,7 +275,6 @@ namespace WebApplications.Utilities
         ///     ({0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}</description></item>
         ///   </list>
         /// </remarks>
-        [PublicAPI]
         public static bool TryParseExact(String input, String format, out CombGuid result)
         {
             Guid g;
@@ -299,7 +293,6 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   An unsigned 16-element byte <see cref="Array">array</see> containing the <see cref="CombGuid"/>.
         /// </returns>
-        [PublicAPI]
         public byte[] ToByteArray()
         {
             return Guid.ToByteArray();
@@ -521,7 +514,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>A new <see cref="CombGuid"/> instance.</returns>
         [SecuritySafeCritical]
-        [PublicAPI]
         public static CombGuid NewCombGuid()
         {
             return NewCombGuid(DateTime.UtcNow);
@@ -533,7 +525,6 @@ namespace WebApplications.Utilities
         /// <param name="dateTime">The date time.</param>
         /// <returns>A new <see cref="CombGuid"/> instance.</returns>
         [SecuritySafeCritical]
-        [PublicAPI]
         public static CombGuid NewCombGuid(DateTimeOffset dateTime)
         {
             return NewCombGuid(dateTime.UtcDateTime);
@@ -545,7 +536,6 @@ namespace WebApplications.Utilities
         /// <param name="instant">The instant.</param>
         /// <returns>A new <see cref="CombGuid"/> instance.</returns>
         [SecuritySafeCritical]
-        [PublicAPI]
         public static CombGuid NewCombGuid(Instant instant)
         {
             return NewCombGuid(instant.ToDateTimeUtc());
@@ -557,7 +547,6 @@ namespace WebApplications.Utilities
         /// <param name="dateTime">The date time.</param>
         /// <returns>A new <see cref="CombGuid"/> instance.</returns>
         [SecuritySafeCritical]
-        [PublicAPI]
         public static CombGuid NewCombGuid(DateTime dateTime)
         {
             // Always convert to universal time.
@@ -600,7 +589,6 @@ namespace WebApplications.Utilities
         ///   The creation date is stored in the last 6 bytes of the <see cref="System.Guid"/>.
         ///   A group of 4 bytes for the msecs and a group of 2 bytes for the days.
         /// </remarks>
-        [PublicAPI]
         public static DateTime GetDateTime(Guid guid)
         {
             // First of all get the GUID into a byte[].
@@ -634,7 +622,6 @@ namespace WebApplications.Utilities
         ///   The creation date is stored in the last 6 bytes of the <see cref="System.Guid"/>.
         ///   A group of 4 bytes for the msecs and a group of 2 bytes for the days.
         /// </remarks>
-        [PublicAPI]
         public static Instant GetInstant(Guid guid)
         {
             return Instant.FromDateTimeUtc(GetDateTime(guid));
@@ -645,7 +632,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="guid">The <see cref="CombGuid"/>.</param>
         /// <returns>The value of the <see cref="CombGuid"/>'s <see cref="Created"/> member.</returns>
-        [PublicAPI]
         public static DateTime GetDateTime(CombGuid guid)
         {
             return guid.Created;
@@ -656,7 +642,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="guid">The <see cref="CombGuid"/>.</param>
         /// <returns>An <see cref="Instant"/> value equivalent to the <see cref="CombGuid"/>'s <see cref="Created"/> member.</returns>
-        [PublicAPI]
         public static Instant GetInstant(CombGuid guid)
         {
             return Instant.FromDateTimeUtc(guid.Created);
@@ -666,7 +651,6 @@ namespace WebApplications.Utilities
         ///   Gets the <see cref="CombGuid"/>'s creation <see cref="System.DateTime">date time</see>.
         /// </summary>
         /// <returns>The value of the <see cref="Created"/> member.</returns>
-        [PublicAPI]
         public DateTime GetDateTime()
         {
             return Created;
@@ -676,7 +660,6 @@ namespace WebApplications.Utilities
         ///   Gets the <see cref="CombGuid"/>'s creation <see cref="Instant">instant</see>.
         /// </summary>
         /// <returns>An <see cref="Instant"/> value equivalent to the <see cref="Created"/> member.</returns>
-        [PublicAPI]
         public Instant GetInstant()
         {
             return Instant.FromDateTimeUtc(Created);
@@ -713,7 +696,6 @@ namespace WebApplications.Utilities
         /// </exception>
         /// <seealso cref="System.Guid.ToString()">Guid.ToString</seealso>
         /// <seealso cref="System.IFormatProvider"/>
-        [PublicAPI]
         public String ToString(String format)
         {
             return Guid.ToString(format, null);

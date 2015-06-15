@@ -38,13 +38,13 @@ namespace WebApplications.Utilities.Reflect
     /// </summary>
     /// <remarks></remarks>
     [DebuggerDisplay("{Info} [Extended]")]
+    [PublicAPI]
     public class Field
     {
         /// <summary>
         /// The extended type.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly ExtendedType ExtendedType;
 
         /// <summary>
@@ -70,7 +70,6 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <value>The field type.</value>
         /// <remarks></remarks>
-        [PublicAPI]
         [NotNull]
         public Type ReturnType
         {
@@ -107,7 +106,6 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
         /// <returns>A function that takes an object of the type T and returns the value of the field.</returns>
-        [UsedImplicitly]
         [CanBeNull]
         public Func<TValue> Getter<TValue>()
         {
@@ -145,7 +143,6 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="T">The type of the parameter the function encapsulates.</typeparam>	
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
         /// <returns>A function that takes an object of the type T and returns the value of the field.</returns>
-        [UsedImplicitly]
         [CanBeNull]
         public Func<T, TValue> Getter<T, TValue>()
         {
@@ -191,7 +188,6 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
         /// <returns>An action that sets the value of the relevant static field.</returns>
         /// <remarks></remarks>
-        [UsedImplicitly]
         [CanBeNull]
         public Action<TValue> Setter<TValue>()
         {
@@ -237,7 +233,6 @@ namespace WebApplications.Utilities.Reflect
         /// <typeparam name="T">The type of the parameter the function encapsulates.</typeparam>	
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
         /// <returns>An action that takes an object of the type T and sets the value of the relevant field.</returns>
-        [UsedImplicitly]
         [CanBeNull]
         public Action<T, TValue> Setter<T, TValue>()
         {

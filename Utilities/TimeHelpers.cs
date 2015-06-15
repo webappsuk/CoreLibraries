@@ -61,49 +61,41 @@ namespace WebApplications.Utilities
         /// <summary>
         /// A constant used to specify an infinite waiting period, for methods that accept a <see cref="Duration"/> parameter.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration InfiniteDuration = Duration.FromMilliseconds(Timeout.Infinite);
 
         /// <summary>
         /// The one tick <see cref="Duration"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration OneTick = Duration.FromTicks(1);
 
         /// <summary>
         /// The one millisecond <see cref="Duration"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration OneMillisecond = Duration.FromMilliseconds(1);
 
         /// <summary>
         /// The one second <see cref="Duration"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration OneSecond = Duration.FromSeconds(1);
 
         /// <summary>
         /// The one minute <see cref="Duration"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration OneMinute = Duration.FromMinutes(1);
 
         /// <summary>
         /// The one hour <see cref="Duration"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration OneHour = Duration.FromHours(1);
 
         /// <summary>
         /// The one standard day <see cref="Duration"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration OneStandardDay = Duration.FromStandardDays(1);
 
         /// <summary>
         /// The one standard week <see cref="Duration"/>.
         /// </summary>
-        [PublicAPI]
         public static readonly Duration OneStandardWeek = Duration.FromStandardWeeks(1);
 
         /// <summary>
@@ -147,7 +139,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="fileTimeTicks">The number of 100-nanosecond intervals that have elapsed since <see cref="FileTimeEpoch"/>.</param>
         /// <returns></returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Instant InstantFromFileTimeUtc(long fileTimeTicks)
         {
@@ -159,7 +150,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The date time zone provider.</value>
         [NotNull]
-        [PublicAPI]
         public static IDateTimeZoneProvider DateTimeZoneProvider
         {
             get
@@ -180,7 +170,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The clock.</value>
         [NotNull]
-        [PublicAPI]
         public static IClock Clock
         {
             get
@@ -201,7 +190,6 @@ namespace WebApplications.Utilities
         /// <param name="path">The path of the database file to load, or <see langword="null"/> to use the path in the configuration.
         /// If no path is given in the config, the default NodaTime <see cref="DateTimeZoneProviders.Tzdb"/> will be used.</param>
         /// <returns></returns>
-        [PublicAPI]
         public static void SetDateTimeZoneProvider(string path = null)
         {
             _dateTimeZoneProvider = LoadTzdb(path);
@@ -214,7 +202,6 @@ namespace WebApplications.Utilities
         /// <param name="path">The path of the database file to load, or <see langword="null"/> to use the path in the configuration.
         /// If no path is given in the config, the default NodaTime <see cref="DateTimeZoneProviders.Tzdb"/> will be used.</param>
         /// <returns></returns>
-        [PublicAPI]
         [NotNull]
         public static IDateTimeZoneProvider LoadTzdb(string path = null)
         {
@@ -288,7 +275,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static double TotalMilliseconds(this Duration duration)
@@ -301,7 +287,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static int Milliseconds(this Duration duration)
@@ -314,7 +299,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static double TotalSeconds(this Duration duration)
@@ -327,7 +311,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static int Seconds(this Duration duration)
@@ -340,7 +323,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static double TotalMinutes(this Duration duration)
@@ -353,7 +335,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static int Minutes(this Duration duration)
@@ -366,7 +347,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static double TotalHours(this Duration duration)
@@ -379,7 +359,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static int Hours(this Duration duration)
@@ -392,7 +371,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static double TotalStandardDays(this Duration duration)
@@ -405,7 +383,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static int StandardDays(this Duration duration)
@@ -418,7 +395,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static double TotalStandardWeeks(this Duration duration)
@@ -431,7 +407,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <returns>System.Double.</returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static int StandardWeeks(this Duration duration)
@@ -447,7 +422,6 @@ namespace WebApplications.Utilities
         /// <param name="instant">The instant.</param>
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         [Pure]
         public static Instant FloorSecond(this Instant instant)
         {
@@ -460,7 +434,6 @@ namespace WebApplications.Utilities
         /// <param name="instant">The instant.</param>
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         [Pure]
         public static Instant CeilingSecond(this Instant instant)
         {
@@ -475,7 +448,6 @@ namespace WebApplications.Utilities
         /// <param name="instant">The instant.</param>
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         [Pure]
         public static Instant FloorMinute(this Instant instant)
         {
@@ -488,7 +460,6 @@ namespace WebApplications.Utilities
         /// <param name="instant">The instant.</param>
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         [Pure]
         public static Instant CeilingMinute(this Instant instant)
         {
@@ -503,7 +474,6 @@ namespace WebApplications.Utilities
         /// <param name="instant">The instant.</param>
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         [Pure]
         public static Instant FloorHour(this Instant instant)
         {
@@ -516,7 +486,6 @@ namespace WebApplications.Utilities
         /// <param name="instant">The instant.</param>
         /// <returns>Instant.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         [Pure]
         public static Instant CeilingHour(this Instant instant)
         {
@@ -532,7 +501,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="period">The period.</param>
         /// <returns></returns>
-        [PublicAPI]
         public static bool IsZero([NotNull] this Period period)
         {
             if (period == null) throw new ArgumentNullException("period");
@@ -554,7 +522,6 @@ namespace WebApplications.Utilities
         /// <param name="period">The period.</param>
         /// <param name="local">The local.</param>
         /// <returns></returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
@@ -570,7 +537,6 @@ namespace WebApplications.Utilities
         /// <param name="period">The period.</param>
         /// <param name="local">The local.</param>
         /// <returns></returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
@@ -586,7 +552,6 @@ namespace WebApplications.Utilities
         /// <param name="period">The period.</param>
         /// <param name="local">The local.</param>
         /// <returns></returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDate local)
@@ -602,7 +567,6 @@ namespace WebApplications.Utilities
         /// <param name="period">The period.</param>
         /// <param name="local">The local.</param>
         /// <returns></returns>
-        [PublicAPI]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDate local)

@@ -427,7 +427,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         public abstract TValue GetOrAdd(
             [NotNull] TKey key,
             TValue value,
@@ -447,7 +446,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue GetOrAdd(
             [NotNull] TKey key,
@@ -477,7 +475,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI]
         public abstract TValue AddOrUpdate(
             [NotNull] TKey key,
             TValue value,
@@ -498,7 +495,7 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
-        [PublicAPI] // ReSharper disable once VirtualMemberNeverOverriden.Global
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue AddOrUpdate(
             [NotNull] TKey key,
             [NotNull] Func<TKey, TValue> addValueFactory,
@@ -530,7 +527,6 @@ namespace WebApplications.Utilities.Caching
         /// <returns>
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         public abstract bool TryAdd(
             TKey key,
             TValue value,

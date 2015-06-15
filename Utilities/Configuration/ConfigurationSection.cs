@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Configuration
     ///   Allows easy configuration retrieval.
     /// </summary>
     /// <typeparam name="T">The section type.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public abstract class ConfigurationSection<T> : ConfigurationSection
         where T : ConfigurationSection<T>
     {
@@ -167,7 +167,6 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>For example: 'MyClassConfigurationSection' will have a name of 'myClass'.</para>
         /// </remarks>
         [NotNull]
-        [UsedImplicitly]
         public static string SectionName
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -217,7 +216,6 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance is the active configuration.
         /// </summary>
-        [UsedImplicitly]
         public bool IsActive
         {
             get { return ReferenceEquals(this, _active); }
@@ -233,7 +231,6 @@ namespace WebApplications.Utilities.Configuration
         /// </remarks>
         /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         [ConfigurationProperty("xmlns", IsRequired = false)]
-        [UsedImplicitly]
         public string Xmlns
         {
             get { return (string)base["xmlns"]; }
@@ -243,7 +240,6 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         ///   Occurs when the <see cref="Active"/> ConfigurationSection is changed.
         /// </summary>
-        [UsedImplicitly]
         public static event ConfigurationChangedEventHandler Changed;
 
         /// <summary>
@@ -285,7 +281,6 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="propertyName">The name of the property.</param>
         /// <returns>The specified property.</returns>
         /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
-        [UsedImplicitly]
         protected TProp GetProperty<TProp>(string propertyName)
         {
             return (TProp)base[propertyName];
@@ -298,7 +293,6 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value to set the property.</param>
         /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
-        [UsedImplicitly]
         protected void SetProperty<TProp>(string propertyName, TProp value)
         {
             base[propertyName] = value;
@@ -308,21 +302,20 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         ///   Information about the configuration changed event.
         /// </summary>
+        [PublicAPI]
         public class ConfigurationChangedEventArgs : EventArgs
         {
             /// <summary>
             ///   The new Configuration
             /// </summary>
             [NotNull]
-            [UsedImplicitly]
-            public T NewConfiguration;
+            public readonly T NewConfiguration;
 
             /// <summary>
             ///   The old configuration (if any).
             /// </summary>
             [NotNull]
-            [UsedImplicitly]
-            public T OldConfiguration;
+            public readonly T OldConfiguration;
 
             /// <summary>
             ///   Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs"/> class.

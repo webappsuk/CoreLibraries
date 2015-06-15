@@ -212,7 +212,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is <see langword="null">null</see>.
         /// </exception>
-        [PublicAPI]
         public bool TryGet([NotNull] TKey key, out IGrouping<TKey, TValue> value)
         {
             WeakGrouping weakGrouping;
@@ -236,7 +235,6 @@ namespace WebApplications.Utilities.Caching
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<TValue> Add([NotNull] TKey key, [NotNull] TValue value)
         {
             // ReSharper disable PossibleNullReferenceException
@@ -255,7 +253,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public bool Remove([NotNull] TKey key)
         {
             WeakGrouping weakGrouping;
@@ -273,7 +270,6 @@ namespace WebApplications.Utilities.Caching
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public bool Remove([NotNull] TKey key, [NotNull] TValue value)
         {
             WeakGrouping weakGrouping;

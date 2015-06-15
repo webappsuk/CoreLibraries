@@ -35,13 +35,13 @@ namespace WebApplications.Utilities.Formatting
     /// Implements <see cref="IWriteable"/> to produce an object that, when written, ouputs it's specified format.
     /// For example, ToString("My format") => "My format".
     /// </summary>
+    [PublicAPI]
     public sealed class FormatOutput : IFormattable, IWriteable
     {
         /// <summary>
         /// The default instance.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatOutput Default = new FormatOutput();
 
         /// <summary>
@@ -87,7 +87,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString([CanBeNull] FormatBuilder format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             using (TextWriter writer = new StringWriter(formatProvider))

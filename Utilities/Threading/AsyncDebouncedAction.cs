@@ -151,7 +151,6 @@ namespace WebApplications.Utilities.Threading
         /// then it will run the action again immediately.</para>
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public async Task Run(CancellationToken token = default(CancellationToken))
         {
             // Record when the request was made.

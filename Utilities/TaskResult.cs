@@ -36,75 +36,66 @@ namespace WebApplications.Utilities
     /// <summary>
     /// Usefull completed Tasks.
     /// </summary>
+    [PublicAPI]
     public static class TaskResult
     {
         /// <summary>
         /// The completed result
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task Completed;
 
         /// <summary>
         /// A task that returns a <see langword="true"/>
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<bool> True;
 
         /// <summary>
         /// A task that returns a <see langword="false"/>
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<bool> False;
 
         /// <summary>
         /// A task that returns a <c>0</c>
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<int> Zero;
 
         /// <summary>
         /// A task that returns a <c>-1</c>
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<int> MinusOne;
 
         /// <summary>
         /// A task that returns a <c>1</c>
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<int> One;
 
         /// <summary>
         /// A task that returns <see cref="System.Int32.MinValue"/>
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<int> MinInt;
 
         /// <summary>
         /// A task that returns <see cref="System.Int32.MaxValue"/>
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<int> MaxInt;
 
         /// <summary>
         /// The cancelled result
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task Cancelled;
 
         /// <summary>
         /// The cancelled token.
         /// </summary>
-        [PublicAPI]
         public static readonly CancellationToken CancelledToken;
 
         /// <summary>
@@ -133,7 +124,6 @@ namespace WebApplications.Utilities
         /// <param name="exception">The exception.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static Task FromException([NotNull] Exception exception)
         {
             if (exception == null) throw new ArgumentNullException("exception");
@@ -149,7 +139,6 @@ namespace WebApplications.Utilities
         /// <param name="exceptions">The exceptions.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static Task FromException([NotNull] IEnumerable<Exception> exceptions)
         {
             if (exceptions == null) throw new ArgumentNullException("exceptions");
@@ -164,20 +153,19 @@ namespace WebApplications.Utilities
     /// Usefull completed Tasks.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [PublicAPI]
     public static class TaskResult<T>
     {
         /// <summary>
         /// A task that returns the <see langword="default"/> value for the type <typeparamref name="T"/>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<T> Default;
 
         /// <summary>
         /// The cancelled result
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly Task<T> Cancelled;
 
         /// <summary>
@@ -200,7 +188,6 @@ namespace WebApplications.Utilities
         /// <param name="exception">The exception.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static Task<T> FromException([NotNull] Exception exception)
         {
             if (exception == null) throw new ArgumentNullException("exception");
@@ -216,7 +203,6 @@ namespace WebApplications.Utilities
         /// <param name="exceptions">The exceptions.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static Task<T> FromException([NotNull] IEnumerable<Exception> exceptions)
         {
             if (exceptions == null) throw new ArgumentNullException("exceptions");

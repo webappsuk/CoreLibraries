@@ -37,6 +37,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="TKey">The singleton key type.</typeparam>
     /// <typeparam name="TSingleton">The singleton type.</typeparam>
     /// <remarks>A singleton is a globally available object that can only be initialised once.</remarks>
+    [PublicAPI]
     public abstract class Singleton<TKey, TSingleton>
         where TSingleton : Singleton<TKey, TSingleton>
     {
@@ -59,7 +60,6 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   The singleton key.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         protected readonly TKey Key;
 
@@ -98,7 +98,6 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The singleton key.</param>
         [NotNull]
-        [UsedImplicitly]
         protected static TSingleton GetSingleton([NotNull] TKey key)
         {
             // ReSharper disable once AssignNullToNotNullAttribute

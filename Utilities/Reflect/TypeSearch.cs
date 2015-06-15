@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Reflect
     [DebuggerDisplay(
         "{Type} [Location: {GenericArgumentLocation}; Name: {GenericArgumentName}; Position: {GenericArgumentPosition}]"
         )]
+    [PublicAPI]
     public class TypeSearch
     {
         #region Defaults
@@ -49,97 +50,81 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The first generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T1 = new TypeSearch(GenericArgumentLocation.Type, 0);
 
         /// <summary>
         /// The second generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T2 = new TypeSearch(GenericArgumentLocation.Type, 1);
 
         /// <summary>
         /// The third generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T3 = new TypeSearch(GenericArgumentLocation.Type, 2);
 
         /// <summary>
         /// The fourth generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T4 = new TypeSearch(GenericArgumentLocation.Type, 3);
 
         /// <summary>
         /// The fifth generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T5 = new TypeSearch(GenericArgumentLocation.Type, 4);
 
         /// <summary>
         /// The sixth generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T6 = new TypeSearch(GenericArgumentLocation.Type, 5);
 
         /// <summary>
         /// The seventh generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T7 = new TypeSearch(GenericArgumentLocation.Type, 6);
 
         /// <summary>
         /// The eighth generic argument on the type.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch T8 = new TypeSearch(GenericArgumentLocation.Type, 7);
 
         /// <summary>
         /// The first generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S1 = new TypeSearch(GenericArgumentLocation.Signature, 0);
 
         /// <summary>
         /// The second generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S2 = new TypeSearch(GenericArgumentLocation.Signature, 1);
 
         /// <summary>
         /// The third generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S3 = new TypeSearch(GenericArgumentLocation.Signature, 2);
 
         /// <summary>
         /// The forth generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S4 = new TypeSearch(GenericArgumentLocation.Signature, 3);
 
         /// <summary>
         /// The fifth generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S5 = new TypeSearch(GenericArgumentLocation.Signature, 4);
 
         /// <summary>
         /// The sixth generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S6 = new TypeSearch(GenericArgumentLocation.Signature, 5);
 
         /// <summary>
         /// The seventh generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S7 = new TypeSearch(GenericArgumentLocation.Signature, 6);
 
         /// <summary>
         /// The eighth generic argument on the signature.
         /// </summary>
-        [PublicAPI]
         public static readonly TypeSearch S8 = new TypeSearch(GenericArgumentLocation.Signature, 7);
         #endregion
 
@@ -206,7 +191,6 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <param name="type">The type.</param>
         /// <remarks></remarks>
-        [PublicAPI]
         public TypeSearch([NotNull] Type type)
             : this(type, isByReference: type.IsByRef, isPointer: type.IsPointer)
         {

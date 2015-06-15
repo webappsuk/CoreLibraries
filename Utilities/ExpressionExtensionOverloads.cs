@@ -44,7 +44,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<TResult>> GetFuncExpression<TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -67,7 +66,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action> GetActionExpression([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -88,7 +86,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<TResult>> Lambda<TResult>(
             [NotNull] Expression<Func<TResult>> expression)
         {
@@ -105,7 +102,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action> Lambda(
             [NotNull] Expression<Action> expression)
         {
@@ -124,7 +120,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, TResult>> GetFuncExpression<T1, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -149,7 +144,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1>> GetActionExpression<T1>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -172,7 +166,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, TResult>> Lambda<T1, TResult>(
             [NotNull] Expression<Func<T1, TResult>> expression)
         {
@@ -190,7 +183,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1>> Lambda<T1>(
             [NotNull] Expression<Action<T1>> expression)
         {
@@ -210,7 +202,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, TResult>> GetFuncExpression<T1, T2, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -237,7 +228,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2>> GetActionExpression<T1, T2>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -262,7 +252,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, TResult>> Lambda<T1, T2, TResult>(
             [NotNull] Expression<Func<T1, T2, TResult>> expression)
         {
@@ -281,7 +270,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2>> Lambda<T1, T2>(
             [NotNull] Expression<Action<T1, T2>> expression)
         {
@@ -302,7 +290,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, TResult>> GetFuncExpression<T1, T2, T3, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -331,7 +318,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3>> GetActionExpression<T1, T2, T3>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -358,7 +344,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, TResult>> Lambda<T1, T2, T3, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, TResult>> expression)
         {
@@ -378,7 +363,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3>> Lambda<T1, T2, T3>(
             [NotNull] Expression<Action<T1, T2, T3>> expression)
         {
@@ -400,7 +384,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, TResult>> GetFuncExpression<T1, T2, T3, T4, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -431,7 +414,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4>> GetActionExpression<T1, T2, T3, T4>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -460,7 +442,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, TResult>> Lambda<T1, T2, T3, T4, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, TResult>> expression)
         {
@@ -481,7 +462,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4>> Lambda<T1, T2, T3, T4>(
             [NotNull] Expression<Action<T1, T2, T3, T4>> expression)
         {
@@ -504,7 +484,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -537,7 +516,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5>> GetActionExpression<T1, T2, T3, T4, T5>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -568,7 +546,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, TResult>> Lambda<T1, T2, T3, T4, T5, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, TResult>> expression)
         {
@@ -590,7 +567,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5>> Lambda<T1, T2, T3, T4, T5>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5>> expression)
         {
@@ -614,7 +590,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -649,7 +624,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6>> GetActionExpression<T1, T2, T3, T4, T5, T6>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -682,7 +656,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, TResult>> Lambda<T1, T2, T3, T4, T5, T6, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, TResult>> expression)
         {
@@ -705,7 +678,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6>> Lambda<T1, T2, T3, T4, T5, T6>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6>> expression)
         {
@@ -730,7 +702,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -767,7 +738,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -802,7 +772,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, TResult>> expression)
         {
@@ -826,7 +795,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7>> Lambda<T1, T2, T3, T4, T5, T6, T7>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7>> expression)
         {
@@ -852,7 +820,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -891,7 +858,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -928,7 +894,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>> expression)
         {
@@ -953,7 +918,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8>> expression)
         {
@@ -980,7 +944,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1021,7 +984,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1060,7 +1022,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>> expression)
         {
@@ -1086,7 +1047,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>> expression)
         {
@@ -1114,7 +1074,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1157,7 +1116,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1198,7 +1156,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>> expression)
         {
@@ -1225,7 +1182,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> expression)
         {
@@ -1254,7 +1210,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1299,7 +1254,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1342,7 +1296,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>> expression)
         {
@@ -1370,7 +1323,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> expression)
         {
@@ -1400,7 +1352,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1447,7 +1398,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1492,7 +1442,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>> expression)
         {
@@ -1521,7 +1470,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> expression)
         {
@@ -1552,7 +1500,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1601,7 +1548,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1648,7 +1594,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>> expression)
         {
@@ -1678,7 +1623,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> expression)
         {
@@ -1710,7 +1654,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1761,7 +1704,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1810,7 +1752,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>> expression)
         {
@@ -1841,7 +1782,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> expression)
         {
@@ -1874,7 +1814,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1927,7 +1866,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -1978,7 +1916,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>> expression)
         {
@@ -2010,7 +1947,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> expression)
         {
@@ -2044,7 +1980,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Func{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -2099,7 +2034,6 @@ namespace WebApplications.Utilities
         /// An <see cref="Expression{T}" /> with the delegate type <see cref="Action{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>([NotNull] this LambdaExpression expression)
         {
             if (expression == null) throw new ArgumentNullException("expression");
@@ -2152,7 +2086,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(
             [NotNull] Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>> expression)
         {
@@ -2185,7 +2118,6 @@ namespace WebApplications.Utilities
         [CanBeNull]
         [ContractAnnotation("expression:null=>null;expression:notnull=>notnull")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> Lambda<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
             [NotNull] Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> expression)
         {

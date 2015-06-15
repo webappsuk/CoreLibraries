@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Financials
     /// <summary>
     /// Represents a financial value and currency binding.
     /// </summary>
+    [PublicAPI]
     public class Financial : IEquatable<Financial>, IFormattable
     {
         private readonly decimal _amount;
@@ -62,7 +63,6 @@ namespace WebApplications.Utilities.Financials
         /// Gets or sets the currency.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public CurrencyInfo Currency
         {
             get { return _currency; }
@@ -71,7 +71,6 @@ namespace WebApplications.Utilities.Financials
         /// <summary>
         /// Gets or sets the amount.
         /// </summary>
-        [UsedImplicitly]
         public decimal Amount
         {
             get { return _amount; }
@@ -203,7 +202,6 @@ namespace WebApplications.Utilities.Financials
         /// The result of the operator.
         /// </returns>
         [NotNull]
-        [UsedImplicitly]
         public static Financial operator +([NotNull] Financial a, [NotNull] Financial b)
         {
             if (a == null) throw new ArgumentNullException("a");
@@ -222,7 +220,6 @@ namespace WebApplications.Utilities.Financials
         /// The result of the operator.
         /// </returns>
         [NotNull]
-        [UsedImplicitly]
         public static Financial operator +([NotNull] Financial financial, decimal amount)
         {
             return new Financial(financial._currency, financial._amount + amount);
@@ -237,7 +234,6 @@ namespace WebApplications.Utilities.Financials
         /// The result of the operator.
         /// </returns>
         [NotNull]
-        [UsedImplicitly]
         public static Financial operator -([NotNull] Financial a, [NotNull] Financial b)
         {
             ValidateCurrenciesMatch(a._currency, b._currency, "Subtraction");
@@ -253,7 +249,6 @@ namespace WebApplications.Utilities.Financials
         /// The result of the operator.
         /// </returns>
         [NotNull]
-        [UsedImplicitly]
         public static Financial operator -([NotNull] Financial financial, decimal amount)
         {
             return new Financial(financial._currency, financial._amount - amount);
@@ -267,7 +262,6 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [UsedImplicitly]
         public static bool operator <([NotNull] Financial a, [NotNull] Financial b)
         {
             ValidateCurrenciesMatch(a._currency, b._currency, "less than");
@@ -282,7 +276,6 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [UsedImplicitly]
         public static bool operator >([NotNull] Financial a, [NotNull] Financial b)
         {
             ValidateCurrenciesMatch(a._currency, b._currency, "more than");
@@ -297,7 +290,6 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [UsedImplicitly]
         public static bool operator <=([NotNull] Financial a, [NotNull] Financial b)
         {
             ValidateCurrenciesMatch(a._currency, b._currency, "less than or equal to");
@@ -312,7 +304,6 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [UsedImplicitly]
         public static bool operator >=([NotNull] Financial a, [NotNull] Financial b)
         {
             ValidateCurrenciesMatch(a._currency, b._currency, "more than or equal to");
@@ -357,7 +348,6 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        [UsedImplicitly]
         public static Financial operator *([NotNull] Financial a, [NotNull] Financial b)
         {
             return new Financial(a._currency, a._amount * b._amount);

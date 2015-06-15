@@ -44,7 +44,6 @@ namespace WebApplications.Utilities.Reflect
         /// <value>The type of the declaring.</value>
         /// <remarks></remarks>
         [CanBeNull]
-        [PublicAPI]
         Type DeclaringType { get; }
 
         /// <summary>
@@ -53,7 +52,6 @@ namespace WebApplications.Utilities.Reflect
         /// <value>The type generic arguments.</value>
         /// <remarks></remarks>
         [CanBeNull]
-        [PublicAPI]
         IEnumerable<GenericArgument> TypeGenericArguments { get; }
 
         /// <summary>
@@ -62,7 +60,6 @@ namespace WebApplications.Utilities.Reflect
         /// <value>The signature generic arguments.</value>
         /// <remarks></remarks>
         [CanBeNull]
-        [PublicAPI]
         IEnumerable<GenericArgument> SignatureGenericArguments { get; }
 
         /// <summary>
@@ -71,7 +68,6 @@ namespace WebApplications.Utilities.Reflect
         /// <value>The parameter types.</value>
         /// <remarks></remarks>
         [CanBeNull]
-        [PublicAPI]
         IEnumerable<Type> ParameterTypes { get; }
 
         /// <summary>
@@ -80,7 +76,6 @@ namespace WebApplications.Utilities.Reflect
         /// <value>The type of the return.</value>
         /// <remarks>For constructors this is effectively the same as the <see cref="DeclaringType"/></remarks>
         [NotNull]
-        [PublicAPI]
         Type ReturnType { get; }
 
         /// <summary>
@@ -93,7 +88,6 @@ namespace WebApplications.Utilities.Reflect
         /// <para>The closure arrays are ordered and contain the same number of elements as their corresponding
         /// generic arguments.  Where elements are <see langword="null"/> a closure is not required.</para></remarks>
         [CanBeNull]
-        [PublicAPI]
         ISignature Close([NotNull] Type[] typeClosures, [NotNull] Type[] signatureClosures);
     }
 }

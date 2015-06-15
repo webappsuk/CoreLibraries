@@ -44,21 +44,18 @@ namespace WebApplications.Utilities.Formatting
             /// The parent resolutions.
             /// </summary>
             [CanBeNull]
-            [PublicAPI]
             public readonly Resolutions Parent;
 
             /// <summary>
             /// The resolver.
             /// </summary>
             [NotNull]
-            [PublicAPI]
             private readonly ResolveDelegate _resolver;
 
             /// <summary>
             /// Any resolved values.
             /// </summary>
             [CanBeNull]
-            [PublicAPI]
             private Dictionary<string, Resolution> _values;
 
             /// <summary>
