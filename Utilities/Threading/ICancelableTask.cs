@@ -29,6 +29,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -116,6 +117,13 @@ namespace WebApplications.Utilities.Threading
         /// <param name="delay">The time span to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
         [PublicAPI]
         void CancelAfter(TimeSpan delay);
+
+        /// <summary>
+        /// Schedules a cancel operation on this <see cref="ICancelableTokenSource"/> after the specified duration.
+        /// </summary>
+        /// <param name="delay">The duration to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
+        [PublicAPI]
+        void CancelAfter(Duration delay);
 
         /// <summary>
         /// Waits for the <see cref="ICancelableTask"/> to complete execution.

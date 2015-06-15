@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -418,6 +419,17 @@ namespace WebApplications.Utilities.Threading
         /// <param name="delay">The time span to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CancelAfter(TimeSpan delay)
+        {
+            ICancelableTokenSource cts = _cts;
+            if (cts != null) cts.CancelAfter(delay);
+        }
+
+        /// <summary>
+        /// Schedules a cancel operation on this <see cref="ICancelableTokenSource"/> after the specified time span.
+        /// </summary>
+        /// <param name="delay">The time span to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CancelAfter(Duration delay)
         {
             ICancelableTokenSource cts = _cts;
             if (cts != null) cts.CancelAfter(delay);
@@ -939,6 +951,16 @@ namespace WebApplications.Utilities.Threading
         }
 
         /// <summary>
+        /// Schedules a cancel operation on this <see cref="ICancelableTokenSource" /> after the specified duration.
+        /// </summary>
+        /// <param name="delay">The duration to wait before canceling this <see cref="ICancelableTokenSource" />.</param>
+        public void CancelAfter(Duration delay)
+        {
+            ICancelableTokenSource cts = _cts;
+            if (cts != null) cts.CancelAfter(delay);
+        }
+
+        /// <summary>
         /// Gets an awaiter used to await this <see cref="CancelableTask{T}"/>.
         /// </summary>
         [PublicAPI]
@@ -1114,6 +1136,18 @@ namespace WebApplications.Utilities.Threading
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken = default(CancellationToken))
         {
             return _task.Wait((int)timeout.TotalMilliseconds, cancellationToken);
+        }
+
+        /// <summary>
+        /// Waits for the <see cref="CancelableTask"/> to complete execution within a specified time interval.
+        /// </summary>
+        /// <param name="timeout">A <see cref="Duration"/> that represents the number of milliseconds to wait, or a <see cref="Duration"/> that represents -1 milliseconds to wait indefinitely.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Wait(Duration timeout, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _task.Wait((int)timeout.TotalMilliseconds(), cancellationToken);
         }
 
         /// <summary>

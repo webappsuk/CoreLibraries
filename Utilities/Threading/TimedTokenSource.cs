@@ -29,6 +29,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -110,6 +111,21 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// Initializes a new instance of the <see cref="TimedTokenSource"/> class.
         /// </summary>
+        /// <param name="timeout">The timeout.</param>
+        /// <param name="token">The token.</param>
+        public TimedTokenSource(Duration timeout, CancellationToken token)
+        {
+            Debug.Assert(token.CanBeCanceled);
+
+            _timeoutSource = new CancellationTokenSource(timeout.ToTimeSpan());
+            _source = CancellationTokenSource.CreateLinkedTokenSource(
+                token,
+                _timeoutSource.Token);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimedTokenSource"/> class.
+        /// </summary>
         /// <param name="milliseconds">The milliseconds.</param>
         /// <param name="tokens">The tokens.</param>
         public TimedTokenSource(int milliseconds, [NotNull] params CancellationToken[] tokens)
@@ -135,6 +151,22 @@ namespace WebApplications.Utilities.Threading
             Debug.Assert(tokens.Any(t => t.CanBeCanceled));
 
             _timeoutSource = new CancellationTokenSource(timeout);
+            _source = CancellationTokenSource.CreateLinkedTokenSource(
+                tokens.Union(new[] { _timeoutSource.Token }).ToArray());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimedTokenSource"/> class.
+        /// </summary>
+        /// <param name="timeout">The timeout.</param>
+        /// <param name="tokens">The tokens.</param>
+        public TimedTokenSource(Duration timeout, [NotNull] params CancellationToken[] tokens)
+        {
+            Debug.Assert(tokens != null);
+            Debug.Assert(tokens.Length > 0);
+            Debug.Assert(tokens.Any(t => t.CanBeCanceled));
+
+            _timeoutSource = new CancellationTokenSource(timeout.ToTimeSpan());
             _source = CancellationTokenSource.CreateLinkedTokenSource(
                 tokens.Union(new[] { _timeoutSource.Token }).ToArray());
         }
@@ -169,6 +201,17 @@ namespace WebApplications.Utilities.Threading
             CancellationTokenSource source = _source;
             if (source != null)
                 source.CancelAfter(delay);
+        }
+
+        /// <summary>
+        /// Schedules a cancel operation on this <see cref="T:System.Threading.CancellationTokenSource" /> after the specified duration.
+        /// </summary>
+        /// <param name="delay">The duration to wait before canceling this <see cref="T:System.Threading.CancellationTokenSource" />.</param>
+        public void CancelAfter(Duration delay)
+        {
+            CancellationTokenSource source = _source;
+            if (source != null)
+                source.CancelAfter(delay.ToTimeSpan());
         }
 
         /// <summary>

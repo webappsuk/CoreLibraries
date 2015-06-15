@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -61,6 +62,15 @@ namespace WebApplications.Utilities.Threading
         /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.</exception>
         [PublicAPI]
         void CancelAfter(TimeSpan delay);
+
+        /// <summary>
+        /// Schedules a cancel operation on this <see cref="ICancelableTokenSource"/> after the specified duration.
+        /// </summary>
+        /// <param name="delay">The duration to wait before canceling this <see cref="ICancelableTokenSource"/>.</param>
+        /// <exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="ICancelableTokenSource"/> has been disposed.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.</exception>
+        [PublicAPI]
+        void CancelAfter(Duration delay);
 
         /// <summary>
         /// Schedules a cancel operation on this <see cref="ICancelableTokenSource"/> after the specified number of milliseconds.

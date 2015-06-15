@@ -28,6 +28,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -35,6 +36,7 @@ namespace WebApplications.Utilities.Threading
     /// <summary>
     /// Debounces an asynchronous function.
     /// </summary>
+    [PublicAPI]
     public class AsyncDebouncedFunction<TResult>
     {
         /// <summary>
@@ -75,18 +77,13 @@ namespace WebApplications.Utilities.Threading
         /// <param name="function">The function.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
         /// <param name="minimumGap">The minimum gap, is the time left after a successful execution before the function can be run again.</param>
-        [PublicAPI]
         public AsyncDebouncedFunction(
             [NotNull] Func<Task<TResult>> function,
-            TimeSpan duration = default(TimeSpan),
-            TimeSpan minimumGap = default(TimeSpan))
+            Duration duration,
+            Duration minimumGap = default(Duration))
             : this(token => function(), duration, minimumGap)
         {
             if (function == null) throw new ArgumentNullException("function");
-            if (duration < TimeSpan.Zero)
-                throw new ArgumentOutOfRangeException("duration", Resources.AsyncDebounced_DurationNegative);
-            if (minimumGap < TimeSpan.Zero)
-                throw new ArgumentOutOfRangeException("minimumGap", Resources.AsyncDebounced_MinimumGapNegative);
         }
 
         /// <summary>
@@ -95,7 +92,43 @@ namespace WebApplications.Utilities.Threading
         /// <param name="function">The function.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
         /// <param name="minimumGap">The minimum gap, is the time left after a successful execution before the function can be run again.</param>
-        [PublicAPI]
+        public AsyncDebouncedFunction(
+            [NotNull] Func<CancellationToken, Task<TResult>> function,
+            Duration duration,
+            Duration minimumGap = default(Duration))
+        {
+            if (function == null) throw new ArgumentNullException("function");
+            if (duration < Duration.Zero)
+                throw new ArgumentOutOfRangeException("duration", Resources.AsyncDebounced_DurationNegative);
+            if (minimumGap < Duration.Zero)
+                throw new ArgumentOutOfRangeException("minimumGap", Resources.AsyncDebounced_MinimumGapNegative);
+
+            _durationTicks = duration.Ticks;
+            _minimumGapTicks = minimumGap.Ticks;
+            _function = function;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AsyncDebouncedFunction{T}" /> class.
+        /// </summary>
+        /// <param name="function">The function.</param>
+        /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
+        /// <param name="minimumGap">The minimum gap, is the time left after a successful execution before the function can be run again.</param>
+        public AsyncDebouncedFunction(
+            [NotNull] Func<Task<TResult>> function,
+            TimeSpan duration = default(TimeSpan),
+            TimeSpan minimumGap = default(TimeSpan))
+            : this(token => function(), duration, minimumGap)
+        {
+            if (function == null) throw new ArgumentNullException("function");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AsyncDebouncedFunction{T}"/> class.
+        /// </summary>
+        /// <param name="function">The function.</param>
+        /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
+        /// <param name="minimumGap">The minimum gap, is the time left after a successful execution before the function can be run again.</param>
         public AsyncDebouncedFunction(
             [NotNull] Func<CancellationToken, Task<TResult>> function,
             TimeSpan duration = default(TimeSpan),
@@ -107,7 +140,6 @@ namespace WebApplications.Utilities.Threading
             if (minimumGap < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException("minimumGap", Resources.AsyncDebounced_MinimumGapNegative);
 
-            // Calculate the gap ticks, based on stopwatch frequency.
             _durationTicks = duration.Ticks;
             _minimumGapTicks = minimumGap.Ticks;
             _function = function;

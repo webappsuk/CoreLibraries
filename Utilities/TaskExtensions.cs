@@ -30,8 +30,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -343,7 +345,8 @@ namespace WebApplications.Utilities
                         return continuation(null);
 
                     if (t.Exception != null)
-                        throw t.Exception;
+                        // ReSharper disable once PossibleNullReferenceException
+                        ExceptionDispatchInfo.Capture(t.Exception).Throw();
 
                     if (t.IsCanceled)
                         throw new TaskCanceledException(Resources.TaskExtensions_After_AntecedentTaskCancelled);
@@ -1076,6 +1079,28 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Adds a timeout to an existing <see cref="CancellationToken"/>.
         /// </summary>
+        /// <param name="token">The cancellation token.</param>
+        /// <param name="timeout">The timeout.</param>
+        /// <returns>A token source that will be cancelled after the timeout period has passed.</returns>
+        [PublicAPI]
+        [NotNull]
+        public static ITokenSource WithTimeout(this CancellationToken token, Duration timeout)
+        {
+            if (timeout == TimeHelpers.InfiniteDuration)
+                return new TokenSource(token);
+            if (timeout <= Duration.Zero ||
+                token.IsCancellationRequested)
+                return TokenSource.Cancelled;
+
+            if (!token.CanBeCanceled)
+                return new CancelableTokenSource(timeout);
+
+            return new TimedTokenSource(timeout, token);
+        }
+
+        /// <summary>
+        /// Adds a timeout to an existing <see cref="CancellationToken"/>.
+        /// </summary>
         /// <param name="token">The token.</param>
         /// <param name="milliseconds">The timeout in milliseconds.</param>
         /// <returns>A token source that will be cancelled after the timeout period has passed.</returns>
@@ -1256,6 +1281,17 @@ namespace WebApplications.Utilities
         {
             if (cts == null) throw new ArgumentNullException("cts");
             return new WrappedTokenSource(cts);
+        }
+
+        /// <summary>
+        /// Schedules a cancel operation on the <see cref="CancellationTokenSource" /> after the specified duration.
+        /// </summary>
+        /// <param name="cts">The <see cref="CancellationTokenSource"/>.</param>
+        /// <param name="delay">The duration to wait before canceling this <see cref="CancellationTokenSource" />.</param>
+        [PublicAPI]
+        public static void CancelAfter([NotNull] this CancellationTokenSource cts, Duration delay)
+        {
+            cts.CancelAfter(delay.ToTimeSpan());
         }
 
         /// <summary>

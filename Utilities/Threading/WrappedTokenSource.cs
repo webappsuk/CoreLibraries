@@ -28,6 +28,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -136,6 +137,17 @@ namespace WebApplications.Utilities.Threading
             CancellationTokenSource source = _source;
             if (source != null)
                 source.CancelAfter(delay);
+        }
+
+        /// <summary>
+        /// Schedules a cancel operation on this <see cref="T:System.Threading.CancellationTokenSource" /> after the specified duration.
+        /// </summary>
+        /// <param name="delay">The duration to wait before canceling this <see cref="T:System.Threading.CancellationTokenSource" />.</param>
+        public void CancelAfter(Duration delay)
+        {
+            CancellationTokenSource source = _source;
+            if (source != null)
+                source.CancelAfter(delay.ToTimeSpan());
         }
 
         /// <summary>

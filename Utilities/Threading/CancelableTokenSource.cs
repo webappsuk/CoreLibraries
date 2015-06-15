@@ -27,6 +27,7 @@
 
 using System;
 using System.Threading;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
@@ -57,9 +58,27 @@ namespace WebApplications.Utilities.Threading
         /// Initializes a new instance of the <see cref="CancelableTokenSource"/> class.
         /// </summary>
         /// <param name="timeout">The timeout.</param>
+        public CancelableTokenSource(Duration timeout)
+            : base(timeout.ToTimeSpan())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CancelableTokenSource"/> class.
+        /// </summary>
+        /// <param name="timeout">The timeout.</param>
         public CancelableTokenSource(int timeout)
             : base(timeout)
         {
+        }
+
+        /// <summary>
+        /// Schedules a cancel operation on this <see cref="CancelableTokenSource" /> after the specified duration.
+        /// </summary>
+        /// <param name="delay">The duration to wait before canceling this <see cref="CancelableTokenSource" />.</param>
+        public void CancelAfter(Duration delay)
+        {
+            CancelAfter(delay.ToTimeSpan());
         }
     }
 }
