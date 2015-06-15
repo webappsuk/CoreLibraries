@@ -26,7 +26,6 @@
 #endregion
 
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Performance.Configuration;
@@ -70,7 +69,6 @@ namespace WebApplications.Utilities.Performance
         private PerfTimer([NotNull] string categoryName)
             : base(categoryName, _counterData)
         {
-            Contract.Requires(categoryName != null);
             Timers = new Timers();
             // ReSharper disable PossibleNullReferenceException
             AddInfo("Count", "Total operations executed since the start of the process.", () => Timers.Count);
@@ -90,7 +88,6 @@ namespace WebApplications.Utilities.Performance
         /// The timers collection.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Timers Timers;
 
         /// <summary>
@@ -102,7 +99,6 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <returns>IDisposable.</returns>
         [NotNull]
-        [PublicAPI]
         public RegionTimer Region()
         {
             return new RegionTimer(IncrementBy);
@@ -122,13 +118,17 @@ namespace WebApplications.Utilities.Performance
             Duration duration = regionTimer.Elapsed;
             if (!IsValid)
                 return;
+            Debug.Assert(Counters != null);
+            Debug.Assert(Counters.Length == 4);
 
+            // ReSharper disable PossibleNullReferenceException
             Counters[0].Increment();
             Counters[1].Increment();
 
             // Get the duration in CPU ticks rather than DateTime ticks.
             Counters[2].IncrementBy((duration.Ticks * Stopwatch.Frequency) / 10000000);
             Counters[3].Increment();
+            // ReSharper restore PossibleNullReferenceException
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -50,29 +50,34 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <summary>
         /// The assemblies referencing the counter.
         /// </summary>
+        [NotNull]
         private readonly List<string> _assemblies;
 
         /// <summary>
         /// The category name.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<string> Assemblies
         {
             get { return _assemblies; }
         }
 
         [NotNull]
+        [PublicAPI]
         public readonly PerformanceType PerformanceType;
 
         /// <summary>
         /// The category name.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly string CategoryName;
 
         /// <summary>
         /// The category help.
         /// </summary>
+        [PublicAPI]
         public string CategoryHelp { get; private set; }
 
         /// <summary>
@@ -86,7 +91,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             [NotNull] PerformanceType performanceType,
             [NotNull] string categoryName)
         {
-            _assemblies = new List<string> {assembly};
+            _assemblies = new List<string> { assembly };
             PerformanceType = performanceType;
             CategoryName = categoryName;
         }
@@ -104,12 +109,17 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             [NotNull] string assembly,
             string categoryHelp)
         {
+            if (categoryName == null) throw new ArgumentNullException("categoryName");
+            if (typeReference == null) throw new ArgumentNullException("typeReference");
+            if (assembly == null) throw new ArgumentNullException("assembly");
             try
             {
                 PerformanceType performanceType = PerformanceType.Get(typeReference);
                 PerfCategory category = _categories.GetOrAdd(
                     categoryName,
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     n => new PerfCategory(assembly, performanceType, n));
+                Debug.Assert(category != null);
 
                 // Type cannot change.
                 if (category.PerformanceType != performanceType)
@@ -148,6 +158,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// Gets all categories.
         /// </summary>
         /// <value>All.</value>
+        [NotNull]
+        [ItemNotNull]
         public static IEnumerable<PerfCategory> All
         {
             get { return _categories.Values; }
@@ -164,18 +176,19 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 return PerformanceType.IsValid &&
                        (PerformanceCounterCategory.Exists(CategoryName)) &&
                        (PerformanceType.CounterCreationData.All(
+                           // ReSharper disable once PossibleNullReferenceException, AssignNullToNotNullAttribute
                            c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)));
             }
         }
 
+        [PublicAPI]
         public bool Created { get; private set; }
 
         /// <summary>
         /// Creates the counters on the specified machine name.
         /// </summary>
-        /// <param name="machineName">Name of the machine.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        public bool Create(string machineName)
+        /// <returns><c>true</c> if created, <c>false</c> otherwise</returns>
+        public bool Create()
         {
             if (!PerformanceType.IsValid)
                 return false;
@@ -186,11 +199,12 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 {
                     if (
                         PerformanceType.CounterCreationData.All(
+                            // ReSharper disable once PossibleNullReferenceException, AssignNullToNotNullAttribute
                             c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)))
                         return true;
 
                     // We don't have all the counters, so drop and recreate.
-                    if (!Delete(machineName))
+                    if (!Delete())
                         return false;
                 }
 
@@ -202,6 +216,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                 Created =
                     PerformanceType.CounterCreationData.All(
+                        // ReSharper disable once PossibleNullReferenceException, AssignNullToNotNullAttribute
                         c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName));
                 Deleted = false;
                 return Created;
@@ -213,14 +228,14 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             }
         }
 
+        [PublicAPI]
         public bool Deleted { get; private set; }
 
         /// <summary>
         /// Deletes the counters from specified machine name.
         /// </summary>
-        /// <param name="machineName">Name of the machine.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        public bool Delete(string machineName)
+        /// <returns><c>true</c> if deleted, <c>false</c> otherwise</returns>
+        public bool Delete()
         {
             if (!PerformanceType.IsValid)
             {

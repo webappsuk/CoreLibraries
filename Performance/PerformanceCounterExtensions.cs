@@ -1,18 +1,43 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Performance
 {
+    /// <summary>
+    /// Extensions for performance counters.
+    /// </summary>
+    [PublicAPI]
     public static class PerformanceCounterExtensions
     {
         /// <summary>
@@ -28,7 +53,6 @@ namespace WebApplications.Utilities.Performance
         /// <param name="oldSample">The old sample.</param>
         /// <param name="newSample">The new sample.</param>
         /// <returns>Duration.</returns>
-        [PublicAPI]
         public static Duration GetElapsedTime(CounterSample oldSample, CounterSample newSample)
         {
             // No data [start time = 0] so return 0 
@@ -41,7 +65,7 @@ namespace WebApplications.Utilities.Performance
             return o >= n ||
                    eFreq <= 0.0f
                 ? Duration.Zero
-                : Duration.FromSeconds((long) ((n - o) / eFreq));
+                : Duration.FromSeconds((long)((n - o) / eFreq));
         }
 
         /// <summary>
@@ -52,7 +76,8 @@ namespace WebApplications.Utilities.Performance
         /// <returns>System.Single.</returns>
         public static float SafeNextValue([NotNull] this PerformanceCounter counter)
         {
-            Contract.Requires(counter != null);
+            if (counter == null) throw new ArgumentNullException("counter");
+
             LinkedList<CounterSample> samples = _samples.GetOrAdd(counter, c => new LinkedList<CounterSample>());
             // ReSharper disable once PossibleNullReferenceException
             lock (samples)
@@ -69,7 +94,7 @@ namespace WebApplications.Utilities.Performance
                             lastSample = sample;
                     }
                     else
-                        // This sample is no longer needed.
+                    // This sample is no longer needed.
                         samples.Remove(node);
 
                     node = node.Previous;

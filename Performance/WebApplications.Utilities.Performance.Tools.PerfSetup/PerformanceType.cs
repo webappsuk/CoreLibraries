@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 using Mono.Cecil;
@@ -54,9 +53,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// </summary>
         [NotNull]
         private static readonly Dictionary<int, PerformanceCounterType> _performanceCounterTypes =
-            Enum.GetValues(typeof (PerformanceCounterType))
+            Enum.GetValues(typeof(PerformanceCounterType))
                 .Cast<PerformanceCounterType>()
-                .ToDictionary(v => (int) v, v => v);
+                .ToDictionary(v => (int)v, v => v);
 
         /// <summary>
         /// The type reference.
@@ -80,13 +79,15 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// </summary>
         /// <param name="typeReference">The type reference.</param>
         /// <exception cref="System.NotImplementedException"></exception>
+        // ReSharper disable once NotNullMemberIsNotInitialized
         private PerformanceType([NotNull] TypeReference typeReference)
         {
-            Contract.Requires(typeReference != null);
+            if (typeReference == null) throw new ArgumentNullException("typeReference");
             TypeReference = typeReference;
             try
             {
                 TypeDefinition typeDefinition = typeReference.Resolve();
+                Debug.Assert(typeDefinition != null);
 
                 // Confirm we descend from PerfCategory
                 TypeDefinition baseType = typeDefinition;
@@ -108,16 +109,21 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                     // Check for match
                     if ((baseType.FullName == "WebApplications.Utilities.Performance.PerfCategory") &&
+                        // ReSharper disable PossibleNullReferenceException
                         (baseType.Module.Assembly.Name.Name == "WebApplications.Utilities.Performance"))
+                        // ReSharper restore PossibleNullReferenceException
                         break;
                 } while (true);
 
                 // Find CounterCreationData[] field
+                // ReSharper disable once AssignNullToNotNullAttribute
                 FieldDefinition creationField = typeDefinition
                     .Fields
                     .SingleOrDefault(
                         fd =>
+                            // ReSharper disable PossibleNullReferenceException
                             fd.IsStatic && fd.FieldType.FullName == "System.Diagnostics.CounterCreationData[]" &&
+                            // ReSharper restore PossibleNullReferenceException
                             fd.IsInitOnly
                     );
 
@@ -133,6 +139,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                 // Find static constructor (initialised static readonly fields must be initialized from a static constructor).
                 MethodDefinition staticConstructor =
+                    // ReSharper disable once AssignNullToNotNullAttribute, PossibleNullReferenceException
                     typeDefinition.Methods.SingleOrDefault(m => m.IsConstructor && m.IsStatic);
                 if ((staticConstructor == null) ||
                     !staticConstructor.HasBody)
@@ -151,8 +158,12 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 Queue<string> lastStrings = new Queue<string>(2);
                 PerformanceCounterType lastCounterType = default(PerformanceCounterType);
                 List<CounterCreationData> data = new List<CounterCreationData>();
+                // ReSharper disable PossibleNullReferenceException
                 foreach (Instruction instr in staticConstructor.Body.Instructions)
+                    // ReSharper restore PossibleNullReferenceException
                 {
+                    Debug.Assert(instr != null);
+
                     // Detect string literals being loaded onto evaluation stack
                     if (instr.OpCode.Code == Code.Ldstr)
                     {
@@ -179,7 +190,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     if (instr.OpCode.Code == Code.Ldc_I4)
                     {
                         // If the int is not a valid performance counter type, clear strings (as this isn't the right data).
-                        if (!_performanceCounterTypes.TryGetValue((int) instr.Operand, out lastCounterType))
+                        // ReSharper disable once PossibleNullReferenceException
+                        if (!_performanceCounterTypes.TryGetValue((int)instr.Operand, out lastCounterType))
                             lastStrings.Clear();
                         continue;
                     }
@@ -195,10 +207,12 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     // Check we have a 3 parameter constructor with the right types
                     MethodReference methodReference = instr.Operand as MethodReference;
                     if ((methodReference == null) ||
+                        // ReSharper disable PossibleNullReferenceException
                         (methodReference.Parameters.Count != 3) ||
                         (methodReference.Parameters[0].ParameterType.FullName != "System.String") ||
                         (methodReference.Parameters[1].ParameterType.FullName != "System.String") ||
                         (methodReference.Parameters[2].ParameterType.FullName !=
+                         // ReSharper restore PossibleNullReferenceException
                          "System.Diagnostics.PerformanceCounterType"))
                         continue;
 
@@ -275,8 +289,10 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         [NotNull]
         public static PerformanceType Get([NotNull] TypeReference typeReference)
         {
-            Contract.Requires(typeReference != null);
+            if (typeReference == null) throw new ArgumentNullException("typeReference");
+            // ReSharper disable AssignNullToNotNullAttribute
             return _types.GetOrAdd(typeReference.FullName, t => new PerformanceType(typeReference));
+            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>

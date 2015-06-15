@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,10 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Performance.Configuration;
 
@@ -63,7 +60,6 @@ namespace WebApplications.Utilities.Performance
         private PerfCounter([NotNull] string categoryName)
             : base(categoryName, _counterData)
         {
-            Contract.Requires(categoryName != null);
             Counter = new Counter();
             // ReSharper disable PossibleNullReferenceException
             AddInfo("Count", "Total operations executed since the start of the process.", () => Counter.Count);
@@ -75,26 +71,28 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// The counter.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly Counter Counter;
 
         /// <summary>
         ///   Increments the operation counters.
         /// </summary>
-        [PublicAPI]
         public void Increment()
         {
-            if (!PerformanceConfiguration.IsEnabled) 
+            if (!PerformanceConfiguration.IsEnabled)
                 return;
 
             Counter.Increment();
 
             if (!IsValid)
                 return;
+            Debug.Assert(Counters != null);
+            Debug.Assert(Counters.Length == 2);
 
+            // ReSharper disable PossibleNullReferenceException
             Counters[0].Increment();
             Counters[1].Increment();
+            // ReSharper restore PossibleNullReferenceException
         }
     }
 }

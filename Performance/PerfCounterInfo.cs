@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using System.IO;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
@@ -36,27 +34,25 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     /// Provides read-only access to a <see cref="PerfCategory">PerfCategory's</see> information.
     /// </summary>
+    [PublicAPI]
     public abstract class PerfCounterInfo : ResolvableWriteable
     {
         /// <summary>
         /// The value type
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Type ValueType;
 
         /// <summary>
         /// The name
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string Name;
 
         /// <summary>
         /// The help
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string Help;
 
         /// <summary>
@@ -64,7 +60,6 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <value>The value.</value>
         [CanBeNull]
-        [PublicAPI]
         public abstract object Value { get; }
 
         /// <summary>
@@ -75,9 +70,10 @@ namespace WebApplications.Utilities.Performance
         /// <param name="help">The help.</param>
         protected PerfCounterInfo([NotNull] Type valueType, [NotNull] string name, [NotNull] string help)
         {
-            Contract.Requires(valueType != null);
-            Contract.Requires(name != null);
-            Contract.Requires(help != null);
+            if (valueType == null) throw new ArgumentNullException("valueType");
+            if (name == null) throw new ArgumentNullException("name");
+            if (help == null) throw new ArgumentNullException("help");
+
             ValueType = valueType;
             Name = name;
             Help = help;
@@ -87,7 +83,6 @@ namespace WebApplications.Utilities.Performance
         /// The default builder for writing out information.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder("{Name}\t: {Value}", true);
 
@@ -140,9 +135,8 @@ namespace WebApplications.Utilities.Performance
         public PerfCounterInfo([NotNull] string name, [NotNull] string help, [NotNull] Func<T> getLatestValueFunc)
             : base(typeof(T), name, help)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(help != null);
-            Contract.Requires(getLatestValueFunc != null);
+            if (getLatestValueFunc == null) throw new ArgumentNullException("getLatestValueFunc");
+
             _getLatestValueFunc = getLatestValueFunc;
         }
 

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,8 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using JetBrains.Annotations;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -34,6 +36,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
     /// <summary>
     /// Build task entry point.
     /// </summary>
+    [PublicAPI]
     public class PerfSetupTask : Task
     {
         /// <summary>
@@ -60,6 +63,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 (s, l) =>
                 {
                     s = "PerfSetup: " + s;
+                    Debug.Assert(Log != null);
                     switch (l)
                     {
                         case Level.Low:
@@ -84,7 +88,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 Logger.Add(Level.Warning, "Not path supplied to PerfSetup");
             try
             {
-                Scan.Execute(ScanMode.Add, Path, ".", true);
+                Debug.Assert(Path != null);
+                Scan.Execute(ScanMode.Add, Path, true);
                 return true;
             }
             catch (Exception e)

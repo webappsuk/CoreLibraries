@@ -26,7 +26,6 @@
 #endregion
 
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Performance.Configuration;
@@ -79,7 +78,6 @@ namespace WebApplications.Utilities.Performance
         private CriticalPerfTimer([NotNull] string categoryName)
             : base(categoryName, _counterData)
         {
-            Contract.Requires(categoryName != null);
             Timers = new Timers();
             // ReSharper disable PossibleNullReferenceException
             AddInfo("Count", "Total operations executed since the start of the process.", () => Timers.Count);
@@ -107,7 +105,6 @@ namespace WebApplications.Utilities.Performance
         /// The timers collection.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Timers Timers;
 
         /// <summary>
@@ -121,7 +118,6 @@ namespace WebApplications.Utilities.Performance
         /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
         /// <returns>IDisposable.</returns>
         [NotNull]
-        [PublicAPI]
         public RegionTimer Region(
             Duration? warningDuration = null,
             Duration? criticalDuration = null)
@@ -142,7 +138,10 @@ namespace WebApplications.Utilities.Performance
             Duration duration = regionTimer.Elapsed;
             if (!IsValid)
                 return;
+            Debug.Assert(Counters != null);
+            Debug.Assert(Counters.Length == 6);
 
+            // ReSharper disable PossibleNullReferenceException
             Counters[0].Increment();
             Counters[1].Increment();
 
@@ -159,6 +158,7 @@ namespace WebApplications.Utilities.Performance
                 return;
 
             Counters[5].Increment();
+            // ReSharper restore PossibleNullReferenceException
         }
     }
 }

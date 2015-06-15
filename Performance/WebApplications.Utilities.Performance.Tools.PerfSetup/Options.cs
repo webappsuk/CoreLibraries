@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
 #endregion
 
 using CmdLine;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
@@ -37,29 +38,43 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
     internal class Options
     {
         [CommandLineParameter(Command = "?", Default = false, Description = "Show Help", Name = "Help", IsHelp = true)]
-        public bool Help { get; set; }
-
-        [CommandLineParameter(Command = "M", Default = ".", Name = "MachineName",
-            Description =
-                "Specifies the machine to run on, allowing counters to be administered on remote machines (defaults to '.')."
-            )]
-        public string MachineName { get; set; }
+        public bool Help
+        {
+            get;
+            [UsedImplicitly]
+            set;
+        }
 
         [CommandLineParameter(Command = "E", Default = true, Name = "ExecuteAgain",
             Description =
                 "When executing on a 64 bit architecture, will execute again in either 32/64 bit mode to ensure that performance counters are added in both modes."
             )]
-        public bool ExecuteAgain { get; set; }
+        public bool ExecuteAgain
+        {
+            get;
+            [UsedImplicitly]
+            set;
+        }
 
         [CommandLineParameter(Name = "Mode", ParameterIndex = 1, Required = true, Description =
             @"Set the mode to one of the following:
 Add - Add performance counters (requires run as administrator).
 Delete - Delete performance counters (requires run as administrator).
 List - Lists performance counters.")]
-        public string Mode { get; set; }
+        public string Mode
+        {
+            get;
+            [UsedImplicitly]
+            set;
+        }
 
         [CommandLineParameter(Name = "path", ParameterIndex = 2, Required = true,
             Description = "Specifies the path or file to scan.")]
-        public string Path { get; set; }
+        public string Path
+        {
+            get;
+            [UsedImplicitly]
+            set;
+        }
     }
 }

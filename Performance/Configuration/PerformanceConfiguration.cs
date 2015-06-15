@@ -43,7 +43,6 @@ namespace WebApplications.Utilities.Performance.Configuration
         /// Gets or sets whether counters are enabled.
         /// </summary>
         [ConfigurationProperty("enabled", DefaultValue = true, IsRequired = false)]
-        [PublicAPI]
         public bool Enabled
         {
             get { return GetProperty<bool>("enabled"); }
@@ -55,7 +54,6 @@ namespace WebApplications.Utilities.Performance.Configuration
         /// </summary>
         [ConfigurationProperty("defaultSamples", DefaultValue = 10, IsRequired = false)]
         [IntegerValidator(MinValue = 2, MaxValue = int.MaxValue)]
-        [PublicAPI]
         public int DefaultSamples
         {
             get { return GetProperty<int>("defaultSamples"); }
@@ -67,7 +65,6 @@ namespace WebApplications.Utilities.Performance.Configuration
         /// </summary>
         [ConfigurationProperty("defaultWarning", DefaultValue = "00:00:02", IsRequired = false)]
         [TimeSpanValidator(MinValueString = "00:00:00.001", MaxValueString = "1.00:00:00")]
-        [PublicAPI]
         public TimeSpan DefaultWarning
         {
             get { return GetProperty<TimeSpan>("defaultWarning"); }
@@ -79,7 +76,6 @@ namespace WebApplications.Utilities.Performance.Configuration
         /// </summary>
         [ConfigurationProperty("defaultCritical", DefaultValue = "00:00:05", IsRequired = false)]
         [TimeSpanValidator(MinValueString = "00:00:00.001", MaxValueString = "1.00:00:00")]
-        [PublicAPI]
         public TimeSpan DefaultCritical
         {
             get { return GetProperty<TimeSpan>("defaultCritical"); }
@@ -112,6 +108,7 @@ namespace WebApplications.Utilities.Performance.Configuration
         static PerformanceConfiguration()
         {
             Update(Active);
+            // ReSharper disable once PossibleNullReferenceException
             Changed += (s, e) => Update(e.NewConfiguration);
         }
 

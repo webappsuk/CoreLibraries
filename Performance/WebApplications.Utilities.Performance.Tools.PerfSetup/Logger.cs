@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -67,9 +67,11 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <param name="level">The level.</param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        public static void Add(Level level, string format, params object[] parameters)
+        public static void Add(Level level, string format, [NotNull] params object[] parameters)
         {
             if (format == null) return;
+            if (parameters == null) throw new ArgumentNullException("parameters");
+
             string message = null;
             if (parameters.Length < 1)
                 message = format;
@@ -84,7 +86,10 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 }
 
             foreach (Action<string, Level> logger in _loggers)
+            {
+                Debug.Assert(logger != null);
                 logger(message, level);
+            }
         }
     }
 }

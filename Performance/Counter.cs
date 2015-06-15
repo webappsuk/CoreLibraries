@@ -27,6 +27,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using NodaTime;
@@ -39,12 +40,12 @@ namespace WebApplications.Utilities.Performance
     /// A counter which also tracks the current rate, by keeping track of the last <see cref="MaximumSamples"/>
     /// instances the counter was incremented.
     /// </summary>
+    [PublicAPI]
     public class Counter : IEnumerable<Instant>
     {
         /// <summary>
         /// The maximum samples for rate calculation.
         /// </summary>
-        [PublicAPI]
         public readonly int MaximumSamples;
 
         private long _count;
@@ -70,7 +71,6 @@ namespace WebApplications.Utilities.Performance
         /// Gets the current count.
         /// </summary>
         /// <value>The count.</value>
-        [PublicAPI]
         public long Count
         {
             get { return _count; }
@@ -80,7 +80,6 @@ namespace WebApplications.Utilities.Performance
         /// Gets the current number of samples.
         /// </summary>
         /// <value>The count of samples.</value>
-        [PublicAPI]
         public int SamplesCount
         {
             get { return _samplesCount; }
@@ -91,7 +90,6 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <value>The rate.</value>
         /// <remarks>Returns <see cref="double.PositiveInfinity"/> if there are less than two samples.</remarks>
-        [PublicAPI]
         public double Rate
         {
             get
@@ -104,6 +102,10 @@ namespace WebApplications.Utilities.Performance
                 {
                     count = samples.Count;
                     if (count < 2) return double.PositiveInfinity;
+
+                    Debug.Assert(samples.First != null);
+                    Debug.Assert(samples.Last != null);
+
                     start = samples.First.Value;
                     end = samples.Last.Value;
                 }
@@ -115,7 +117,6 @@ namespace WebApplications.Utilities.Performance
         /// Increments this instance.
         /// </summary>
         /// <param name="timeStamp">The time stamp (defaults to now).</param>
-        [PublicAPI]
         public void Increment(Instant? timeStamp = null)
         {
             Instant lastIncrement = timeStamp ?? HighPrecisionClock.Instance.Now;
@@ -139,7 +140,7 @@ namespace WebApplications.Utilities.Performance
             Instant[] copy;
             lock (_samples)
                 copy = _samples.ToArray();
-            return ((IEnumerable<Instant>) copy).GetEnumerator();
+            return ((IEnumerable<Instant>)copy).GetEnumerator();
         }
 
         /// <summary>

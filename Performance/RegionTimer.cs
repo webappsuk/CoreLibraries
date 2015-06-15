@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     /// Used to allow the timing of a region of code for a <see cref="PerfTimer"/>.
     /// </summary>
+    [PublicAPI]
     public class RegionTimer : IDisposable
     {
         /// <summary>
@@ -53,19 +54,16 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// The duration after which the timer has passed a warning level, or <see langword="null"/>.
         /// </summary>
-        [PublicAPI]
         public readonly Duration WarningDuration;
 
         /// <summary>
         /// The duration after which the timer has passed a critical level, or <see langword="null"/>.
         /// </summary>
-        [PublicAPI]
         public readonly Duration CriticalDuration;
 
         /// <summary>
         /// When the timer started.
         /// </summary>
-        [PublicAPI]
         public readonly Instant Started;
 
         private Instant? _stopped;
@@ -74,7 +72,6 @@ namespace WebApplications.Utilities.Performance
         /// When the timer stopped, if stopped; otherwise <see langword="nulL" />.
         /// </summary>
         /// <value>When the timer stopped.</value>
-        [PublicAPI]
         public Instant? Stopped
         {
             get { return _stopped; }
@@ -85,7 +82,6 @@ namespace WebApplications.Utilities.Performance
         /// still running</see>.
         /// </summary>
         /// <value>The elapsed time.</value>
-        [PublicAPI]
         public Duration Elapsed
         {
             get
@@ -100,7 +96,6 @@ namespace WebApplications.Utilities.Performance
         /// Gets a value indicating whether this instance is running.
         /// </summary>
         /// <value><see langword="true" /> if this instance is running; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsRunning
         {
             get { return !_stopped.HasValue; }
@@ -110,7 +105,6 @@ namespace WebApplications.Utilities.Performance
         /// Gets a value indicating whether this <see cref="RegionTimer" /> has exceeded the <see cref="WarningDuration"/>.
         /// </summary>
         /// <value><see langword="true" /> if warning; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool Warning
         {
             get { return Elapsed > WarningDuration; }
@@ -120,7 +114,6 @@ namespace WebApplications.Utilities.Performance
         /// Gets a value indicating whether this <see cref="RegionTimer" /> has exceeded the <see cref="CriticalDuration"/>.
         /// </summary>
         /// <value><see langword="true" /> if critical; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool Critical
         {
             get { return Elapsed > CriticalDuration; }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -41,6 +40,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
     /// <summary>
     /// Class Scan
     /// </summary>
+    [PublicAPI]
     public static class Scan
     {
         /// <summary>
@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         static Scan()
         {
             AssemblyResolver = new DefaultAssemblyResolver();
-            ReaderParameters = new ReaderParameters() { AssemblyResolver = AssemblyResolver };
+            ReaderParameters = new ReaderParameters { AssemblyResolver = AssemblyResolver };
         }
 
         /// <summary>
@@ -64,16 +64,16 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// </summary>
         /// <param name="mode">The mode.</param>
         /// <param name="fullPath">The assemblies path.</param>
-        /// <param name="machineName">Name of the machine.</param>
         /// <param name="executeAgain">if set to <see langword="true" /> execute's again on 64-bit OS.</param>
         public static void Execute(
             ScanMode mode,
             [NotNull] string fullPath,
-            [NotNull] string machineName,
             bool executeAgain)
         {
+            if (fullPath == null) throw new ArgumentNullException("fullPath");
+
             // Check we have access to the performance counters.
-            PerformanceCounterCategory.Exists("TestAccess", machineName);
+            PerformanceCounterCategory.Exists("TestAccess");
 
             string[] files;
             string directory;
@@ -83,7 +83,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 if (File.Exists(fullPath))
                 {
                     directory = Path.GetDirectoryName(fullPath);
-                    files = new[] {fullPath};
+                    files = new[] { fullPath };
                 }
                 else if (Directory.Exists(fullPath))
                 {
@@ -92,6 +92,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         .Where(
                             f =>
                             {
+                                // ReSharper disable once PossibleNullReferenceException
                                 string ext = Path.GetExtension(f).ToLower();
                                 return (ext == ".dll" || ext == ".exe");
                             }).ToArray();
@@ -108,8 +109,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 return;
             }
 
-            Contract.Assert(files != null);
-            Contract.Assert(directory != null);
+            Debug.Assert(files != null);
+            Debug.Assert(directory != null);
 
             if (!files.Any())
             {
@@ -130,7 +131,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 switch (mode)
                 {
                     case ScanMode.Add:
-                        bool added = performanceInformation.Create(machineName);
+                        bool added = performanceInformation.Create();
                         Logger.Add(
                             added ? Level.Normal : Level.Error,
                             "Adding '{0}' {1}",
@@ -142,7 +143,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                             failed++;
                         break;
                     case ScanMode.Delete:
-                        bool deleted = performanceInformation.Delete(machineName);
+                        bool deleted = performanceInformation.Delete();
                         Logger.Add(
                             deleted ? Level.Normal : Level.Error,
                             "Deleting '{0}' {1}",
@@ -199,7 +200,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         "Running PerfSetup in {0} bit process on 64 bit operating system, will run again in {1} bit mode to ensure counters are added to both environments!",
                         bit64 ? 64 : 32,
                         bit64 ? 32 : 64);
-                    ExecuteAgain(mode, fullPath, machineName, !bit64);
+                    ExecuteAgain(mode, fullPath, !bit64);
                 }
             }
             else
@@ -213,16 +214,21 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         private static void Load(string assemblyPath)
         {
             AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemblyPath, ReaderParameters);
+            Debug.Assert(assembly != null);
+            Debug.Assert(assembly.Name != null);
             if (assembly.Name.Name == "WebApplications.Utilities.Performance")
                 return;
 
             // Find any modules that reference logging.
+            // ReSharper disable once AssignNullToNotNullAttribute
             ModuleDefinition[] referencingModules = assembly.Modules
                 .Where(
+                    // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
                     m => m.AssemblyReferences
                         .FirstOrDefault(
                             ar => ar.Name == "WebApplications.Utilities.Performance") !=
                          null)
+                // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
                 .ToArray();
 
             if (referencingModules.Length < 1)
@@ -230,14 +236,27 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
             Queue<string> lastStrings = new Queue<string>(2);
             foreach (ModuleDefinition module in referencingModules)
+            {
+                Debug.Assert(module != null);
+                Debug.Assert(module.Types != null);
                 foreach (TypeDefinition type in module.Types)
+                {
+                    Debug.Assert(type != null);
+                    Debug.Assert(type.Methods != null);
                     foreach (MethodDefinition method in type.Methods)
                     {
+                        Debug.Assert(method != null);
+
                         if (!method.HasBody) continue;
 
                         lastStrings.Clear();
+
+                        Debug.Assert(method.Body != null);
+                        Debug.Assert(method.Body.Instructions != null);
                         foreach (Instruction instr in method.Body.Instructions)
                         {
+                            Debug.Assert(instr != null);
+
                             // Detect string literals loaded onto evaluation stack
                             if (instr.OpCode.Code == Code.Ldstr)
                             {
@@ -273,10 +292,12 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                 (methodReference.Name != "GetOrAdd") ||
                                 !methodReference.HasGenericArguments ||
                                 !methodReference.IsGenericInstance ||
+                                // ReSharper disable PossibleNullReferenceException
                                 (methodReference.GenericArguments.Count != 1) ||
                                 (methodReference.Parameters.Count != 2) ||
                                 (methodReference.Parameters[0].ParameterType.FullName != "System.String") ||
                                 (methodReference.Parameters[1].ParameterType.FullName != "System.String"))
+                                // ReSharper restore PossibleNullReferenceException
                                 continue;
 
                             // Make sure it's on the right type.
@@ -286,14 +307,14 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                  "WebApplications.Utilities.Performance.PerfCategory"))
                                 continue;
 
-                            TypeReference PerfCategoryType = methodReference.GenericArguments.First();
-                            Contract.Assert(PerfCategoryType != null);
+                            TypeReference perfCategoryType = methodReference.GenericArguments.First();
+                            Debug.Assert(perfCategoryType != null);
 
                             if (lastStrings.Count > 1)
                             {
                                 int pCount = methodReference.Parameters.Count();
                                 bool isTimer = pCount == 4;
-                                Contract.Assert(isTimer || (pCount == 2));
+                                Debug.Assert(isTimer || (pCount == 2));
                                 string categoryName = lastStrings.Dequeue();
                                 string categoryHelp = lastStrings.Dequeue();
 
@@ -304,13 +325,14 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                         Level.Low,
                                         "The '{0}' assembly calls PerfCategory.GetOrAdd<{1}>(\"{2}\", {3}).",
                                         assemblyPath,
-                                        PerfCategoryType.Name,
+                                        perfCategoryType.Name,
                                         categoryName,
                                         categoryHelp == null ? "null" : "\"" + categoryHelp + "\"");
 
                                     PerfCategory.Set(
                                         categoryName,
-                                        PerfCategoryType,
+                                        perfCategoryType,
+                                        // ReSharper disable once AssignNullToNotNullAttribute
                                         assembly.Name.Name,
                                         categoryHelp);
                                 }
@@ -328,6 +350,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                             lastStrings.Clear();
                         }
                     }
+                }
+            }
         }
 
         /// <summary>
@@ -335,12 +359,10 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// </summary>
         /// <param name="mode">The mode.</param>
         /// <param name="fullPath">The full path.</param>
-        /// <param name="machineName">Name of the machine.</param>
         /// <param name="bit64">if set to <see langword="true" /> [bit64].</param>
         private static void ExecuteAgain(
             ScanMode mode,
             [NotNull] string fullPath,
-            [NotNull] string machineName,
             bool bit64)
         {
             string executable = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
@@ -368,9 +390,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 ProcessStartInfo processStartInfo = new ProcessStartInfo(
                     executable,
                     string.Format(
-                        "/M:\"{0}\" /E- {1} \"{2}\"",
-                        machineName,
-                        mode.ToString(),
+                        "/E- {0} \"{1}\"",
+                        mode,
                         fullPath))
                 {
                     CreateNoWindow = true,
@@ -381,6 +402,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 Logger.Add(Level.Low, "Executing: {0} {1}", processStartInfo.FileName, processStartInfo.Arguments);
 
                 Process process = Process.Start(processStartInfo);
+                Debug.Assert(process != null);
+
                 string output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 Logger.Add(Level.Low, output);

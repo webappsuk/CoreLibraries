@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using CmdLine;
 using JetBrains.Annotations;
 
@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
     [UsedImplicitly]
     internal class Program
     {
+        [UsedImplicitly]
         private static void Main(string[] args)
         {
             Logger.AddLogger(
@@ -50,12 +51,12 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             try
             {
                 Options options = CommandLine.Parse<Options>();
-                Contract.Assert(options != null);
+                Debug.Assert(options != null);
 
                 if (options.Help) return;
 
                 ScanMode mode;
-                switch (options.Mode.ToLower())
+                switch ((options.Mode ?? string.Empty).ToLower())
                 {
                     case "add":
                         mode = ScanMode.Add;
@@ -68,17 +69,19 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         break;
                 }
 
-                if (options.Path.EndsWith("\""))
+                if (options.Path != null &&
+                    options.Path.EndsWith("\""))
                     options.Path = options.Path.Substring(0, options.Path.Length - 1);
 
                 Scan.Execute(
                     mode,
+                    // ReSharper disable once AssignNullToNotNullAttribute - Let Execute throw
                     options.Path,
-                    options.MachineName ?? ".",
                     options.ExecuteAgain);
             }
             catch (CommandLineException commandLineException)
             {
+                // ReSharper disable once PossibleNullReferenceException
                 Logger.Add(Level.Error, commandLineException.ArgumentHelp.Message);
                 Logger.Add(Level.High, commandLineException.ArgumentHelp.GetHelpText(Console.BufferWidth));
             }
