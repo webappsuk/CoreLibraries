@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ namespace WebApplications.Utilities.Logging
         ///   Include initialization code here that will run when the library is first loaded,
         ///   and before any element of the library is used.
         /// </remarks>
-        [PublicAPI]
         internal static void Initialize()
         {
             Log.LoadConfiguration();

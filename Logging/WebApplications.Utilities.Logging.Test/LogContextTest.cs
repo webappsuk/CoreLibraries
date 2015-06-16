@@ -68,7 +68,7 @@ namespace WebApplications.Utilities.Logging.Test
                 _prefixReservations.Clear();
             }
             Guid reservation = Guid.NewGuid();
-            string key = Tester.RandomGenerator.RandomString();
+            string key = Tester.RandomGenerator.RandomString(LogContext.MaximumKeyLength);
             string key2 = LogContext.ReserveKey(key, reservation);
             Assert.AreEqual(key, key2);
             Guid r2;

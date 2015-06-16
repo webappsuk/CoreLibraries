@@ -20,6 +20,5 @@
   <files>
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net452\CodeContracts" />
   </files>
 </package>

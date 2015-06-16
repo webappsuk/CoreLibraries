@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ namespace WebApplications.Utilities.Logging.Configuration
     /// <summary>
     ///   A logger element from a configuration file.
     /// </summary>
+    [PublicAPI]
     public class LoggerElement : ConstructorConfigurationElement
     {
         /// <summary>
@@ -46,7 +47,6 @@ namespace WebApplications.Utilities.Logging.Configuration
         [ConfigurationProperty("type")]
         [TypeConverter(typeof(TypeNameConverter))]
         [SubclassTypeValidator(typeof(ILogger))]
-        [PublicAPI]
         public override Type Type
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -60,7 +60,6 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// <value>The logger name.</value>
         [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
         [NotNull]
-        [PublicAPI]
         public string Name
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -72,7 +71,6 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets a value indicating whether logging is enabled.
         /// </summary>
         [ConfigurationProperty("enabled", DefaultValue = true, IsRequired = false)]
-        [PublicAPI]
         public bool Enabled
         {
             get { return GetProperty<bool>("enabled"); }
@@ -83,7 +81,6 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets the valid <see cref="LoggingLevels">logging levels</see>.
         /// </summary>
         [ConfigurationProperty("validLevels", DefaultValue = LoggingLevels.All, IsRequired = false)]
-        [PublicAPI]
         public LoggingLevels ValidLevels
         {
             get { return GetProperty<LoggingLevels>("validLevels"); }

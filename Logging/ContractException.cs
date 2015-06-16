@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,12 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
-    /// Exception for a <see cref="Contract.Requires{ContractException}(bool, string)" /> failure.
+    /// Exception for a <see cref="System.Diagnostics.Contracts.Contract.Requires{ContractException}(bool, string)" /> failure.
     /// </summary>
     [Serializable]
     [PublicAPI]
@@ -46,7 +45,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string ConditionKey = LogContext.ReserveKey("Contract Condition", _reservation);
 
         /// <summary>
@@ -56,7 +54,6 @@ namespace WebApplications.Utilities.Logging
         /// The condition.
         /// </value>
         [CanBeNull]
-        [PublicAPI]
         public string Condition
         {
             get { return Log.Get(ConditionKey); }
@@ -82,7 +79,7 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="Contract.Requires{ContractException}(bool)" />.
+        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="System.Diagnostics.Contracts.Contract.Requires{ContractException}(bool)" />.
         /// </summary>
         /// <param name="conditions">The conditions.</param>
         public ContractException([CanBeNull] string conditions)
@@ -95,7 +92,7 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="Contract.Requires{ContractException}(bool, string)" />.
+        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="System.Diagnostics.Contracts.Contract.Requires{ContractException}(bool, string)" />.
         /// </summary>
         /// <param name="conditions">The conditions.</param>
         /// <param name="message">The tag.</param>
@@ -111,7 +108,7 @@ namespace WebApplications.Utilities.Logging
     }
 
     /// <summary>
-    /// Exception for a <see cref="Contract.Requires{ContractException}(bool, string)" /> failure.
+    /// Exception for a <see cref="System.Diagnostics.Contracts.Contract.Requires{ContractException}(bool, string)" /> failure.
     /// </summary>
     /// <typeparam name="TResource">The type of the resource.</typeparam>
     [Serializable]
@@ -120,21 +117,21 @@ namespace WebApplications.Utilities.Logging
         where TResource : class
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="Contract.Requires{ContractException}(bool)" />.
+        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="System.Diagnostics.Contracts.Contract.Requires{ContractException}(bool)" />.
         /// </summary>
         /// <param name="conditions">The conditions.</param>
         public ContractException([CanBeNull] string conditions)
-            : base(typeof (TResource), "Contract_Failed", conditions)
+            : base(typeof(TResource), "Contract_Failed", conditions)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="Contract.Requires{ContractException}(bool, string)" />.
+        /// Initializes a new instance of the <see cref="ContractException" /> class.  This is used by <see cref="System.Diagnostics.Contracts.Contract.Requires{ContractException}(bool, string)" />.
         /// </summary>
         /// <param name="conditions">The conditions.</param>
         /// <param name="resourceProperty">The tag.</param>
         public ContractException([CanBeNull] string conditions, [NotNull] string resourceProperty)
-            : base(typeof (TResource), resourceProperty, conditions)
+            : base(typeof(TResource), resourceProperty, conditions)
         {
         }
     }

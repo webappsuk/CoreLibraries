@@ -8,7 +8,7 @@ using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Logging.Test
 {
-    [DeploymentItem("TimeZoneData", "TimeZoneData")]
+    [DeploymentItem("Resources\\", "Resources")]
     public abstract class LoggingTestBase : TestBase
     {
         [ClassInitialize]

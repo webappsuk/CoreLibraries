@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,8 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
@@ -40,6 +38,7 @@ namespace WebApplications.Utilities.Logging
     /// <summary>
     ///   Implements a specialised Exception handler that is automatically logged and supports late translation of resources.
     /// </summary>
+    [PublicAPI]
     [Serializable]
     [DebuggerDisplay("[{ExceptionTypeFullName}] {Message} @ {TimeStamp}")]
     public class LoggingException : ApplicationException, IFormattable
@@ -49,13 +48,13 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         private static readonly Action<Exception, string> _setMessage =
-            typeof (Exception).GetSetter<Exception, string>("_message");
+            // ReSharper disable once AssignNullToNotNullAttribute
+            typeof(Exception).GetSetter<Exception, string>("_message");
 
         /// <summary>
         /// The associated log item.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Log Log;
 
         #region Constructors
@@ -1063,7 +1062,7 @@ namespace WebApplications.Utilities.Logging
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
@@ -1168,7 +1167,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the GUID.
         /// </summary>
         /// <value>The GUID.</value>
-        [PublicAPI]
         public CombGuid Guid
         {
             get { return Log.Guid; }
@@ -1178,7 +1176,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the log group.
         /// </summary>
         /// <value>The log group.</value>
-        [PublicAPI]
         public LoggingLevel Level
         {
             get { return Log.Level; }
@@ -1189,7 +1186,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The parameters.</value>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<string> Parameters
         {
             get { return Log.Parameters; }
@@ -1199,7 +1195,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the time stamp.
         /// </summary>
         /// <value>The time stamp.</value>
-        [PublicAPI]
         public DateTime TimeStamp
         {
             get { return Log.TimeStamp; }
@@ -1210,7 +1205,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The format format.</value>
         [CanBeNull]
-        [PublicAPI]
         public string MessageFormat
         {
             get { return Log.MessageFormat; }
@@ -1220,7 +1214,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the thread ID.
         /// </summary>
         /// <value>The thread ID.</value>
-        [PublicAPI]
         public int ThreadID
         {
             get { return Log.ThreadID; }
@@ -1231,7 +1224,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The name of the thread.</value>
         [CanBeNull]
-        [PublicAPI]
         public string ThreadName
         {
             get { return Log.ThreadName; }
@@ -1242,7 +1234,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The full name of the type of the exception.</value>
         [NotNull]
-        [PublicAPI]
         public string ExceptionTypeFullName
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -1253,7 +1244,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the stored procedure name (if a SQL exception - otherwise null).
         /// </summary>
         /// <value>The stored procedure.</value>
-        [PublicAPI]
         [CanBeNull]
         public string StoredProcedure
         {
@@ -1264,7 +1254,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the stored procedure line number (if a SQL exception - otherwise -1).
         /// </summary>
         /// <value>The stored procedure line.</value>
-        [PublicAPI]
         public int StoredProcedureLine
         {
             get { return Log.StoredProcedureLine; }
@@ -1278,7 +1267,6 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
         /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
         [CanBeNull]
-        [PublicAPI]
         public string this[[NotNull] string key]
         {
             get { return Log[key]; }
@@ -1289,7 +1277,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The format.</value>
         /// <returns>The error format that explains the reason for the exception, or an empty string("").</returns>
-        [PublicAPI]
         public override string Message
         {
             get { return Log.Message ?? string.Empty; }
@@ -1301,7 +1288,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The safe stack trace.</value>
         [NotNull]
-        [PublicAPI]
         public new string StackTrace
         {
             get { return Log.StackTrace ?? base.StackTrace ?? string.Empty; }
@@ -1322,10 +1308,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="key">The key.</param>
         /// <returns>System.String.</returns>
         [CanBeNull]
-        [PublicAPI]
         public string Get([NotNull] string key)
         {
-            Contract.Requires(key != null);
             return Log.Get(key);
         }
 
@@ -1335,10 +1319,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="prefix">The prefix.</param>
         /// <returns>IEnumerable{KeyValuePair{System.StringSystem.String}}.</returns>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix)
         {
-            Contract.Requires(prefix != null);
             return Log.GetPrefixed(prefix);
         }
 
@@ -1350,7 +1332,6 @@ namespace WebApplications.Utilities.Logging
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" PathDiscovery="*AllFiles*"/>
         /// </PermissionSet>
-        [PublicAPI]
         public override string ToString()
         {
             return ToString(Log.VerboseFormat);
@@ -1362,7 +1343,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
             return ToString(Log.VerboseFormat, formatProvider);
@@ -1374,7 +1354,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [PublicAPI]
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             return ToString((FormatBuilder)format, formatProvider);
@@ -1386,7 +1365,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [PublicAPI]
         [NotNull]
         public string ToString([CanBeNull] FormatBuilder format, [CanBeNull] IFormatProvider formatProvider = null)
         {

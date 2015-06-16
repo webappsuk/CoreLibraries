@@ -1,7 +1,7 @@
 ﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
 // Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
-//
+// 
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 //     * Redistributions of source code must retain the above copyright
@@ -12,7 +12,7 @@
 //     * Neither the name of Web Applications UK Ltd nor the
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
-//
+// 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -55,7 +55,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// The default logging directory.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly string DefaultDirectory;
 
         private uint _buffer;
@@ -97,7 +96,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// The default file name format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static FormatBuilder DefaultFileNameFormat =
             new FormatBuilder(
                 "{" + Log.FormatTagApplicationName + "}-{" + Log.FormatTagTimeStamp + ":yyMMddHHmmssffff}",
@@ -152,7 +150,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             bool autoFlush = false)
             : base(name, true, validLevels)
         {
-            Contract.Requires(name != null);
             MaxLog = maxLog;
             MaxDuration = maxDuration == default(TimeSpan) ? TimeSpan.FromDays(1) : maxDuration;
             _directory = directory ?? DefaultDirectory;
@@ -174,7 +171,6 @@ namespace WebApplications.Utilities.Logging.Loggers
                     (chunk.Alignment == 0) &&
                     (chunk.Format == null) &&
                     (!chunk.Children.Any()))
-                {
                     switch (chunk.Tag.ToLowerInvariant())
                     {
                         case "all":
@@ -193,7 +189,6 @@ namespace WebApplications.Utilities.Logging.Loggers
                             format = Log.ShortFormat;
                             break;
                     }
-                }
             }
             _format = format ?? Log.VerboseFormat;
             _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref _extension, _format);
@@ -205,7 +200,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   The directory being logged to.
         /// </summary>
         [NotNull]
-        [PublicAPI]
+
         // ReSharper disable once CodeAnnotationAnalyzer
         public string Directory
         {
@@ -226,7 +221,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   The format string used for naming log files.
         /// </summary>
         [NotNull]
-        [PublicAPI]
+
         // ReSharper disable once CodeAnnotationAnalyzer
         public FormatBuilder FileNameFormat
         {
@@ -248,7 +243,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <value>The format.</value>
         [NotNull]
-        [PublicAPI]
+
         // ReSharper disable once CodeAnnotationAnalyzer
         public FormatBuilder Format
         {
@@ -269,7 +264,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets the extension.
         /// </summary>
         /// <value>The extension.</value>
-        [PublicAPI]
         [CanBeNull]
         public string Extension
         {
@@ -287,7 +281,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         ///   The maximum time period that a single log file can cover.
         /// </summary>
-        [PublicAPI]
         public TimeSpan MaxDuration
         {
             get { return _maxDuration; }
@@ -307,7 +300,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         ///   The maximum number of log items in a single log file.
         /// </summary>
-        [PublicAPI]
         public Int64 MaxLog
         {
             get { return _maxLog; }
@@ -330,7 +322,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets the buffer size in bytes.
         /// </summary>
         /// <value>The buffer.</value>
-        [PublicAPI]
         public uint Buffer
         {
             get { return _buffer; }
@@ -359,14 +350,12 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets a value indicating whether to auto flush the file.
         /// </summary>
         /// <value><see langword="true" /> if auto flush; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool AutoFlush { get; set; }
 
         /// <summary>
         /// The format tag used to dedupe a file.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagDedupe = "dedupe";
 
         /// <summary>
@@ -385,10 +374,10 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] ref string extension,
             [NotNull] FormatBuilder format)
         {
-            Contract.Requires(directory != null);
-            Contract.Requires(fileNameFormat != null);
-            Contract.Requires(extension != null);
-            Contract.Requires(format != null);
+            if (directory == null) throw new ArgumentNullException("directory");
+            if (fileNameFormat == null) throw new ArgumentNullException("fileNameFormat");
+            if (extension == null) throw new ArgumentNullException("extension");
+            if (format == null) throw new ArgumentNullException("format");
 
             if (string.IsNullOrWhiteSpace(directory))
                 directory = DefaultDirectory;
@@ -493,16 +482,13 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override async Task Add(
-            [InstantHandle] IEnumerable<Log> logs,
-            CancellationToken token = default(CancellationToken))
+        public override async Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires(logs != null);
+            if (logs == null) throw new ArgumentNullException("logs");
+
             LogFile logFile = null;
             foreach (Log log in logs)
             {
-                Contract.Assert(log != null);
-
                 logFile = _logFile;
 
                 // Check if the current file is OK.
@@ -556,7 +542,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                                         FileMode.Create,
                                         FileAccess.ReadWrite,
                                         FileShare.Read,
-                                        (int) Buffer,
+                                        (int)Buffer,
                                         FileOptions.Asynchronous | FileOptions.SequentialScan),
                                     fileName,
                                     Format,
@@ -564,7 +550,10 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                                 dedupe = -1;
                                 // ReSharper disable once AssignNullToNotNullAttribute
-                                TraceTextWriter.Default.WriteLine(Resources.FileLogger_Started_File, fileName, Buffer.ToMemorySize());
+                                TraceTextWriter.Default.WriteLine(
+                                    Resources.FileLogger_Started_File,
+                                    fileName,
+                                    Buffer.ToMemorySize());
                                 break;
                             }
                             catch (Exception e)
@@ -578,6 +567,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                         _logFile = logFile;
                     }
                 }
+
+                Debug.Assert(logFile != null);
                 await logFile.Write(log, token).ConfigureAwait(false);
             }
 
@@ -598,7 +589,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         /// Closes the current log file.
         /// </summary>
-        [PublicAPI]
         public void CloseFile()
         {
             LogFile logFile = Interlocked.Exchange(ref _logFile, null);
@@ -619,6 +609,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         /// A log file.
         /// </summary>
+        [PublicAPI]
         private class LogFile : IDisposable
         {
             /// <summary>
@@ -642,14 +633,12 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// The file name
             /// </summary>
             [NotNull]
-            [PublicAPI]
             public readonly string FileName;
 
             [NotNull]
-            [PublicAPI]
             public readonly FormatBuilder Format;
 
-            [PublicAPI]
+
             public readonly LogFileStyle Style;
 
             public readonly DateTime Start;
@@ -664,10 +653,12 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <param name="fileName">Name of the file.</param>
             /// <param name="format">The format.</param>
             /// <param name="start">The start.</param>
-            public LogFile([NotNull] FileStream fileStream, [NotNull] string fileName, [NotNull] FormatBuilder format, DateTime start)
+            public LogFile(
+                [NotNull] FileStream fileStream,
+                [NotNull] string fileName,
+                [NotNull] FormatBuilder format,
+                DateTime start)
             {
-                Contract.Requires(fileName != null);
-                Contract.Requires(format != null);
                 Format = format;
                 Start = start;
 
@@ -722,7 +713,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public async Task Write([NotNull] Log log, CancellationToken token = default(CancellationToken))
             {
-                Contract.Requires(log != null);
                 string logStr = log.ToString(Format);
                 Logs++;
 
@@ -755,10 +745,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [PublicAPI]
             public Task WriteLine([NotNull] string text, CancellationToken token = default(CancellationToken))
             {
-                Contract.Requires(text != null);
                 return Write(text + Environment.NewLine, token);
             }
 
@@ -770,7 +758,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [PublicAPI]
             public Task Write([CanBeNull] string text, CancellationToken token = default(CancellationToken))
             {
                 // ReSharper disable once AssignNullToNotNullAttribute

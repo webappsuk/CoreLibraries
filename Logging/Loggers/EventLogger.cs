@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,25 +58,21 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <para>By default this is set to <see cref="LoggingLevels">LogLevels.AtLeastInformation</see>.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="machineName">Name of the machine.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        /// <paramref name="name" /> to not be a null value.</para>
-        /// <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        /// <paramref name="eventLog" /> to not be a null value.</para></remarks>
         public EventLogger(
             [NotNull] string name,
             [NotNull] string eventLog = "Application",
             LoggingLevels validLevels = LoggingLevels.AtLeastInformation,
             [CanBeNull] FormatBuilder format = null,
-            [NotNull] string machineName = "."
-            )
+            [NotNull] string machineName = ".")
             : base(name, false, validLevels)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(eventLog != null);
-            Contract.Requires(machineName != null);
-            Contract.Requires(name != null, Resources.EventLogger_NameCannotBeNull);
-            EventLog = eventLog;
-            MachineName = machineName;
+            if (string.IsNullOrWhiteSpace(eventLog))
+                throw new ArgumentNullException("eventLog", Resources.EventLogger_EventLogCannotBeNull);
+            if (string.IsNullOrWhiteSpace(machineName))
+                throw new ArgumentNullException("machineName", Resources.EventLogger_MachineNameCannotBeNull);
+
+            _eventLog = eventLog;
+            _machineName = machineName;
             Format = format ?? Log.VerboseFormat;
         }
 
@@ -84,13 +80,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   The <see cref="System.Diagnostics.EventLog.Log">name</see> of the <see cref="EventLog">event log</see>.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public string EventLog
         {
             get { return _eventLog; }
             set
             {
-                Contract.Requires(value != null);
                 if (_eventLog == value) return;
                 if (string.IsNullOrWhiteSpace(value))
                     // ReSharper disable once AssignNullToNotNullAttribute
@@ -104,7 +98,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <value>The format.</value>
         [NotNull]
-        [PublicAPI]
         public FormatBuilder Format { get; set; }
 
         /// <summary>
@@ -112,13 +105,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <value>The format.</value>
         [NotNull]
-        [PublicAPI]
         public string MachineName
         {
             get { return _machineName; }
             set
             {
-                Contract.Requires(value != null);
                 if (_machineName == value) return;
                 if (string.IsNullOrWhiteSpace(value))
                     // ReSharper disable once AssignNullToNotNullAttribute
@@ -133,20 +124,20 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires(logs != null);
+            if (logs == null) throw new ArgumentNullException("logs");
+
             string source = Log.ApplicationName;
             if (string.IsNullOrWhiteSpace(source))
                 source = "Application";
             else if (source.Length > 254)
                 source = source.Substring(0, 254);
 
-            EventLog eventLog = new EventLog {Source = source, MachineName = MachineName, Log = EventLog};
+            EventLog eventLog = new EventLog { Source = source, MachineName = MachineName, Log = EventLog };
             FormatBuilder format = Format;
             foreach (Log log in logs)
             {
-                Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
                 string logStr = log.ToString(format);
                 StringBuilder builder = new StringBuilder(logStr.Length);
@@ -186,9 +177,9 @@ namespace WebApplications.Utilities.Logging.Loggers
                 }
 
                 // Create an id based on time of day.
-                int id = (int) (log.TimeStamp.TimeOfDay.TotalSeconds / 1.32);
+                int id = (int)(log.TimeStamp.TimeOfDay.TotalSeconds / 1.32);
 
-                eventLog.WriteEntry(builder.ToString(), entryType, id, (short) log.Level, log.Guid.ToByteArray());
+                eventLog.WriteEntry(builder.ToString(), entryType, id, (short)log.Level, log.Guid.ToByteArray());
             }
             // ReSharper disable once AssignNullToNotNullAttribute
             return TaskResult.Completed;

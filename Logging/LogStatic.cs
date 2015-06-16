@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -89,9 +88,9 @@ namespace WebApplications.Utilities.Logging
                     // Create a hash set of known public keys that we don't want to match.
                     HashSet<HashedByteArray> publicKeys = new HashSet<HashedByteArray>
                     {
-                        typeof (int).Assembly.GetName().GetPublicKey(),
-                        typeof (UtilityExtensions).Assembly.GetName().GetPublicKey(),
-                        typeof (PerformanceCounterExtensions).Assembly.GetName().GetPublicKey()
+                        typeof(int).Assembly.GetName().GetPublicKey(),
+                        typeof(UtilityExtensions).Assembly.GetName().GetPublicKey(),
+                        typeof(PerformanceCounterExtensions).Assembly.GetName().GetPublicKey()
                     };
                     // Get the assembly name from the lowest point on the stack that does not have a
                     // 'known' public key.
@@ -125,112 +124,96 @@ namespace WebApplications.Utilities.Logging
         /// The message format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagHeader = "!header";
 
         /// <summary>
         /// The message format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagMessage = "message";
 
         /// <summary>
         /// The resource format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagResource = "resource";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagCulture = "culture";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagTimeStamp = "time";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagLevel = "level";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagGuid = "guid";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagException = "exception";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagStackTrace = "stack";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagThreadID = "threadid";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagThreadName = "thread";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagApplicationName = "application";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagApplicationGuid = "applicationguid";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagStoredProcedure = "sproc";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagInnerException = "innerexception";
 
         /// <summary>
         /// The culture format tag.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string FormatTagContext = "context";
         #endregion
 
@@ -246,7 +229,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string LogKeyPrefix = LogContext.ReservePrefix(
             "Log ",
             _logReservation);
@@ -256,7 +238,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string ParameterPrefix =
             LogContext.ReservePrefix("Log Parameter ", _logReservation);
 
@@ -265,7 +246,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string GuidKey = LogContext.ReserveKey(
             "Log GUID",
             _logReservation);
@@ -275,7 +255,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string LevelKey = LogContext.ReserveKey(
             "Log Level",
             _logReservation);
@@ -285,7 +264,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string MessageFormatKey =
             LogContext.ReserveKey("Log Message Format", _logReservation);
 
@@ -294,7 +272,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string ResourcePropertyKey =
             LogContext.ReserveKey("Log Resource Property", _logReservation);
 
@@ -303,7 +280,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string ExceptionTypeFullNameKey =
             LogContext.ReserveKey("Log Exception Type", _logReservation);
 
@@ -312,7 +288,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string InnerExceptionGuidsPrefix =
             LogContext.ReservePrefix("Log Inner Exception ", _logReservation);
 
@@ -321,7 +296,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string StackTraceKey = LogContext.ReserveKey(
             "Log Stack Trace",
             _logReservation);
@@ -331,7 +305,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string ThreadIDKey = LogContext.ReserveKey(
             "Log Thread ID",
             _logReservation);
@@ -341,7 +314,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string ThreadNameKey = LogContext.ReserveKey(
             "Log Thread Name",
             _logReservation);
@@ -351,7 +323,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string StoredProcedureKey =
             LogContext.ReserveKey("Log Stored Procedure", _logReservation);
 
@@ -360,7 +331,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string StoredProcedureLineKey =
             LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
 
@@ -369,7 +339,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly string IsTerminatingKey =
             LogContext.ReserveKey("Is Terminating", _logReservation);
         #endregion
@@ -379,7 +348,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
 
         /// <summary>
@@ -454,13 +422,12 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The entry assembly.</value>
         [NotNull]
-        [PublicAPI]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static Assembly EntryAssembly
         {
             get
             {
-                Contract.Assert(_entryAssembly.Value != null);
+                Debug.Assert(_entryAssembly.Value != null);
                 return _entryAssembly.Value;
             }
         }
@@ -468,13 +435,11 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   Gets the valid <see cref="LoggingLevel">log levels</see>.
         /// </summary>
-        [PublicAPI]
         public static LoggingLevels ValidLevels { get; set; }
 
         /// <summary>
         ///   Gets the loggers.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static IEnumerable<ILogger> Loggers
         {
@@ -501,7 +466,6 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The maximum number of log entries to store in the memory cache.
         /// </summary>
-        [PublicAPI]
         public static int CacheMaximum
         {
             get { return _defaultMemoryLogger.MaximumLogEntries; }
@@ -511,7 +475,6 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The maximum length of time to hold items in the memory cache.
         /// </summary>
-        [PublicAPI]
         public static TimeSpan CacheExpiry
         {
             get { return _defaultMemoryLogger.CacheExpiry; }
@@ -521,7 +484,6 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Clears all cached logs.
         /// </summary>
-        [PublicAPI]
         public static void ClearCache()
         {
             _defaultMemoryLogger.Clear();
@@ -560,7 +522,7 @@ namespace WebApplications.Utilities.Logging
             {
                 // Get the active configuration
                 LoggingConfiguration configuration = ConfigurationSection<LoggingConfiguration>.Active;
-                Contract.Assert(configuration != null);
+                Debug.Assert(configuration != null);
 
                 ApplicationName = configuration.ApplicationName;
                 ApplicationGuid = configuration.ApplicationGuid;
@@ -571,7 +533,7 @@ namespace WebApplications.Utilities.Logging
                     _loggers.Where(kvp => kvp.Value.IsFromConfiguration).ToArray();
                 foreach (ILogger l in loggers.Select(l => l.Key))
                 {
-                    Contract.Assert(l != null);
+                    Debug.Assert(l != null);
                     _loggers.Remove(l);
                 }
 
@@ -580,8 +542,8 @@ namespace WebApplications.Utilities.Logging
                     loggers,
                     kvp =>
                     {
-                        Contract.Assert(kvp.Key != null);
-                        Contract.Assert(kvp.Value != null);
+                        Debug.Assert(kvp.Key != null);
+                        Debug.Assert(kvp.Value != null);
                         using (kvp.Value.Lock.LockAsync().Result)
                             kvp.Key.Dispose();
                     });
@@ -596,9 +558,9 @@ namespace WebApplications.Utilities.Logging
                 if (configuration.Enabled)
                 {
                     ValidLevels = configuration.ValidLevels;
-                    foreach (LoggerElement loggerElement in configuration.Loggers.Where(l => l != null && l.Enabled))
+                    foreach (LoggerElement loggerElement in configuration.Loggers.Where(l => l.Enabled))
                     {
-                        Contract.Assert(loggerElement != null);
+                        Debug.Assert(loggerElement != null);
                         try
                         {
                             AddLogger(loggerElement.GetInstance<ILogger>(), _defaultMemoryLogger, int.MaxValue, true);
@@ -625,10 +587,8 @@ namespace WebApplications.Utilities.Logging
                     _tickAction.Change(period, Duration.Zero);
                 }
                 else
-                {
-                    // Disable logging.
+                // Disable logging.
                     ValidLevels = LoggingLevels.None;
-                }
             }
         }
 
@@ -638,7 +598,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static void SetTrace([CanBeNull] string format, LoggingLevels validLevels = LoggingLevels.All)
         {
             SetTrace(format != null ? new FormatBuilder().Append(format) : null, validLevels);
@@ -649,7 +608,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
-        [PublicAPI]
         public static void SetTrace(
             [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
@@ -674,7 +632,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static void SetConsole([CanBeNull] string format, LoggingLevels validLevels = LoggingLevels.All)
         {
             if (!ConsoleHelper.IsConsole)
@@ -688,7 +645,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
-        [PublicAPI]
         public static void SetConsole(
             [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
@@ -718,13 +674,12 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         [NotNull]
-        [PublicAPI]
         public static ILogger AddLogger(
             [NotNull] ILogger logger,
             [CanBeNull] ILogger sourceLogger = null,
             int limit = Int32.MaxValue)
         {
-            Contract.Requires(logger != null);
+            if (logger == null) throw new ArgumentNullException("logger");
             return AddLogger(logger, sourceLogger, limit, false);
         }
 
@@ -737,14 +692,13 @@ namespace WebApplications.Utilities.Logging
         /// <param name="isFromConfiguration">if set to <see langword="true" /> the logger was added from the configuration.</param>
         /// <returns>ILogger.</returns>
         [NotNull]
-        [PublicAPI]
         private static ILogger AddLogger(
             [NotNull] ILogger logger,
             [CanBeNull] ILogger sourceLogger,
             int limit,
             bool isFromConfiguration)
         {
-            Contract.Requires(logger != null);
+            if (logger == null) throw new ArgumentNullException("logger");
             if (sourceLogger == null)
                 sourceLogger = _defaultMemoryLogger;
 
@@ -777,7 +731,8 @@ namespace WebApplications.Utilities.Logging
                 // Add logs, we already have the lock, so we go first.
                 IQueryable<Log> logs = sourceLogger.All;
                 if (logs != null)
-                    logger.Add(limit < int.MaxValue ? (IEnumerable<Log>) new CyclicConcurrentQueue<Log>(logs, limit) : logs);
+                    logger.Add(
+                        limit < int.MaxValue ? (IEnumerable<Log>)new CyclicConcurrentQueue<Log>(logs, limit) : logs);
             }
             finally
             {
@@ -797,14 +752,13 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         [NotNull]
-        [PublicAPI]
         public static T AddLogger<T>(
             [NotNull] T logger,
             [CanBeNull] ILogger sourceLogger = null,
             int limit = Int32.MaxValue)
             where T : ILogger
         {
-            Contract.Requires(!ReferenceEquals(logger, null));
+            if (logger == null) throw new ArgumentNullException("logger");
             return AddLogger(() => logger, sourceLogger, limit, false);
         }
 
@@ -818,14 +772,13 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         [NotNull]
-        [PublicAPI]
         public static T AddLogger<T>(
             [NotNull] [InstantHandle] Func<T> loggerCreator,
             [CanBeNull] ILogger sourceLogger = null,
             int limit = Int32.MaxValue)
             where T : ILogger
         {
-            Contract.Requires(loggerCreator != null);
+            if (loggerCreator == null) throw new ArgumentNullException("loggerCreator");
             return AddLogger(loggerCreator, sourceLogger, limit, false);
         }
 
@@ -839,7 +792,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="isFromConfiguration">if set to <see langword="true" /> [is from configuration].</param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         [NotNull]
-        [PublicAPI]
         private static T AddLogger<T>(
             [NotNull] [InstantHandle] Func<T> loggerCreator,
             [CanBeNull] ILogger sourceLogger,
@@ -847,7 +799,7 @@ namespace WebApplications.Utilities.Logging
             bool isFromConfiguration)
             where T : ILogger
         {
-            Contract.Requires(loggerCreator != null);
+            if (loggerCreator == null) throw new ArgumentNullException("loggerCreator");
             if (sourceLogger == null)
                 sourceLogger = _defaultMemoryLogger;
 
@@ -883,7 +835,8 @@ namespace WebApplications.Utilities.Logging
                 // Add logs, we already have the lock, so we go first.
                 IQueryable<Log> logs = sourceLogger.All;
                 if (logs != null)
-                    logger.Add(limit < int.MaxValue ? (IEnumerable<Log>)new CyclicConcurrentQueue<Log>(logs, limit) : logs);
+                    logger.Add(
+                        limit < int.MaxValue ? (IEnumerable<Log>)new CyclicConcurrentQueue<Log>(logs, limit) : logs);
             }
             finally
             {
@@ -898,10 +851,10 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="logger">The retrieved logger.</param>
         /// <returns>Returns <see langword="true" /> if the logger was retrieved successfully; otherwise returns <see langword="false" />.</returns>
-        [PublicAPI]
         public static bool RemoveLogger([NotNull] ILogger logger)
         {
-            Contract.Requires(logger != null);
+            if (logger == null) throw new ArgumentNullException("logger");
+
             // Sanity check - should be impossible to get reference to _defaultMemoryLogger anyway.
             if (ReferenceEquals(logger, _defaultMemoryLogger))
                 return false;
@@ -916,7 +869,6 @@ namespace WebApplications.Utilities.Logging
         /// <typeparam name="T">The logger type</typeparam>
         /// <returns>All loggers matching the type</returns>
         [NotNull]
-        [PublicAPI]
         public static IEnumerable<T> GetLoggers<T>()
             where T : ILogger
         {
@@ -930,7 +882,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   Note: If more logs are added whilst the system is flushing this will continue to block until there are no outstanding logs.
         /// </remarks>
-        [PublicAPI]
         [NotNull]
         public static Task Flush(CancellationToken token = new CancellationToken())
         {
@@ -943,7 +894,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   Note: If more logs are added whilst the system is flushing this will continue to block until there are no outstanding logs.
         /// </remarks>
-        [PublicAPI]
         [NotNull]
         private static async Task DoFlush(CancellationToken token = new CancellationToken())
         {
@@ -972,7 +922,7 @@ namespace WebApplications.Utilities.Logging
 
                     Log log;
                     if (!_buffer.TryTake(out log)) break;
-                    Contract.Assert(log != null);
+                    Debug.Assert(log != null);
 
                     if (log.TimeStamp > requested)
                         notReady.Add(log);
@@ -998,6 +948,7 @@ namespace WebApplications.Utilities.Logging
                     .ToList();
 
             // Order the logs
+            // ReSharper disable once PossibleNullReferenceException
             Log[] orderedLogs = ready.OrderBy(l => l.TimeStamp).ToArray();
             ready.Clear();
 
@@ -1016,16 +967,16 @@ namespace WebApplications.Utilities.Logging
             // ReSharper disable once AssignNullToNotNullAttribute
             await Task.WhenAll(
                 loggers.Select(
-                // ReSharper disable once PossibleNullReferenceException
+                    // ReSharper disable once PossibleNullReferenceException
                     kvp => kvp.Value.Lock
                         .LockAsync(CancellationToken.None)
                         .ContinueWith(
                             t =>
                             {
-                                Contract.Assert(t != null);
+                                Debug.Assert(t != null);
                                 try
                                 {
-                                    Contract.Assert(kvp.Key != null);
+                                    Debug.Assert(kvp.Key != null);
                                     kvp.Key.Add(
                                         // ReSharper disable PossibleNullReferenceException
                                         orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
@@ -1040,7 +991,7 @@ namespace WebApplications.Utilities.Logging
                             },
                             CancellationToken.None,
                             TaskContinuationOptions.LongRunning,
-                        // ReSharper disable AssignNullToNotNullAttribute
+                            // ReSharper disable AssignNullToNotNullAttribute
                             TaskScheduler.Default)))
                 // ReSharper restore AssignNullToNotNullAttribute
                 // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
@@ -1103,7 +1054,6 @@ namespace WebApplications.Utilities.Logging
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
@@ -1132,7 +1082,6 @@ namespace WebApplications.Utilities.Logging
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [LocalizationRequired] [CanBeNull] string format,
@@ -1162,7 +1111,6 @@ namespace WebApplications.Utilities.Logging
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
@@ -1182,7 +1130,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -1203,7 +1150,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level"><para>The log level.</para>
         /// <para>By default this uses the error log level.</para></param>
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
-        [PublicAPI]
         public static void Add([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
@@ -1225,7 +1171,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -1247,7 +1192,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] Exception exception,
@@ -1272,7 +1216,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] LogContext context,
@@ -1292,7 +1235,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
@@ -1320,7 +1262,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
@@ -1349,7 +1290,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
@@ -1368,7 +1308,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -1392,7 +1331,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] Exception exception,
             LoggingLevel level,
@@ -1417,7 +1355,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -1440,7 +1377,6 @@ namespace WebApplications.Utilities.Logging
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [LocalizationRequired] [CanBeNull] string format,
@@ -1462,7 +1398,6 @@ namespace WebApplications.Utilities.Logging
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1485,7 +1420,6 @@ namespace WebApplications.Utilities.Logging
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             LoggingLevel level,
@@ -1509,7 +1443,6 @@ namespace WebApplications.Utilities.Logging
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1534,7 +1467,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -1556,7 +1488,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1580,7 +1511,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] CultureInfo culture,
@@ -1607,7 +1537,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] CultureInfo culture,
@@ -1630,7 +1559,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Expression<Func<string>> resource,
@@ -1651,7 +1579,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1673,7 +1600,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             LoggingLevel level,
@@ -1696,7 +1622,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1722,7 +1647,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -1748,7 +1672,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1768,7 +1691,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
@@ -1798,7 +1720,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Type resourceType,
@@ -1829,7 +1750,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             LoggingLevel level,
             [CanBeNull] Type resourceType,
@@ -1861,7 +1781,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -1896,7 +1815,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] Exception exception,
             LoggingLevel level,
@@ -1931,7 +1849,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -1963,7 +1880,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Type resourceType,
@@ -1995,7 +1911,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2028,7 +1943,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             LoggingLevel level,
@@ -2053,7 +1967,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2081,7 +1994,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -2109,7 +2021,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2133,7 +2044,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
@@ -2163,7 +2073,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] LogContext context,
             [CanBeNull] string resourceProperty,
@@ -2194,7 +2103,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             LoggingLevel level,
             [CanBeNull] string resourceProperty,
@@ -2226,7 +2134,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -2261,7 +2168,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] Exception exception,
             LoggingLevel level,
@@ -2296,7 +2202,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -2328,7 +2233,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] string resourceProperty,
@@ -2360,7 +2264,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2393,7 +2296,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             LoggingLevel level,
@@ -2418,7 +2320,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2447,7 +2348,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -2476,7 +2376,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2501,7 +2400,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] Exception exception,
@@ -2532,7 +2430,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] LogContext context,
@@ -2563,7 +2460,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
@@ -2593,7 +2489,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -2624,7 +2519,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] CultureInfo culture,
@@ -2648,7 +2542,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] CultureInfo culture,
@@ -2672,7 +2565,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -2695,7 +2587,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2718,7 +2609,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] Exception exception,
             [CanBeNull] Type resourceType,
@@ -2750,7 +2640,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -2783,7 +2672,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -2817,7 +2705,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -2850,7 +2737,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] Exception exception,
             [CanBeNull] string resourceProperty,
@@ -2882,7 +2768,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -2915,7 +2800,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -2949,7 +2833,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If <see cref="LoggingLevel.Error"/> is an invalid level then the log won't be added.
         /// </remarks>
-        [PublicAPI]
         public static void Add<TResource>(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,

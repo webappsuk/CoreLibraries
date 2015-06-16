@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
@@ -44,7 +42,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder EnumerableElementVerboseFormat = new FormatBuilder()
             .AppendLine()
             .AppendForegroundColor(Color.DarkCyan)
@@ -57,7 +54,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder EnumerableElementNoLineFormat = new FormatBuilder()
             .AppendForegroundColor(Color.DarkCyan)
             .AppendFormat("{Key}")
@@ -69,7 +65,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder EnumerableElementXMLFormat = new FormatBuilder()
             .AppendFormatLine("<{KeyXmlTag}>")
             .AppendLayout(firstLineIndentSize: 8)
@@ -82,7 +77,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder EnumerableElementJSONFormat = new FormatBuilder()
             .Append(',')
             .AppendLine()
@@ -95,14 +89,12 @@ namespace WebApplications.Utilities.Logging
             /// The resource.
             /// </summary>
             [NotNull]
-            [PublicAPI]
             public readonly Expression<Func<string>> Resource;
 
             /// <summary>
             /// The value.
             /// </summary>
-            [CanBeNull]
-            [PublicAPI]
+            [NotNull]
             public readonly IEnumerable<object> Values;
 
             /// <summary>
@@ -112,9 +104,8 @@ namespace WebApplications.Utilities.Logging
             /// <param name="values">The values.</param>
             public LogEnumerableElement(
                 [NotNull] Expression<Func<string>> resource,
-                [CanBeNull] IEnumerable<object> values)
+                [NotNull] IEnumerable<object> values)
             {
-                Contract.Requires(resource != null);
                 Resource = resource;
                 Values = values;
             }
@@ -125,7 +116,6 @@ namespace WebApplications.Utilities.Logging
             /// <param name="context">The context.</param>
             /// <param name="chunk">The chunk.</param>
             /// <returns>An object that will be cached unless it is a <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
-            // ReSharper disable once CodeAnnotationAnalyzer
             public override object Resolve(FormatWriteContext context, FormatChunk chunk)
             {
                 string key;
@@ -142,17 +132,23 @@ namespace WebApplications.Utilities.Logging
                     case "noline":
                         return EnumerableElementNoLineFormat;
                     case "key":
-                        key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        key = Translation.GetResource(
+                            Resource,
+                            context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(key)
                             ? Resolution.Null
                             : key;
                     case "keyxml":
-                        key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        key = Translation.GetResource(
+                            Resource,
+                            context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(key)
                             ? Resolution.Null
                             : key.XmlEscape();
                     case "keyxmltag":
-                        key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        key = Translation.GetResource(
+                            Resource,
+                            context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(key)
                             ? Resolution.Null
                             : key.Replace(' ', '_');

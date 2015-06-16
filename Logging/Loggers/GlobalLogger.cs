@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+#if false // TODO
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,24 +35,22 @@ using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
-#if false // TODO
     /// <summary>
     /// The <see cref="GlobalLogger"/> gives access to all logs, from all processes, on the current machine.
     /// </summary>
+    [PublicAPI]
     public sealed class GlobalLogger : LoggerBase
     {
         /// <summary>
         /// The log file path.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public static readonly string LogFilePath;
 
         /// <summary>
         /// The log file name.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public const string LogFileName = @"WebApplications.Utilities.Logging.GlobalLog.log";
 
         static GlobalLogger()
@@ -93,9 +91,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <exception cref="System.NotImplementedException"></exception>
         public override Task Add(IEnumerable<Log> logs, CancellationToken token = new CancellationToken())
         {
-            Contract.Requires(logs != null);
+            if (logs == null) throw new ArgumentNullException("logs");
             throw new NotImplementedException();
         }
     }
-#endif
 }
+#endif

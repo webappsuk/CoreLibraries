@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,19 +41,18 @@ namespace WebApplications.Utilities.Logging.Interfaces
     /// <remarks>
     ///   For a head start use <see cref="LoggerBase"/>, which already implements a number of these methods.
     /// </remarks>
+    [PublicAPI]
     public interface ILogger : IDisposable
     {
         /// <summary>
         /// A <see cref="bool" /> value indicating whether the logger supports multiple instances.
         /// </summary>
         /// <value>Returns <see langword="true" /> if the logger supports multiple instances; otherwise returns <see langword="false" />.</value>
-        [PublicAPI]
         bool AllowMultiple { get; }
 
         /// <summary>
         ///   The valid <see cref="LoggingLevels">log levels</see> for this log level.
         /// </summary>
-        [PublicAPI]
         LoggingLevels ValidLevels { get; set; }
 
         /// <summary>
@@ -61,7 +60,6 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// </summary>
         /// <value>The logger name.</value>
         [NotNull]
-        [PublicAPI]
         string Name { get; }
 
         /// <summary>
@@ -71,22 +69,19 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
         [NotNull]
-        [PublicAPI]
-        Task Add([NotNull] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
+        Task Add([NotNull][ItemNotNull][InstantHandle] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Gets all logs (if available).
         /// </summary>
         /// <value>The query.</value>
         [CanBeNull]
-        [PublicAPI]
         IQueryable<Log> All { get; }
 
         /// <summary>
         /// Force a flush of this logger.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         Task Flush(CancellationToken token = default(CancellationToken));
     }
 }

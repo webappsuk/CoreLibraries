@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,16 +29,13 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Text;
-using WebApplications.Utilities.Annotations;
 using ProtoBuf;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
@@ -50,13 +47,13 @@ namespace WebApplications.Utilities.Logging
     /// implicit casts, or the static <see cref="Empty">new LogContext()</see>.</remarks>
     [ProtoContract(UseProtoMembersOnly = true, IgnoreListHandling = true)]
     [Serializable]
+    [PublicAPI]
     public partial class LogContext : ResolvableWriteable, IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder VerboseFormat = new FormatBuilder()
             .AppendLine()
             .AppendForegroundColor(Color.Gray)
@@ -73,8 +70,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         // TODO Create Context NoLine format
         [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder NoLineFormat = new FormatBuilder()
+        public static readonly FormatBuilder NoLineFormat = new FormatBuilder()
             .MakeReadOnly();
 
         /// <summary>
@@ -82,8 +78,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         // TODO Create Context XMLFormat format
         [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder XMLFormat = new FormatBuilder()
+        public static readonly FormatBuilder XMLFormat = new FormatBuilder()
             .AppendFormatLine("<{KeyXmlTag}>")
             .AppendLayout(firstLineIndentSize: 8)
             .AppendFormat("{Value:{<items>:{<item>:{xml}}}}")
@@ -96,21 +91,18 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         // TODO Create Context JSONFormat format
         [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder JSONFormat = new FormatBuilder()
+        public static readonly FormatBuilder JSONFormat = new FormatBuilder()
             .MakeReadOnly();
 
         /// <summary>
         /// The minimum key length (note also minimum prefix length).
         /// </summary>
-        [PublicAPI]
         [NonSerialized]
         public const int MinimumKeyLength = 3;
 
         /// <summary>
         /// The maximum key length (note maximum prefix length is this minus <see cref="MinimumKeyLength"/>.
         /// </summary>
-        [PublicAPI]
         [NonSerialized]
         public const int MaximumKeyLength = 200;
 
@@ -119,7 +111,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        [PublicAPI]
         public static readonly LogContext Empty = new LogContext().Lock();
 
         /// <summary>
@@ -175,7 +166,7 @@ namespace WebApplications.Utilities.Logging
         internal LogContext([NotNull] IEnumerable<KeyValuePair<string, string>> dictionary)
             : base(false, true, false)
         {
-            Contract.Requires(dictionary != null);
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
             _context = new ConcurrentDictionary<string, string>(dictionary);
         }
 
@@ -191,11 +182,8 @@ namespace WebApplications.Utilities.Logging
         /// anyone else modifying a reserved key for a context.</para>
         ///   <para>Trying to reserve a key when it has already been reserved with a different GUID will throw an exception.</para></remarks>
         [NotNull]
-        [PublicAPI]
         public static string ReserveKey([NotNull] string key, Guid reservation)
         {
-            Contract.Requires(key != null);
-            Contract.Requires(reservation != Guid.Empty);
             // ReSharper disable AssignNullToNotNullAttribute
             if (reservation == Guid.Empty)
                 throw new LoggingException(() => Resources.LogContext_Invalid_Reservation);
@@ -253,11 +241,8 @@ namespace WebApplications.Utilities.Logging
         /// for a key that matches the prefix has already been reserved will throw an exception.</para>
         /// </remarks>
         [NotNull]
-        [PublicAPI]
         public static string ReservePrefix([NotNull] string prefix, Guid reservation)
         {
-            Contract.Requires(prefix != null);
-            Contract.Requires(reservation != Guid.Empty);
             // ReSharper disable AssignNullToNotNullAttribute
             if (reservation == Guid.Empty)
                 throw new LoggingException(() => Resources.LogContext_Invalid_Reservation);
@@ -319,11 +304,10 @@ namespace WebApplications.Utilities.Logging
         /// <param name="key">The key.</param>
         /// <returns><see langword="true" /> if the specified key is a reserved key; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static bool IsReservedKey([NotNull] string key)
         {
+            if (key == null) throw new ArgumentNullException("key");
             // Check for reservation.
-            Contract.Requires(key != null);
             return Reservation(key) != Guid.Empty;
         }
 
@@ -335,12 +319,12 @@ namespace WebApplications.Utilities.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Guid Reservation([NotNull] string key)
         {
-            Contract.Requires(key != null);
             Guid reservation;
-            return _keyReservations.TryGetValue(key, out reservation)
-                ? reservation
-                // ReSharper disable once AssignNullToNotNullAttribute
-                : _prefixReservations.FirstOrDefault(kvp => key.StartsWith(kvp.Key)).Value;
+            lock (_keyReservations)
+                return _keyReservations.TryGetValue(key, out reservation)
+                    ? reservation
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    : _prefixReservations.FirstOrDefault(kvp => key.StartsWith(kvp.Key)).Value;
         }
 
         /// <summary>
@@ -354,7 +338,6 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         private static string Validate(Guid reservation, [NotNull] string key)
         {
-            Contract.Requires(key != null);
             Guid r = Reservation(key);
             // ReSharper disable AssignNullToNotNullAttribute
             // Check for reservation
@@ -391,7 +374,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets a value indicating whether this instance is locked.
         /// </summary>
         /// <value><see langword="true" /> if this instance is locked; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsLocked
         {
             get { return _locked; }
@@ -401,7 +383,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the count.
         /// </summary>
         /// <value>The count.</value>
-        [PublicAPI]
         public int Count
         {
             get { return _context.Count; }
@@ -415,10 +396,8 @@ namespace WebApplications.Utilities.Logging
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext" /> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
-        [PublicAPI]
         public LogContext Set([NotNull] string key, [CanBeNull] object value)
         {
-            Contract.Requires(key != null);
             return Set(Guid.Empty, key, value);
         }
 
@@ -430,10 +409,8 @@ namespace WebApplications.Utilities.Logging
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext" /> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
-        [PublicAPI]
         public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull] params object[] values)
         {
-            Contract.Requires(prefix != null);
             return SetPrefixed(Guid.Empty, prefix, (IEnumerable<object>)values);
         }
 
@@ -445,10 +422,8 @@ namespace WebApplications.Utilities.Logging
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext" /> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
-        [PublicAPI]
-        public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull][InstantHandle] IEnumerable<object> values)
+        public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
-            Contract.Requires(prefix != null);
             return SetPrefixed(Guid.Empty, prefix, values);
         }
 
@@ -461,10 +436,8 @@ namespace WebApplications.Utilities.Logging
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext"/> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
-        [PublicAPI]
         public LogContext SetPrefixed(Guid reservation, [NotNull] string prefix, [CanBeNull] params object[] values)
         {
-            Contract.Requires(prefix != null);
             return SetPrefixed(reservation, prefix, (IEnumerable<object>)values);
         }
 
@@ -477,10 +450,9 @@ namespace WebApplications.Utilities.Logging
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext"/> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
-        [PublicAPI]
         public LogContext Set(Guid reservation, [NotNull] string key, [CanBeNull] object value)
         {
-            Contract.Requires(key != null);
+            if (key == null) throw new ArgumentNullException("key");
             // ReSharper disable once AssignNullToNotNullAttribute
             if (IsLocked) throw new LoggingException(() => Resources.LogContext_Locked);
             _context.GetOrAdd(Validate(reservation, key), k => value != null ? value.ToString() : null);
@@ -496,10 +468,13 @@ namespace WebApplications.Utilities.Logging
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext"/> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
-        [PublicAPI]
-        public LogContext SetPrefixed(Guid reservation, [NotNull] string prefix, [CanBeNull][InstantHandle] IEnumerable<object> values)
+        public LogContext SetPrefixed(
+            Guid reservation,
+            [NotNull] string prefix,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
-            Contract.Requires(prefix != null);
+            if (prefix == null) throw new ArgumentNullException("prefix");
+
             // ReSharper disable once AssignNullToNotNullAttribute
             if (IsLocked) throw new LoggingException(() => Resources.LogContext_Locked);
             if (values == null) return this;
@@ -515,16 +490,11 @@ namespace WebApplications.Utilities.Logging
         /// Gets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>The value associated with the specified key. If the specified key is not found, throws a <see cref="T:System.Collections.Generic.KeyNotFoundException" />.</returns>
+        /// <returns>The value associated with the specified key.</returns>
         [CanBeNull]
-        [PublicAPI]
         public string this[[NotNull] string key]
         {
-            get
-            {
-                Contract.Requires(key != null);
-                return Get(key);
-            }
+            get { return Get(key); }
         }
 
         /// <summary>
@@ -534,10 +504,9 @@ namespace WebApplications.Utilities.Logging
         /// <returns>System.String.</returns>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public string Get([NotNull] string key)
         {
-            Contract.Requires(key != null);
+            if (key == null) throw new ArgumentNullException("key");
             string value;
             return _context.TryGetValue(key, out value) ? value : null;
         }
@@ -548,10 +517,10 @@ namespace WebApplications.Utilities.Logging
         /// <param name="prefix">The prefix.</param>
         /// <returns>IEnumerable{KeyValuePair{System.StringSystem.String}}.</returns>
         [NotNull]
-        [PublicAPI]
         public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix)
         {
-            Contract.Requires(prefix != null);
+            if (prefix == null) throw new ArgumentNullException("prefix");
+
             // ReSharper disable once PossibleNullReferenceException
             return _context.Where(kvp => kvp.Key.StartsWith(prefix));
         }
@@ -622,6 +591,7 @@ namespace WebApplications.Utilities.Logging
                         ? Resolution.Null
                         : key.Replace(' ', '_');
                 case "value":
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     return _context.Select(kvp => new ContextElement(kvp.Key, kvp.Value)).ToArray();
                 default:
                     return Resolution.Unknown;

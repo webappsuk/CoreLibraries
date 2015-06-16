@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -61,8 +61,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : this(name, writer, format, true, validLevels)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(writer != null);
         }
 
         /// <summary>
@@ -81,8 +79,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels)
             : base(name, allowMultiple, validLevels)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(writer != null);
+            if (writer == null) throw new ArgumentNullException("writer");
             Format = format;
             _writer = writer;
         }
@@ -101,16 +98,14 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add(
-            [InstantHandle] IEnumerable<Log> logs,
-            CancellationToken token = default(CancellationToken))
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires(logs != null);
+            if (logs == null) throw new ArgumentNullException("logs");
+
             FormatBuilder format = Format ?? Log.VerboseFormat;
             // ReSharper disable once PossibleNullReferenceException
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
-                Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
                 log.WriteTo(_writer, format);
             }

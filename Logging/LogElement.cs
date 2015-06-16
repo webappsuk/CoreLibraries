@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,26 +26,10 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Security;
-using System.Text;
-using System.Threading;
 using WebApplications.Utilities.Annotations;
-using ProtoBuf;
-using ProtoBuf.Meta;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
@@ -56,8 +40,7 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementVerboseFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementVerboseFormat = new FormatBuilder()
             .AppendLine()
             .AppendForegroundColor(Color.Teal)
             .AppendFormat("{Key}")
@@ -69,8 +52,7 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementNoLineFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementNoLineFormat = new FormatBuilder()
             .AppendForegroundColor(Color.Teal)
             .AppendFormat("{Key}")
             .AppendResetForegroundColor()
@@ -81,8 +63,7 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementXMLFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementXMLFormat = new FormatBuilder()
             .AppendFormatLine("<{KeyXmlTag}>{ValueXml}</{KeyXmlTag}>")
             .MakeReadOnly();
 
@@ -90,8 +71,7 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementJSONFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementJSONFormat = new FormatBuilder()
             .Append(',')
             .AppendLine()
             .AppendFormat("\"{Key}\"=\"{Value}\"")
@@ -103,14 +83,12 @@ namespace WebApplications.Utilities.Logging
             /// The resource.
             /// </summary>
             [NotNull]
-            [PublicAPI]
             public readonly Expression<Func<string>> Resource;
 
             /// <summary>
             /// The value.
             /// </summary>
             [CanBeNull]
-            [PublicAPI]
             public readonly object Value;
 
             /// <summary>
@@ -120,7 +98,6 @@ namespace WebApplications.Utilities.Logging
             /// <param name="value">The value.</param>
             public LogElement([NotNull] Expression<Func<string>> resource, [CanBeNull] object value)
             {
-                Contract.Requires(resource != null);
                 Resource = resource;
                 Value = value;
             }
@@ -147,24 +124,30 @@ namespace WebApplications.Utilities.Logging
                     case "noline":
                         return ElementNoLineFormat;
                     case "key":
-                        string key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        string key = Translation.GetResource(
+                            Resource,
+                            context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(key)
                             ? Resolution.Null
                             : key;
                     case "keyxml":
-                        string keyXml = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        string keyXml = Translation.GetResource(
+                            Resource,
+                            context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(keyXml)
                             ? Resolution.Null
                             : keyXml.XmlEscape();
                     case "keyxmltag":
-                        string keyXmlTag = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        string keyXmlTag = Translation.GetResource(
+                            Resource,
+                            context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(keyXmlTag)
                             ? Resolution.Null
                             : keyXmlTag.Replace(' ', '_');
                     case "value":
                         return Value;
                     case "valuexml":
-                        return Value.XmlEscape();
+                        return Value == null ? Resolution.Null : Value.XmlEscape();
                     default:
                         return Resolution.Unknown;
                 }

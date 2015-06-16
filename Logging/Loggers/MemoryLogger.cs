@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,7 +93,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, validLevels)
         {
-            Contract.Requires(name != null);
             _maximumLogEntries = maximumLogEntries;
             _cacheExpiry = cacheExpiry;
 
@@ -123,7 +121,9 @@ namespace WebApplications.Utilities.Logging.Loggers
                         value);
 
                 _cacheExpiry = value;
+#pragma warning disable 4014
                 _cleaner.ExecuteAsync();
+#pragma warning restore 4014
             }
         }
 
@@ -150,10 +150,12 @@ namespace WebApplications.Utilities.Logging.Loggers
                     // ReSharper disable once AssignNullToNotNullAttribute
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                  () => Resources.MemoryLogger_MaximumLogsLessThanOne,
+                        () => Resources.MemoryLogger_MaximumLogsLessThanOne,
                         value);
                 _maximumLogEntries = value;
+#pragma warning disable 4014
                 _cleaner.ExecuteAsync();
+#pragma warning restore 4014
             }
         }
 
@@ -185,14 +187,15 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires(logs != null);
+            if (logs == null) throw new ArgumentNullException("logs");
+
             lock (_lock)
             {
                 foreach (Log log in logs
                     .Where(
-                    // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         log => log.Level.IsValid(ValidLevels) &&
                                CacheExpiry > (DateTime.UtcNow - log.TimeStamp)))
                 {
@@ -212,8 +215,10 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>Task.</returns>
         public override Task Flush(CancellationToken token = default(CancellationToken))
         {
+#pragma warning disable 4014
             // ReSharper disable once MethodSupportsCancellation
             _cleaner.ExecuteAsync();
+#pragma warning restore 4014
             return base.Flush(token);
         }
 
@@ -237,7 +242,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 while ((_queue.Count > 0) &&
                        ((_queue.Count > MaximumLogEntries) ||
-                    // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         (CacheExpiry > (DateTime.UtcNow - _queue.Peek().TimeStamp))))
                     _queue.Dequeue();
             }

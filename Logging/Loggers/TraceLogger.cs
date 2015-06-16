@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
@@ -49,7 +48,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, TraceTextWriter.Default, format, false, validLevels)
         {
-            Contract.Requires(name != null);
         }
     }
 }

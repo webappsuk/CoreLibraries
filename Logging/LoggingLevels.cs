@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Logging
     ///   Allows the specification of multiple <see cref="LoggingLevel">log levels</see>.
     /// </summary>
     [Flags]
+    [PublicAPI]
     public enum LoggingLevels : byte
     {
         /// <summary>
@@ -53,28 +54,24 @@ namespace WebApplications.Utilities.Logging
         ///   At least critical.
         /// </summary>
         [Description("At least critical.")]
-        [PublicAPI]
         AtLeastCritical = Emergency | Critical,
 
         /// <summary>
         ///   At least an error.
         /// </summary>
         [Description("At least an error.")]
-        [PublicAPI]
         AtLeastError = Emergency | Critical | Error,
 
         /// <summary>
         ///   At least a warning.
         /// </summary>
         [Description("At least a warning.")]
-        [PublicAPI]
         AtLeastWarning = Emergency | Critical | Error | Warning,
 
         /// <summary>
         ///   At least a system notification.
         /// </summary>
         [Description("At least a system notification.")]
-        [PublicAPI]
         AtLeastSystemNotification =
             Emergency | Critical | Error | Warning | SystemNotification,
 
@@ -82,7 +79,6 @@ namespace WebApplications.Utilities.Logging
         ///   At least a notification.
         /// </summary>
         [Description("At least a notification.")]
-        [PublicAPI]
         AtLeastNotification =
             Emergency | Critical | Error | Warning | SystemNotification | Notification,
 
@@ -90,7 +86,6 @@ namespace WebApplications.Utilities.Logging
         ///   At least information.
         /// </summary>
         [Description("At least information.")]
-        [PublicAPI]
         AtLeastInformation =
             Emergency | Critical | Error | Warning | SystemNotification | Notification | Information,
 

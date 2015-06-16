@@ -391,4 +391,13 @@
     <value>&lt;Log&gt;
 {!layout:f4}{message:{xml}}{level:{xml}}{time:{xml}}{guid:{xml}}{thread:{xml}}{threadid:{xml}}{exception:{xml}}{innerexception:{xml}}{sproc:{xml}}{context:{xml}}{stack:{xml}}{!layout}&lt;/Log&gt;</value>
   </data>
+  <data name="ConsoleLogger_NotConsole" xml:space="preserve">
+    <value>Application must be running in the console to use the ConsoleLogger.</value>
+  </data>
+  <data name="Log_NoMessage" xml:space="preserve">
+    <value>A format or resource, and/or an exception must be specified.</value>
+  </data>
+  <data name="Log_FormatAndResource" xml:space="preserve">
+    <value>Cannot use both a format string and a resource.</value>
+  </data>
 </root>

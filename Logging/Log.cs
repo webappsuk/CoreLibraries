@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -45,9 +44,9 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Threading;
-using WebApplications.Utilities.Annotations;
 using ProtoBuf;
 using ProtoBuf.Meta;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging.Configuration;
 
@@ -154,8 +153,9 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [NonSerialized]
         private static readonly Lazy<string> _protobufSchema = new Lazy<string>(
-            // ReSharper disable once PossibleNullReferenceException
-            () => RuntimeTypeModel.Default.GetSchema(typeof (Log)),
+            // ReSharper disable PossibleNullReferenceException
+            () => RuntimeTypeModel.Default.GetSchema(typeof(Log)),
+            // ReSharper restore PossibleNullReferenceException
             LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
@@ -175,10 +175,11 @@ namespace WebApplications.Utilities.Logging
         /// <para>To add logs use <see cref="Log.Add(string, object[])"/> instead.</para>
         /// <para>You can create partial logs, however the context must contain at least the 
         /// <see cref="GuidKey">Guid key</see>, and be a valid <see cref="CombGuid"/>.</para></remarks>
-        public Log([NotNull] [InstantHandle] IEnumerable<KeyValuePair<string, string>> dictionary)
+        public Log([InstantHandle] [NotNull] IEnumerable<KeyValuePair<string, string>> dictionary)
             : this()
         {
-            Contract.Requires(dictionary != null);
+            if (dictionary == null) throw new ArgumentNullException("dictionary");
+
             Dictionary<string, string> context = new Dictionary<string, string>();
             SortedDictionary<int, string> parameters = new SortedDictionary<int, string>();
             SortedDictionary<int, Guid> ieGuids = new SortedDictionary<int, Guid>();
@@ -303,8 +304,13 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
             : this()
         {
-            Contract.Requires((format == null) ^ (resource == null) || (exception != null));
-            Contract.Requires(resourceType == null || format != null);
+            if ((format == null) && (resource == null) && (exception == null))
+                throw new ArgumentNullException(Resources.Log_NoMessage, innerException: null);
+            if ((format != null) && (resource != null))
+                throw new ArgumentException(Resources.Log_FormatAndResource);
+            // If a resourceType is given, the format is used for the name of the resource property.
+            if (resourceType != null && format == null)
+                throw new ArgumentException("Resource property not given for resource type.");
 
             _guid = CombGuid.NewCombGuid();
             _level = level;
@@ -332,7 +338,7 @@ namespace WebApplications.Utilities.Logging
                     Translation translation;
                     if (Translation.TryGet(resourceType, format, out translation, culture))
                     {
-                        Contract.Assert(translation != null);
+                        Debug.Assert(translation != null);
 
                         _translation = translation;
                         _messageFormat = translation.Message;
@@ -350,7 +356,7 @@ namespace WebApplications.Utilities.Logging
                 Translation translation;
                 if (Translation.TryGet(resource, out translation, culture))
                 {
-                    Contract.Assert(translation != null);
+                    Debug.Assert(translation != null);
 
                     _translation = translation;
                     _messageFormat = translation.Message;
@@ -389,7 +395,7 @@ namespace WebApplications.Utilities.Logging
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (!isLogException && hasMessage)
-                    innerExceptions = new[] {exception};
+                    innerExceptions = new[] { exception };
                 else
                 {
                     // Add the exception type.
@@ -411,7 +417,7 @@ namespace WebApplications.Utilities.Logging
                     else
                     {
                         if (exception.InnerException != null)
-                            innerExceptions = new[] {exception.InnerException};
+                            innerExceptions = new[] { exception.InnerException };
 
                         // If this is a SQL exception, then log the stored proc.
                         SqlException sqlException = exception as SqlException;
@@ -440,7 +446,9 @@ namespace WebApplications.Utilities.Logging
                         }).ToArray();
 
             // If there was a message and no stack trace was added for an exception, get the current stack trace
-            if (hasMessage && ReferenceEquals(_stackTrace, null) && LoggingConfiguration.Active.GenerateStackTrace)
+            if (hasMessage &&
+                ReferenceEquals(_stackTrace, null) &&
+                LoggingConfiguration.Active.GenerateStackTrace)
                 // Note that the first two stack frames are either Log.Add, or new Log() followed by new Log().
                 _stackTrace = FormatStackTrace(new StackTrace(2, true));
 
@@ -458,7 +466,6 @@ namespace WebApplications.Utilities.Logging
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log([LocalizationRequired] [CanBeNull] string format, [CanBeNull] params object[] parameters)
             : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, format, null, parameters)
         {
@@ -471,7 +478,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [LocalizationRequired] [CanBeNull] string format,
@@ -487,7 +493,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log(
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
@@ -504,7 +509,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -522,7 +526,6 @@ namespace WebApplications.Utilities.Logging
         ///   <see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="level"><para>The log level.</para>
         /// <para>By default this uses the error log level.</para></param>
-        [PublicAPI]
         public Log([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
             : this(Translation.DefaultCulture, null, exception, level, null, null, null, null)
         {
@@ -540,7 +543,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>The log level.</para>
         ///   <para>By default this uses the error log level.</para>
         /// </param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -558,7 +560,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] Exception exception,
@@ -579,7 +580,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] LogContext context,
@@ -596,7 +596,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
             : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, null, resource, parameters)
         {
@@ -608,7 +607,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="context">The log context.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
@@ -624,7 +622,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="level">The log level.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
@@ -640,7 +637,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -659,7 +655,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] Exception exception,
             LoggingLevel level,
@@ -679,7 +674,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -700,7 +694,6 @@ namespace WebApplications.Utilities.Logging
         /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [LocalizationRequired] [CanBeNull] string format,
@@ -717,7 +710,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -735,7 +727,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             LoggingLevel level,
@@ -754,7 +745,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [StringFormatMethod("format")]
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -774,7 +764,6 @@ namespace WebApplications.Utilities.Logging
         ///   <see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="level"><para>The log level.</para>
         ///   <para>By default this uses the error log level.</para></param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -792,7 +781,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="level"><para>The log level.</para>
         ///   <para>By default this uses the error log level.</para></param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -812,7 +800,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] CultureInfo culture,
@@ -835,7 +822,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] CultureInfo culture,
@@ -854,7 +840,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="culture">The culture.</param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Expression<Func<string>> resource,
@@ -870,7 +855,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="context">The log context.</param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -887,7 +871,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             LoggingLevel level,
@@ -905,7 +888,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -926,7 +908,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -948,7 +929,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para>By default this uses the error log level.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -966,7 +946,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
@@ -990,7 +969,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [CanBeNull] Type resourceType,
@@ -1015,7 +993,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="level">The log level.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             LoggingLevel level,
             [CanBeNull] Type resourceType,
@@ -1033,7 +1010,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -1054,7 +1030,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] Exception exception,
             LoggingLevel level,
@@ -1076,7 +1051,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -1103,7 +1077,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Type resourceType,
@@ -1121,7 +1094,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1140,7 +1112,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             LoggingLevel level,
@@ -1160,7 +1131,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1183,7 +1153,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -1207,7 +1176,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1227,7 +1195,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] Exception exception,
@@ -1245,7 +1212,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] LogContext context,
@@ -1263,7 +1229,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
@@ -1280,7 +1245,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -1298,7 +1262,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] CultureInfo culture,
@@ -1318,7 +1281,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         [StringFormatMethod("format")]
         public Log(
             [CanBeNull] CultureInfo culture,
@@ -1338,7 +1300,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -1357,7 +1318,6 @@ namespace WebApplications.Utilities.Logging
         ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1376,7 +1336,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] Exception exception,
             [CanBeNull] Type resourceType,
@@ -1403,7 +1362,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -1431,7 +1389,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
@@ -1452,7 +1409,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">The resource class type.</param>
         /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
         /// <param name="parameters">The parameters.</param>
-        [PublicAPI]
         public Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
@@ -1471,7 +1427,6 @@ namespace WebApplications.Utilities.Logging
         /// <value>The protobuf schema.</value>
         /// <remarks><para>See https://code.google.com/p/protobuf/.
         /// </para></remarks>
-        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string ProtobufSchema
@@ -1489,7 +1444,6 @@ namespace WebApplications.Utilities.Logging
         /// <value>
         /// <see langword="true" /> if <see cref="MessageFormat"/> is translatable; otherwise, <see langword="false" />.
         /// </value>
-        [PublicAPI]
         public bool IsTranslatable
         {
             get { return _resourceProperty != null; }
@@ -1498,7 +1452,6 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   A Guid used to uniquely identify a log item.
         /// </summary>
-        [PublicAPI]
         public CombGuid Guid
         {
             get { return _guid; }
@@ -1511,7 +1464,6 @@ namespace WebApplications.Utilities.Logging
         /// The context.
         /// </value>
         [CanBeNull]
-        [PublicAPI]
         public LogContext Context
         {
             get { return _context; }
@@ -1520,7 +1472,6 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
-        [PublicAPI]
         public LoggingLevel Level
         {
             get { return _level; }
@@ -1529,7 +1480,6 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The formatted log message.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         public string Message
         {
@@ -1542,7 +1492,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="culture">The culture.</param>
         /// <returns></returns>
         [CanBeNull]
-        [PublicAPI]
         public string GetMessage([CanBeNull] CultureInfo culture)
         {
             lock (_lock)
@@ -1557,7 +1506,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The message format.</value>
         [CanBeNull]
-        [PublicAPI]
         public string MessageFormat
         {
             get { return GetMessageFormat(Translation.DefaultCulture); }
@@ -1569,7 +1517,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="culture">The culture.</param>
         /// <returns></returns>
         [CanBeNull]
-        [PublicAPI]
         public string GetMessageFormat([CanBeNull] CultureInfo culture)
         {
             lock (_lock)
@@ -1585,7 +1532,6 @@ namespace WebApplications.Utilities.Logging
         /// <value>
         ///   Returns <see langword="true"/> if this instance was an exception; otherwise <see langword="false"/>.
         /// </value>
-        [PublicAPI]
         public bool IsException
         {
             get { return !string.IsNullOrWhiteSpace(_exceptionType); }
@@ -1595,7 +1541,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the type of the exception (if any).
         /// </summary>
         /// <value>The type of the exception.</value>
-        [PublicAPI]
         [CanBeNull]
         public string ExceptionType
         {
@@ -1606,7 +1551,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the inner exceptions unique identifiers, if any.
         /// </summary>
         /// <value>The inner exceptions unique identifiers.</value>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<Guid> InnerExceptionGuids
         {
@@ -1616,17 +1560,15 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The time stamp of when the log item was created.
         /// </summary>
-        [PublicAPI]
         public DateTime TimeStamp
         {
-            get { return ((CombGuid) _guid).Created; }
+            get { return ((CombGuid)_guid).Created; }
         }
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<string> Parameters
         {
@@ -1638,7 +1580,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The stack trace.</value>
         [CanBeNull]
-        [PublicAPI]
         public string StackTrace
         {
             get { return _stackTrace; }
@@ -1649,7 +1590,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The resource property full name.</value>
         [CanBeNull]
-        [PublicAPI]
         public string ResourceProperty
         {
             get { return _resourceProperty; }
@@ -1662,7 +1602,6 @@ namespace WebApplications.Utilities.Logging
         /// The tag.
         /// </value>
         [CanBeNull]
-        [PublicAPI]
         public string Tag
         {
             get { return _translation == null ? null : _translation.ResourceTag; }
@@ -1672,7 +1611,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the thread ID (or -1 if not known).
         /// </summary>
         /// <value>The thread ID.</value>
-        [PublicAPI]
         public int ThreadID
         {
             get { return _threadID; }
@@ -1683,7 +1621,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The name of the thread.</value>
         [CanBeNull]
-        [PublicAPI]
         public string ThreadName
         {
             get { return _threadName; }
@@ -1695,7 +1632,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The stored procedure.</value>
         [CanBeNull]
-        [PublicAPI]
         public string StoredProcedure
         {
             get { return _storedProcedure; }
@@ -1705,7 +1641,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the stored procedure line (if any); otherwise 0.
         /// </summary>
         /// <value>The stored procedure line.</value>
-        [PublicAPI]
         public int StoredProcedureLine
         {
             get { return _storedProcedureLine; }
@@ -1717,7 +1652,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="key">The key.</param>
         /// <returns>The value associated with the specified key; otherwise null.</returns>
         [CanBeNull]
-        [PublicAPI]
         public string this[[NotNull] string key]
         {
             get { return AllProperties.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value; }
@@ -1728,8 +1662,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         private void CalculateMessage([NotNull] CultureInfo culture)
         {
-            Contract.Requires(culture != null);
-
             string messageFormat = _messageFormat;
             // Check if we have a resource property.
             if (_resourceProperty == null)
@@ -1814,13 +1746,12 @@ namespace WebApplications.Utilities.Logging
         /// The short format.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder ShortFormat =
             new FormatBuilder(
                 120,
                 33,
                 alignment: Alignment.Left,
-                tabStops: new[] {33},
+                tabStops: new[] { 33 },
                 format: Resources.LogFormat_Short,
                 isReadOnly: true);
 
@@ -1828,13 +1759,12 @@ namespace WebApplications.Utilities.Logging
         /// The verbose default format.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder(
                 120,
                 22,
                 alignment: Alignment.Left,
-                tabStops: new[] {20, 22},
+                tabStops: new[] { 20, 22 },
                 format: Resources.LogFormat_Verbose,
                 isReadOnly: true);
 
@@ -1843,7 +1773,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         // TODO Create AllFormat
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder AllFormat =
             new FormatBuilder()
                 .MakeReadOnly();
@@ -1853,7 +1782,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         // TODO Create JSONFormat
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder JSONFormat =
             new FormatBuilder(int.MaxValue, alignment: Alignment.Left)
                 .MakeReadOnly();
@@ -1862,7 +1790,6 @@ namespace WebApplications.Utilities.Logging
         /// The XML Node format.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder XMLFormat =
             new FormatBuilder(
                 int.MaxValue,
@@ -1884,7 +1811,7 @@ namespace WebApplications.Utilities.Logging
             // ReSharper disable once PossibleNullReferenceException
             switch (chunk.Tag.ToLowerInvariant())
             {
-                    /*
+                /*
                  * Standard named formats.
                  */
                 case "default":
@@ -1899,7 +1826,7 @@ namespace WebApplications.Utilities.Logging
                 case "xml":
                     return XMLFormat;
 
-                    /* 
+                /* 
                  * Control Tags.
                  */
                 case FormatBuilder.ForegroundColorTag:
@@ -1913,7 +1840,7 @@ namespace WebApplications.Utilities.Logging
                         ? new Resolution(_level.ToColor(), true)
                         : Resolution.UnknownYet;
 
-                    /*
+                /*
                  * Log element completion.
                  */
                 case FormatTagHeader:
@@ -1932,7 +1859,7 @@ namespace WebApplications.Utilities.Logging
                         header[c++] = '\r'; // Formatter normalizes '\r' to newline automatically.
                     for (int p = 0; p < width; p++)
                         header[c++] = pattern[p % pattern.Length];
-                    header[c++] = '\r';
+                    header[c] = '\r';
 
                     // We have to replace the original chunk with a non-control chunk for it to to be output.
                     // Set NoCache to true to support format changes.
@@ -1958,7 +1885,7 @@ namespace WebApplications.Utilities.Logging
                 case FormatTagTimeStamp:
                     return new LogElement(
                         () => Resources.LogKeys_TimeStamp,
-                        ((CombGuid) _guid).Created);
+                        ((CombGuid)_guid).Created);
 
                 case FormatTagLevel:
                     return new LogElement(
@@ -2072,6 +1999,7 @@ namespace WebApplications.Utilities.Logging
 
                 int count = 0;
                 if (_parameters != null)
+                    // ReSharper disable once InconsistentlySynchronizedField
                     foreach (string parameter in _parameters)
                         yield return new KeyValuePair<string, string>(ParameterPrefix + count++, parameter);
 
@@ -2106,7 +2034,6 @@ namespace WebApplications.Utilities.Logging
         /// Throws a new <see cref="LoggingException"/> passing this log. 
         /// </summary>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [ContractAnnotation("=>halt")]
         public void Throw()
         {
@@ -2140,7 +2067,7 @@ namespace WebApplications.Utilities.Logging
             bool first = true;
             foreach (StackFrame sf in frames)
             {
-                Contract.Assert(sf != null);
+                Debug.Assert(sf != null);
 
                 MethodBase mb = sf.GetMethod();
                 if (mb == null)
@@ -2167,16 +2094,16 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from log or logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof (object)) &&
-                               (baseType != typeof (LoggingException)) &&
-                               (baseType != typeof (Log)))
+                        while ((baseType != typeof(object)) &&
+                               (baseType != typeof(LoggingException)) &&
+                               (baseType != typeof(Log)))
                         {
-                            Contract.Assert(baseType != null);
+                            Debug.Assert(baseType != null);
                             baseType = baseType.BaseType;
                         }
 
-                        if ((baseType == typeof (LoggingException)) ||
-                            (baseType == typeof (Log)))
+                        if ((baseType == typeof(LoggingException)) ||
+                            (baseType == typeof(Log)))
                         {
                             // We are descended from LoggingException or Log so skip frame.
                             baseType = declaringType;
@@ -2222,7 +2149,7 @@ namespace WebApplications.Utilities.Logging
                         else
                             fFirstTyParam = false;
 
-                        Contract.Assert(typars[k] != null);
+                        Debug.Assert(typars[k] != null);
                         sb.Append(typars[k].Name);
                         k++;
                     }
@@ -2235,7 +2162,7 @@ namespace WebApplications.Utilities.Logging
                 bool fFirstParam = true;
                 foreach (ParameterInfo t1 in pi)
                 {
-                    Contract.Assert(t1 != null);
+                    Debug.Assert(t1 != null);
 
                     if (fFirstParam == false)
                         sb.Append(", ");
@@ -2297,7 +2224,7 @@ namespace WebApplications.Utilities.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string Get([NotNull] string key)
         {
-            Contract.Requires(key != null);
+            if (key == null) throw new ArgumentNullException("key");
             return AllProperties.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value;
         }
 
@@ -2309,7 +2236,8 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix)
         {
-            Contract.Requires(prefix != null);
+            if (prefix == null) throw new ArgumentNullException("prefix");
+
             // ReSharper disable once PossibleNullReferenceException
             return AllProperties.Where(kvp => kvp.Key.StartsWith(prefix));
         }

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,21 +25,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using WebApplications.Utilities.Annotations;
-using Microsoft.SqlServer.Server;
-using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
     ///   Extension methods for logging.
     /// </summary>
+    [PublicAPI]
     public static class LoggingExtensions
     {
         /// <summary>
@@ -54,7 +51,6 @@ namespace WebApplications.Utilities.Logging
         ///   provided; otherwise returns <see langword="false"/>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static bool IsValid(this LoggingLevel level, LoggingLevels validLevels)
         {
             LoggingLevels l = (LoggingLevels)level;
@@ -72,7 +68,6 @@ namespace WebApplications.Utilities.Logging
         /// provided; otherwise returns <see langword="false" />.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static bool IsValid(this LoggingLevel level)
         {
             LoggingLevels l = (LoggingLevels)level;
@@ -107,14 +102,14 @@ namespace WebApplications.Utilities.Logging
             new ConcurrentDictionary<LoggingLevel, Color>(
                 new Dictionary<LoggingLevel, Color>
                 {
-                    {LoggingLevel.Debugging, Color.Gray},
-                    {LoggingLevel.Information, Color.Silver},
-                    {LoggingLevel.Notification, Color.White},
-                    {LoggingLevel.SystemNotification, Color.Olive},
-                    {LoggingLevel.Warning, Color.Yellow},
-                    {LoggingLevel.Error, Color.Red},
-                    {LoggingLevel.Critical, Color.Purple},
-                    {LoggingLevel.Emergency, Color.Fuchsia}
+                    { LoggingLevel.Debugging, Color.Gray },
+                    { LoggingLevel.Information, Color.Silver },
+                    { LoggingLevel.Notification, Color.White },
+                    { LoggingLevel.SystemNotification, Color.Olive },
+                    { LoggingLevel.Warning, Color.Yellow },
+                    { LoggingLevel.Error, Color.Red },
+                    { LoggingLevel.Critical, Color.Purple },
+                    { LoggingLevel.Emergency, Color.Fuchsia }
                 });
 
         /// <summary>
@@ -123,7 +118,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The level.</param>
         /// <returns>Color.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static Color ToColor(this LoggingLevel level)
         {
             return _levelColors[level];
@@ -135,7 +129,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The level.</param>
         /// <param name="color">The color.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [PublicAPI]
         public static void SetColor(this LoggingLevel level, Color color)
         {
             _levelColors[level] = color;

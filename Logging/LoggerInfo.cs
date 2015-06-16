@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -57,7 +56,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="type">The type of the logger.</param>
         internal LoggerInfo(bool isFromConfiguration, [NotNull] Type type)
         {
-            Contract.Requires(type != null);
             IsFromConfiguration = isFromConfiguration;
             Type = type;
         }

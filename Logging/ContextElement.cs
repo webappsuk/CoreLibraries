@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,11 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
@@ -42,7 +38,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder ElementVerboseFormat = new FormatBuilder()
             .AppendLine()
             .AppendForegroundColor(Color.DarkCyan)
@@ -55,7 +50,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder ElementNoLineFormat = new FormatBuilder()
             .AppendForegroundColor(Color.DarkCyan)
             .AppendFormat("{Key}")
@@ -67,7 +61,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder ElementXMLFormat = new FormatBuilder()
             .AppendFormatLine("<{KeyXmlTag}>{Value}</{KeyXmlTag}>")
             .MakeReadOnly();
@@ -76,7 +69,6 @@ namespace WebApplications.Utilities.Logging
         /// The default format
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly FormatBuilder ElementJSONFormat = new FormatBuilder()
             .Append(',')
             .AppendLine()
@@ -89,14 +81,12 @@ namespace WebApplications.Utilities.Logging
             /// The resource.
             /// </summary>
             [NotNull]
-            [PublicAPI]
             public readonly string Key;
 
             /// <summary>
             /// The value.
             /// </summary>
             [CanBeNull]
-            [PublicAPI]
             public readonly string Value;
 
             /// <summary>
@@ -106,7 +96,7 @@ namespace WebApplications.Utilities.Logging
             /// <param name="value">The value.</param>
             public ContextElement([NotNull] string key, [CanBeNull] string value)
             {
-                Contract.Requires(key != null);
+                if (key == null) throw new ArgumentNullException("key");
                 Key = key;
                 Value = value;
             }

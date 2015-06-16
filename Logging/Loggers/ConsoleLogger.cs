@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -61,8 +60,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, ConsoleTextWriter.Default, format, false, validLevels)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(ConsoleHelper.IsConsole);
+            if (!ConsoleHelper.IsConsole) throw new InvalidOperationException(Resources.ConsoleLogger_NotConsole);
             Format = format ?? Log.VerboseFormat;
         }
 
