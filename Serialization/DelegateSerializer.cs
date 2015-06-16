@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization;
 using WebApplications.Utilities.Annotations;
@@ -40,8 +40,11 @@ namespace WebApplications.Utilities.Serialization
     ///   Anonymous method serialization: (http://www.codeproject.com/KB/cs/AnonymousSerialization.aspx ).
     /// </remarks>
     [Serializable]
+    [PublicAPI]
+    // TODO This doesnt work for combined delegates
     public sealed class DelegateSerializer : ISerializable
     {
+        [NotNull]
         private readonly Delegate _delegate;
 
         /// <summary>
@@ -51,8 +54,10 @@ namespace WebApplications.Utilities.Serialization
         /// <example>
         ///   <code>formatter.Serialize(stream, new DelegateSerializer(del));</code>
         /// </example>
-        internal DelegateSerializer(Delegate @delegate)
+        // TODO Make public when fixed
+        internal DelegateSerializer([NotNull] Delegate @delegate)
         {
+            if (@delegate == null) throw new ArgumentNullException("delegate");
             _delegate = @delegate;
         }
 
@@ -71,19 +76,27 @@ namespace WebApplications.Utilities.Serialization
         /// </example>
         internal DelegateSerializer([NotNull] SerializationInfo info, StreamingContext context)
         {
-            Contract.Requires(info != null);
-            Type delType = (Type) info.GetValue("delegateType", typeof (Type));
+            if (info == null) throw new ArgumentNullException("info");
+
+            Type delType = (Type)info.GetValue("delegateType", typeof(Type));
+            Debug.Assert(delType != null);
 
             // If it's a "simple" delegate we just read it straight off
             if (info.GetBoolean("isSerializable"))
-                _delegate = (Delegate) info.GetValue("delegate", delType);
+            {
+                Delegate @delegate = (Delegate)info.GetValue("delegate", delType);
+                Debug.Assert(@delegate != null);
+                _delegate = @delegate;
+            }
 
-                // Otherwise, we need to read its anonymous class
+            // Otherwise, we need to read its anonymous class
             else
             {
-                MethodInfo method = (MethodInfo) info.GetValue("method", typeof (MethodInfo));
+                MethodInfo method = (MethodInfo)info.GetValue("method", typeof(MethodInfo));
+                Debug.Assert(method != null);
 
-                AnonymousClassWrapper w = (AnonymousClassWrapper) info.GetValue("class", typeof (AnonymousClassWrapper));
+                AnonymousClassWrapper w = (AnonymousClassWrapper)info.GetValue("class", typeof(AnonymousClassWrapper));
+                Debug.Assert(w != null);
 
                 _delegate = Delegate.CreateDelegate(delType, w.Obj, method);
             }
@@ -106,20 +119,24 @@ namespace WebApplications.Utilities.Serialization
         {
             info.AddValue("delegateType", _delegate.GetType());
 
+            Debug.Assert(_delegate.Method != null);
+            Debug.Assert(_delegate.Method.DeclaringType != null);
+
             // If it's a "simple" delegate we can serialize it directly
-            if (_delegate == null || _delegate.Target == null ||
-                (_delegate.Method.DeclaringType.GetCustomAttributes(typeof (SerializableAttribute), false).Length > 0))
+            if (_delegate.Target == null ||
+                (_delegate.Method.DeclaringType.GetCustomAttributes(typeof(SerializableAttribute), false).Length > 0))
             {
                 info.AddValue("isSerializable", true);
                 info.AddValue("delegate", _delegate);
             }
-                // Otherwise, serialize the anonymous class
+            // Otherwise, serialize the anonymous class
             else
             {
                 info.AddValue("isSerializable", false);
                 info.AddValue("method", _delegate.Method);
                 info.AddValue(
-                    "class", new AnonymousClassWrapper(_delegate.Method.DeclaringType, _delegate.Target));
+                    "class",
+                    new AnonymousClassWrapper(_delegate.Method.DeclaringType, _delegate.Target));
             }
         }
         #endregion
@@ -155,9 +172,11 @@ namespace WebApplications.Utilities.Serialization
             /// <param name="context">
             ///   The <see cref="System.Runtime.Serialization.StreamingContext"/> for this serialization.
             /// </param>
-            internal AnonymousClassWrapper(SerializationInfo info, StreamingContext context)
+            internal AnonymousClassWrapper([NotNull] SerializationInfo info, StreamingContext context)
             {
-                _type = (Type) info.GetValue("classType", typeof (Type));
+                if (info == null) throw new ArgumentNullException("info");
+
+                _type = (Type)info.GetValue("classType", typeof(Type));
                 if (_type == null)
                     return;
 
@@ -165,16 +184,20 @@ namespace WebApplications.Utilities.Serialization
 
                 foreach (FieldInfo field in _type.GetFields())
                 {
+                    Debug.Assert(field != null);
+
                     // If the field is a delegate
-                    if (typeof (Delegate).IsAssignableFrom(field.FieldType))
+                    if (typeof(Delegate).IsAssignableFrom(field.FieldType))
                         field.SetValue(
                             Obj,
-                            ((DelegateSerializer) info.GetValue(field.Name, typeof (DelegateSerializer)))._delegate);
-                        // If the field is an anonymous class
+                            // ReSharper disable once PossibleNullReferenceException
+                            ((DelegateSerializer)info.GetValue(field.Name, typeof(DelegateSerializer)))._delegate);
+                    // If the field is an anonymous class
                     else if (!field.FieldType.IsSerializable)
                         field.SetValue(
                             Obj,
-                            ((AnonymousClassWrapper) info.GetValue(field.Name, typeof (AnonymousClassWrapper))).Obj);
+                            // ReSharper disable once PossibleNullReferenceException
+                            ((AnonymousClassWrapper)info.GetValue(field.Name, typeof(AnonymousClassWrapper))).Obj);
                     else
                         field.SetValue(Obj, info.GetValue(field.Name, field.FieldType));
                 }
@@ -204,10 +227,13 @@ namespace WebApplications.Utilities.Serialization
 
                 foreach (FieldInfo field in _type.GetFields())
                 {
+                    Debug.Assert(field != null);
+
                     // If the field is a delegate
-                    if (typeof (Delegate).IsAssignableFrom(field.FieldType))
-                        info.AddValue(field.Name, new DelegateSerializer((Delegate) field.GetValue(Obj)));
-                        // If the field is an anonymous class
+                    if (typeof(Delegate).IsAssignableFrom(field.FieldType))
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        info.AddValue(field.Name, new DelegateSerializer((Delegate)field.GetValue(Obj)));
+                    // If the field is an anonymous class
                     else if (!field.FieldType.IsSerializable)
                         info.AddValue(field.Name, new AnonymousClassWrapper(field.FieldType, field.GetValue(Obj)));
                     else

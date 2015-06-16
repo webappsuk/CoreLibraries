@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System.Runtime.Serialization;
 using System.Xml.Linq;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Serialization
 {
@@ -51,9 +52,12 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        void ISerializationSurrogate.GetObjectData(object obj, SerializationInfo info, StreamingContext context)
+        void ISerializationSurrogate.GetObjectData(
+            object obj,
+            [NotNull] SerializationInfo info,
+            StreamingContext context)
         {
-            info.AddValue("data", obj == null ? null : ((XElement) obj).ToString(SaveOptions.DisableFormatting));
+            info.AddValue("data", obj == null ? null : ((XElement)obj).ToString(SaveOptions.DisableFormatting));
         }
 
         /// <summary>
@@ -76,7 +80,10 @@ namespace WebApplications.Utilities.Serialization
         ///   The caller does not have the required permission.
         /// </exception>
         object ISerializationSurrogate.SetObjectData(
-            object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
+            object obj,
+            [NotNull] SerializationInfo info,
+            StreamingContext context,
+            ISurrogateSelector selector)
         {
             string o = info.GetString("data");
 

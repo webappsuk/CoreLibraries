@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -38,16 +38,19 @@ namespace WebApplications.Utilities.Serialization
     ///   Also simplifies type and assembly names making binding across multiple versions far more reliable.
     ///   (Includes fix for simplification of generic type names).
     /// </summary>
+    [PublicAPI]
     public class ExtendedSerializationBinder : SerializationBinder
     {
         /// <summary>
         ///   The default extended serialization binder.
         /// </summary>
+        [NotNull]
         public static readonly ExtendedSerializationBinder Default = new ExtendedSerializationBinder();
 
         /// <summary>
         ///   Maps old types to new types.
         /// </summary>
+        [NotNull]
         private static readonly ConcurrentDictionary<string, Type> _typeMap = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace WebApplications.Utilities.Serialization
         private ExtendedSerializationBinder()
         {
         }
-        
+
         /// <summary>
         ///   Overrides the default binder, firstly by using a cache of <see cref="Type"/>s based on the assembly name and type name,
         ///   speeding up type binding, but also allowing easy overrides using
@@ -76,8 +79,11 @@ namespace WebApplications.Utilities.Serialization
         /// <seealso cref="System.Reflection.AssemblyName"/>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            return _typeMap.GetOrAdd(Reflection.SimplifiedTypeFullName(new[] {typeName, assemblyName}.JoinNotNullOrWhiteSpace(",")),
-                                     sn => Type.GetType(sn));
+            if (assemblyName == null) throw new ArgumentNullException("assemblyName");
+            if (typeName == null) throw new ArgumentNullException("typeName");
+            return _typeMap.GetOrAdd(
+                Reflection.SimplifiedTypeFullName(new[] { typeName, assemblyName }.JoinNotNullOrWhiteSpace(",")),
+                Type.GetType);
         }
 
         /// <summary>
@@ -88,10 +94,9 @@ namespace WebApplications.Utilities.Serialization
         /// <param name="typeName">The name of the old type.</param>
         /// <seealso cref="System.Reflection.Assembly"/>
         /// <seealso cref="System.Reflection.AssemblyName"/>
-        [UsedImplicitly]
         public static void MapType<TNew>([NotNull] string assemblyName, [NotNull] string typeName)
         {
-            MapType(assemblyName, typeName, typeof (TNew));
+            MapType(assemblyName, typeName, typeof(TNew));
         }
 
         /// <summary>
@@ -105,11 +110,14 @@ namespace WebApplications.Utilities.Serialization
         /// </exception>
         /// <seealso cref="System.Reflection.Assembly"/>
         /// <seealso cref="System.Reflection.AssemblyName"/>
-        [UsedImplicitly]
         public static void MapType([NotNull] string assemblyName, [NotNull] string typeName, [NotNull] Type newType)
         {
-            _typeMap.AddOrUpdate(Reflection.SimplifiedTypeFullName(new[] {typeName, assemblyName}.JoinNotNullOrWhiteSpace(",")), newType,
-                                 (n, t) => newType);
+            if (assemblyName == null) throw new ArgumentNullException("assemblyName");
+            if (typeName == null) throw new ArgumentNullException("typeName");
+            _typeMap.AddOrUpdate(
+                Reflection.SimplifiedTypeFullName(new[] { typeName, assemblyName }.JoinNotNullOrWhiteSpace(",")),
+                newType,
+                (n, t) => newType);
         }
     }
 }

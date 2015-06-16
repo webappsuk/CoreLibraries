@@ -17,7 +17,4 @@
       </group>
     </references>
   </metadata>
-  <files>
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net452\CodeContracts" />
-  </files>
 </package>

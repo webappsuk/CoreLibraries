@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -49,11 +49,13 @@ namespace WebApplications.Utilities.Serialization
     /// <remarks>
     ///   A good article on surrogates can be found at (http://msdn.microsoft.com/en-gb/magazine/cc188950.aspx).
     /// </remarks>
+    [PublicAPI]
     public static class Serialize
     {
         /// <summary>
         ///   Holds all of the serialization surrogates.
         /// </summary>
+        [NotNull]
         private static readonly ConcurrentDictionary<Type, Func<ISerializationSurrogate>> _surrogates =
             new ConcurrentDictionary<Type, Func<ISerializationSurrogate>>();
 
@@ -79,15 +81,19 @@ namespace WebApplications.Utilities.Serialization
         ///   <see cref="WebApplications.Utilities.Serialization.Serialize.AddOrUpdateSurrogate"/> in its list of checked surrogates.
         /// </value>
         [NotNull]
-        [UsedImplicitly]
         public static SurrogateSelector SurrogateSelector
         {
             get
             {
                 SurrogateSelector surrogateSelector = new SurrogateSelector();
                 foreach (KeyValuePair<Type, Func<ISerializationSurrogate>> kvp in _surrogates)
-                    surrogateSelector.AddSurrogate(kvp.Key, new StreamingContext(StreamingContextStates.All),
-                                                   kvp.Value());
+                    // ReSharper disable AssignNullToNotNullAttribute
+                    surrogateSelector.AddSurrogate(
+                        kvp.Key,
+                        new StreamingContext(StreamingContextStates.All),
+                        // ReSharper disable once PossibleNullReferenceException
+                        kvp.Value());
+                // ReSharper restore AssignNullToNotNullAttribute
                 return surrogateSelector;
             }
         }
@@ -107,10 +113,10 @@ namespace WebApplications.Utilities.Serialization
         ///   <para><paramref name="surrogateType"/> must implement
         ///   <see cref="System.Runtime.Serialization.ISerializationSurrogate"/>.</para>
         /// </exception>
-        [UsedImplicitly]
-        public static void AddOrUpdateSurrogate<TInput>(Type surrogateType)
+        public static void AddOrUpdateSurrogate<TInput>([NotNull] Type surrogateType)
         {
-            AddOrUpdateSurrogate(typeof (TInput), surrogateType);
+            if (surrogateType == null) throw new ArgumentNullException("surrogateType");
+            AddOrUpdateSurrogate(typeof(TInput), surrogateType);
         }
 
         /// <summary>
@@ -121,10 +127,9 @@ namespace WebApplications.Utilities.Serialization
         /// <typeparam name="TSurrogate">
         ///   The type of the surrogate to call when serializing/deserializing objects of type <typeparamref name="TInput"/>.
         /// </typeparam>
-        [UsedImplicitly]
         public static void AddOrUpdateSurrogate<TInput, TSurrogate>() where TSurrogate : ISerializationSurrogate
         {
-            AddOrUpdateSurrogate(typeof (TInput), typeof (TSurrogate));
+            AddOrUpdateSurrogate(typeof(TInput), typeof(TSurrogate));
         }
 
         /// <summary>
@@ -146,7 +151,6 @@ namespace WebApplications.Utilities.Serialization
         ///   <para><paramref name="surrogateType"/> must implement
         ///   <see cref="System.Runtime.Serialization.ISerializationSurrogate"/>.</para>
         /// </exception>
-        [UsedImplicitly]
         public static void AddOrUpdateSurrogate([NotNull] Type inputType, [NotNull] Type surrogateType)
         {
             if (inputType == null)
@@ -156,12 +160,14 @@ namespace WebApplications.Utilities.Serialization
                 throw new ArgumentNullException("surrogateType");
 
             if (surrogateType.IsInterface)
-                throw new ArgumentOutOfRangeException("surrogateType",
-                                                      Resources.Serialize_AddOrUpdateSurrogate_MustBeConcrete);
-            if (surrogateType.GetInterface(typeof (ISerializationSurrogate).FullName) == null)
-                throw new ArgumentOutOfRangeException("surrogateType",
-                                                      Resources.
-                                                          Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate);
+                throw new ArgumentOutOfRangeException(
+                    "surrogateType",
+                    Resources.Serialize_AddOrUpdateSurrogate_MustBeConcrete);
+            if (surrogateType.GetInterface(typeof(ISerializationSurrogate).FullName) == null)
+                throw new ArgumentOutOfRangeException(
+                    "surrogateType",
+                    Resources.
+                        Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate);
 
             // Create type constructor
             Func<ISerializationSurrogate> constructor = surrogateType.ConstructorFunc<ISerializationSurrogate>();
@@ -179,10 +185,9 @@ namespace WebApplications.Utilities.Serialization
         /// </exception>
         /// <seealso cref="System.Reflection.Assembly"/>
         /// <seealso cref="System.Reflection.AssemblyName"/>
-        [UsedImplicitly]
         public static void MapType<TNew>([NotNull] string assemblyName, [NotNull] string typeName)
         {
-            ExtendedSerializationBinder.MapType(assemblyName, typeName, typeof (TNew));
+            ExtendedSerializationBinder.MapType(assemblyName, typeName, typeof(TNew));
         }
 
         /// <summary>
@@ -196,7 +201,6 @@ namespace WebApplications.Utilities.Serialization
         /// </exception>
         /// <seealso cref="System.Reflection.Assembly"/>
         /// <seealso cref="System.Reflection.AssemblyName"/>
-        [UsedImplicitly]
         public static void MapType([NotNull] string assemblyName, [NotNull] string typeName, [NotNull] Type newType)
         {
             ExtendedSerializationBinder.MapType(assemblyName, typeName, newType);
@@ -212,17 +216,17 @@ namespace WebApplications.Utilities.Serialization
         ///   A <see cref="BinaryFormatter">binary formatter</see> for serialization.
         /// </returns>
         [NotNull]
-        [UsedImplicitly]
-        public static BinaryFormatter GetFormatter([CanBeNull] object context = null,
-                                                   StreamingContextStates contextState = StreamingContextStates.Other)
+        public static BinaryFormatter GetFormatter(
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
         {
             return new BinaryFormatter
-                       {
-                           SurrogateSelector = SurrogateSelector,
-                           AssemblyFormat = FormatterAssemblyStyle.Simple,
-                           Binder = ExtendedSerializationBinder.Default,
-                           Context = new StreamingContext(contextState, context)
-                       };
+            {
+                SurrogateSelector = SurrogateSelector,
+                AssemblyFormat = FormatterAssemblyStyle.Simple,
+                Binder = ExtendedSerializationBinder.Default,
+                Context = new StreamingContext(contextState, context)
+            };
         }
 
         /// <summary>
@@ -234,21 +238,21 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   A <see cref="SoapFormatter">SOAP formatter</see> for serialization.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
         [Obsolete(
             "See http://social.msdn.microsoft.com/forums/en-US/netfxremoting/thread/c4d67e93-fa11-46d9-aa4f-b63960f6af91/"
             )]
-        public static SoapFormatter GetSoapFormatter([CanBeNull] object context = null,
-                                                     StreamingContextStates contextState = StreamingContextStates.Other)
+        public static SoapFormatter GetSoapFormatter(
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
         {
             return new SoapFormatter
-                       {
-                           SurrogateSelector = SurrogateSelector,
-                           AssemblyFormat = FormatterAssemblyStyle.Simple,
-                           Binder = ExtendedSerializationBinder.Default,
-                           Context = new StreamingContext(contextState, context)
-                       };
+            {
+                SurrogateSelector = SurrogateSelector,
+                AssemblyFormat = FormatterAssemblyStyle.Simple,
+                Binder = ExtendedSerializationBinder.Default,
+                Context = new StreamingContext(contextState, context)
+            };
         }
 
         /// <summary>
@@ -257,17 +261,17 @@ namespace WebApplications.Utilities.Serialization
         /// <param name="context">The serialization context.</param>
         /// <param name="contextState">The state of the serialization context.</param>
         /// <returns>A <see cref="XmlFormatter">XML formatter</see>.</returns>
-        [UsedImplicitly]
         [NotNull]
-        public static XmlFormatter GetXmlFormatter([CanBeNull] object context = null,
-                                                   StreamingContextStates contextState = StreamingContextStates.Other)
+        public static XmlFormatter GetXmlFormatter(
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
         {
             return new XmlFormatter
-                       {
-                           SurrogateSelector = SurrogateSelector,
-                           Binder = ExtendedSerializationBinder.Default,
-                           Context = new StreamingContext(contextState, context)
-                       };
+            {
+                SurrogateSelector = SurrogateSelector,
+                Binder = ExtendedSerializationBinder.Default,
+                Context = new StreamingContext(contextState, context)
+            };
         }
 
         /// <summary>
@@ -277,10 +281,11 @@ namespace WebApplications.Utilities.Serialization
         /// <param name="context">The serialization context.</param>
         /// <param name="contextState">The state of the serialization context.</param>
         /// <returns><paramref name="obj"/> serialized to a <see cref="string"/>.</returns>
-        [UsedImplicitly]
         [NotNull]
-        public static string SerializeToString([NotNull] this object obj, [CanBeNull] object context = null,
-                                               StreamingContextStates contextState = StreamingContextStates.Other)
+        public static string SerializeToString(
+            [NotNull] this object obj,
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
         {
             StringBuilder s = new StringBuilder();
             s.AppendSerialization(obj, GetFormatter(context, contextState));
@@ -293,7 +298,6 @@ namespace WebApplications.Utilities.Serialization
         /// <param name="obj">The object tree to serialize.</param>
         /// <param name="formatter">The formatter for the serialized object.</param>
         /// <returns><paramref name="obj"/> serialized to a <see cref="string"/>.</returns>
-        [UsedImplicitly]
         [NotNull]
         public static string SerializeToString([NotNull] this object obj, [NotNull] IFormatter formatter)
         {
@@ -315,11 +319,11 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="enumerable"/> is a <see langword="null"/>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
-        public static string SerializeToString<T>([NotNull] this IEnumerable<T> enumerable,
-                                                  [CanBeNull] object context = null,
-                                                  StreamingContextStates contextState = StreamingContextStates.Other)
+        public static string SerializeToString<T>(
+            [NotNull] this IEnumerable<T> enumerable,
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
         {
             StringBuilder s = new StringBuilder();
             s.AppendSerialization(enumerable.ToList(), GetFormatter(context, contextState));
@@ -338,10 +342,10 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="enumerable"/> is a <see langword="null"/>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
-        public static string SerializeToString<T>([NotNull] this IEnumerable<T> enumerable,
-                                                  [NotNull] IFormatter formatter)
+        public static string SerializeToString<T>(
+            [NotNull] this IEnumerable<T> enumerable,
+            [NotNull] IFormatter formatter)
         {
             StringBuilder s = new StringBuilder();
             s.AppendSerialization(enumerable.ToList(), formatter);
@@ -356,7 +360,6 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   Base64 encoded <see cref="System.Text.StringBuilder"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
         public static StringBuilder SerializeToStringBuilder(
             [NotNull] this object obj,
@@ -376,7 +379,6 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   Base64 encoded <see cref="System.Text.StringBuilder"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
         public static StringBuilder SerializeToStringBuilder(
             [NotNull] this object obj,
@@ -400,7 +402,6 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="enumerable"/> is a <see langword="null"/>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
         public static StringBuilder SerializeToStringBuilder<T>(
             [NotNull] this IEnumerable<T> enumerable,
@@ -424,7 +425,6 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="enumerable"/> is a <see langword="null"/>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
         public static StringBuilder SerializeToStringBuilder<T>(
             [NotNull] this IEnumerable<T> enumerable,
@@ -446,13 +446,13 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   Base64 encoded <see cref="System.Text.StringBuilder"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
-        public static StringBuilder AppendSerialization([NotNull] this StringBuilder stringBuilder,
-                                                        [NotNull] Object obj,
-                                                        [CanBeNull] object context = null,
-                                                        StreamingContextStates contextState =
-                                                            StreamingContextStates.Other)
+        public static StringBuilder AppendSerialization(
+            [NotNull] this StringBuilder stringBuilder,
+            [NotNull] Object obj,
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState =
+                StreamingContextStates.Other)
         {
             return AppendSerialization(stringBuilder, obj, GetFormatter(context, contextState));
         }
@@ -471,15 +471,15 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="enumerable"/> is a <see langword="null"/>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
-        public static StringBuilder AppendSerialization<T>([NotNull] this StringBuilder stringBuilder,
-                                                           [NotNull] IEnumerable<T> enumerable,
-                                                           [CanBeNull] object context = null,
-                                                           StreamingContextStates contextState =
-                                                               StreamingContextStates.Other)
+        public static StringBuilder AppendSerialization<T>(
+            [NotNull] this StringBuilder stringBuilder,
+            [NotNull] IEnumerable<T> enumerable,
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState =
+                StreamingContextStates.Other)
         {
-            return AppendSerialization(stringBuilder, (object) enumerable.ToList(), GetFormatter(context, contextState));
+            return AppendSerialization(stringBuilder, (object)enumerable.ToList(), GetFormatter(context, contextState));
         }
 
         /// <summary>
@@ -495,13 +495,13 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="enumerable"/> is a <see langword="null"/>
         /// </exception>
-        [UsedImplicitly]
         [NotNull]
-        public static StringBuilder AppendSerialization<T>([NotNull] this StringBuilder stringBuilder,
-                                                           [NotNull] IEnumerable<T> enumerable,
-                                                           [NotNull] IFormatter formatter)
+        public static StringBuilder AppendSerialization<T>(
+            [NotNull] this StringBuilder stringBuilder,
+            [NotNull] IEnumerable<T> enumerable,
+            [NotNull] IFormatter formatter)
         {
-            return AppendSerialization(stringBuilder, (object) enumerable.ToList(), formatter);
+            return AppendSerialization(stringBuilder, (object)enumerable.ToList(), formatter);
         }
 
         /// <summary>
@@ -513,10 +513,11 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   Base64 encoded <see cref="System.Text.StringBuilder"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
-        public static StringBuilder AppendSerialization([NotNull] this StringBuilder stringBuilder, object obj,
-                                                        [NotNull] IFormatter formatter)
+        public static StringBuilder AppendSerialization(
+            [NotNull] this StringBuilder stringBuilder,
+            object obj,
+            [NotNull] IFormatter formatter)
         {
             using (Stream serializationStream = new MemoryStream())
             {
@@ -551,14 +552,13 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   <paramref name="enumerable"/> serialized to a <see cref="byte"/> <see cref="Array"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
         public static byte[] SerializeToByteArray<T>(
             [NotNull] this IEnumerable<T> enumerable,
             [CanBeNull] object context = null,
             StreamingContextStates contextState = StreamingContextStates.Other)
         {
-            return SerializeToByteArray((object) enumerable.ToList(), context, contextState);
+            return SerializeToByteArray((object)enumerable.ToList(), context, contextState);
         }
 
         /// <summary>
@@ -570,7 +570,6 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   <paramref name="obj"/> serialized to a <see cref="byte" /> <see cref="Array"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
         public static byte[] SerializeToByteArray(
             [NotNull] this object obj,
@@ -589,13 +588,12 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   <paramref name="enumerable"/> serialized to a <see cref="byte"/> <see cref="Array"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
         public static byte[] SerializeToByteArray<T>(
             [NotNull] this IEnumerable<T> enumerable,
             [NotNull] IFormatter formatter)
         {
-            return SerializeToByteArray((object) enumerable.ToList(), formatter);
+            return SerializeToByteArray((object)enumerable.ToList(), formatter);
         }
 
 
@@ -607,7 +605,6 @@ namespace WebApplications.Utilities.Serialization
         /// <returns>
         ///   <paramref name="obj"/> serialized to a <see cref="byte"/> <see cref="Array"/>.
         /// </returns>
-        [UsedImplicitly]
         [NotNull]
         public static byte[] SerializeToByteArray(
             [NotNull] this object obj,
@@ -647,10 +644,11 @@ namespace WebApplications.Utilities.Serialization
         ///   <para>The format of the <paramref name="data"/> is invalid, contains either a non-base-64 character,
         ///   more than two padding characters, or a non-white space-character among the padding characters.</para>
         /// </exception>
-        [UsedImplicitly]
         [CanBeNull]
-        public static T Deserialize<T>([NotNull] this string data, [CanBeNull] object context = null,
-                                       StreamingContextStates contextState = StreamingContextStates.Other)
+        public static T Deserialize<T>(
+            [NotNull] this string data,
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
         {
             return Deserialize<T>(Convert.FromBase64String(data), GetFormatter(context, contextState));
         }
@@ -671,7 +669,6 @@ namespace WebApplications.Utilities.Serialization
         ///   <para>The format of the <paramref name="data"/> is invalid, contains either a non-base-64 character,
         ///   more than two padding characters, or a non-white space-character among the padding characters.</para>
         /// </exception>
-        [UsedImplicitly]
         [CanBeNull]
         public static T Deserialize<T>([NotNull] this string data, [NotNull] IFormatter formatter)
         {
@@ -686,10 +683,11 @@ namespace WebApplications.Utilities.Serialization
         /// <param name="context">The de-serialization context.</param>
         /// <param name="contextState">The de-serialization context state.</param>
         /// <returns>The deserialized object tree of type <typeparamref name="T"/>.</returns>
-        [UsedImplicitly]
         [CanBeNull]
-        public static T Deserialize<T>([NotNull] this byte[] data, [CanBeNull] object context = null,
-                                       StreamingContextStates contextState = StreamingContextStates.Other)
+        public static T Deserialize<T>(
+            [NotNull] this byte[] data,
+            [CanBeNull] object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
         {
             return Deserialize<T>(data, GetFormatter(context, contextState));
         }
@@ -701,14 +699,11 @@ namespace WebApplications.Utilities.Serialization
         /// <param name="data">The data to deserialize.</param>
         /// <param name="formatter">The formatter.</param>
         /// <returns>The deserialized object tree of type <typeparamref name="T"/>.</returns>
-        [UsedImplicitly]
         [CanBeNull]
         public static T Deserialize<T>([NotNull] this byte[] data, [NotNull] IFormatter formatter)
         {
             using (Stream serializationStream = new MemoryStream(data))
-            {
-                return (T) formatter.Deserialize(serializationStream);
-            }
+                return (T)formatter.Deserialize(serializationStream);
         }
     }
 }
