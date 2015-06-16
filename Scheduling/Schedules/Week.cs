@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,361 +31,304 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
-    /// Enumeration of the potential weeks in a week.
+    /// Enumeration of the potential weeks in a year.
     /// </summary>
     [Flags]
+    [PublicAPI]
     public enum Week : ulong
     {
         /// <summary>
-        /// Sometimes the first few days of a year are not in week one.
+        /// The first few days of the year that are part of the last week of the previous year.
         /// </summary>
-        [PublicAPI]
-        Zeroth = (ulong)1,
+        Zeroth = 1UL,
 
         /// <summary>
-        /// 
+        /// The first week in the year.
         /// </summary>
-        [PublicAPI]
-        First = (ulong)1 << 1,
+        First = 1UL << 1,
 
         /// <summary>
-        /// 
+        /// The second week in the year.
         /// </summary>
-        [PublicAPI]
-        Second = (ulong)1 << 2,
+        Second = 1UL << 2,
 
         /// <summary>
-        /// 
+        /// The third week in the year.
         /// </summary>
-        [PublicAPI]
-        Third = (ulong)1 << 3,
+        Third = 1UL << 3,
 
         /// <summary>
-        /// 
+        /// The fourth week in the year.
         /// </summary>
-        [PublicAPI]
-        Fourth = (ulong)1 << 4,
+        Fourth = 1UL << 4,
 
         /// <summary>
-        /// 
+        /// The fifth week in the year.
         /// </summary>
-        [PublicAPI]
-        Fifth = (ulong)1 << 5,
+        Fifth = 1UL << 5,
 
         /// <summary>
-        /// 
+        /// The sixth week in the year.
         /// </summary>
-        [PublicAPI]
-        Sixth = (ulong)1 << 6,
+        Sixth = 1UL << 6,
 
         /// <summary>
-        /// 
+        /// The seventh week in the year.
         /// </summary>
-        [PublicAPI]
-        Seventh = (ulong)1 << 7,
+        Seventh = 1UL << 7,
 
         /// <summary>
-        /// 
+        /// The eighth week in the year.
         /// </summary>
-        [PublicAPI]
-        Eighth = (ulong)1 << 8,
+        Eighth = 1UL << 8,
 
         /// <summary>
-        /// 
+        /// The ninth week in the year.
         /// </summary>
-        [PublicAPI]
-        Ninth = (ulong)1 << 9,
+        Ninth = 1UL << 9,
 
         /// <summary>
-        /// 
+        /// The tenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Tenth = (ulong)1 << 10,
+        Tenth = 1UL << 10,
 
         /// <summary>
-        /// 
+        /// The eleventh week in the year.
         /// </summary>
-        [PublicAPI]
-        Eleventh = (ulong)1 << 11,
+        Eleventh = 1UL << 11,
 
         /// <summary>
-        /// 
+        /// The twelfth week in the year.
         /// </summary>
-        [PublicAPI]
-        Twelfth = (ulong)1 << 12,
+        Twelfth = 1UL << 12,
 
         /// <summary>
-        /// 
+        /// The thirteenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Thirteenth = (ulong)1 << 13,
+        Thirteenth = 1UL << 13,
 
         /// <summary>
-        /// 
+        /// The fourteenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Fourteenth = (ulong)1 << 14,
+        Fourteenth = 1UL << 14,
 
         /// <summary>
-        /// 
+        /// The fifteenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Fifteenth = (ulong)1 << 15,
+        Fifteenth = 1UL << 15,
 
         /// <summary>
-        /// 
+        /// The sixteenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Sixteenth = (ulong)1 << 16,
+        Sixteenth = 1UL << 16,
 
         /// <summary>
-        /// 
+        /// The seventeenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Seventeenth = (ulong)1 << 17,
+        Seventeenth = 1UL << 17,
 
         /// <summary>
-        /// 
+        /// The eighteenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Eighteenth = (ulong)1 << 18,
+        Eighteenth = 1UL << 18,
 
         /// <summary>
-        /// 
+        /// The nineteenth week in the year.
         /// </summary>
-        [PublicAPI]
-        Nineteenth = (ulong)1 << 19,
+        Nineteenth = 1UL << 19,
 
         /// <summary>
-        /// 
+        /// The twentieth week in the year.
         /// </summary>
-        [PublicAPI]
-        Twentieth = (ulong)1 << 20,
+        Twentieth = 1UL << 20,
 
         /// <summary>
-        /// 
+        /// The twenty first week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentyFirst = (ulong)1 << 21,
+        TwentyFirst = 1UL << 21,
 
         /// <summary>
-        /// 
+        /// The twenty second week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentySecond = (ulong)1 << 22,
+        TwentySecond = 1UL << 22,
 
         /// <summary>
-        /// 
+        /// The twenty third week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentyThird = (ulong)1 << 23,
+        TwentyThird = 1UL << 23,
 
         /// <summary>
-        /// 
+        /// The twenty fourth week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentyFourth = (ulong)1 << 24,
+        TwentyFourth = 1UL << 24,
 
         /// <summary>
-        /// 
+        /// The twenty fifth week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentyFifth = (ulong)1 << 25,
+        TwentyFifth = 1UL << 25,
 
         /// <summary>
-        /// 
+        /// The twenty sixth week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentySixth = (ulong)1 << 26,
+        TwentySixth = 1UL << 26,
 
         /// <summary>
-        /// 
+        /// The twenty seventh week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentySeventh = (ulong)1 << 27,
+        TwentySeventh = 1UL << 27,
 
         /// <summary>
-        /// 
+        /// The twenty eighth week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentyEighth = (ulong)1 << 28,
+        TwentyEighth = 1UL << 28,
 
         /// <summary>
-        /// 
+        /// The twenty ninth week in the year.
         /// </summary>
-        [PublicAPI]
-        TwentyNinth = (ulong)1 << 29,
+        TwentyNinth = 1UL << 29,
 
         /// <summary>
-        /// 
+        /// The thirtieth week in the year.
         /// </summary>
-        [PublicAPI]
-        Thirtieth = (ulong)1 << 30,
+        Thirtieth = 1UL << 30,
 
         /// <summary>
-        /// 
+        /// The thirty first week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtyFirst = (ulong)1 << 31,
+        ThirtyFirst = 1UL << 31,
 
         /// <summary>
-        /// 
+        /// The thirty second week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtySecond = (ulong)1 << 32,
+        ThirtySecond = 1UL << 32,
 
         /// <summary>
-        /// 
+        /// The thirty third week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtyThird = (ulong)1 << 33,
+        ThirtyThird = 1UL << 33,
 
         /// <summary>
-        /// 
+        /// The thirty fourth week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtyFourth = (ulong)1 << 34,
+        ThirtyFourth = 1UL << 34,
 
         /// <summary>
-        /// 
+        /// The thirty fifth week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtyFifth = (ulong)1 << 35,
+        ThirtyFifth = 1UL << 35,
 
         /// <summary>
-        /// 
+        /// The thirty sixth week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtySixth = (ulong)1 << 36,
+        ThirtySixth = 1UL << 36,
 
         /// <summary>
-        /// 
+        /// The thirty seventh week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtySeventh = (ulong)1 << 37,
+        ThirtySeventh = 1UL << 37,
 
         /// <summary>
-        /// 
+        /// The thirty eighth week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtyEighth = (ulong)1 << 38,
+        ThirtyEighth = 1UL << 38,
 
         /// <summary>
-        /// 
+        /// The thirty ninth week in the year.
         /// </summary>
-        [PublicAPI]
-        ThirtyNinth = (ulong)1 << 39,
+        ThirtyNinth = 1UL << 39,
 
         /// <summary>
-        /// 
+        /// The fortieth week in the year.
         /// </summary>
-        [PublicAPI]
-        Fortieth = (ulong)1 << 40,
+        Fortieth = 1UL << 40,
 
         /// <summary>
-        /// 
+        /// The forty first week in the year.
         /// </summary>
-        [PublicAPI]
-        FortyFirst = (ulong)1 << 41,
+        FortyFirst = 1UL << 41,
 
         /// <summary>
-        /// 
+        /// The forty second week in the year.
         /// </summary>
-        [PublicAPI]
-        FortySecond = (ulong)1 << 42,
+        FortySecond = 1UL << 42,
 
         /// <summary>
-        /// 
+        /// The forty third week in the year.
         /// </summary>
-        [PublicAPI]
-        FortyThird = (ulong)1 << 43,
+        FortyThird = 1UL << 43,
 
         /// <summary>
-        /// 
+        /// The forty forth week in the year.
         /// </summary>
-        [PublicAPI]
-        FortyForth = (ulong)1 << 44,
+        FortyForth = 1UL << 44,
 
         /// <summary>
-        /// 
+        /// The forty fifth week in the year.
         /// </summary>
-        [PublicAPI]
-        FortyFifth = (ulong)1 << 45,
+        FortyFifth = 1UL << 45,
 
         /// <summary>
-        /// 
+        /// The forty sixth week in the year.
         /// </summary>
-        [PublicAPI]
-        FortySixth = (ulong)1 << 46,
+        FortySixth = 1UL << 46,
 
         /// <summary>
-        /// 
+        /// The forty seventh week in the year.
         /// </summary>
-        [PublicAPI]
-        FortySeventh = (ulong)1 << 47,
+        FortySeventh = 1UL << 47,
 
         /// <summary>
-        /// 
+        /// The forty eighth week in the year.
         /// </summary>
-        [PublicAPI]
-        FortyEighth = (ulong)1 << 48,
+        FortyEighth = 1UL << 48,
 
         /// <summary>
-        /// 
+        /// The forty ninth week in the year.
         /// </summary>
-        [PublicAPI]
-        FortyNinth = (ulong)1 << 49,
+        FortyNinth = 1UL << 49,
 
         /// <summary>
-        /// 
+        /// The fiftieth week in the year.
         /// </summary>
-        [PublicAPI]
-        Fiftieth = (ulong)1 << 50,
+        Fiftieth = 1UL << 50,
 
         /// <summary>
-        /// 
+        /// The fifty first week in the year.
         /// </summary>
-        [PublicAPI]
-        FiftyFirst = (ulong)1 << 51,
+        FiftyFirst = 1UL << 51,
 
         /// <summary>
-        /// 
+        /// The fifty second week in the year.
         /// </summary>
-        [PublicAPI]
-        FiftySecond = (ulong)1 << 52,
+        FiftySecond = 1UL << 52,
 
         /// <summary>
-        /// 
+        /// No weeks in the year.
         /// </summary>
-        [PublicAPI]
         Never = 0,
 
         /// <summary>
-        /// 
+        /// Every four weeks starting from the first week.
         /// </summary>
-        [PublicAPI]
         EveryFourWeeks =
             First | Fifth | Ninth | Thirteenth | Seventeenth | TwentyFirst | TwentyFifth | TwentyNinth | ThirtyThird |
             ThirtySeventh | FortyFirst | FortyFifth | FortyNinth,
 
         /// <summary>
-        /// 
+        /// Every two weeks starting from the first week.
         /// </summary>
-        [PublicAPI]
         EveryTwoWeeks =
             EveryFourWeeks | Third | Seventh | Eleventh | Fifteenth | Nineteenth | TwentyThird | TwentySeventh |
             ThirtyFirst | ThirtyFifth | ThirtyNinth | FortyThird | FortySeventh | FiftyFirst,
 
         /// <summary>
-        /// 
+        /// Every two weeks starting from the second week.
         /// </summary>
-        [PublicAPI]
         EveryOtherWeek = ~EveryTwoWeeks,
 
         /// <summary>
-        /// 
+        /// Every week in the year.
         /// </summary>
-        [PublicAPI]
         Every = EveryTwoWeeks | EveryOtherWeek
     }
 }

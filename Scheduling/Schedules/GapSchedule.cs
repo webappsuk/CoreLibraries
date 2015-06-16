@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,20 @@
 #endregion
 
 using System;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
     /// Defines a schedule that runs after a specific gap.
     /// </summary>
+    [PublicAPI]
     public class GapSchedule : ISchedule
     {
         /// <summary>
         /// The duration between runs.
         /// </summary>
-        [PublicAPI]
         public readonly Duration Duration;
 
         private readonly string _name;

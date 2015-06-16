@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,207 +31,175 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
-    /// Enumeration of the potential seconds in a minute.
+    /// Enumeration of the potential hours in a day.
     /// </summary>
     [Flags]
-    public enum Hour : ulong
+    [PublicAPI]
+    public enum Hour
     {
         /// <summary>
-        /// 
+        /// The zeroth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Zeroth = (ulong)1,
+        Zeroth = 1,
 
         /// <summary>
-        /// 
+        /// The first hour in the day.
         /// </summary>
-        [PublicAPI]
-        First = (ulong)1 << 1,
+        First = 1 << 1,
 
         /// <summary>
-        /// 
+        /// The second hour in the day.
         /// </summary>
-        [PublicAPI]
-        Second = (ulong)1 << 2,
+        Second = 1 << 2,
 
         /// <summary>
-        /// 
+        /// The third hour in the day.
         /// </summary>
-        [PublicAPI]
-        Third = (ulong)1 << 3,
+        Third = 1 << 3,
 
         /// <summary>
-        /// 
+        /// The fourth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Fourth = (ulong)1 << 4,
+        Fourth = 1 << 4,
 
         /// <summary>
-        /// 
+        /// The fifth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Fifth = (ulong)1 << 5,
+        Fifth = 1 << 5,
 
         /// <summary>
-        /// 
+        /// The sixth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Sixth = (ulong)1 << 6,
+        Sixth = 1 << 6,
 
         /// <summary>
-        /// 
+        /// The seventh hour in the day.
         /// </summary>
-        [PublicAPI]
-        Seventh = (ulong)1 << 7,
+        Seventh = 1 << 7,
 
         /// <summary>
-        /// 
+        /// The eighth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Eighth = (ulong)1 << 8,
+        Eighth = 1 << 8,
 
         /// <summary>
-        /// 
+        /// The ninth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Ninth = (ulong)1 << 9,
+        Ninth = 1 << 9,
 
         /// <summary>
-        /// 
+        /// The tenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Tenth = (ulong)1 << 10,
+        Tenth = 1 << 10,
 
         /// <summary>
-        /// 
+        /// The eleventh hour in the day.
         /// </summary>
-        [PublicAPI]
-        Eleventh = (ulong)1 << 11,
+        Eleventh = 1 << 11,
 
         /// <summary>
-        /// 
+        /// The twelfth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Twelfth = (ulong)1 << 12,
+        Twelfth = 1 << 12,
 
         /// <summary>
-        /// 
+        /// The thirteenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Thirteenth = (ulong)1 << 13,
+        Thirteenth = 1 << 13,
 
         /// <summary>
-        /// 
+        /// The fourteenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Fourteenth = (ulong)1 << 14,
+        Fourteenth = 1 << 14,
 
         /// <summary>
-        /// 
+        /// The fifteenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Fifteenth = (ulong)1 << 15,
+        Fifteenth = 1 << 15,
 
         /// <summary>
-        /// 
+        /// The sixteenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Sixteenth = (ulong)1 << 16,
+        Sixteenth = 1 << 16,
 
         /// <summary>
-        /// 
+        /// The seventeenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Seventeenth = (ulong)1 << 17,
+        Seventeenth = 1 << 17,
 
         /// <summary>
-        /// 
+        /// The eighteenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Eighteenth = (ulong)1 << 18,
+        Eighteenth = 1 << 18,
 
         /// <summary>
-        /// 
+        /// The nineteenth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Nineteenth = (ulong)1 << 19,
+        Nineteenth = 1 << 19,
 
         /// <summary>
-        /// 
+        /// The twentieth hour in the day.
         /// </summary>
-        [PublicAPI]
-        Twentieth = (ulong)1 << 20,
+        Twentieth = 1 << 20,
 
         /// <summary>
-        /// 
+        /// The twenty first hour in the day.
         /// </summary>
-        [PublicAPI]
-        TwentyFirst = (ulong)1 << 21,
+        TwentyFirst = 1 << 21,
 
         /// <summary>
-        /// 
+        /// The twenty second hour in the day.
         /// </summary>
-        [PublicAPI]
-        TwentySecond = (ulong)1 << 22,
+        TwentySecond = 1 << 22,
 
         /// <summary>
-        /// 
+        /// The twenty third hour in the day.
         /// </summary>
-        [PublicAPI]
-        TwentyThird = (ulong)1 << 23,
+        TwentyThird = 1 << 23,
 
         /// <summary>
-        /// 
+        /// No hours in the day.
         /// </summary>
-        [PublicAPI]
         Never = 0,
 
         /// <summary>
-        /// 
+        /// The twenty fourth hour in the day.
         /// </summary>
-        [PublicAPI]
         TwentyFourth = Zeroth,
 
         /// <summary>
-        /// 
+        /// Every twelve hours starting from the zeroth hour.
         /// </summary>
-        [PublicAPI]
         EveryTwelveHours = Zeroth | Twelfth,
 
         /// <summary>
-        /// 
+        /// Every six hours starting from the zeroth hour.
         /// </summary>
-        [PublicAPI]
         EverySixHours = EveryTwelveHours | Sixth | Eighteenth,
 
         /// <summary>
-        /// 
+        /// Every four hours starting from the zeroth hour.
         /// </summary>
-        [PublicAPI]
         EveryFourHours = EveryTwelveHours | Fourth | Eighth | Sixteenth | Twentieth,
 
         /// <summary>
-        /// 
+        /// Wvery three hours starting from the zeroth hour.
         /// </summary>
-        [PublicAPI]
         EveryThreeHours = EverySixHours | Third | Ninth | Fifteenth | TwentyFirst,
 
         /// <summary>
-        /// 
+        /// Every two hours starting from the zeroth hour.
         /// </summary>
-        [PublicAPI]
         EveryTwoHours = EveryFourHours | Second | Sixth | Tenth | Fourteenth | Eighteenth | TwentySecond,
 
         /// <summary>
-        /// 
+        /// Every two hours starting from the first hour.
         /// </summary>
-        [PublicAPI]
         EveryOtherHour = ~EveryTwoHours,
 
         /// <summary>
-        /// 
+        /// Every hour in the day.
         /// </summary>
-        [PublicAPI]
         Every = EveryTwoHours | EveryOtherHour
     }
 }

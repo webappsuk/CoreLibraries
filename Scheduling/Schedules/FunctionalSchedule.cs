@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,8 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -36,6 +35,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// Defines a schedule based on a function.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public class FunctionalSchedule : ISchedule
     {
         private readonly ScheduleOptions _options;
@@ -49,12 +49,12 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="function">The function.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public FunctionalSchedule(
             [NotNull] Func<Instant, Instant> function,
             ScheduleOptions options = ScheduleOptions.None)
         {
-            Contract.Requires(function != null);
+            if (function == null) throw new ArgumentNullException("function");
+
             _function = function;
             _options = options;
         }
@@ -65,13 +65,13 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="name">The name.</param>
         /// <param name="function">The function.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public FunctionalSchedule(
             [CanBeNull] string name,
             [NotNull] Func<Instant, Instant> function,
             ScheduleOptions options = ScheduleOptions.None)
         {
-            Contract.Requires(function != null);
+            if (function == null) throw new ArgumentNullException("function");
+
             _function = function;
             _options = options;
             _name = name;

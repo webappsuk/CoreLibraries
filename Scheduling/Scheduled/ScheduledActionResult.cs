@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,40 @@
 #endregion
 
 using System;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
     /// <summary>
     /// The result of a scheduled action.
     /// </summary>
+    [PublicAPI]
     public class ScheduledActionResult
     {
         /// <summary>
         /// When the execution was due.
         /// </summary>
-        [PublicAPI]
         public readonly Instant Due;
 
         /// <summary>
         /// How long the execution took.
         /// </summary>
-        [PublicAPI]
         public readonly Duration Duration;
 
         /// <summary>
         /// Any exception that was thrown by the function.
         /// </summary>
-        [PublicAPI]
         public readonly Exception Exception;
 
         /// <summary>
         /// When the execution actually started.
         /// </summary>
-        [PublicAPI]
         public readonly Instant Started;
 
         /// <summary>
         /// Whether this action was cancelled.
         /// </summary>
-        [PublicAPI]
         public readonly bool Cancelled;
 
         /// <summary>

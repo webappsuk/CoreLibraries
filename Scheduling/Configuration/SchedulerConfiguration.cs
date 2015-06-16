@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,11 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.ComponentModel;
 using System.Configuration;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
@@ -44,7 +44,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         ///   Gets a value indicating whether the scheduler is enabled is enabled.
         /// </summary>
         [ConfigurationProperty("enabled", DefaultValue = true, IsRequired = false)]
-        [PublicAPI]
         public bool Enabled
         {
             get { return GetProperty<bool>("enabled"); }
@@ -56,7 +55,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// </summary>
         [ConfigurationProperty("defautlMaximumHistory", DefaultValue = 100, IsRequired = false)]
         [IntegerValidator(MinValue = 1, MaxValue = int.MaxValue)]
-        [PublicAPI]
         public int DefautlMaximumHistory
         {
             get { return GetProperty<int>("defautlMaximumHistory"); }
@@ -69,7 +67,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         [ConfigurationProperty("defaultMaximumDuration", DefaultValue = "00:10:00", IsRequired = false)]
         [TypeConverter(typeof(DurationConverter))]
         [DurationValidator(MinValueString = "00:00:00.01", MaxValueString = "1.00:00:00")]
-        [PublicAPI]
         public Duration DefaultMaximumDuration
         {
             get { return GetProperty<Duration>("defaultMaximumDuration"); }
@@ -86,14 +83,14 @@ namespace WebApplications.Utilities.Scheduling.Configuration
             ClearItemsName = "clear",
             RemoveItemName = "remove")]
         [NotNull]
-        [PublicAPI]
+        [ItemNotNull]
         public ScheduleCollection Schedules
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             get { return (ScheduleCollection)this["schedules"]; }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
                 this["schedules"] = value;
             }
         }

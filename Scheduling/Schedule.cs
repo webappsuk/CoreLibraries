@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
-using WebApplications.Utilities.Ranges;
-using WebApplications.Utilities.Ranges;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling
@@ -41,15 +38,15 @@ namespace WebApplications.Utilities.Scheduling
     /// <summary>
     /// Extension methods for scheduling
     /// </summary>
+    [PublicAPI]
     public static class Schedule
     {
         /// <summary>
         /// A schedule that will never run.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly ISchedule Never = Scheduler.AddSchedule(new OneOffSchedule("Never", Instant.MaxValue));
-        
+
         #region Months
         /// <summary>
         /// Converts a <see cref="Month">Month enum</see> into a enumeration of month integers.
@@ -57,20 +54,17 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="month">The month.</param>
         /// <returns>An enumeration of month integers.</returns>
         [NotNull]
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static IEnumerable<int> Months(this Month month)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
-            ulong m = (ulong)month;
+            int m = (int)month;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 1; i < 13; i++)
             {
-                ulong bit = (ulong)1 << i;
+                int bit = 1 << i;
                 if ((m & bit) == bit)
                     valid.Add(i);
             }
@@ -82,12 +76,9 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="months">The months.</param>
         /// <returns>A <see cref="Month">Month enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Month Months([NotNull] params int[] months)
         {
-            Contract.Requires(months != null);
             return months.Months();
         }
 
@@ -96,13 +87,11 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="months">The months.</param>
         /// <returns>A <see cref="Month">Month enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Month Months([NotNull] this IEnumerable<int> months)
         {
-            Contract.Requires(months != null);
-            return (Month)months.Aggregate<int, ulong>(0, (current, m) => current | (ulong)1 << m);
+            if (months == null) throw new ArgumentNullException("months");
+            return (Month)months.Aggregate(0, (current, m) => current | 1 << m);
         }
         #endregion
 
@@ -113,20 +102,17 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="day">The day.</param>
         /// <returns>An enumeration of day integers.</returns>
         [NotNull]
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static IEnumerable<int> Days(this Day day)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
-            ulong d = (ulong)day;
+            uint d = (uint)day;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 1; i < 32; i++)
             {
-                ulong bit = (ulong)1 << i;
+                uint bit = 1U << i;
                 if ((d & bit) == bit)
                     valid.Add(i);
             }
@@ -138,12 +124,9 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="days">The days.</param>
         /// <returns>A <see cref="Day">Day enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Day Days([NotNull] params int[] days)
         {
-            Contract.Requires(days != null);
             return days.Days();
         }
 
@@ -152,13 +135,11 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="days">The days.</param>
         /// <returns>A <see cref="Day">Day enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Day Days([NotNull] this IEnumerable<int> days)
         {
-            Contract.Requires(days != null);
-            return (Day)days.Aggregate<int, ulong>(0, (current, d) => current | (ulong)1 << d);
+            if (days == null) throw new ArgumentNullException("days");
+            return (Day)days.Aggregate<int, uint>(0, (current, d) => current | 1U << d);
         }
         #endregion
 
@@ -169,12 +150,9 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="week">The week.</param>
         /// <returns>An enumeration of week integers.</returns>
         [NotNull]
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static IEnumerable<int> Weeks(this Week week)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong d = (ulong)week;
 
@@ -194,12 +172,9 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="weeks">The weeks.</param>
         /// <returns>A <see cref="Week">Week enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Week Weeks([NotNull] params int[] weeks)
         {
-            Contract.Requires(weeks != null);
             return weeks.Weeks();
         }
 
@@ -208,12 +183,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="weeks">The weeks.</param>
         /// <returns>A <see cref="Week">Week enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Week Weeks([NotNull] this IEnumerable<int> weeks)
         {
-            Contract.Requires(weeks != null);
+            if (weeks == null) throw new ArgumentNullException("weeks");
             return (Week)weeks.Aggregate<int, ulong>(0, (current, d) => current | (ulong)1 << d);
         }
         #endregion
@@ -225,12 +198,9 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="weekDay">The week day.</param>
         /// <returns>An enumeration of <see cref="DayOfWeek"/>.</returns>
         [NotNull]
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static IEnumerable<IsoDayOfWeek> WeekDays(this WeekDay weekDay)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<IsoDayOfWeek>>() != null);
             List<IsoDayOfWeek> valid = new List<IsoDayOfWeek>();
             if (WeekDay.Sunday ==
                 (weekDay & WeekDay.Sunday))
@@ -261,12 +231,9 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="daysOfWeek">The weekDays.</param>
         /// <returns>A <see cref="WeekDay">WeekDay enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static WeekDay WeekDays([NotNull] params IsoDayOfWeek[] daysOfWeek)
         {
-            Contract.Requires(daysOfWeek != null);
             return daysOfWeek.WeekDays();
         }
 
@@ -275,12 +242,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="daysOfWeek">The weekDays.</param>
         /// <returns>A <see cref="WeekDay">WeekDay enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static WeekDay WeekDays([NotNull] this IEnumerable<IsoDayOfWeek> daysOfWeek)
         {
-            Contract.Requires(daysOfWeek != null);
+            if (daysOfWeek == null) throw new ArgumentNullException("daysOfWeek");
             WeekDay weekDay = WeekDay.Never;
             foreach (IsoDayOfWeek dayOfWeek in daysOfWeek)
             {
@@ -322,20 +287,17 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="hour">The hour.</param>
         /// <returns>An enumeration of hour integers.</returns>
         [NotNull]
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static IEnumerable<int> Hours(this Hour hour)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
-            ulong h = (ulong)hour;
+            int h = (int)hour;
 
             // Check bits
             List<int> valid = new List<int>();
             for (int i = 0; i < 24; i++)
             {
-                ulong bit = (ulong)1 << i;
+                int bit = 1 << i;
                 if ((h & bit) == bit)
                     valid.Add(i);
             }
@@ -347,12 +309,9 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="hours">The hours.</param>
         /// <returns>A <see cref="Hour">Hour enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Hour Hours([NotNull] params int[] hours)
         {
-            Contract.Requires(hours != null);
             return hours.Hours();
         }
 
@@ -361,13 +320,11 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="hours">The hours.</param>
         /// <returns>A <see cref="Hour">Hour enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Hour Hours([NotNull] this IEnumerable<int> hours)
         {
-            Contract.Requires(hours != null);
-            return (Hour)hours.Aggregate<int, ulong>(0, (current, h) => current | (ulong)1 << h);
+            if (hours == null) throw new ArgumentNullException("hours");
+            return (Hour)hours.Aggregate(0, (current, h) => current | 1 << h);
         }
         #endregion
 
@@ -378,12 +335,9 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="minute">The minute.</param>
         /// <returns>An enumeration of minute integers.</returns>
         [NotNull]
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static IEnumerable<int> Minutes(this Minute minute)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong m = (ulong)minute;
 
@@ -403,12 +357,9 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="minutes">The minutes.</param>
         /// <returns>A <see cref="Minute">Minute enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Minute Minutes([NotNull] params int[] minutes)
         {
-            Contract.Requires(minutes != null);
             return minutes.Minutes();
         }
 
@@ -417,12 +368,10 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="minutes">The minutes.</param>
         /// <returns>A <see cref="Minute">Minute enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Minute Minutes([NotNull] this IEnumerable<int> minutes)
         {
-            Contract.Requires(minutes != null);
+            if (minutes == null) throw new ArgumentNullException("minutes");
             return (Minute)minutes.Aggregate<int, ulong>(0, (current, m) => current | (ulong)1 << m);
         }
         #endregion
@@ -434,12 +383,9 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="second">The second.</param>
         /// <returns>An enumeration of second integers.</returns>
         [NotNull]
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static IEnumerable<int> Seconds(this Second second)
         {
-            Contract.Ensures(Contract.Result<IEnumerable<int>>() != null);
             // Cast to an integer
             ulong s = (ulong)second;
 
@@ -459,12 +405,9 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="seconds">The seconds.</param>
         /// <returns>A <see cref="Second">Second enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Second Seconds([NotNull] params int[] seconds)
         {
-            Contract.Requires(seconds != null);
             return seconds.Seconds();
         }
 
@@ -473,16 +416,14 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <param name="seconds">The seconds.</param>
         /// <returns>A <see cref="Second">Second enum</see>.</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Second Seconds([NotNull] this IEnumerable<int> seconds)
         {
-            Contract.Requires(seconds != null);
+            if (seconds == null) throw new ArgumentNullException("seconds");
             return (Second)seconds.Aggregate<int, ulong>(0, (current, s) => current | (ulong)1 << s);
         }
         #endregion
-        
+
         /// <summary>
         /// Gets the next valid second after the current <paramref name="instant" />.
         /// </summary>
@@ -497,9 +438,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="calendarSystem">The calendar (defaults to ISO-8601 standard).</param>
         /// <param name="timeZone">The time zone (defaults to UTC).</param>
         /// <returns>The next valid date (or <see cref="DateTime.MaxValue" /> if none).</returns>
-        [PublicAPI]
-        [System.Diagnostics.Contracts.Pure]
-        [WebApplications.Utilities.Annotations.Pure]
+        [Pure]
         public static Instant NextValid(
             this Instant instant,
             Month month = Month.Every,
@@ -512,8 +451,6 @@ namespace WebApplications.Utilities.Scheduling
             [CanBeNull] CalendarSystem calendarSystem = null,
             [CanBeNull] DateTimeZone timeZone = null)
         {
-            Contract.Ensures(Contract.Result<Instant>() >= instant);
-
             // Never case, if any are set to never, we'll never get a valid date.
             if ((month == Month.Never) ||
                 (week == Week.Never) ||
@@ -528,8 +465,8 @@ namespace WebApplications.Utilities.Scheduling
                 calendarSystem = CalendarSystem.Iso;
             if (timeZone == null)
                 timeZone = DateTimeZone.Utc;
-            Contract.Assert(calendarSystem != null);
-            Contract.Assert(timeZone != null);
+            Debug.Assert(calendarSystem != null);
+            Debug.Assert(timeZone != null);
 
             // Move to next second.
             instant = instant.CeilingSecond();

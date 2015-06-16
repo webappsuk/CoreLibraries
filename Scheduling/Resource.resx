@@ -153,4 +153,10 @@
   <data name="Scheduler_Scheduler_TimeZoneDB_Failed" xml:space="preserve">
     <value>A fatal exception occurred whilst trying to load the TimeZone DB '{0}.</value>
   </data>
+  <data name="OneOffSchedule_InvalidTimeZone" xml:space="preserve">
+    <value>'{0}' does not represent a valid timezone.</value>
+  </data>
+  <data name="Scheduler_AddSchedule_SchenduleNameNull" xml:space="preserve">
+    <value>Schendule name cannot be null</value>
+  </data>
 </root>

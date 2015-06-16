@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,207 +31,175 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
-    /// Enumeration of the potential seconds in a minute.
+    /// Enumeration of the potential days in a month.
     /// </summary>
     [Flags]
-    public enum Day : ulong
+    [PublicAPI]
+    public enum Day : uint
     {
         /// <summary>
-        /// 
+        /// The first day of the month.
         /// </summary>
-        [PublicAPI]
-        First = (ulong)1 << 1,
+        First = 1U << 1,
 
         /// <summary>
-        /// 
+        /// The second day of the month.
         /// </summary>
-        [PublicAPI]
-        Second = (ulong)1 << 2,
+        Second = 1U << 2,
 
         /// <summary>
-        /// 
+        /// The third day of the month.
         /// </summary>
-        [PublicAPI]
-        Third = (ulong)1 << 3,
+        Third = 1U << 3,
 
         /// <summary>
-        /// 
+        /// The fourth day of the month.
         /// </summary>
-        [PublicAPI]
-        Fourth = (ulong)1 << 4,
+        Fourth = 1U << 4,
 
         /// <summary>
-        /// 
+        /// The fifth day of the month.
         /// </summary>
-        [PublicAPI]
-        Fifth = (ulong)1 << 5,
+        Fifth = 1U << 5,
 
         /// <summary>
-        /// 
+        /// The sixth day of the month.
         /// </summary>
-        [PublicAPI]
-        Sixth = (ulong)1 << 6,
+        Sixth = 1U << 6,
 
         /// <summary>
-        /// 
+        /// The seventh day of the month.
         /// </summary>
-        [PublicAPI]
-        Seventh = (ulong)1 << 7,
+        Seventh = 1U << 7,
 
         /// <summary>
-        /// 
+        /// The eighth day of the month.
         /// </summary>
-        [PublicAPI]
-        Eighth = (ulong)1 << 8,
+        Eighth = 1U << 8,
 
         /// <summary>
-        /// 
+        /// The ninth day of the month.
         /// </summary>
-        [PublicAPI]
-        Ninth = (ulong)1 << 9,
+        Ninth = 1U << 9,
 
         /// <summary>
-        /// 
+        /// The tenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Tenth = (ulong)1 << 10,
+        Tenth = 1U << 10,
 
         /// <summary>
-        /// 
+        /// The eleventh day of the month.
         /// </summary>
-        [PublicAPI]
-        Eleventh = (ulong)1 << 11,
+        Eleventh = 1U << 11,
 
         /// <summary>
-        /// 
+        /// The twelfth day of the month.
         /// </summary>
-        [PublicAPI]
-        Twelfth = (ulong)1 << 12,
+        Twelfth = 1U << 12,
 
         /// <summary>
-        /// 
+        /// The thirteenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Thirteenth = (ulong)1 << 13,
+        Thirteenth = 1U << 13,
 
         /// <summary>
-        /// 
+        /// The fourteenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Fourteenth = (ulong)1 << 14,
+        Fourteenth = 1U << 14,
 
         /// <summary>
-        /// 
+        /// The fifteenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Fifteenth = (ulong)1 << 15,
+        Fifteenth = 1U << 15,
 
         /// <summary>
-        /// 
+        /// The sixteenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Sixteenth = (ulong)1 << 16,
+        Sixteenth = 1U << 16,
 
         /// <summary>
-        /// 
+        /// The seventeenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Seventeenth = (ulong)1 << 17,
+        Seventeenth = 1U << 17,
 
         /// <summary>
-        /// 
+        /// The eighteenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Eighteenth = (ulong)1 << 18,
+        Eighteenth = 1U << 18,
 
         /// <summary>
-        /// 
+        /// The nineteenth day of the month.
         /// </summary>
-        [PublicAPI]
-        Nineteenth = (ulong)1 << 19,
+        Nineteenth = 1U << 19,
 
         /// <summary>
-        /// 
+        /// The twentieth day of the month.
         /// </summary>
-        [PublicAPI]
-        Twentieth = (ulong)1 << 20,
+        Twentieth = 1U << 20,
 
         /// <summary>
-        /// 
+        /// The twenty first day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentyFirst = (ulong)1 << 21,
+        TwentyFirst = 1U << 21,
 
         /// <summary>
-        /// 
+        /// The twenty second day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentySecond = (ulong)1 << 22,
+        TwentySecond = 1U << 22,
 
         /// <summary>
-        /// 
+        /// The twenty third day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentyThird = (ulong)1 << 23,
+        TwentyThird = 1U << 23,
 
         /// <summary>
-        /// 
+        /// The twenty fourth day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentyFourth = (ulong)1 << 24,
+        TwentyFourth = 1U << 24,
 
         /// <summary>
-        /// 
+        /// The twenty fifth day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentyFifth = (ulong)1 << 25,
+        TwentyFifth = 1U << 25,
 
         /// <summary>
-        /// 
+        /// The twenty sixth day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentySixth = (ulong)1 << 26,
+        TwentySixth = 1U << 26,
 
         /// <summary>
-        /// 
+        /// The twenty seventh day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentySeventh = (ulong)1 << 27,
+        TwentySeventh = 1U << 27,
 
         /// <summary>
-        /// 
+        /// The twenty eighth day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentyEighth = (ulong)1 << 28,
+        TwentyEighth = 1U << 28,
 
         /// <summary>
-        /// 
+        /// The twenty ninth day of the month.
         /// </summary>
-        [PublicAPI]
-        TwentyNinth = (ulong)1 << 29,
+        TwentyNinth = 1U << 29,
 
         /// <summary>
-        /// 
+        /// The thirtieth day of the month.
         /// </summary>
-        [PublicAPI]
-        Thirtieth = (ulong)1 << 30,
+        Thirtieth = 1U << 30,
 
         /// <summary>
-        /// 
+        /// The thirty first day of the month.
         /// </summary>
-        [PublicAPI]
-        ThirtyFirst = (ulong)1 << 31,
+        ThirtyFirst = 1U << 31,
 
         /// <summary>
-        /// 
+        /// No day of the month.
         /// </summary>
-        [PublicAPI]
         Never = 0,
 
         /// <summary>
-        /// 
+        /// Every day of the month.
         /// </summary>
-        [PublicAPI]
         Every =
             First | Second | Third | Fourth | Fifth | Sixth | Seventh | Eighth | Ninth | Tenth | Eleventh | Twelfth |
             Thirteenth | Fourteenth | Fifteenth | Sixteenth | Seventeenth | Eighteenth | Nineteenth | Twentieth |

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,30 @@
 
 using System;
 using System.Configuration;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
 {
     /// <summary>
     /// Validates a <see cref="Duration"/>.
     /// </summary>
+    [PublicAPI]
     public class DurationValidator : ConfigurationValidatorBase
     {
         /// <summary>
         /// The minimum value.
         /// </summary>
-        [PublicAPI]
-        public readonly Duration MinValue = Duration.FromTimeSpan(TimeSpan.MinValue);
+        public readonly Duration MinValue;
 
         /// <summary>
         /// The maximum value.
         /// </summary>
-        [PublicAPI]
-        public readonly Duration MaxValue = Duration.FromTimeSpan(TimeSpan.MaxValue);
+        public readonly Duration MaxValue;
 
         /// <summary>
         /// The range is exclusive.
         /// </summary>
-        [PublicAPI]
         public readonly bool RangeIsExclusive;
 
         /// <summary>
@@ -82,7 +80,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// </summary>
         /// <param name="type">The object type.</param>
         /// <returns>true if the <paramref name="type" /> parameter value matches the expected type; otherwise, false.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
         public override bool CanValidate(Type type)
         {
             return (type == typeof(Duration));
@@ -94,16 +91,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <param name="value">The object value.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// value;The specified value must be a Duration.
-        /// or
-        /// value
-        /// or
-        /// value
-        /// or
-        /// value
-        /// or
-        /// value
         /// </exception>
-        // ReSharper disable once CodeAnnotationAnalyzer
         public override void Validate(object value)
         {
             if (!(value is Duration))

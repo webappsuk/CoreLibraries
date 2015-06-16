@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,9 @@
 
 using System;
 using System.Configuration;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
 using NodaTime.Text;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
 {
@@ -38,6 +37,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
     /// Describes validation rules for a duration. This class cannot be inherited.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
+    [PublicAPI]
     public sealed class DurationValidatorAttribute : ConfigurationValidatorAttribute
     {
         private Duration _min = Duration.FromTimeSpan(TimeSpan.MinValue);
@@ -105,7 +105,8 @@ namespace WebApplications.Utilities.Scheduling.Configuration
             get { return _min.ToString(); }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
+
                 // ReSharper disable PossibleNullReferenceException
                 ParseResult<Duration> parseResult = DurationPattern.RoundtripPattern.Parse(value);
                 Duration duration;
@@ -145,7 +146,8 @@ namespace WebApplications.Utilities.Scheduling.Configuration
             get { return _max.ToString(); }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
+
                 // ReSharper disable PossibleNullReferenceException
                 ParseResult<Duration> parseResult = DurationPattern.RoundtripPattern.Parse(value);
                 Duration duration;

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Caching;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
@@ -41,6 +40,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
     /// Holds a scheduled action.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public abstract class ScheduledAction : IEquatable<ScheduledAction>
     {
         #region Delegates
@@ -92,13 +92,11 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// The maximum history.
         /// </summary>
-        [PublicAPI]
         public readonly int MaximumHistory;
 
         /// <summary>
         /// The return type (if a function).
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         public readonly Type ReturnType;
 
@@ -115,8 +113,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             Duration maximumDuration,
             [CanBeNull] Type returnType)
         {
-            Contract.Requires(schedule != null);
-            Contract.Requires(maximumHistory > 0);
+            if (schedule == null) throw new ArgumentNullException("schedule");
+            if (maximumHistory <= 0) throw new ArgumentOutOfRangeException("maximumHistory");
+
             _enabled = 1;
             LastExecutionFinished = Instant.MinValue;
             _schedule = schedule;
@@ -135,7 +134,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets or sets the maximum duration.
         /// </summary>
         /// <value>The maximum duration.</value>
-        [PublicAPI]
         public Duration MaximumDuration
         {
             get { return Duration.FromMilliseconds(MaximumDurationMs); }
@@ -155,9 +153,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets a value indicating whether this instance is a function.
         /// </summary>
         /// <value><see langword="true" /> if this instance is function; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool IsFunction
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             get { return !ReferenceEquals(ReturnType, null); }
         }
 
@@ -165,7 +163,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets the execution history.
         /// </summary>
         /// <value>The history.</value>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<ScheduledActionResult> History
         {
@@ -176,7 +173,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets the last result (if any).
         /// </summary>
         /// <value>The history.</value>
-        [PublicAPI]
         [CanBeNull]
         public ScheduledActionResult LastResult
         {
@@ -193,14 +189,14 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets or sets the schedule.
         /// </summary>
         /// <value>The schedule.</value>
-        [PublicAPI]
         [NotNull]
         public ISchedule Schedule
         {
             get { return _schedule; }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
+
                 if (ReferenceEquals(_schedule, value))
                     return;
                 _schedule = value;
@@ -213,7 +209,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets or sets a value indicating whether this <see cref="ScheduledAction"/> is enabled.
         /// </summary>
         /// <value><see langword="true" /> if enabled; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
         public bool Enabled
         {
             get { return _enabled > 0; }
@@ -238,7 +233,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task containing the result.</returns>
         [NotNull]
-        public Task<ScheduledActionResult> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ScheduledActionResult> ExecuteAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return DoExecuteAsync(cancellationToken);
         }
@@ -249,7 +245,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task containing the result.</returns>
         [NotNull]
-        protected abstract Task<ScheduledActionResult> DoExecuteAsync(CancellationToken cancellationToken = default(CancellationToken));
+        protected abstract Task<ScheduledActionResult> DoExecuteAsync(
+            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// The next time the action is due.
@@ -260,7 +257,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets the next due date and time (UTC).
         /// </summary>
         /// <value>The next due date and time.</value>
-        [PublicAPI]
         public Instant NextDue
         {
             get
@@ -274,17 +270,15 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets the next due date and time (UTC) in ticks.
         /// </summary>
         /// <value>The next due date and time.</value>
-        [PublicAPI]
         public long NextDueTicks
         {
             get { return Interlocked.Read(ref NextDueTicksInternal); }
         }
-        
+
         /// <summary>
         /// Gets the date and time (UTC) that the last execution finished.
         /// </summary>
         /// <value>The last execution finished date and time.</value>
-        [PublicAPI]
         public Instant LastExecutionFinished { get; protected set; }
 
         protected long ExecutionCountInternal;
@@ -293,7 +287,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets the execution count.
         /// </summary>
         /// <value>The execution count.</value>
-        [PublicAPI]
         public long ExecutionCount
         {
             get { return ExecutionCountInternal; }
@@ -337,9 +330,11 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                                 : TimeHelpers.Clock.Now;
                         }
                         else
+                        {
                             last = due > Instant.MinValue
                                 ? due
                                 : TimeHelpers.Clock.Now;
+                        }
 
                         ndt = Schedule.Next(last).Ticks;
 
@@ -414,7 +409,6 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>true if the <paramref name="left" /> parameter is equal to the <paramref name="right" /> parameter; otherwise, false.</returns>
-        [PublicAPI]
         public static bool Equals([CanBeNull] ScheduledAction left, [CanBeNull] ScheduledAction right)
         {
             if (ReferenceEquals(null, left)) return ReferenceEquals(null, right);

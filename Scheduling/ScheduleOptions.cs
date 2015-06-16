@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling
 {
@@ -34,6 +35,7 @@ namespace WebApplications.Utilities.Scheduling
     /// Schedule options.
     /// </summary>
     [Flags]
+    [PublicAPI]
     public enum ScheduleOptions : byte
     {
         /// <summary>

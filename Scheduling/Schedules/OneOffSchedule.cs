@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,21 +26,20 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
     /// Defines a schedule that runs at a specific <see cref="Instant"/>.
     /// </summary>
+    [PublicAPI]
     public class OneOffSchedule : ISchedule
     {
         /// <summary>
         /// An instant in time.
         /// </summary>
-        [PublicAPI]
         public readonly Instant Instant;
 
         private readonly string _name;
@@ -65,7 +64,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="instant">The instant.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public OneOffSchedule(Instant instant, ScheduleOptions options = ScheduleOptions.None)
         {
             Instant = instant;
@@ -78,7 +76,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="name">An optional name for the schedule.</param>
         /// <param name="instant">The instant.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public OneOffSchedule([CanBeNull] string name, Instant instant, ScheduleOptions options = ScheduleOptions.None)
         {
             _name = name;
@@ -91,7 +88,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="zonedDateTime">The date and time.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public OneOffSchedule(ZonedDateTime zonedDateTime, ScheduleOptions options = ScheduleOptions.None)
         {
             Instant = zonedDateTime.ToInstant();
@@ -104,7 +100,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="name">An optional name for the schedule.</param>
         /// <param name="zonedDateTime">The date and time.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public OneOffSchedule(
             [CanBeNull] string name,
             ZonedDateTime zonedDateTime,
@@ -146,9 +141,18 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             [NotNull] string timeZone,
             ScheduleOptions options = ScheduleOptions.None)
         {
-            Contract.Requires(timeZone != null);
-            _name = name;
+            if (timeZone == null) throw new ArgumentNullException("timeZone");
+
             DateTimeZone tz = TimeHelpers.DateTimeZoneProvider[timeZone];
+            if (tz == null)
+            {
+                throw new ArgumentException(
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    string.Format(Resource.OneOffSchedule_InvalidTimeZone, timeZone),
+                    "timeZone");
+            }
+
+            _name = name;
             Instant = tz.AtLeniently(LocalDateTime.FromDateTime(dateTime)).ToInstant();
             _options = options;
         }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,123 +31,105 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
-    /// Enumeration of the potential seconds in a minute.
+    /// Enumeration of the potential months in a year.
     /// </summary>
     [Flags]
-    public enum Month : ulong
+    [PublicAPI]
+    public enum Month
     {
         /// <summary>
-        /// 
+        /// The month of January.
         /// </summary>
-        [PublicAPI]
         January = 1 << 1,
 
         /// <summary>
-        /// 
+        /// The month of February.
         /// </summary>
-        [PublicAPI]
         February = 1 << 2,
 
         /// <summary>
-        /// 
+        /// The month of March.
         /// </summary>
-        [PublicAPI]
         March = 1 << 3,
 
         /// <summary>
-        /// 
+        /// The month of April.
         /// </summary>
-        [PublicAPI]
         April = 1 << 4,
 
         /// <summary>
-        /// 
+        /// The month of May.
         /// </summary>
-        [PublicAPI]
         May = 1 << 5,
 
         /// <summary>
-        /// 
+        /// The month of June.
         /// </summary>
-        [PublicAPI]
         June = 1 << 6,
 
         /// <summary>
-        /// 
+        /// The month of July.
         /// </summary>
-        [PublicAPI]
         July = 1 << 7,
 
         /// <summary>
-        /// 
+        /// The month of August.
         /// </summary>
-        [PublicAPI]
         August = 1 << 8,
 
         /// <summary>
-        /// 
+        /// The month of September.
         /// </summary>
-        [PublicAPI]
         September = 1 << 9,
 
         /// <summary>
-        /// 
+        /// The month of October.
         /// </summary>
-        [PublicAPI]
         October = 1 << 10,
 
         /// <summary>
-        /// 
+        /// The month of November.
         /// </summary>
-        [PublicAPI]
         November = 1 << 11,
 
         /// <summary>
-        /// 
+        /// The month of December.
         /// </summary>
-        [PublicAPI]
         December = 1 << 12,
 
         /// <summary>
-        /// 
+        /// No months in the year.
         /// </summary>
-        [PublicAPI]
         Never = 0,
 
         /// <summary>
-        /// 
+        /// Every six months starting from January.
         /// </summary>
-        [PublicAPI]
         TwiceAYear = January | July,
 
         /// <summary>
-        /// 
+        /// Every three months starting from January.
         /// </summary>
-        [PublicAPI]
         FourTimesAYear = TwiceAYear | May | November,
 
         /// <summary>
-        /// 
+        /// Every four months starting from January.
         /// </summary>
-        [PublicAPI]
         ThreeTimesAYear = January | May | September,
 
         /// <summary>
-        /// 
+        /// Every two months starting from January.
         /// </summary>
-        [PublicAPI]
         EveryTwoMonths = FourTimesAYear | March | September,
 
         /// <summary>
-        /// 
+        /// Every two months starting from February.
         /// </summary>
-        [PublicAPI]
         EveryOtherMonth = ~EveryTwoMonths,
 
         /// <summary>
-        /// 
+        /// Every month in the year.
         /// </summary>
-        [PublicAPI]
         Every = EveryTwoMonths | EveryOtherMonth
     }
 }

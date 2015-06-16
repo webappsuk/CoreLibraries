@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
@@ -43,6 +42,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
     /// </summary>
     /// <typeparam name="T">The return type.</typeparam>
     /// <remarks></remarks>
+    [PublicAPI]
     public sealed class ScheduledFunction<T> : ScheduledAction
     {
         #region Delegates
@@ -94,9 +94,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             Duration maximumDuration)
             : base(schedule, maximumHistory, maximumDuration, isFunction ? typeof(T) : null)
         {
-            Contract.Requires(function != null);
-            Contract.Requires(schedule != null);
-            Contract.Requires(maximumHistory > 0);
+            if (function == null) throw new ArgumentNullException("function");
+            if (schedule == null) throw new ArgumentNullException("schedule");
             _function = function;
         }
 
@@ -104,13 +103,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets the execution history.
         /// </summary>
         /// <value>The history.</value>
-        [PublicAPI]
         [NotNull]
         public new IEnumerable<ScheduledFunctionResult<T>> History
         {
             get
             {
-                Contract.Requires(IsFunction);
+                if (!IsFunction) throw new InvalidOperationException();
                 return HistoryQueue.Cast<ScheduledFunctionResult<T>>();
             }
         }
@@ -119,13 +117,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// Gets the last result (if any).
         /// </summary>
         /// <value>The history.</value>
-        [PublicAPI]
         [CanBeNull]
         public new ScheduledFunctionResult<T> LastResult
         {
             get
             {
-                Contract.Requires(IsFunction); 
+                if (!IsFunction) throw new InvalidOperationException();
                 return HistoryQueue.LastOrDefault() as ScheduledFunctionResult<T>;
             }
         }
@@ -142,11 +139,10 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task containing the result.</returns>
         [NotNull]
-        [PublicAPI]
         public new Task<ScheduledFunctionResult<T>> ExecuteAsync(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(IsFunction);
+            if (!IsFunction) throw new InvalidOperationException();
             return DoExecuteAsync(cancellationToken)
                 .ContinueWith(
                     // ReSharper disable once PossibleNullReferenceException
@@ -162,7 +158,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task containing the result.</returns>
-        protected override async Task<ScheduledActionResult> DoExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task<ScheduledActionResult> DoExecuteAsync(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // Start stopwatch, and mark time the request was made.
             Stopwatch stopwatch = Stopwatch.StartNew();
@@ -204,13 +201,14 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                             true,
                             default(T));
                     }
-                    
+
                     ScheduledFunctionResult<T> result;
                     // De-bounce - we started before the last execution finished, so return last result, so long as it wasn't cancelled.
                     if (started <= LastExecutionFinished)
                     {
                         result = HistoryQueue.LastOrDefault() as ScheduledFunctionResult<T>;
-                        if (result != null && !result.Cancelled) return result;
+                        if (result != null &&
+                            !result.Cancelled) return result;
                     }
 
                     // Get the due date, and set to not due.

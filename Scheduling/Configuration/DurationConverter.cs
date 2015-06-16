@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,11 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Globalization;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
 using NodaTime.Text;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
 {
@@ -46,7 +46,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.</param>
         /// <param name="sourceType">A <see cref="T:System.Type" /> that represents the type you want to convert from.</param>
         /// <returns>true if this converter can perform the conversion; otherwise, false.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
         public override bool CanConvertFrom([NotNull] ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string)) return true;
@@ -62,7 +61,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.</param>
         /// <param name="destinationType">A <see cref="T:System.Type" /> that represents the type you want to convert to.</param>
         /// <returns>true if this converter can perform the conversion; otherwise, false.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
         public override bool CanConvertTo([NotNull] ITypeDescriptorContext context, Type destinationType)
         {
             if (destinationType == typeof(string)) return true;
@@ -79,7 +77,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <param name="culture">The <see cref="T:System.Globalization.CultureInfo" /> to use as the current culture.</param>
         /// <param name="value">The <see cref="T:System.Object" /> to convert.</param>
         /// <returns>An <see cref="T:System.Object" /> that represents the converted value.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value is TimeSpan)
@@ -95,7 +92,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
                 // ReSharper disable PossibleNullReferenceException
                 ParseResult<Duration> result = DurationPattern.RoundtripPattern.Parse(str);
                 // ReSharper restore PossibleNullReferenceException
-                Contract.Assert(result != null);
+                Debug.Assert(result != null);
                 if (result.Success)
                     return result.Value;
 
@@ -115,7 +112,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// <param name="value">The <see cref="T:System.Object" /> to convert.</param>
         /// <param name="destinationType">The <see cref="T:System.Type" /> to convert the <paramref name="value" /> parameter to.</param>
         /// <returns>An <see cref="T:System.Object" /> that represents the converted value.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
         public override object ConvertTo(
             [CanBeNull] ITypeDescriptorContext context,
             [CanBeNull] CultureInfo culture,

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,83 +26,72 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
     /// Defines a schedule.
     /// </summary>
+    [PublicAPI]
     public class PeriodicSchedule : FunctionalSchedule
     {
         /// <summary>
         /// The calendar.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly CalendarSystem CalendarSystem;
 
         /// <summary>
         /// The time zone.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly DateTimeZone DateTimeZone;
 
         /// <summary>
         /// The day.
         /// </summary>
-        [PublicAPI]
         public readonly Day Day;
 
         /// <summary>
         /// The day of the week.
         /// </summary>
-        [PublicAPI]
         public readonly DayOfWeek FirstDayOfWeek;
 
         /// <summary>
         /// The hour.
         /// </summary>
-        [PublicAPI]
         public readonly Hour Hour;
 
         /// <summary>
         /// The minimum gap, added to all supplied date times.
         /// </summary>
-        [PublicAPI]
         public readonly Duration MinimumGap;
 
         /// <summary>
         /// The minute.
         /// </summary>
-        [PublicAPI]
         public readonly Minute Minute;
 
         /// <summary>
         /// The month.
         /// </summary>
-        [PublicAPI]
         public readonly Month Month;
 
         /// <summary>
         /// The second.
         /// </summary>
-        [PublicAPI]
         public readonly Second Second;
 
         /// <summary>
         /// The week.
         /// </summary>
-        [PublicAPI]
         public readonly Week Week;
 
         /// <summary>
         /// The weekday.
         /// </summary>
-        [PublicAPI]
         public readonly WeekDay WeekDay;
 
         /// <summary>
@@ -143,17 +132,13 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 minute,
                 second,
                 minimumTimeSpan < TimeSpan.Zero ? Duration.Zero : Duration.FromTimeSpan(minimumTimeSpan),
-                // ReSharper disable PossibleNullReferenceException
-                // ReSharper disable AssignNullToNotNullAttribute
+                // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
                 string.IsNullOrWhiteSpace(calendar) ? CalendarSystem.Iso : CalendarSystem.ForId(calendar),
                 string.IsNullOrWhiteSpace(timeZone) ? DateTimeZone.Utc : TimeHelpers.DateTimeZoneProvider[timeZone],
-                // ReSharper restore PossibleNullReferenceException
-                // ReSharper restore AssignNullToNotNullAttribute
+                // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
                 options,
                 name)
         {
-            Contract.Requires(CalendarSystem.Iso != null);
-            Contract.Requires(DateTimeZone.Utc != null);
         }
 
         /// <summary>
@@ -170,7 +155,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="calendarSystem">The calendar.</param>
         /// <param name="dateTimeZone">The time zone.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public PeriodicSchedule(
             Month month = Month.Every,
             Week week = Week.Every,
@@ -216,7 +200,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="calendarSystem">The calendar.</param>
         /// <param name="dateTimeZone">The time zone.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
         public PeriodicSchedule(
             [CanBeNull] string name,
             Month month = Month.Every,
@@ -263,7 +246,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="calendarSystem">The calendar.</param>
         /// <param name="dateTimeZone">The time zone.</param>
         /// <param name="options">The options.</param>
-        [PublicAPI]
+        [UsedImplicitly]
         private PeriodicSchedule(
             Month month,
             Week week,
@@ -292,8 +275,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                     dateTimeZone),
                 options)
         {
-            Contract.Requires(calendarSystem != null);
-            Contract.Requires(dateTimeZone != null);
+            if (calendarSystem == null) throw new ArgumentNullException("calendarSystem");
+            if (dateTimeZone == null) throw new ArgumentNullException("dateTimeZone");
             Month = month;
             Week = week;
             Day = day;
@@ -333,10 +316,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             [NotNull] CalendarSystem calendarSystem,
             [NotNull] DateTimeZone timeZone)
         {
-            Contract.Requires(minimumGap != null);
-            Contract.Requires(calendarSystem != null);
-            Contract.Requires(timeZone != null);
-            Contract.Ensures(Contract.Result<Func<Instant, Instant>>() != null);
+            if (calendarSystem == null) throw new ArgumentNullException("calendarSystem");
+            if (timeZone == null) throw new ArgumentNullException("timeZone");
+
             // Never case
             if ((month == Month.Never) ||
                 (week == Week.Never) ||

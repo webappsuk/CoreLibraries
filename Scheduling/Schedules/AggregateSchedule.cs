@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,16 +28,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
     /// Creates a schedule made up of multiple other schedules
     /// </summary>
+    [PublicAPI]
     public class AggregateSchedule : ISchedule, IEnumerable<ISchedule>
     {
         [NotNull]
@@ -55,38 +56,38 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// Initializes a new instance of the <see cref="AggregateSchedule" /> class, used by configuration system.
         /// </summary>
         /// <param name="name">An optional name for the schedule.</param>
-        /// <param name="schedule1">The schedule1.</param>
-        /// <param name="schedule2">The schedule2.</param>
-        /// <param name="schedule3">The schedule3.</param>
-        /// <param name="schedule4">The schedule4.</param>
-        /// <param name="schedule5">The schedule5.</param>
-        /// <param name="schedule6">The schedule6.</param>
-        /// <param name="schedule7">The schedule7.</param>
-        /// <param name="schedule8">The schedule8.</param>
-        /// <param name="schedule9">The schedule9.</param>
-        /// <param name="schedule10">The schedule10.</param>
-        /// <param name="schedule11">The schedule11.</param>
-        /// <param name="schedule12">The schedule12.</param>
-        /// <param name="schedule13">The schedule13.</param>
-        /// <param name="schedule14">The schedule14.</param>
-        /// <param name="schedule15">The schedule15.</param>
-        /// <param name="schedule16">The schedule16.</param>
-        /// <param name="schedule17">The schedule17.</param>
-        /// <param name="schedule18">The schedule18.</param>
-        /// <param name="schedule19">The schedule19.</param>
-        /// <param name="schedule20">The schedule20.</param>
-        /// <param name="schedule21">The schedule21.</param>
-        /// <param name="schedule22">The schedule22.</param>
-        /// <param name="schedule23">The schedule23.</param>
-        /// <param name="schedule24">The schedule24.</param>
-        /// <param name="schedule25">The schedule25.</param>
-        /// <param name="schedule26">The schedule26.</param>
-        /// <param name="schedule27">The schedule27.</param>
-        /// <param name="schedule28">The schedule28.</param>
-        /// <param name="schedule29">The schedule29.</param>
-        /// <param name="schedule30">The schedule30.</param>
-        /// <param name="schedule31">The schedule31.</param>
-        /// <param name="schedule32">The schedule32.</param>
+        /// <param name="schedule1">The 1st schedule.</param>
+        /// <param name="schedule2">The 2nd schedule.</param>
+        /// <param name="schedule3">The 3rd schedule.</param>
+        /// <param name="schedule4">The 4th schedule.</param>
+        /// <param name="schedule5">The 5th schedule.</param>
+        /// <param name="schedule6">The 6th schedule.</param>
+        /// <param name="schedule7">The 7th schedule.</param>
+        /// <param name="schedule8">The 8th schedule.</param>
+        /// <param name="schedule9">The 9th schedule.</param>
+        /// <param name="schedule10">The 10th schedule.</param>
+        /// <param name="schedule11">The 11th schedule.</param>
+        /// <param name="schedule12">The 12th schedule.</param>
+        /// <param name="schedule13">The 13th schedule.</param>
+        /// <param name="schedule14">The 14th schedule.</param>
+        /// <param name="schedule15">The 15th schedule.</param>
+        /// <param name="schedule16">The 16th schedule.</param>
+        /// <param name="schedule17">The 17th schedule.</param>
+        /// <param name="schedule18">The 18th schedule.</param>
+        /// <param name="schedule19">The 19th schedule.</param>
+        /// <param name="schedule20">The 20th schedule.</param>
+        /// <param name="schedule21">The 21st schedule.</param>
+        /// <param name="schedule22">The 22nd schedule.</param>
+        /// <param name="schedule23">The 23rd schedule.</param>
+        /// <param name="schedule24">The 24th schedule.</param>
+        /// <param name="schedule25">The 25th schedule.</param>
+        /// <param name="schedule26">The 26th schedule.</param>
+        /// <param name="schedule27">The 27th schedule.</param>
+        /// <param name="schedule28">The 28th schedule.</param>
+        /// <param name="schedule29">The 29th schedule.</param>
+        /// <param name="schedule30">The 30th schedule.</param>
+        /// <param name="schedule31">The 31st schedule.</param>
+        /// <param name="schedule32">The 32nd schedule.</param>
         [UsedImplicitly]
         private AggregateSchedule(
             [CanBeNull] string name,
@@ -168,11 +169,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// Initializes a new instance of the <see cref="AggregateSchedule"/> class.
         /// </summary>
         /// <param name="schedules">An enumeration of schedules.</param>
-        [PublicAPI]
         public AggregateSchedule([NotNull] IEnumerable<ISchedule> schedules)
             : this(null, schedules.ToArray())
         {
-            Contract.Requires(schedules != null);
         }
 
         /// <summary>
@@ -180,22 +179,18 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="name">An optional name for the schedule.</param>
         /// <param name="schedules">An enumeration of schedules.</param>
-        [PublicAPI]
         public AggregateSchedule([CanBeNull] string name, [NotNull] IEnumerable<ISchedule> schedules)
             : this(name, schedules.ToArray())
         {
-            Contract.Requires(schedules != null);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateSchedule" /> class.
         /// </summary>
         /// <param name="schedules">A collection of schedules.</param>
-        [PublicAPI]
         public AggregateSchedule([NotNull] params ISchedule[] schedules)
             : this(null, schedules)
         {
-            Contract.Requires(schedules != null);
         }
 
         /// <summary>
@@ -204,10 +199,10 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="name">An optional name for the schedule.</param>
         /// <param name="schedules">A collection of schedules.</param>
         /// <exception cref="System.ArgumentException">The specified schedules have differing options.</exception>
-        [PublicAPI]
         public AggregateSchedule([CanBeNull] string name, [NotNull] params ISchedule[] schedules)
         {
-            Contract.Requires(schedules != null);
+            if (schedules == null) throw new ArgumentNullException("schedules");
+
             // Duplicate collection
             _schedules = schedules;
             _name = name;
@@ -243,7 +238,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Instant next = Instant.MaxValue;
             foreach (ISchedule schedule in _schedules)
             {
-                Contract.Assert(schedule != null);
+                Debug.Assert(schedule != null);
                 Instant scheduleNext = schedule.Next(last);
                 if (scheduleNext < last)
                     return last;

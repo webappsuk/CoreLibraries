@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,75 +31,65 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
     /// <summary>
-    /// 
+    /// Enumeration of the potential days in a week.
     /// </summary>
     [Flags]
+    [PublicAPI]
     public enum WeekDay
     {
         /// <summary>
-        /// 
+        /// Sunday.
         /// </summary>
-        [PublicAPI]
         Sunday = 1,
 
         /// <summary>
-        /// 
+        /// Monday.
         /// </summary>
-        [PublicAPI]
         Monday = 1 << 1,
 
         /// <summary>
-        /// 
+        /// Tuesday.
         /// </summary>
-        [PublicAPI]
         Tuesday = 1 << 2,
 
         /// <summary>
-        /// 
+        /// Wednesday.
         /// </summary>
-        [PublicAPI]
         Wednesday = 1 << 3,
 
         /// <summary>
-        /// 
+        /// Thursday.
         /// </summary>
-        [PublicAPI]
         Thursday = 1 << 4,
 
         /// <summary>
-        /// 
+        /// Friday.
         /// </summary>
-        [PublicAPI]
         Friday = 1 << 5,
 
         /// <summary>
-        /// 
+        /// Saturday.
         /// </summary>
-        [PublicAPI]
         Saturday = 1 << 6,
 
         /// <summary>
-        /// 
+        /// No days in the week.
         /// </summary>
-        [PublicAPI]
         Never = 0,
 
         /// <summary>
-        /// 
+        /// The days at the weekend.
         /// </summary>
-        [PublicAPI]
         Weekend = Saturday | Sunday,
 
         /// <summary>
-        /// 
+        /// The days during the week.
         /// </summary>
-        [PublicAPI]
         WeekDay = Monday | Tuesday | Wednesday | Thursday | Friday,
 
         /// <summary>
-        /// 
+        /// Every day of the week.
         /// </summary>
-        [PublicAPI]
         Every = Weekend | WeekDay
     }
 }

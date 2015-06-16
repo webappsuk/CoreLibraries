@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,416 +34,350 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// Enumeration of the potential seconds in a minute.
     /// </summary>
     [Flags]
+    [PublicAPI]
     public enum Second : ulong
     {
         /// <summary>
-        /// 
+        /// The zeroth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Zeroth = (ulong)1,
+        Zeroth = 1UL,
 
         /// <summary>
-        /// 
+        /// The first second in the minute.
         /// </summary>
-        [PublicAPI]
-        First = (ulong)1 << 1,
+        First = 1UL << 1,
 
         /// <summary>
-        /// 
+        /// The second second in the minute.
         /// </summary>
-        [PublicAPI]
-        Second = (ulong)1 << 2,
+        Second = 1UL << 2,
 
         /// <summary>
-        /// 
+        /// The third second in the minute.
         /// </summary>
-        [PublicAPI]
-        Third = (ulong)1 << 3,
+        Third = 1UL << 3,
 
         /// <summary>
-        /// 
+        /// The fourth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Fourth = (ulong)1 << 4,
+        Fourth = 1UL << 4,
 
         /// <summary>
-        /// 
+        /// The fifth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Fifth = (ulong)1 << 5,
+        Fifth = 1UL << 5,
 
         /// <summary>
-        /// 
+        /// The sixth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Sixth = (ulong)1 << 6,
+        Sixth = 1UL << 6,
 
         /// <summary>
-        /// 
+        /// The seventh second in the minute.
         /// </summary>
-        [PublicAPI]
-        Seventh = (ulong)1 << 7,
+        Seventh = 1UL << 7,
 
         /// <summary>
-        /// 
+        /// The eighth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Eighth = (ulong)1 << 8,
+        Eighth = 1UL << 8,
 
         /// <summary>
-        /// 
+        /// The ninth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Ninth = (ulong)1 << 9,
+        Ninth = 1UL << 9,
 
         /// <summary>
-        /// 
+        /// The tenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Tenth = (ulong)1 << 10,
+        Tenth = 1UL << 10,
 
         /// <summary>
-        /// 
+        /// The eleventh second in the minute.
         /// </summary>
-        [PublicAPI]
-        Eleventh = (ulong)1 << 11,
+        Eleventh = 1UL << 11,
 
         /// <summary>
-        /// 
+        /// The twelfth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Twelfth = (ulong)1 << 12,
+        Twelfth = 1UL << 12,
 
         /// <summary>
-        /// 
+        /// The thirteenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Thirteenth = (ulong)1 << 13,
+        Thirteenth = 1UL << 13,
 
         /// <summary>
-        /// 
+        /// The fourteenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Fourteenth = (ulong)1 << 14,
+        Fourteenth = 1UL << 14,
 
         /// <summary>
-        /// 
+        /// The fifteenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Fifteenth = (ulong)1 << 15,
+        Fifteenth = 1UL << 15,
 
         /// <summary>
-        /// 
+        /// The sixteenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Sixteenth = (ulong)1 << 16,
+        Sixteenth = 1UL << 16,
 
         /// <summary>
-        /// 
+        /// The seventeenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Seventeenth = (ulong)1 << 17,
+        Seventeenth = 1UL << 17,
 
         /// <summary>
-        /// 
+        /// The eighteenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Eighteenth = (ulong)1 << 18,
+        Eighteenth = 1UL << 18,
 
         /// <summary>
-        /// 
+        /// The nineteenth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Nineteenth = (ulong)1 << 19,
+        Nineteenth = 1UL << 19,
 
         /// <summary>
-        /// 
+        /// The twentieth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Twentieth = (ulong)1 << 20,
+        Twentieth = 1UL << 20,
 
         /// <summary>
-        /// 
+        /// The twenty first second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentyFirst = (ulong)1 << 21,
+        TwentyFirst = 1UL << 21,
 
         /// <summary>
-        /// 
+        /// The twenty second second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentySecond = (ulong)1 << 22,
+        TwentySecond = 1UL << 22,
 
         /// <summary>
-        /// 
+        /// The twenty third second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentyThird = (ulong)1 << 23,
+        TwentyThird = 1UL << 23,
 
         /// <summary>
-        /// 
+        /// The twenty fourth second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentyFourth = (ulong)1 << 24,
+        TwentyFourth = 1UL << 24,
 
         /// <summary>
-        /// 
+        /// The twenty fifth second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentyFifth = (ulong)1 << 25,
+        TwentyFifth = 1UL << 25,
 
         /// <summary>
-        /// 
+        /// The twenty sixth second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentySixth = (ulong)1 << 26,
+        TwentySixth = 1UL << 26,
 
         /// <summary>
-        /// 
+        /// The twenty seventh second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentySeventh = (ulong)1 << 27,
+        TwentySeventh = 1UL << 27,
 
         /// <summary>
-        /// 
+        /// The twenty eighth second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentyEighth = (ulong)1 << 28,
+        TwentyEighth = 1UL << 28,
 
         /// <summary>
-        /// 
+        /// The twenty ninth second in the minute.
         /// </summary>
-        [PublicAPI]
-        TwentyNinth = (ulong)1 << 29,
+        TwentyNinth = 1UL << 29,
 
         /// <summary>
-        /// 
+        /// The thirtieth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Thirtieth = (ulong)1 << 30,
+        Thirtieth = 1UL << 30,
 
         /// <summary>
-        /// 
+        /// The thirty first second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtyFirst = (ulong)1 << 31,
+        ThirtyFirst = 1UL << 31,
 
         /// <summary>
-        /// 
+        /// The thirty second second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtySecond = (ulong)1 << 32,
+        ThirtySecond = 1UL << 32,
 
         /// <summary>
-        /// 
+        /// The thirty third second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtyThird = (ulong)1 << 33,
+        ThirtyThird = 1UL << 33,
 
         /// <summary>
-        /// 
+        /// The thirty fourth second in the minute.
         /// </summary>
-        ThirtyFourth = (ulong)1 << 34,
+        ThirtyFourth = 1UL << 34,
 
         /// <summary>
-        /// 
+        /// The thirty fifth second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtyFifth = (ulong)1 << 35,
+        ThirtyFifth = 1UL << 35,
 
         /// <summary>
-        /// 
+        /// The thirty sixth second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtySixth = (ulong)1 << 36,
+        ThirtySixth = 1UL << 36,
 
         /// <summary>
-        /// 
+        /// The thirty seventh second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtySeventh = (ulong)1 << 37,
+        ThirtySeventh = 1UL << 37,
 
         /// <summary>
-        /// 
+        /// The thirty eighth second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtyEighth = (ulong)1 << 38,
+        ThirtyEighth = 1UL << 38,
 
         /// <summary>
-        /// 
+        /// The thirty ninth second in the minute.
         /// </summary>
-        [PublicAPI]
-        ThirtyNinth = (ulong)1 << 39,
+        ThirtyNinth = 1UL << 39,
 
         /// <summary>
-        /// 
+        /// The fortieth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Fortieth = (ulong)1 << 40,
+        Fortieth = 1UL << 40,
 
         /// <summary>
-        /// 
+        /// The forty first second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortyFirst = (ulong)1 << 41,
+        FortyFirst = 1UL << 41,
 
         /// <summary>
-        /// 
+        /// The forty second second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortySecond = (ulong)1 << 42,
+        FortySecond = 1UL << 42,
 
         /// <summary>
-        /// 
+        /// The forty third second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortyThird = (ulong)1 << 43,
+        FortyThird = 1UL << 43,
 
         /// <summary>
-        /// 
+        /// The forty forth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortyForth = (ulong)1 << 44,
+        FortyForth = 1UL << 44,
 
         /// <summary>
-        /// 
+        /// The forty fifth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortyFifth = (ulong)1 << 45,
+        FortyFifth = 1UL << 45,
 
         /// <summary>
-        /// 
+        /// The forty sixth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortySixth = (ulong)1 << 46,
+        FortySixth = 1UL << 46,
 
         /// <summary>
-        /// 
+        /// The forty seventh second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortySeventh = (ulong)1 << 47,
+        FortySeventh = 1UL << 47,
 
         /// <summary>
-        /// 
+        /// The forty eighth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortyEighth = (ulong)1 << 48,
+        FortyEighth = 1UL << 48,
 
         /// <summary>
-        /// 
+        /// The forty ninth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FortyNinth = (ulong)1 << 49,
+        FortyNinth = 1UL << 49,
 
         /// <summary>
-        /// 
+        /// The fiftieth second in the minute.
         /// </summary>
-        [PublicAPI]
-        Fiftieth = (ulong)1 << 50,
+        Fiftieth = 1UL << 50,
 
         /// <summary>
-        /// 
+        /// The fifty first second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftyFirst = (ulong)1 << 51,
+        FiftyFirst = 1UL << 51,
 
         /// <summary>
-        /// 
+        /// The fifty second second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftySecond = (ulong)1 << 52,
+        FiftySecond = 1UL << 52,
 
         /// <summary>
-        /// 
+        /// The fifty third second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftyThird = (ulong)1 << 53,
+        FiftyThird = 1UL << 53,
 
         /// <summary>
-        /// 
+        /// The fifty forth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftyForth = (ulong)1 << 54,
+        FiftyForth = 1UL << 54,
 
         /// <summary>
-        /// 
+        /// The fifty fifth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftyFifth = (ulong)1 << 55,
+        FiftyFifth = 1UL << 55,
 
         /// <summary>
-        /// 
+        /// The fifty sixth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftySixth = (ulong)1 << 56,
+        FiftySixth = 1UL << 56,
 
         /// <summary>
-        /// 
+        /// The fifty seventh second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftySeventh = (ulong)1 << 57,
+        FiftySeventh = 1UL << 57,
 
         /// <summary>
-        /// 
+        /// The fifty eighth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftyEighth = (ulong)1 << 58,
+        FiftyEighth = 1UL << 58,
 
         /// <summary>
-        /// 
+        /// The fifty ninth second in the minute.
         /// </summary>
-        [PublicAPI]
-        FiftyNinth = (ulong)1 << 59,
+        FiftyNinth = 1UL << 59,
 
         /// <summary>
-        /// 
+        /// No seconds in the minute.
         /// </summary>
-        [PublicAPI]
         Never = 0,
 
         /// <summary>
-        /// 
+        /// The sixtyth second in the minute.
         /// </summary>
-        [PublicAPI]
         Sixtyth = Zeroth,
 
         /// <summary>
-        /// 
+        /// Every thirty seconds starting from the zeroth second.
         /// </summary>
-        [PublicAPI]
         EveryThirtySeconds = Zeroth | Thirtieth,
 
         /// <summary>
-        /// 
+        /// Every fifteen seconds starting from the zeroth second.
         /// </summary>
-        [PublicAPI]
         EveryFifteenSeconds = EveryThirtySeconds | Fifteenth | FortyFifth,
 
         /// <summary>
-        /// 
+        /// Every ten seconds starting from the zeroth second.
         /// </summary>
-        [PublicAPI]
         EveryTenSeconds = EveryThirtySeconds | Tenth | Twentieth | Fortieth | Fiftieth,
 
         /// <summary>
-        /// 
+        /// Every five seconds starting from the zeroth second.
         /// </summary>
-        [PublicAPI]
         EveryFiveSeconds = EveryTenSeconds | EveryFifteenSeconds | Fifth | TwentyFifth | ThirtyFifth | FiftyFifth,
 
         /// <summary>
-        /// 
+        /// Every three seconds starting from the zeroth second.
         /// </summary>
-        [PublicAPI]
         EveryThreeSeconds =
             EveryFifteenSeconds | Third | Sixth | Ninth | Twelfth | Eighteenth | TwentyFirst | TwentyFourth |
             TwentySeventh | ThirtyThird | ThirtySixth | ThirtyNinth | FortySecond | FortyEighth | FiftyFirst |
             FiftyForth | FiftySeventh,
 
         /// <summary>
-        /// 
+        /// Every two seconds starting from the zeroth second.
         /// </summary>
-        [PublicAPI]
         EveryTwoSeconds =
             EveryTenSeconds | Second | Fourth | Sixth | Eighth | Twelfth | Fourteenth | Sixteenth | Eighteenth |
             TwentySecond | TwentyFourth | TwentySixth | TwentyEighth | ThirtySecond | ThirtyFourth | ThirtySixth |
@@ -451,15 +385,13 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             FiftySixth | FiftyEighth,
 
         /// <summary>
-        /// 
+        /// Every two seconds starting from the first second.
         /// </summary>
-        [PublicAPI]
         EveryOtherSecond = ~EveryTwoSeconds,
 
         /// <summary>
-        /// 
+        /// Every second in the minute.
         /// </summary>
-        [PublicAPI]
         Every = EveryTwoSeconds | EveryOtherSecond
     }
 }
