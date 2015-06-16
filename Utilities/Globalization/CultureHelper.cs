@@ -190,10 +190,6 @@ namespace WebApplications.Utilities.Globalization
         ///   The corresponding <see cref="System.Globalization.RegionInfo"/> for the
         ///   <paramref name="cultureInfo"/> specified.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="cultureInfo"/> cannot be null.
-        /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
         /// </exception>
@@ -213,10 +209,6 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         ///   The corresponding currency info for the <paramref name="regionInfo"/> specified.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="regionInfo"/> cannot be null.
-        /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="regionInfo"/> is <see langword="null"/>.
         /// </exception>
@@ -237,10 +229,9 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         ///   The corresponding currency info for the <paramref name="cultureInfo"/> specified.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="cultureInfo"/> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
+        /// </exception>
         /// <seealso cref="Globalization.CurrencyInfo"/>
         [CanBeNull]
         public static CurrencyInfo CurrencyInfo([NotNull] this CultureInfo cultureInfo)
@@ -258,10 +249,9 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         ///   A list of <see cref="CultureInfo"/>s that have the specified currency <paramref name="isoCode"/>.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="isoCode"/> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="isoCode"/> is <see langword="null"/>.
+        /// </exception>
         [NotNull]
         public static IEnumerable<CultureInfo> CultureInfoFromCurrencyISO([NotNull] string isoCode)
         {
@@ -284,10 +274,9 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         ///   A list of <see cref="System.Globalization.RegionInfo"/>s that have the specified currency.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="isoCode"/> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="isoCode"/> is <see langword="null"/>.
+        /// </exception>
         [NotNull]
         public static IEnumerable<RegionInfo> RegionInfoFromCurrencyISO([NotNull] string isoCode)
         {
@@ -314,10 +303,9 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         ///   A formatted <see cref="string"/> in the correct currency format.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="currencyISO"/> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="currencyISO"/> is <see langword="null"/>.
+        /// </exception>
         /// <seealso cref="CultureInfo"/>
         /// <seealso cref="System.Globalization.RegionInfo"/>
         [NotNull]
@@ -391,10 +379,9 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         ///   The <see cref="System.Globalization.RegionInfo"/> that corresponds to the <paramref name="name"/> specified.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="name"/> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="name"/> is <see langword="null"/>.
+        /// </exception>
         /// <seealso cref="CultureInfo"/>
         /// <seealso cref="System.Globalization.RegionInfo.DisplayName"/>
         [CanBeNull]
@@ -427,10 +414,9 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         ///   The <see cref="System.Globalization.RegionInfo"/> that corresponds to the <paramref name="name"/> specified.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="name"/> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="name"/> is <see langword="null"/>.
+        /// </exception>
         [CanBeNull]
         public static RegionInfo FindRegion([NotNull] string name)
         {

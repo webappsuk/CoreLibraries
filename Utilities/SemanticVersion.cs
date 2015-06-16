@@ -445,11 +445,6 @@ namespace WebApplications.Utilities
         /// <b>True</b> if <paramref name="version"/> precedes 
         /// <paramref name="other"/>, otherwise <b>false</b>.
         /// </returns>
-        [SuppressMessage(
-            "Microsoft.Design",
-            "CA1062:Validate arguments of public methods",
-            MessageId = "0",
-            Justification = "MFC3: The version argument is being validated using code contracts.")]
         public static bool operator <([CanBeNull] SemanticVersion version, [CanBeNull] SemanticVersion other)
         {
             if (version == null)
@@ -474,11 +469,6 @@ namespace WebApplications.Utilities
         /// <b>True</b> if <paramref name="version"/> follows
         /// <paramref name="other"/>, otherwise <b>false</b>.
         /// </returns>
-        [SuppressMessage(
-            "Microsoft.Design",
-            "CA1062:Validate arguments of public methods",
-            MessageId = "0",
-            Justification = "MFC3: The version argument is being validated using code contracts.")]
         public static bool operator >([CanBeNull] SemanticVersion version, [CanBeNull] SemanticVersion other)
         {
             if (version == null)
@@ -503,11 +493,6 @@ namespace WebApplications.Utilities
         /// <b>True</b> if <paramref name="version"/> if equal to or precedes 
         /// <paramref name="other"/>, otherwise <b>false</b>.
         /// </returns>
-        [SuppressMessage(
-            "Microsoft.Design",
-            "CA1062:Validate arguments of public methods",
-            MessageId = "0",
-            Justification = "MFC3: The version argument is being validated using code contracts.")]
         public static bool operator <=([CanBeNull] SemanticVersion version, [CanBeNull] SemanticVersion other)
         {
             if (version == null)
@@ -532,11 +517,6 @@ namespace WebApplications.Utilities
         /// <b>True</b> if <paramref name="version"/> if equal to or follows
         /// <paramref name="other"/>, otherwise <b>false</b>.
         /// </returns>
-        [SuppressMessage(
-            "Microsoft.Design",
-            "CA1062:Validate arguments of public methods",
-            MessageId = "0",
-            Justification = "MFC3: The version argument is being validated using code contracts.")]
         public static bool operator >=([CanBeNull] SemanticVersion version, [CanBeNull] SemanticVersion other)
         {
             if (version == null)

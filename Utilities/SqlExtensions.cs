@@ -1143,16 +1143,15 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   The converted <paramref name="enumerable"/> as a <see cref="SqlDataRecord"/>.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> requiring
-        ///   <paramref name="sqlMetaData"/> to not be a <see langword="null"/>.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="enumerable"/> or <paramref name="sqlMetaData"/> is <see langword="null"/>.
+        /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue<T>(
             [NotNull] this IEnumerable<T> enumerable,
             [NotNull] SqlMetaData sqlMetaData)
         {
             if (enumerable == null) throw new ArgumentNullException("enumerable");
-            if (sqlMetaData == null) throw new ArgumentNullException("enumerable");
+            if (sqlMetaData == null) throw new ArgumentNullException("sqlMetaData");
 
             IEnumerable<SqlDataRecord> value = null;
 

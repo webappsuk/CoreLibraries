@@ -66,10 +66,6 @@ namespace WebApplications.Utilities.Globalization
         ///   The <see cref="CurrencyInfo"/> that corresponds to the <paramref name="currencyCode"/> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="currencyCode"/> cannot be null.
-        /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="currencyCode"/> is <see langword="null"/>.
         /// </exception>

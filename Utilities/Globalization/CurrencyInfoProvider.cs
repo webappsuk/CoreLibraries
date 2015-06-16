@@ -102,10 +102,6 @@ namespace WebApplications.Utilities.Globalization
             /// The <see cref="CurrencyInfo" /> that corresponds to the <paramref name="currencyCode" /> specified (if any);
             /// otherwise the default value for the type is returned.
             /// </returns>
-            /// <remarks>
-            /// There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-            /// <paramref name="currencyCode" /> cannot be null.
-            /// </remarks>
             public CurrencyInfo Get(string currencyCode)
             {
                 return null;
@@ -541,15 +537,12 @@ namespace WebApplications.Utilities.Globalization
         ///   The <see cref="CurrencyInfo"/> that corresponds to the <paramref name="currencyCode"/> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <remarks>l
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="currencyCode"/> cannot be null.
-        /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="currencyCode"/> is <see langword="null"/>.
         /// </exception>
         public CurrencyInfo Get(string currencyCode)
         {
+            if (currencyCode == null) throw new ArgumentNullException("currencyCode");
             CurrencyInfo currencyInfo;
             _currencyInfos.TryGetValue(currencyCode, out currencyInfo);
             return currencyInfo;
@@ -562,8 +555,12 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>
         /// The associated <see cref="CurrencyInfo" /> if found; otherwise <see langword="null" />.
         /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="regionInfo"/> is <see langword="null"/>.
+        /// </exception>
         public CurrencyInfo Get(RegionInfo regionInfo)
         {
+            if (regionInfo == null) throw new ArgumentNullException("regionInfo");
             CurrencyInfo currencyInfo;
             _currencyInfos.TryGetValue(regionInfo.ISOCurrencySymbol, out currencyInfo);
             return currencyInfo;

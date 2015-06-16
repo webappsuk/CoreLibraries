@@ -93,12 +93,6 @@ namespace WebApplications.Utilities.Globalization
             /// <paramref name="cultureName" /> specified (if any);
             ///   otherwise the default value for the type is returned.
             /// </returns>
-            /// <remarks>
-            ///   There is a 
-            /// <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-            ///   
-            /// <paramref name="cultureName" /> cannot be null.
-            /// </remarks>
             public ExtendedCultureInfo Get(string cultureName)
             {
                 return null;
@@ -114,12 +108,6 @@ namespace WebApplications.Utilities.Globalization
             /// <paramref name="cultureInfo" /> specified (if any);
             ///   otherwise the default value for the type is returned.
             /// </returns>
-            /// <remarks>
-            /// There is a 
-            /// <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-            ///   
-            /// <paramref name="cultureInfo" /> cannot be null.
-            /// </remarks>
             public ExtendedCultureInfo Get(CultureInfo cultureInfo)
             {
                 return null;
@@ -264,14 +252,12 @@ namespace WebApplications.Utilities.Globalization
         /// <paramref name="cultureName" /> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <remarks>
-        /// There is a 
-        /// <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   
-        /// <paramref name="cultureName" /> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="cultureName"/> is <see langword="null"/>.
+        /// </exception>
         public ExtendedCultureInfo Get(string cultureName)
         {
+            if (cultureName == null) throw new ArgumentNullException("cultureName");
             ExtendedCultureInfo cultureInfo;
             _cultureInfos.TryGetValue(cultureName, out cultureInfo);
             return cultureInfo;
@@ -287,14 +273,12 @@ namespace WebApplications.Utilities.Globalization
         /// <paramref name="cultureInfo" /> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <remarks>
-        /// There is a 
-        /// <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   
-        /// <paramref name="cultureInfo" /> cannot be null.
-        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
+        /// </exception>
         public ExtendedCultureInfo Get(CultureInfo cultureInfo)
         {
+            if (cultureInfo == null) throw new ArgumentNullException("cultureInfo");
             ExtendedCultureInfo eci;
             _cultureInfos.TryGetValue(cultureInfo.Name, out eci);
             return eci;
@@ -309,6 +293,7 @@ namespace WebApplications.Utilities.Globalization
         /// </returns>
         public IEnumerable<ExtendedCultureInfo> FindByCurrency(CurrencyInfo currencyInfo)
         {
+            if (currencyInfo == null) throw new ArgumentNullException("currencyInfo");
             IEnumerable<ExtendedCultureInfo> cultures;
             // ReSharper disable once AssignNullToNotNullAttribute
             return _currencyCultureInfos.TryGetValue(currencyInfo.Code, out cultures)

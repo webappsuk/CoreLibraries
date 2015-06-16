@@ -66,10 +66,6 @@ namespace WebApplications.Utilities.Globalization
         ///   The <see cref="CultureInfo"/> that corresponds to the <paramref name="cultureName"/> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="cultureName"/> cannot be null.
-        /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="cultureName"/> is <see langword="null"/>.
         /// </exception>
@@ -84,10 +80,6 @@ namespace WebApplications.Utilities.Globalization
         ///   The <see cref="CultureInfo"/> that corresponds to the <paramref name="cultureInfo"/> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
-        ///   <paramref name="cultureInfo"/> cannot be null.
-        /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
         /// </exception>

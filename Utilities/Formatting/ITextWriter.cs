@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -94,8 +93,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="buffer">The character array to write data from.</param>
         /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
         /// <param name="count">The number of characters to write.</param>
-        [SuppressMessage("Microsoft.Contracts", "CC1055")]
-        // Skip extra error checking to avoid *potential* AppCompat problems.
         void Write(char[] buffer, int index, int count);
 
         /// <summary>
