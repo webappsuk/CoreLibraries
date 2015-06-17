@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using WebApplications.Utilities.Annotations;
@@ -85,6 +86,8 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>
         /// Usage:
         /// <code>InfoHelper.GetMethodInfo(() =&gt; TypeOrInstance.Method(parameters));</code>
@@ -92,11 +95,7 @@ namespace WebApplications.Utilities.Reflect
         [ContractAnnotation("throwIfNotFound:true => notnull")]
         public static MethodInfo GetMethodInfo([NotNull] Expression<Action> exp, bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            MethodCallExpression body = exp.Body as MethodCallExpression;
-            if (body != null) return body.Method;
-            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<MethodInfo>(exp, throwIfNotFound, ExpressionType.Call);
         }
 
         /// <summary>
@@ -107,6 +106,8 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetMethodInfo&lt;Type&gt;(i => i.Method(parameters));</code>
         /// </remarks>
@@ -115,11 +116,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Action<TInstance>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            MethodCallExpression body = exp.Body as MethodCallExpression;
-            if (body != null) return body.Method;
-            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<MethodInfo>(exp, throwIfNotFound, ExpressionType.Call);
         }
 
         /// <summary>
@@ -131,6 +128,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>instance.GetMethodInfo(i => i.Method(parameters));</code>
         /// </remarks>
@@ -140,12 +140,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Action<TInstance>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-
-            MethodCallExpression body = exp.Body as MethodCallExpression;
-            if (body != null) return body.Method;
-            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<MethodInfo>(exp, throwIfNotFound, ExpressionType.Call);
         }
 
         /// <summary>
@@ -155,21 +150,16 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetMethodInfo(() => TypeOrInstance.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
         public static MethodInfo GetMethodInfo([NotNull] Expression<Func<object>> exp, bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression)exp.Body).Operand
-                : exp.Body;
-
-            MethodCallExpression expression = body as MethodCallExpression;
-            if (expression != null) return expression.Method;
-            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<MethodInfo>(exp, throwIfNotFound, ExpressionType.Call);
         }
 
         /// <summary>
@@ -180,6 +170,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetMethodInfo&lt;Type&gt;(i => i.Method(parameters));</code>
         /// </remarks>
@@ -188,44 +181,33 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression)exp.Body).Operand
-                : exp.Body;
-
-            MethodCallExpression expression = body as MethodCallExpression;
-            if (expression != null) return expression.Method;
-            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<MethodInfo>(exp, throwIfNotFound, ExpressionType.Call);
         }
 
         /// <summary>
         /// Gets the method information.
         /// </summary>
         /// <typeparam name="TInstance">The type of the instance.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="instance">The instance.</param>
         /// <param name="exp">The expression.</param>
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the method was not found, an exception will be throw;
-        /// otherwise, <see langword="null"/> will be returned.</param>
+        /// otherwise, <see langword="null" /> will be returned.</param>
         /// <returns></returns>
-        /// <remarks>Usage:
-        /// <code>instance.GetMethodInfo(i => i.Method(parameters));</code>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
+        /// <remarks>
+        /// Usage:
+        /// <code>instance.GetMethodInfo(i =&gt; i.Method(parameters));</code>
         /// </remarks>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
-        public static MethodInfo GetMethodInfo<TInstance>(
+        public static MethodInfo GetMethodInfo<TInstance, TResult>(
             this TInstance instance,
-            [NotNull] Expression<Func<TInstance, object>> exp,
+            [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression)exp.Body).Operand
-                : exp.Body;
-
-            MethodCallExpression expression = body as MethodCallExpression;
-            if (expression != null) return expression.Method;
-            if (throwIfNotFound) throw new ArgumentException("MethodInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<MethodInfo>(exp, throwIfNotFound, ExpressionType.Call);
         }
 
         /// <summary>
@@ -236,6 +218,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the constructor was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetConstructorInfo(() => new Type(parameter));</code>
         /// </remarks>
@@ -244,11 +229,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            NewExpression body = exp.Body as NewExpression;
-            if (body != null) return body.Constructor;
-            if (throwIfNotFound) throw new ArgumentException("ConstructorInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<ConstructorInfo>(exp, throwIfNotFound, ExpressionType.New);
         }
 
         /// <summary>
@@ -259,6 +240,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetPropertyInfo&lt;Type&gt;(i => i.Property);</code>
         /// </remarks>
@@ -267,15 +251,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            Expression body = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression)exp.Body).Operand
-                : exp.Body;
-
-            MemberExpression expression = body as MemberExpression;
-            if (expression != null) return expression.Member as PropertyInfo;
-            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<PropertyInfo>(exp, throwIfNotFound, ExpressionType.MemberAccess);
         }
 
         /// <summary>
@@ -286,6 +262,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetPropertyInfo(() => TypeOrInstance.Property);</code>
         /// </remarks>
@@ -294,35 +273,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TResult>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            MemberExpression body = exp.Body as MemberExpression;
-            if (body != null) return body.Member as PropertyInfo;
-            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
-            return null;
-        }
-
-        /// <summary>
-        /// Gets the property information.
-        /// </summary>
-        /// <typeparam name="TInstance">The type of the instance.</typeparam>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="exp">The expression.</param>
-        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
-        /// otherwise, <see langword="null"/> will be returned.</param>
-        /// <returns></returns>
-        /// <remarks>Usage:
-        /// <code>InfoHelper.GetPropertyInfo&lt;Type,PropertyType&gt;(i => i.Property);</code>
-        /// </remarks>
-        [ContractAnnotation("throwIfNotFound:true => notnull")]
-        public static PropertyInfo GetPropertyInfo<TInstance, TResult>(
-            [NotNull] Expression<Func<TInstance, TResult>> exp,
-            bool throwIfNotFound = false)
-        {
-            if (exp == null) throw new ArgumentNullException("exp");
-            MemberExpression body = exp.Body as MemberExpression;
-            if (body != null) return body.Member as PropertyInfo;
-            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<PropertyInfo>(exp, throwIfNotFound, ExpressionType.MemberAccess);
         }
 
         /// <summary>
@@ -335,6 +286,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the property was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>instance.GetPropertyInfo(i => i.Property);</code>
         /// </remarks>
@@ -344,11 +298,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            MemberExpression body = exp.Body as MemberExpression;
-            if (body != null) return body.Member as PropertyInfo;
-            if (throwIfNotFound) throw new ArgumentException("PropertyInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<PropertyInfo>(exp, throwIfNotFound, ExpressionType.MemberAccess);
         }
 
         /// <summary>
@@ -359,6 +309,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetFieldInfo&lt;Type&gt;(i => i.Field);</code>
         /// </remarks>
@@ -367,15 +320,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, object>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            Expression memExp = exp.Body.NodeType == ExpressionType.Convert
-                ? ((UnaryExpression)exp.Body).Operand
-                : exp.Body;
-
-            MemberExpression expression = memExp as MemberExpression;
-            if (expression != null) return expression.Member as FieldInfo;
-            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<FieldInfo>(exp, throwIfNotFound, ExpressionType.MemberAccess);
         }
 
         /// <summary>
@@ -386,6 +331,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref>
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>InfoHelper.GetFieldInfo(() => TypeOrInstance.Field);</code>
         /// </remarks>
@@ -394,35 +342,7 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TResult>> exp,
             bool throwIfNotFound = false)
         {
-            if (exp == null) throw new ArgumentNullException("exp");
-            MemberExpression body = exp.Body as MemberExpression;
-            if (body != null) return body.Member as FieldInfo;
-            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
-            return null;
-        }
-
-        /// <summary>
-        /// Gets the field information.
-        /// </summary>
-        /// <typeparam name="TInstance">The type of the instance.</typeparam>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="exp">The expression.</param>
-        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
-        /// otherwise, <see langword="null"/> will be returned.</param>
-        /// <returns></returns>
-        /// <remarks>Usage:
-        /// <code>InfoHelper.GetFieldInfo&lt;Type,FieldType&gt;(i => i.Field);</code>
-        /// </remarks>
-        [ContractAnnotation("throwIfNotFound:true => notnull")]
-        public static FieldInfo GetFieldInfo<TInstance, TResult>(
-            [NotNull] Expression<Func<TInstance, TResult>> exp,
-            bool throwIfNotFound = false)
-        {
-            if (exp == null) throw new ArgumentNullException("exp");
-            MemberExpression body = exp.Body as MemberExpression;
-            if (body != null) return body.Member as FieldInfo;
-            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
-            return null;
+            return GetMemberInfoInternal<FieldInfo>(exp, throwIfNotFound, ExpressionType.MemberAccess);
         }
 
         /// <summary>
@@ -435,6 +355,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="throwIfNotFound">if set to <see langword="true" /> and the field was not found, an exception will be throw;
         /// otherwise, <see langword="null"/> will be returned.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <remarks>Usage:
         /// <code>instance.GetFieldInfo(i => i.Field);</code>
         /// </remarks>
@@ -444,10 +367,169 @@ namespace WebApplications.Utilities.Reflect
             [NotNull] Expression<Func<TInstance, TResult>> exp,
             bool throwIfNotFound = false)
         {
+            return GetMemberInfoInternal<FieldInfo>(exp, throwIfNotFound, ExpressionType.MemberAccess);
+        }
+
+        /// <summary>
+        /// Gets the member information.
+        /// </summary>
+        /// <typeparam name="TInstance">The type of the instance.</typeparam>
+        /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the member was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
+        /// <remarks>Usage:
+        /// <code>InfoHelper.GetMemberInfo&lt;Type&gt;(i => i.AnyMember);</code>
+        /// </remarks>
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
+        public static MemberInfo GetMemberInfo<TInstance>(
+            [NotNull] Expression<Func<TInstance, object>> exp,
+            bool throwIfNotFound = false)
+        {
+            return GetMemberInfoInternal(exp, throwIfNotFound);
+        }
+
+        /// <summary>
+        /// Gets the member information.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the member was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
+        /// <remarks>Usage:
+        /// <code>InfoHelper.GetMemberInfo(() => TypeOrInstance.AnyMember);</code>
+        /// </remarks>
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
+        public static MemberInfo GetMemberInfo<TResult>(
+            [NotNull] Expression<Func<TResult>> exp,
+            bool throwIfNotFound = false)
+        {
+            return GetMemberInfoInternal(exp, throwIfNotFound);
+        }
+
+        /// <summary>
+        /// Gets the member information.
+        /// </summary>
+        /// <typeparam name="TInstance">The type of the instance.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="instance">The instance.</param>
+        /// <param name="exp">The expression.</param>
+        /// <param name="throwIfNotFound">if set to <see langword="true" /> and the member was not found, an exception will be throw;
+        /// otherwise, <see langword="null"/> will be returned.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
+        /// <remarks>Usage:
+        /// <code>instance.GetMemberInfo(i => i.AnyMember);</code>
+        /// </remarks>
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
+        public static MemberInfo GetMemberInfo<TInstance, TResult>(
+            this TInstance instance,
+            [NotNull] Expression<Func<TInstance, TResult>> exp,
+            bool throwIfNotFound = false)
+        {
+            return GetMemberInfoInternal(exp, throwIfNotFound);
+        }
+
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
+        private static MemberInfo GetMemberInfoInternal(LambdaExpression exp, bool throwIfNotFound)
+        {
             if (exp == null) throw new ArgumentNullException("exp");
-            MemberExpression body = exp.Body as MemberExpression;
-            if (body != null) return body.Member as FieldInfo;
-            if (throwIfNotFound) throw new ArgumentException("FieldInfo not found in expression");
+
+            Expression body = exp.Body;
+
+            Debug.Assert(body != null);
+            if (body.NodeType == ExpressionType.Convert ||
+                body.NodeType == ExpressionType.ConvertChecked)
+            {
+                UnaryExpression convertExp = body as UnaryExpression;
+                if (convertExp != null) body = convertExp.Operand;
+                Debug.Assert(body != null);
+            }
+
+            switch (body.NodeType)
+            {
+                case ExpressionType.Call:
+                    MethodCallExpression methodBody = body as MethodCallExpression;
+                    if (methodBody != null) return methodBody.Method;
+                    break;
+                case ExpressionType.MemberAccess:
+                    MemberExpression memberBody = body as MemberExpression;
+                    if (memberBody != null) return memberBody.Member;
+                    break;
+                case ExpressionType.New:
+                    NewExpression ctorBody = body as NewExpression;
+                    if (ctorBody != null) return ctorBody.Constructor;
+                    break;
+            }
+
+            if (throwIfNotFound) throw new ArgumentException(Resources.InfoHelper_GetMemberInfoInternal_NotFound);
+            return null;
+        }
+
+        [ContractAnnotation("throwIfNotFound:true => notnull")]
+        private static T GetMemberInfoInternal<T>(LambdaExpression exp, bool throwIfNotFound, ExpressionType type)
+            where T : MemberInfo
+        {
+            if (exp == null) throw new ArgumentNullException("exp");
+
+            Expression body = exp.Body;
+
+            Debug.Assert(body != null);
+            if (body.NodeType == ExpressionType.Convert ||
+                body.NodeType == ExpressionType.ConvertChecked)
+            {
+                UnaryExpression convertExp = body as UnaryExpression;
+                if (convertExp != null) body = convertExp.Operand;
+                Debug.Assert(body != null);
+            }
+
+            switch (body.NodeType)
+            {
+                case ExpressionType.Call:
+                    if (type != ExpressionType.Call) break;
+
+                    MethodCallExpression methodBody = body as MethodCallExpression;
+                    if (methodBody != null)
+                    {
+                        T info = methodBody.Method as T;
+                        if (info != null) return info;
+                    }
+                    break;
+                case ExpressionType.MemberAccess:
+                    if (type != ExpressionType.MemberAccess) break;
+
+                    MemberExpression memberBody = body as MemberExpression;
+                    if (memberBody != null)
+                    {
+                        T info = memberBody.Member as T;
+                        if (info != null) return info;
+                    }
+                    break;
+                case ExpressionType.New:
+                    if (type != ExpressionType.New) break;
+
+                    NewExpression ctorBody = body as NewExpression;
+                    if (ctorBody != null)
+                    {
+                        T info = ctorBody.Constructor as T;
+                        if (info != null) return info;
+                    }
+                    break;
+            }
+
+            if (throwIfNotFound)
+                throw new ArgumentException(
+                    string.Format(Resources.InfoHelper_GetMemberInfoInternal_T_NotFound, typeof(T).Name));
             return null;
         }
 
@@ -465,7 +547,10 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetParameterInfo&lt;ParameterType&gt;(p => TypeOrInstance.Method(..., ref InfoHelper&lt;ParameterType&gt;.Parameter, ...));</code>
         /// If both <c>p</c> and <see cref="InfoHelper{T}.Parameter"/> are used, then the parameter <c>p</c> is passed to will be used.
         /// </remarks>
-        /// <exception cref="System.ArgumentException">Multiple parameters specified</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
+        /// <exception cref="ArgumentException">Multiple parameters specified</exception>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
         public static ParameterInfo GetParameterInfo<TParam>(
             [NotNull] Expression<Action<TParam>> exp,
@@ -499,6 +584,9 @@ namespace WebApplications.Utilities.Reflect
         /// <code>InfoHelper.GetParameterInfo&lt;Type,ParameterType&gt;(p => TypeOrInstance.Method(..., ref InfoHelper&lt;ParameterType&gt;.Parameter, ...));</code>
         /// If both <c>p</c> and <see cref="InfoHelper{T}.Parameter"/> are used, then the parameter <c>p</c> is passed to will be used.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">The <paramref name="exp">expression</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">The information was not found in the <paramref name="exp">expression</paramref> 
+        /// and <paramref name="throwIfNotFound"/> is <see langword="true"/>.</exception>
         /// <exception cref="System.ArgumentException">Multiple parameters specified</exception>
         [ContractAnnotation("throwIfNotFound:true => notnull")]
         public static ParameterInfo GetParameterInfo<TInstance, TParam>(
@@ -538,6 +626,7 @@ namespace WebApplications.Utilities.Reflect
             bool multipleTemp = false;
             bool multipleRefOut = false;
 
+            // ReSharper disable once PossibleNullReferenceException
             for (int i = 0; i < body.Arguments.Count; i++)
             {
                 Expression arg = body.Arguments[i];
@@ -582,8 +671,10 @@ namespace WebApplications.Utilities.Reflect
             if (multipleTemp || multipleRefOut)
                 throw new ArgumentException("Multiple parameters specified");
 
+            Debug.Assert(body.Method != null);
             return paramArg == null
                 ? null
+                // ReSharper disable once PossibleNullReferenceException
                 : body.Method.GetParameters()[index];
         }
     }

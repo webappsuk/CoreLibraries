@@ -637,6 +637,24 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MemberInfo not found in expression.
+        /// </summary>
+        internal static string InfoHelper_GetMemberInfoInternal_NotFound {
+            get {
+                return ResourceManager.GetString("InfoHelper_GetMemberInfoInternal_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} not found in expression.
+        /// </summary>
+        internal static string InfoHelper_GetMemberInfoInternal_T_NotFound {
+            get {
+                return ResourceManager.GetString("InfoHelper_GetMemberInfoInternal_T_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maximum capacity is {0}..
         /// </summary>
         internal static string LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity {

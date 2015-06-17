@@ -537,4 +537,10 @@
   <data name="ApmWrap_Unwrap_ResultWrongType" xml:space="preserve">
     <value>Result is the wrong type</value>
   </data>
+  <data name="InfoHelper_GetMemberInfoInternal_T_NotFound" xml:space="preserve">
+    <value>{0} not found in expression</value>
+  </data>
+  <data name="InfoHelper_GetMemberInfoInternal_NotFound" xml:space="preserve">
+    <value>MemberInfo not found in expression</value>
+  </data>
 </root>
