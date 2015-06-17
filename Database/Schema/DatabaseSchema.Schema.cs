@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -191,15 +190,6 @@ namespace WebApplications.Utilities.Database.Schema
                 [NotNull] IEnumerable<SqlTableDefinition> tables,
                 [NotNull] IEnumerable<SqlType> types)
             {
-                Contract.Requires(schemasByID != null);
-                Contract.Requires(programDefinitionsByName != null);
-                Contract.Requires(tablesByName != null);
-                Contract.Requires(typesByName != null);
-                Contract.Requires(schemas != null);
-                Contract.Requires(programDefinitions != null);
-                Contract.Requires(tables != null);
-                Contract.Requires(types != null);
-
                 _guid = guid;
                 _schemasByID = schemasByID;
                 _programDefinitionsByName = programDefinitionsByName;
@@ -226,11 +216,6 @@ namespace WebApplications.Utilities.Database.Schema
                 [NotNull] IReadOnlyDictionary<string, SqlTableDefinition> tablesByName,
                 [NotNull] IReadOnlyDictionary<string, SqlType> typesByName)
             {
-                Contract.Requires(schemasByID != null);
-                Contract.Requires(programDefinitionsByName != null);
-                Contract.Requires(tablesByName != null);
-                Contract.Requires(typesByName != null);
-
                 // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
                 SqlSchema[] schemas = schemasByID.Values.OrderBy(s => s.FullName).ToArray();
                 SqlProgramDefinition[] programDefinitions =
@@ -242,6 +227,7 @@ namespace WebApplications.Utilities.Database.Schema
                 List<byte> guidBytes = new List<byte>(16);
                 unchecked
                 {
+                    // ReSharper disable PossibleNullReferenceException
                     guidBytes.AddRange(
                         BitConverter.GetBytes(
                             schemas.Aggregate(0, (hash, schema) => (397 * hash) ^ schema.GetHashCode())));
@@ -255,8 +241,10 @@ namespace WebApplications.Utilities.Database.Schema
                     guidBytes.AddRange(
                         BitConverter.GetBytes(
                             tables.Aggregate(0, (hash, tableDefinition) => (397 * hash) ^ tableDefinition.GetHashCode())));
+                    // ReSharper restore PossibleNullReferenceException
                 }
 
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return _schemasByGuid.GetOrAdd(
                     new Guid(guidBytes.ToArray()),
                     g =>

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,7 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public string Name
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("name"); }
             set { SetProperty("name", value); }
         }
@@ -63,6 +64,7 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public string MapTo
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("mapTo"); }
             set { SetProperty("mapTo", value); }
         }

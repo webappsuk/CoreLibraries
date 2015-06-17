@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -42,6 +41,7 @@ namespace WebApplications.Utilities.Database.Configuration
     ///   A configuration section used to specify database configurations.
     /// </summary>
     /// <seealso cref="T:WebApplications.Utilities.Configuration.ConfigurationSection`1"/>
+    [PublicAPI]
     public partial class DatabasesConfiguration : ConfigurationSection<DatabasesConfiguration>
     {
         /// <summary>
@@ -51,17 +51,17 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The <see cref="DatabaseCollection">collection</see> of database elements.
         /// </value>
         [ConfigurationProperty("", IsRequired = true, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof (DatabaseCollection),
+        [ConfigurationCollection(typeof(DatabaseCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
-        [PublicAPI]
         [NotNull]
+        [ItemNotNull]
         public DatabaseCollection Databases
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<DatabaseCollection>(""); }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
                 SetProperty("", value);
             }
         }
@@ -91,7 +91,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public static Task<LoadBalancedConnection> GetConfiguredConnection(
             [NotNull] string database,
@@ -99,7 +98,7 @@ namespace WebApplications.Utilities.Database.Configuration
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
+            if (database == null) throw new ArgumentNullException("database");
             return Active.GetConnection(database, connectionName, ensureIdentical, cancellationToken);
         }
 
@@ -114,7 +113,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public Task<LoadBalancedConnection> GetConnection(
             [NotNull] string database,
@@ -122,16 +120,15 @@ namespace WebApplications.Utilities.Database.Configuration
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
+            if (database == null) throw new ArgumentNullException("database");
+
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-            {
                 return TaskResult<LoadBalancedConnection>.FromException(
                     new LoggingException(
                         () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                         database));
-            }
 
             return db.GetConnection(connectionName, ensureIdentical, cancellationToken);
         }
@@ -145,14 +142,13 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public static Task<IEnumerable<LoadBalancedConnection>> GetConfiguredConnections(
             [NotNull] string database,
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
+            if (database == null) throw new ArgumentNullException("database");
             return Active.GetConnections(database, ensureIdentical, cancellationToken);
         }
 
@@ -165,23 +161,21 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<LoadBalancedConnection>> GetConnections(
             [NotNull] string database,
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
+            if (database == null) throw new ArgumentNullException("database");
+
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-            {
                 return TaskResult<IEnumerable<LoadBalancedConnection>>.FromException(
                     new LoggingException(
                         () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                         database));
-            }
 
             return db.GetConnections(ensureIdentical, cancellationToken);
         }
@@ -195,7 +189,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public static Task<DatabaseSchema> GetConfiguredSchema(
             [NotNull] string database,
@@ -203,7 +196,8 @@ namespace WebApplications.Utilities.Database.Configuration
             bool forceReload = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
+            if (database == null) throw new ArgumentNullException("database");
+
             return Active.GetSchema(database, connectionName, forceReload, cancellationToken);
         }
 
@@ -216,7 +210,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public Task<DatabaseSchema> GetSchema(
             [NotNull] string database,
@@ -224,16 +217,15 @@ namespace WebApplications.Utilities.Database.Configuration
             bool forceReload = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
+            if (database == null) throw new ArgumentNullException("database");
+
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-            {
                 return TaskResult<DatabaseSchema>.FromException(
                     new LoggingException(
                         () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                         database));
-            }
 
             return db.GetSchema(connectionName, forceReload, cancellationToken);
         }
@@ -254,7 +246,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <returns>An awaitable task, resulting in a <see cref="SqlProgram"/>.</returns>
         /// <exception cref="LoggingException">The database corresponding to the ID provided in the <paramref name="database" /> parameter could not be found.</exception>
         [NotNull]
-        [PublicAPI]
         public static Task<SqlProgram> GetConfiguredSqlProgram(
             [NotNull] string database,
             [NotNull] string name,
@@ -265,8 +256,9 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
-            Contract.Requires(name != null);
+            if (database == null) throw new ArgumentNullException("database");
+            if (name == null) throw new ArgumentNullException("name");
+
             return Active.GetSqlProgram(
                 database,
                 name,
@@ -295,7 +287,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
         /// <exception cref="LoggingException">The database corresponding to the ID provided in the <paramref name="database" /> parameter could not be found.</exception>
         [NotNull]
-        [PublicAPI]
         public Task<SqlProgram> GetSqlProgram(
             [NotNull] string database,
             [NotNull] string name,
@@ -306,19 +297,17 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // We have to find the database otherwise we cannot get a load balanced connection.
-            Contract.Requires(database != null);
-            Contract.Requires(name != null);
+            if (database == null) throw new ArgumentNullException("database");
+            if (name == null) throw new ArgumentNullException("name");
 
+            // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) ||
                 (!db.Enabled))
-            {
                 return TaskResult<SqlProgram>.FromException(
                     new LoggingException(
                         () => Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
                         database));
-            }
 
             return db.GetSqlProgram(
                 name,

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -38,6 +37,7 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     ///   Holds information about a connection.
     /// </summary>
+    [PublicAPI]
     public class Connection : IEquatable<Connection>
     {
         /// <summary>
@@ -47,7 +47,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="connectionString">The connection string.</param>
         private Connection(double weight, [NotNull] string connectionString)
         {
-            Contract.Requires(connectionString != null);
+            if (connectionString == null) throw new ArgumentNullException("connectionString");
+
             Weight = weight;
             ConnectionString = connectionString;
         }
@@ -62,7 +63,8 @@ namespace WebApplications.Utilities.Database
         /// </param>
         public Connection([NotNull] string connectionString, double weight = 1.0D)
         {
-            Contract.Requires(connectionString != null);
+            if (connectionString == null) throw new ArgumentNullException("connectionString");
+
             Weight = weight;
 
             // Load string into builder and coerce to async
@@ -179,7 +181,6 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing the <see cref="DatabaseSchema"/> for this <see cref="Connection"/>.</returns>
         [NotNull]
-        [PublicAPI]
         public Task<DatabaseSchema> GetSchema(
             bool forceReload,
             CancellationToken cancellationToken = default(CancellationToken))

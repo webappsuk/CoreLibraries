@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlTypes;
-using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -39,6 +39,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   Holds information about known SQL Types.
     /// </summary>
+    [PublicAPI]
     public sealed class SqlMetaType
     {
         #region Pre-defined meta types
@@ -46,7 +47,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>bigint</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaBigInt = new SqlMetaType(
             19,
             byte.MaxValue,
@@ -57,8 +57,8 @@ namespace WebApplications.Utilities.Database.Schema
             127,
             38,
             "bigint",
-            typeof (long),
-            typeof (SqlInt64),
+            typeof(long),
+            typeof(SqlInt64),
             SqlDbType.BigInt,
             DbType.Int64,
             0);
@@ -67,7 +67,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>float</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaFloat = new SqlMetaType(
             15,
             byte.MaxValue,
@@ -78,8 +77,8 @@ namespace WebApplications.Utilities.Database.Schema
             62,
             109,
             "float",
-            typeof (double),
-            typeof (SqlDouble),
+            typeof(double),
+            typeof(SqlDouble),
             SqlDbType.Float,
             DbType.Double,
             0);
@@ -88,7 +87,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>real</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaReal = new SqlMetaType(
             7,
             byte.MaxValue,
@@ -99,8 +97,8 @@ namespace WebApplications.Utilities.Database.Schema
             59,
             109,
             "real",
-            typeof (float),
-            typeof (SqlSingle),
+            typeof(float),
+            typeof(SqlSingle),
             SqlDbType.Real,
             DbType.Single,
             0);
@@ -109,7 +107,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>binary</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaBinary = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -120,8 +117,8 @@ namespace WebApplications.Utilities.Database.Schema
             173,
             173,
             "binary",
-            typeof (byte[]),
-            typeof (SqlBinary),
+            typeof(byte[]),
+            typeof(SqlBinary),
             SqlDbType.Binary,
             DbType.Binary,
             2);
@@ -130,7 +127,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>timestamp</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaTimestamp = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -141,8 +137,8 @@ namespace WebApplications.Utilities.Database.Schema
             173,
             173,
             "timestamp",
-            typeof (byte[]),
-            typeof (SqlBinary),
+            typeof(byte[]),
+            typeof(SqlBinary),
             SqlDbType.
                 Timestamp,
             DbType.Binary,
@@ -152,7 +148,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>varbinary</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaVarBinary = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -163,8 +158,8 @@ namespace WebApplications.Utilities.Database.Schema
             165,
             165,
             "varbinary",
-            typeof (byte[]),
-            typeof (SqlBinary),
+            typeof(byte[]),
+            typeof(SqlBinary),
             SqlDbType.
                 VarBinary,
             DbType.Binary,
@@ -174,7 +169,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>varbinary(max)</c> data type (a large value data type).
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaMaxVarBinary = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -185,8 +179,8 @@ namespace WebApplications.Utilities.Database.Schema
             165,
             165,
             "varbinary",
-            typeof (byte[]),
-            typeof (
+            typeof(byte[]),
+            typeof(
                 SqlBinary),
             SqlDbType.
                 VarBinary,
@@ -197,7 +191,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for a small <c>varbinary</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaSmallVarBinary = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -208,9 +201,9 @@ namespace WebApplications.Utilities.Database.Schema
             37,
             173,
             string.Empty,
-            typeof (byte[]),
-            typeof (SqlBinary),
-            (SqlDbType) 24,
+            typeof(byte[]),
+            typeof(SqlBinary),
+            (SqlDbType)24,
             DbType.Binary,
             2);
 
@@ -218,7 +211,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>image</c> data type (a large object data type).
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaImage = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -229,8 +221,8 @@ namespace WebApplications.Utilities.Database.Schema
             34,
             34,
             "image",
-            typeof (byte[]),
-            typeof (SqlBinary),
+            typeof(byte[]),
+            typeof(SqlBinary),
             SqlDbType.Image,
             DbType.Binary,
             0);
@@ -239,7 +231,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>bit</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaBit = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -250,8 +241,8 @@ namespace WebApplications.Utilities.Database.Schema
             50,
             104,
             "bit",
-            typeof (bool),
-            typeof (SqlBoolean),
+            typeof(bool),
+            typeof(SqlBoolean),
             SqlDbType.Bit,
             DbType.Boolean,
             0);
@@ -260,7 +251,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>tinyint</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaTinyInt = new SqlMetaType(
             3,
             byte.MaxValue,
@@ -271,8 +261,8 @@ namespace WebApplications.Utilities.Database.Schema
             48,
             38,
             "tinyint",
-            typeof (byte),
-            typeof (SqlByte),
+            typeof(byte),
+            typeof(SqlByte),
             SqlDbType.TinyInt,
             DbType.Byte,
             0);
@@ -281,7 +271,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>smallint</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaSmallInt = new SqlMetaType(
             5,
             byte.MaxValue,
@@ -292,8 +281,8 @@ namespace WebApplications.Utilities.Database.Schema
             52,
             38,
             "smallint",
-            typeof (short),
-            typeof (SqlInt16),
+            typeof(short),
+            typeof(SqlInt16),
             SqlDbType.SmallInt,
             DbType.Int16,
             0);
@@ -302,7 +291,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>int</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaInt = new SqlMetaType(
             10,
             byte.MaxValue,
@@ -313,8 +301,8 @@ namespace WebApplications.Utilities.Database.Schema
             56,
             38,
             "int",
-            typeof (int),
-            typeof (SqlInt32),
+            typeof(int),
+            typeof(SqlInt32),
             SqlDbType.Int,
             DbType.Int32,
             0);
@@ -323,7 +311,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>char</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaChar = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -334,8 +321,8 @@ namespace WebApplications.Utilities.Database.Schema
             175,
             175,
             "char",
-            typeof (string),
-            typeof (SqlString),
+            typeof(string),
+            typeof(SqlString),
             SqlDbType.Char,
             DbType.
                 AnsiStringFixedLength,
@@ -345,7 +332,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>varchar</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaVarChar = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -356,8 +342,8 @@ namespace WebApplications.Utilities.Database.Schema
             167,
             167,
             "varchar",
-            typeof (string),
-            typeof (SqlString),
+            typeof(string),
+            typeof(SqlString),
             SqlDbType.VarChar,
             DbType.AnsiString,
             7);
@@ -366,7 +352,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>varchar(max)</c> data type (a large value data type).
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaMaxVarChar = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -377,8 +362,8 @@ namespace WebApplications.Utilities.Database.Schema
             167,
             167,
             "varchar",
-            typeof (string),
-            typeof (SqlString
+            typeof(string),
+            typeof(SqlString
                 ),
             SqlDbType.VarChar,
             DbType.AnsiString,
@@ -388,7 +373,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>text</c> data type (a large object data type).
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaText = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -399,8 +383,8 @@ namespace WebApplications.Utilities.Database.Schema
             35,
             35,
             "text",
-            typeof (string),
-            typeof (SqlString),
+            typeof(string),
+            typeof(SqlString),
             SqlDbType.Text,
             DbType.AnsiString,
             0);
@@ -409,7 +393,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>nchar</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaNChar = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -420,8 +403,8 @@ namespace WebApplications.Utilities.Database.Schema
             239,
             239,
             "nchar",
-            typeof (string),
-            typeof (SqlString),
+            typeof(string),
+            typeof(SqlString),
             SqlDbType.NChar,
             DbType.
                 StringFixedLength,
@@ -431,7 +414,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>nvarchar</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaNVarChar = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -442,8 +424,8 @@ namespace WebApplications.Utilities.Database.Schema
             231,
             231,
             "nvarchar",
-            typeof (string),
-            typeof (SqlString),
+            typeof(string),
+            typeof(SqlString),
             SqlDbType.NVarChar,
             DbType.String,
             7);
@@ -452,7 +434,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>nvarchar(max)</c> data type (a large value data type).
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaMaxNVarChar = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -463,8 +444,8 @@ namespace WebApplications.Utilities.Database.Schema
             231,
             231,
             "nvarchar",
-            typeof (string),
-            typeof (
+            typeof(string),
+            typeof(
                 SqlString),
             SqlDbType.
                 NVarChar,
@@ -475,7 +456,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>ntext</c> data type (a large object data type).
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaNText = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -486,8 +466,8 @@ namespace WebApplications.Utilities.Database.Schema
             99,
             99,
             "ntext",
-            typeof (string),
-            typeof (SqlString),
+            typeof(string),
+            typeof(SqlString),
             SqlDbType.NText,
             DbType.String,
             7);
@@ -496,7 +476,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>decimal</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaDecimal = new SqlMetaType(
             38,
             4,
@@ -507,8 +486,8 @@ namespace WebApplications.Utilities.Database.Schema
             108,
             108,
             "decimal",
-            typeof (Decimal),
-            typeof (SqlDecimal),
+            typeof(Decimal),
+            typeof(SqlDecimal),
             SqlDbType.Decimal,
             DbType.Decimal,
             2);
@@ -517,7 +496,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>xml</c> data type (a large object data type).
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaXml = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -528,8 +506,8 @@ namespace WebApplications.Utilities.Database.Schema
             241,
             241,
             "xml",
-            typeof (string),
-            typeof (SqlXml),
+            typeof(string),
+            typeof(SqlXml),
             SqlDbType.Xml,
             DbType.Xml,
             0);
@@ -538,7 +516,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>datetime</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaDateTime = new SqlMetaType(
             23,
             3,
@@ -549,8 +526,8 @@ namespace WebApplications.Utilities.Database.Schema
             61,
             111,
             "datetime",
-            typeof (DateTime),
-            typeof (SqlDateTime
+            typeof(DateTime),
+            typeof(SqlDateTime
                 ),
             SqlDbType.DateTime,
             DbType.DateTime,
@@ -560,7 +537,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>smalldatetime</c> type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaSmallDateTime = new SqlMetaType(
             16,
             0,
@@ -571,9 +547,9 @@ namespace WebApplications.Utilities.Database.Schema
             58,
             111,
             "smalldatetime",
-            typeof (
+            typeof(
                 DateTime),
-            typeof (
+            typeof(
                 SqlDateTime
                 ),
             SqlDbType.
@@ -586,7 +562,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>money</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaMoney = new SqlMetaType(
             19,
             byte.MaxValue,
@@ -597,8 +572,8 @@ namespace WebApplications.Utilities.Database.Schema
             60,
             110,
             "money",
-            typeof (Decimal),
-            typeof (SqlMoney),
+            typeof(Decimal),
+            typeof(SqlMoney),
             SqlDbType.Money,
             DbType.Currency,
             0);
@@ -607,7 +582,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>smallmoney</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaSmallMoney = new SqlMetaType(
             10,
             byte.MaxValue,
@@ -618,8 +592,8 @@ namespace WebApplications.Utilities.Database.Schema
             122,
             110,
             "smallmoney",
-            typeof (Decimal),
-            typeof (SqlMoney),
+            typeof(Decimal),
+            typeof(SqlMoney),
             SqlDbType.
                 SmallMoney,
             DbType.Currency,
@@ -629,7 +603,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>uniqueidentifier</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaUniqueId = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -640,8 +613,8 @@ namespace WebApplications.Utilities.Database.Schema
             36,
             36,
             "uniqueidentifier",
-            typeof (Guid),
-            typeof (SqlGuid),
+            typeof(Guid),
+            typeof(SqlGuid),
             SqlDbType.
                 UniqueIdentifier,
             DbType.Guid,
@@ -651,7 +624,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>sql_variant</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaVariant = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -662,8 +634,8 @@ namespace WebApplications.Utilities.Database.Schema
             98,
             98,
             "sql_variant",
-            typeof (object),
-            typeof (object),
+            typeof(object),
+            typeof(object),
             SqlDbType.Variant,
             DbType.Object,
             0);
@@ -672,7 +644,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for user-defined data types.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaUdt = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -683,8 +654,8 @@ namespace WebApplications.Utilities.Database.Schema
             240,
             240,
             "udt",
-            typeof (object),
-            typeof (object),
+            typeof(object),
+            typeof(object),
             SqlDbType.Udt,
             DbType.Object,
             0);
@@ -693,7 +664,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for user-defined data types.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaMaxUdt = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -704,8 +674,8 @@ namespace WebApplications.Utilities.Database.Schema
             240,
             240,
             "udt",
-            typeof (object),
-            typeof (object),
+            typeof(object),
+            typeof(object),
             SqlDbType.Udt,
             DbType.Object,
             0);
@@ -714,7 +684,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>table</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaTable = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -725,21 +694,17 @@ namespace WebApplications.Utilities.Database.Schema
             243,
             243,
             "table",
-            typeof (
-                IEnumerable
-                <DbDataRecord>),
-            typeof (
-                IEnumerable
-                <DbDataRecord>),
+            typeof(IEnumerable<DbDataRecord>),
+            typeof(IEnumerable<DbDataRecord>),
             SqlDbType.Structured,
             DbType.Object,
             0);
 
+        // TODO What is this?
         /// <summary>
-        ///   TODO small udt?
+        ///   The meta data for structured user defined type
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaSUDT = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -750,8 +715,8 @@ namespace WebApplications.Utilities.Database.Schema
             31,
             31,
             "",
-            typeof (SqlDataRecord),
-            typeof (SqlDataRecord),
+            typeof(SqlDataRecord),
+            typeof(SqlDataRecord),
             SqlDbType.Structured,
             DbType.Object,
             0);
@@ -760,7 +725,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>date</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaDate = new SqlMetaType(
             byte.MaxValue,
             byte.MaxValue,
@@ -771,8 +735,8 @@ namespace WebApplications.Utilities.Database.Schema
             40,
             40,
             "date",
-            typeof (DateTime),
-            typeof (DateTime),
+            typeof(DateTime),
+            typeof(DateTime),
             SqlDbType.Date,
             DbType.Date,
             0);
@@ -781,7 +745,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>time</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaTime = new SqlMetaType(
             byte.MaxValue,
             7,
@@ -792,8 +755,8 @@ namespace WebApplications.Utilities.Database.Schema
             41,
             41,
             "time",
-            typeof (TimeSpan),
-            typeof (TimeSpan),
+            typeof(TimeSpan),
+            typeof(TimeSpan),
             SqlDbType.Time,
             DbType.Time,
             1);
@@ -802,7 +765,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>datetime2</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaDateTime2 = new SqlMetaType(
             byte.MaxValue,
             7,
@@ -813,8 +775,8 @@ namespace WebApplications.Utilities.Database.Schema
             42,
             42,
             "datetime2",
-            typeof (DateTime),
-            typeof (DateTime),
+            typeof(DateTime),
+            typeof(DateTime),
             SqlDbType.
                 DateTime2,
             DbType.DateTime2,
@@ -824,7 +786,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The meta data for the <c>datetimeoffset</c> data type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly SqlMetaType MetaDateTimeOffset = new SqlMetaType(
             byte.MaxValue,
             7,
@@ -835,8 +796,8 @@ namespace WebApplications.Utilities.Database.Schema
             43,
             43,
             "datetimeoffset",
-            typeof (DateTimeOffset),
-            typeof (DateTimeOffset),
+            typeof(DateTimeOffset),
+            typeof(DateTimeOffset),
             SqlDbType.DateTimeOffset,
             DbType.DateTimeOffset,
             1);
@@ -846,94 +807,79 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The class type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public readonly Type ClassType;
 
         /// <summary>
         ///   The SQL type.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public readonly Type SqlType;
 
         /// <summary>
         ///   The number of bytes the type is stored in.
         ///   If this is -1 then the data type is variable-length.
         /// </summary>
-        [UsedImplicitly]
         public readonly int FixedLength;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the data type is fixed-length.
         /// </summary>
-        [UsedImplicitly]
         public readonly bool IsFixed;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the data type is a large object/value.
         /// </summary>
-        [UsedImplicitly]
         public readonly bool IsLong;
 
         /// <summary>
         ///   PLP.
         /// </summary>
-        [UsedImplicitly]
         public readonly bool IsPlp;
 
         /// <summary>
         ///   The precision, which is the number of digits in a numerical data type.
         /// </summary>
-        [UsedImplicitly]
         public readonly byte Precision;
 
         /// <summary>
         ///   The scale, which is the number of digits to the right of the decimal point.
         /// </summary>
-        [UsedImplicitly]
         public readonly byte Scale;
 
         /// <summary>
         ///   TDS value.
         /// </summary>
-        [UsedImplicitly]
         public readonly byte TDSType;
 
         /// <summary>
         ///   Nullable TDS value.
         /// </summary>
-        [UsedImplicitly]
         public readonly byte NullableType;
 
         /// <summary>
         ///   The name of the type.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
         public readonly string TypeName;
 
         /// <summary>
         ///   The equivalent <see cref="SqlDbType"/>
         /// </summary>
-        [UsedImplicitly]
         public readonly SqlDbType SqlDbType;
 
         /// <summary>
         ///   The equivalent <see cref="DbType"/>
         /// </summary>
-        [UsedImplicitly]
         public readonly DbType DbType;
 
         /// <summary>
         ///   Propbytes.
         /// </summary>
-        [UsedImplicitly]
         public readonly byte PropBytes;
 
         /// <summary>
         ///   Type id.
         /// </summary>
-        [UsedImplicitly]
         public const int TypeId = 0;
 
         /// <summary>
@@ -1003,7 +949,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   TODO
         /// </returns>
-        [UsedImplicitly]
         public static bool IsAnsiType(SqlDbType type)
         {
             if (type != SqlDbType.Char &&
@@ -1019,7 +964,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if size can be determined by character length; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool IsSizeInCharacters(SqlDbType type)
         {
             if (type != SqlDbType.NChar &&
@@ -1036,7 +980,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type is a character stream; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool IsCharType(SqlDbType type)
         {
             if (type != SqlDbType.NChar &&
@@ -1054,7 +997,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type accepts Unicode characters; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool IsNCharType(SqlDbType type)
         {
             if (type != SqlDbType.NChar &&
@@ -1071,14 +1013,13 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type is a binary type; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool IsBinType(SqlDbType type)
         {
             if (type != SqlDbType.Image &&
                 type != SqlDbType.Binary &&
                 (type != SqlDbType.VarBinary && type != SqlDbType.Timestamp) &&
                 type != SqlDbType.Udt)
-                return type == (SqlDbType) 24;
+                return type == (SqlDbType)24;
             return true;
         }
 
@@ -1089,7 +1030,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type is supported; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool Is70Supported(SqlDbType type)
         {
             if (type != SqlDbType.BigInt &&
@@ -1105,7 +1045,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type is supported; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool Is80Supported(SqlDbType type)
         {
             if (type >= SqlDbType.BigInt)
@@ -1120,7 +1059,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type is supported; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool Is90Supported(SqlDbType type)
         {
             if (!Is80Supported(type) &&
@@ -1136,7 +1074,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type is supported; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool Is100Supported(SqlDbType type)
         {
             if (!Is90Supported(type) &&
@@ -1153,7 +1090,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the type is from SQL Server 2008 onwards; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool IsNewKatmaiType(SqlDbType type)
         {
             return SqlDbType.Structured == type;
@@ -1166,7 +1102,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the <paramref name="type"/> is a time type; otherwise returns <see langword="false"/>.
         /// </returns>
-        [UsedImplicitly]
         public static bool IsVarTime(SqlDbType type)
         {
             if (type != SqlDbType.Time &&
@@ -1190,7 +1125,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <paramref name="target"/> was an unsupported <see cref="SqlDbType"/>.
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public static SqlMetaType GetMetaTypeFromSqlDbType(SqlDbType target, bool isMultiValued = false)
         {
             switch (target)
@@ -1243,7 +1177,7 @@ namespace WebApplications.Utilities.Database.Schema
                     return MetaVarChar;
                 case SqlDbType.Variant:
                     return MetaVariant;
-                case (SqlDbType) 24:
+                case (SqlDbType)24:
                     return MetaSmallVarBinary;
                 case SqlDbType.Xml:
                     return MetaXml;
@@ -1274,7 +1208,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <param name="target">The target.</param>
     /// <returns></returns>
         [NotNull]
-        [UsedImplicitly]
+
         public static SqlMetaType GetMetaTypeFromDbType(DbType target)
         {
             switch (target)
@@ -1333,7 +1267,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="mt">The mt.</param>
         /// <returns></returns>
         [NotNull]
-        [UsedImplicitly]
+
         public static SqlMetaType GetMaxMetaTypeFromMetaType([NotNull]SqlMetaType mt)
         {
             switch (mt.SqlDbType)

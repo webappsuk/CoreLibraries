@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     ///   A specialised command that allows finer grained control when using <see cref="SqlProgram"/>s.
     /// </summary>
+    [PublicAPI]
     public partial class SqlProgramCommand
     {
         /// <summary>
@@ -49,14 +50,15 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         [NotNull]
         private static readonly Func<SqlParameterCollection> _createSqlParameterCollection =
-            typeof (SqlParameterCollection).ConstructorFunc<SqlParameterCollection>();
+            typeof(SqlParameterCollection).ConstructorFunc<SqlParameterCollection>();
 
         /// <summary>
         /// Allows rapid setting of a commands parameters.
         /// </summary>
         [NotNull]
         private static readonly Action<SqlCommand, SqlParameterCollection> _setSqlParameterCollection =
-            typeof (SqlCommand).GetSetter<SqlCommand, SqlParameterCollection>("_parameters");
+            // ReSharper disable once AssignNullToNotNullAttribute
+            typeof(SqlCommand).GetSetter<SqlCommand, SqlParameterCollection>("_parameters");
 
         [NotNull]
         private readonly SqlProgramMapping _mapping;
@@ -80,9 +82,10 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgramMapping mapping,
             TimeSpan commandTimeout)
         {
-            Contract.Requires(program != null);
-            Contract.Requires(mapping != null);
-            Contract.Requires(commandTimeout >= TimeSpan.Zero);
+            if (program == null) throw new ArgumentNullException("program");
+            if (mapping == null) throw new ArgumentNullException("mapping");
+            if (commandTimeout < TimeSpan.Zero) throw new ArgumentOutOfRangeException("commandTimeout");
+
             _program = program;
             _mapping = mapping;
             CommandTimeout = commandTimeout;
@@ -97,7 +100,6 @@ namespace WebApplications.Utilities.Database
         /// <value>
         ///   The time to wait (in seconds) for the command to execute.
         /// </value>
-        [UsedImplicitly]
         public TimeSpan CommandTimeout
         {
             get { return _commandTimeout; }
@@ -118,11 +120,9 @@ namespace WebApplications.Utilities.Database
         /// <returns>The <see cref="SqlParameter" /> that corresponds to the <paramref name="parameterName" /> provided.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
         [NotNull]
-        [UsedImplicitly]
         public SqlParameter GetParameter([NotNull] string parameterName)
         {
-            Contract.Requires(parameterName != null);
-            Contract.Ensures(Contract.Result<SqlParameter>() != null);
+            if (parameterName == null) throw new ArgumentNullException("parameterName");
 
             lock (_parameters)
             {
@@ -142,15 +142,15 @@ namespace WebApplications.Utilities.Database
                             parameterName);
 
                     // Create the parameter and add it to the collection
-                    Contract.Assert(parameterDefinition != null);
+                    Debug.Assert(parameterDefinition != null);
                     parameter = _parameters.Add(parameterDefinition.CreateSqlParameter());
                 }
                 else
-                    // Get the parameter and set it's value.
+                // Get the parameter and set it's value.
                     parameter = _parameters[index];
 
                 // Create the parameter and add it to the collection
-                Contract.Assert(parameter != null);
+                Debug.Assert(parameter != null);
                 return parameter;
             }
         }
@@ -166,13 +166,12 @@ namespace WebApplications.Utilities.Database
         /// <returns>The SqlParameter with the specified name.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
         [NotNull]
-        [PublicAPI]
         public SqlParameter SetParameter<T>(
             [NotNull] string parameterName,
             T value,
             TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            Contract.Requires(parameterName != null);
+            if (parameterName == null) throw new ArgumentNullException("parameterName");
 
             lock (_parameters)
             {
@@ -186,7 +185,7 @@ namespace WebApplications.Utilities.Database
                         () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
                         _program.Name,
                         parameterName);
-                Contract.Assert(parameterDefinition != null);
+                Debug.Assert(parameterDefinition != null);
 
                 // Find or create SQL Parameter.
                 int index = _parameters.IndexOf(parameterName);
@@ -194,7 +193,7 @@ namespace WebApplications.Utilities.Database
                     ? _parameters.Add(parameterDefinition.CreateSqlParameter())
                     : _parameters[index];
 
-                Contract.Assert(parameter != null);
+                Debug.Assert(parameter != null);
                 parameter.Value = parameterDefinition.CastCLRValue(value, mode);
                 return parameter;
             }
@@ -232,11 +231,11 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
-                        return (T) sqlCommand.ExecuteScalar();
+                        return (T)sqlCommand.ExecuteScalar();
                     }
                 }
             }
@@ -274,12 +273,12 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
                         // ReSharper disable once PossibleNullReferenceException
-                        return (T) await sqlCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+                        return (T)await sqlCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
                     }
                 }
             }
@@ -300,7 +299,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public int ExecuteNonQuery()
         {
             try
@@ -311,7 +309,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -339,7 +337,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        [PublicAPI]
         public async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             try
@@ -351,7 +348,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -385,12 +382,11 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteReader(
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -399,7 +395,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -432,12 +428,12 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public T ExecuteReader<T>(
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -446,7 +442,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -480,13 +476,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        [PublicAPI]
         public async Task ExecuteReaderAsync(
             [NotNull] ResultDelegateAsync resultAction,
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -496,7 +492,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -534,13 +530,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        [PublicAPI]
         public async Task<T> ExecuteReaderAsync<T>(
             [NotNull] ResultDelegateAsync<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -550,7 +546,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -586,10 +582,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -598,7 +594,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -630,10 +626,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public T ExecuteXmlReader<T>([NotNull] XmlResultDelegate<T> resultFunc)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -642,7 +638,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -674,12 +670,12 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        [PublicAPI]
         public async Task ExecuteXmlReaderAsync(
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -689,7 +685,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);
@@ -725,12 +721,12 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
-        [PublicAPI]
         public async Task<T> ExecuteXmlReaderAsync<T>(
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             try
             {
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
@@ -740,7 +736,7 @@ namespace WebApplications.Utilities.Database
                     using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
                     {
                         CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int) CommandTimeout.TotalSeconds
+                        CommandTimeout = (int)CommandTimeout.TotalSeconds
                     })
                     {
                         _setSqlParameterCollection(sqlCommand, _parameters);

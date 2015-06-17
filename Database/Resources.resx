@@ -339,4 +339,7 @@
   <data name="DatabaseElement_GetSchemas_No_Connection" xml:space="preserve">
     <value>No valid connection found on the '{0}' database</value>
   </data>
+  <data name="Connection_WeightMustBePositive" xml:space="preserve">
+    <value>Weight must be positive.</value>
+  </data>
 </root>

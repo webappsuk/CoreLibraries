@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     /// Base class of all entities in a <see cref="DatabaseSchema"/>.
     /// </summary>
+    [PublicAPI]
     public abstract class DatabaseEntity : IEquatable<DatabaseEntity>
     {
         /// <summary>
@@ -48,25 +49,23 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         [NotNull]
         protected static readonly PropertyInfo HashCodeProperty =
-            InfoHelper.GetPropertyInfo<DatabaseEntity, long>(e => e.HashCode);
+            InfoHelper.GetPropertyInfo<DatabaseEntity, long>(e => e.HashCode, true);
 
         /// <summary>
         /// The <see cref="List{T}.Add"/> method for a <see cref="List{T}">list of</see> <see cref="Difference">differences</see>.
         /// </summary>
         [NotNull]
         protected static readonly MethodInfo DifferenceAddMethod =
-            InfoHelper.GetMethodInfo<List<Difference>>(l => l.Add(default(Difference)));
+            InfoHelper.GetMethodInfo<List<Difference>>(l => l.Add(default(Difference)), true);
 
         /// <summary>
         /// A hash code.
         /// </summary>
-        [PublicAPI]
         public abstract long HashCode { get; }
 
         /// <summary>
         /// The full name.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public string FullName;
 
@@ -76,8 +75,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="fullName">The full name.</param>
         protected DatabaseEntity([NotNull] string fullName)
         {
-            Contract.Requires(fullName != null);
-            // ReSharper disable once PossibleNullReferenceException
+            if (fullName == null) throw new ArgumentNullException("fullName");
             FullName = fullName;
         }
 
@@ -87,7 +85,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="other">The other.</param>
         /// <returns>Delta.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        [PublicAPI]
         [NotNull]
         public abstract Delta GetDifferences([NotNull] DatabaseEntity other);
 
@@ -101,7 +98,7 @@ namespace WebApplications.Utilities.Database.Schema
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            DatabaseEntity other = (DatabaseEntity) obj;
+            DatabaseEntity other = (DatabaseEntity)obj;
             return HashCode.Equals(other.HashCode) &&
                    GetDifferences(other).IsEmpty;
         }
@@ -189,27 +186,34 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         static DatabaseEntity()
         {
-            // ReSharper disable once PossibleNullReferenceException
-            MemberInfo[] properties = typeof (T).GetGetter<Expression<Func<T, object>>[]>("_properties")()
+            // TODO Redo this without reflection if possible
+            // ReSharper disable once PossibleNullReferenceException, AssignNullToNotNullAttribute
+            MemberInfo[] properties = typeof(T).GetGetter<Expression<Func<T, object>>[]>("_properties")()
                 .Select(
                     e =>
-                        ((MemberExpression)
-                        (e.Body.NodeType == ExpressionType.Convert ? ((UnaryExpression) e.Body).Operand : e.Body))
-                        .Member)
+                    {
+                        Debug.Assert(e != null);
+                        // TODO Use InfoHelper.GetMemberInfo when added
+                        return ((MemberExpression)
+                            (e.Body.NodeType == ExpressionType.Convert
+                                ? ((UnaryExpression)e.Body).Operand
+                                : e.Body))
+                            .Member;
+                    })
                 .ToArray();
-            Contract.Assert(properties != null);
+            Debug.Assert(properties != null);
 
-            ParameterExpression inputExpression = Expression.Parameter(typeof (T), "input");
+            ParameterExpression inputExpression = Expression.Parameter(typeof(T), "input");
             Expression hcExpression = null;
 
 
-            ParameterExpression leftExpression = Expression.Parameter(typeof (T), "left");
-            ParameterExpression rightExpression = Expression.Parameter(typeof (T), "right");
-            ParameterExpression differencesExpression = Expression.Parameter(typeof (List<Difference>), "differences");
+            ParameterExpression leftExpression = Expression.Parameter(typeof(T), "left");
+            ParameterExpression rightExpression = Expression.Parameter(typeof(T), "right");
+            ParameterExpression differencesExpression = Expression.Parameter(typeof(List<Difference>), "differences");
             List<Expression> adExpressions = new List<Expression>(properties.Length);
             foreach (MemberInfo memberInfo in properties)
             {
-                Contract.Assert(memberInfo != null);
+                Debug.Assert(memberInfo != null);
 
                 /*
                  * Build hash code function
@@ -218,17 +222,17 @@ namespace WebApplications.Utilities.Database.Schema
 
                 // Calculate the hash code using the HashCode property if available, otherwise GetHashCode.
                 bool isEnumerable = e.Type.IsGenericType &&
-                                    e.Type.GetGenericTypeDefinition() == typeof (IEnumerable<>);
+                                    e.Type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
                 if (isEnumerable)
                 {
-                    ParameterExpression variable = Expression.Variable(typeof (long));
+                    ParameterExpression variable = Expression.Variable(typeof(long));
 
-                    Expression ee = new[]
-                    {
-                        e.ForEach(
-                            item => Expression.Assign(variable, GetHashExpression(variable, item))),
-                        variable
-                    }.Blockify(variable);
+                    Expression ee = Expression.Block(
+                        new[] { variable },
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        e.ForEach(item => Expression.Assign(variable, GetHashExpression(variable, item))),
+                        variable);
+                    Debug.Assert(ee != null);
 
                     if (e.Type.IsNullable())
                         ee = Expression.Condition(
@@ -254,24 +258,28 @@ namespace WebApplications.Utilities.Database.Schema
                 Expression eq;
                 if (isEnumerable)
                 {
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     Type gType = le.Type.GenericTypeArguments.First();
-                    eq = gType == typeof (string)
+
+                    // ReSharper disable PossibleNullReferenceException
+                    eq = gType == typeof(string)
                         ? Expression.Call(
-                            typeof (Enumerable).GetMethods()
+                            typeof(Enumerable).GetMethods()
                                 .First(m => m.Name == "SequenceEqual" && m.GetParameters().Count() == 3)
                                 .MakeGenericMethod(gType),
                             le,
                             re,
                             Expression.Constant(StringComparer.InvariantCultureIgnoreCase))
                         : Expression.Call(
-                            typeof (Enumerable).GetMethods()
+                            typeof(Enumerable).GetMethods()
                                 .First(m => m.Name == "SequenceEqual" && m.GetParameters().Count() == 2)
                                 .MakeGenericMethod(gType),
                             le,
                             re);
+                    // ReSharper restore PossibleNullReferenceException
                 }
                 else
-                    eq = le.Type == typeof (string)
+                    eq = le.Type == typeof(string)
                         ? (Expression)
                             Expression.Call(
                                 Expression.Constant(StringComparer.InvariantCultureIgnoreCase),
@@ -291,17 +299,17 @@ namespace WebApplications.Utilities.Database.Schema
                             // ReSharper disable once PossiblyMistakenUseOfParamsMethod
                             Expression.New(
                                 // ReSharper disable once AssignNullToNotNullAttribute
-                                typeof (Difference<>).MakeGenericType(le.Type)
+                                typeof(Difference<>).MakeGenericType(le.Type)
                                     .GetConstructor(
                                         BindingFlags.NonPublic | BindingFlags.CreateInstance | BindingFlags.Instance,
                                         null,
-                                        new[] {typeof (string), le.Type, re.Type},
+                                        new[] { typeof(string), le.Type, re.Type },
                                         null),
                                 Expression.Constant(memberInfo.Name),
                                 le,
                                 re))));
             }
-            Contract.Assert(hcExpression != null);
+            Debug.Assert(hcExpression != null);
             Expression<Func<T, long>> ghcLambda = Expression.Lambda<Func<T, long>>(hcExpression, inputExpression);
             _getHashCodeFunc = ghcLambda.Compile();
             Expression<Action<T, T, List<Difference>>> addLambda = Expression.Lambda<Action<T, T, List<Difference>>>(
@@ -324,18 +332,19 @@ namespace WebApplications.Utilities.Database.Schema
             [CanBeNull] Expression hashCodeExpression,
             [NotNull] Expression propertyExpression)
         {
-            Contract.Requires(propertyExpression != null);
-            Expression gh = propertyExpression.Type.DescendsFrom(typeof (DatabaseEntity))
-                ? (Expression) Expression.Property(propertyExpression, HashCodeProperty)
+            if (propertyExpression == null) throw new ArgumentNullException("propertyExpression");
+
+            Expression gh = propertyExpression.Type.DescendsFrom(typeof(DatabaseEntity))
+                ? (Expression)Expression.Property(propertyExpression, HashCodeProperty)
                 : Expression.Convert(
-                    propertyExpression.Type == typeof (string)
+                    propertyExpression.Type == typeof(string)
                         ? Expression.Call(
                             Expression.Constant(StringComparer.InvariantCultureIgnoreCase),
                             "GetHashCode",
                             null,
                             propertyExpression)
                         : Expression.Call(propertyExpression, "GetHashCode", Array<Type>.Empty),
-                    typeof (long));
+                    typeof(long));
 
             // Wrap with null check if necessary
             propertyExpression = propertyExpression.Type.IsNullable()
@@ -376,8 +385,7 @@ namespace WebApplications.Utilities.Database.Schema
         protected DatabaseEntity([NotNull] string fullName)
             : base(fullName)
         {
-            Contract.Requires(fullName != null);
-            _hashCode = new Lazy<long>(() => _getHashCodeFunc((T) this), LazyThreadSafetyMode.PublicationOnly);
+            _hashCode = new Lazy<long>(() => _getHashCodeFunc((T)this), LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
@@ -388,13 +396,14 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="System.NotImplementedException"></exception>
         public override Delta GetDifferences(DatabaseEntity other)
         {
-            Contract.Requires(other != null);
+            if (other == null) throw new ArgumentNullException("other");
+
             T entity = other as T;
             if (entity == null)
                 throw new LoggingException(
                     () => "Cannot get the differences between diferrent types of DatabaseEntity.");
 
-            T me = (T) this;
+            T me = (T)this;
             List<Difference> differences = new List<Difference>();
             _addDifferences(me, entity, differences);
 

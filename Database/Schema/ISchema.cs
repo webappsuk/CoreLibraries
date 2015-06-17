@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,26 +34,24 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     /// Interface for a Database schema.
     /// </summary>
+    [PublicAPI]
     public interface ISchema : IEquatable<ISchema>
     {
         /// <summary>
         /// Holds all the SQL schemas (<see cref="SqlSchema"/>, using the <see cref="SqlSchema.ID"/> as the key.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         IReadOnlyDictionary<int, SqlSchema> SchemasByID { get; }
 
         /// <summary>
         ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName { get; }
 
         /// <summary>
         ///   Holds all the table and view definitions (<see cref="SqlTableDefinition"/>) for the schema.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         IReadOnlyDictionary<string, SqlTableDefinition> TablesByName { get; }
 
@@ -61,7 +59,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Holds all the types for the schema, which are stored with the <see cref="SqlType.FullName">full
         ///   name</see> as the key and the <see cref="SqlType"/> as the value.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         IReadOnlyDictionary<string, SqlType> TypesByName { get; }
 
@@ -71,7 +68,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   An enumerable containing the schema names in ascended order.
         /// </value>
-        [PublicAPI]
         [NotNull]
         IEnumerable<SqlSchema> Schemas { get; }
 
@@ -81,7 +77,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   The <see cref="SqlType">type</see>.
         /// </value>
-        [PublicAPI]
         [NotNull]
         IEnumerable<SqlType> Types { get; }
 
@@ -89,7 +84,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Gets the program definitions.
         /// </summary>
         /// <value>The program definitions.</value>
-        [PublicAPI]
         [NotNull]
         IEnumerable<SqlProgramDefinition> ProgramDefinitions { get; }
 
@@ -97,14 +91,12 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Gets the table and view definitions.
         /// </summary>
         /// <value>The table and view definitions.</value>
-        [PublicAPI]
         [NotNull]
         IEnumerable<SqlTableDefinition> Tables { get; }
 
         /// <summary>
         ///   Unique identity of the schema.
         /// </summary>
-        [PublicAPI]
         Guid Guid { get; }
     }
 }

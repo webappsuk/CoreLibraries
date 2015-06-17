@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
 
@@ -37,6 +36,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   A class for holding information about a program parameter.
     /// </summary>
+    [PublicAPI]
     public class SqlProgramParameter : DatabaseEntity<SqlProgramParameter>
     {
         /// <summary>
@@ -45,36 +45,31 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         [NotNull]
         private static readonly Expression<Func<SqlProgramParameter, object>>[] _properties =
-            new Expression<Func<SqlProgramParameter, object>>[]
-            {
-                p => p.Ordinal,
-                p => p.Type,
-                p => p.Direction,
-                p => p.IsReadOnly
-            };
+        {
+            p => p.Ordinal,
+            p => p.Type,
+            p => p.Direction,
+            p => p.IsReadOnly
+        };
 
         /// <summary>
         ///   The <see cref="ParameterDirection"/>.
         /// </summary>
-        [PublicAPI]
         public readonly ParameterDirection Direction;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the parameter is read only.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsReadOnly;
 
         /// <summary>
         ///   The zero-based index that is the parameter's position.
         /// </summary>
-        [PublicAPI]
         public readonly int Ordinal;
 
         /// <summary>
         ///   The parameter type information.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly SqlType Type;
 
@@ -85,7 +80,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The zero-based index that is the parameter position.
         /// </param>
         /// <param name="name">
-        ///   <para>The <see cref="SqlProgramParameter.Name">parameter name</see>.</para>
+        ///   <para>The <see cref="DatabaseEntity.FullName">parameter name</see>.</para>
         ///   <para>The name should include the obligatory '@'.</para>
         /// </param>
         /// <param name="type">The type information.</param>
@@ -94,10 +89,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="isReadOnly">
         ///   If set to <see langword="true"/> the parameter is <see cref="IsReadOnly">read-only.</see>
         /// </param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contact</see> specifying that
-        ///   <paramref name="name"/> and <paramref name="type"/> cannot be <see langword="null"/>.
-        /// </remarks>
         internal SqlProgramParameter(
             int ordinal,
             [NotNull] string name,
@@ -107,8 +98,8 @@ namespace WebApplications.Utilities.Database.Schema
             bool isReadOnly)
             : base(name)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(type != null);
+            if (name == null) throw new ArgumentNullException("name");
+            if (type == null) throw new ArgumentNullException("type");
             Ordinal = ordinal;
             IsReadOnly = isReadOnly;
             Direction = direction;

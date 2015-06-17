@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Threading;
@@ -46,6 +46,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   Holds information about a database schema
     /// </summary>
+    [PublicAPI]
     public partial class DatabaseSchema : ISchema
     {
         /// <summary>
@@ -80,7 +81,8 @@ namespace WebApplications.Utilities.Database.Schema
                 int schemaID,
                 [NotNull] string name)
             {
-                Contract.Requires(name != null);
+                if (name == null) throw new ArgumentNullException("name");
+
                 Type = type;
                 SchemaID = schemaID;
                 Name = name;
@@ -109,9 +111,10 @@ namespace WebApplications.Utilities.Database.Schema
                 ParameterDirection parameterDirection,
                 bool isReadonly)
             {
-                Contract.Requires(name != null);
-                Contract.Requires(parameterName != null);
-                Contract.Requires(parameterType != null);
+                if (name == null) throw new ArgumentNullException("name");
+                if (parameterName == null) throw new ArgumentNullException("parameterName");
+                if (parameterType == null) throw new ArgumentNullException("parameterType");
+
                 Type = type;
                 SchemaID = schemaID;
                 Name = name;
@@ -174,9 +177,9 @@ namespace WebApplications.Utilities.Database.Schema
                 bool isNullable,
                 int? tableTypeID)
             {
-                Contract.Requires(name != null);
-                Contract.Requires(columnName != null);
-                Contract.Requires(columnType != null);
+                if (name == null) throw new ArgumentNullException("name");
+                if (columnName == null) throw new ArgumentNullException("columnName");
+                if (columnType == null) throw new ArgumentNullException("columnType");
 
                 Type = type;
                 SchemaID = schemaID;
@@ -210,14 +213,12 @@ namespace WebApplications.Utilities.Database.Schema
 
             public CurrentSchema([NotNull] Schema schema)
             {
-                Contract.Requires(schema != null);
                 Loaded = TimeHelpers.Clock.Now;
                 Schema = schema;
             }
 
             public CurrentSchema([NotNull] ExceptionDispatchInfo exceptionDispatchInfo)
             {
-                Contract.Requires(exceptionDispatchInfo != null);
                 Loaded = TimeHelpers.Clock.Now;
                 ExceptionDispatchInfo = exceptionDispatchInfo;
             }
@@ -227,7 +228,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The connection string which was used to generate schema initially.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string ConnectionString;
 
         /// <summary>
@@ -239,7 +239,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         /// The current schema, when it was loaded, and any error.
         /// </summary>
-        [NotNull]
         private CurrentSchema _current;
 
         /// <summary>
@@ -248,7 +247,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="connectionString">The connection string to the database to load the schema of.</param>
         private DatabaseSchema([NotNull] string connectionString)
         {
-            Contract.Requires(connectionString != null);
             ConnectionString = connectionString;
         }
 
@@ -256,17 +254,18 @@ namespace WebApplications.Utilities.Database.Schema
         /// Gets the current complete and immutable schema.
         /// </summary>
         /// <value>The current <see cref="Schema"/>.</value>
-        [PublicAPI]
         [NotNull]
         public Schema Current
         {
             get
             {
                 CurrentSchema current = _current;
+                if (current == null) throw new InvalidOperationException();
+
                 if (current.ExceptionDispatchInfo != null)
                     current.ExceptionDispatchInfo.Throw();
 
-                Contract.Assert(current.Schema != null);
+                Debug.Assert(current.Schema != null);
                 return current.Schema;
             }
         }
@@ -275,12 +274,13 @@ namespace WebApplications.Utilities.Database.Schema
         /// When the <see cref="Current"/> <see cref="Schema" /> was loaded.
         /// </summary>
         /// <value>The loaded <see cref="Instant"/>.</value>
-        [PublicAPI]
         public Instant Loaded
         {
             get
             {
                 CurrentSchema current = _current;
+                if (current == null) throw new InvalidOperationException();
+
                 if (current.ExceptionDispatchInfo != null)
                     current.ExceptionDispatchInfo.Throw();
 
@@ -292,7 +292,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         /// Holds all the SQL schemas (<see cref="SqlSchema"/>, using the <see cref="SqlSchema.ID"/> as the key.
         /// </summary>
-        [PublicAPI]
         public IReadOnlyDictionary<int, SqlSchema> SchemasByID
         {
             get { return Current.SchemasByID; }
@@ -302,7 +301,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="SqlProgramDefinition.FullName">full
         ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
         /// </summary>
-        [PublicAPI]
         public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName
         {
             get { return Current.ProgramDefinitionsByName; }
@@ -311,7 +309,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   Holds all the table and view definitions (<see cref="SqlTableDefinition"/>) for the schema.
         /// </summary>
-        [PublicAPI]
         public IReadOnlyDictionary<string, SqlTableDefinition> TablesByName
         {
             get { return Current.TablesByName; }
@@ -321,7 +318,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Holds all the types for the schema, which are stored with the <see cref="SqlType.FullName">full
         ///   name</see> and <see cref="SqlType.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
         /// </summary>
-        [PublicAPI]
         public IReadOnlyDictionary<string, SqlType> TypesByName
         {
             get { return Current.TypesByName; }
@@ -333,7 +329,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   An enumerable containing the schema names in ascended order.
         /// </value>
-        [PublicAPI]
         public IEnumerable<SqlSchema> Schemas
         {
             get { return Current.Schemas; }
@@ -345,7 +340,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   The <see cref="SqlType">type</see>.
         /// </value>
-        [PublicAPI]
         public IEnumerable<SqlType> Types
         {
             get { return Current.Types; }
@@ -355,7 +349,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Gets the program definitions.
         /// </summary>
         /// <value>The program definitions.</value>
-        [PublicAPI]
         public IEnumerable<SqlProgramDefinition> ProgramDefinitions
         {
             get { return Current.ProgramDefinitions; }
@@ -365,7 +358,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Gets the table and view definitions.
         /// </summary>
         /// <value>The table and view definitions.</value>
-        [PublicAPI]
         public IEnumerable<SqlTableDefinition> Tables
         {
             get { return Current.Tables; }
@@ -374,7 +366,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   Unique identity of the schema.
         /// </summary>
-        [PublicAPI]
         public Guid Guid
         {
             get { return Current.Guid; }
@@ -392,9 +383,10 @@ namespace WebApplications.Utilities.Database.Schema
         public static Task<DatabaseSchema> GetOrAdd(
             [NotNull] Connection connection,
             bool forceReload = false,
-            CancellationToken cancellationToken = default (CancellationToken))
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(connection != null);
+            if (connection == null) throw new ArgumentNullException("connection");
+
             // ReSharper disable PossibleNullReferenceException
             return _databaseSchemas.GetOrAdd(
                 connection.ConnectionString,
@@ -434,13 +426,13 @@ namespace WebApplications.Utilities.Database.Schema
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if ((current != null) &&
-                    (!forceReload || (_current.Loaded > requested)))
+                    (!forceReload || (current.Loaded > requested)))
                 {
                     // Rethrow load errors.
                     if (current.ExceptionDispatchInfo != null)
                         current.ExceptionDispatchInfo.Throw();
 
-                    Contract.Assert(current.Schema != null);
+                    Debug.Assert(current.Schema != null);
                     return this;
                 }
 
@@ -466,7 +458,7 @@ namespace WebApplications.Utilities.Database.Schema
                         if (!Version.TryParse(sqlConnection.ServerVersion, out version))
                             throw new DatabaseSchemaException(
                                 () => Resources.DatabaseSchema_Load_CouldNotParseVersionInformation);
-                        Contract.Assert(version != null);
+                        Debug.Assert(version != null);
 
                         if (version.Major < 9)
                             throw new DatabaseSchemaException(
@@ -476,13 +468,14 @@ namespace WebApplications.Utilities.Database.Schema
                         string sql = version.Major == 9 ? SQLResources.RetrieveSchema9 : SQLResources.RetrieveSchema10;
 
                         // Create the command first, as we will reuse on each connection.
-                        using (SqlCommand command = new SqlCommand(sql, sqlConnection) {CommandType = CommandType.Text})
-                            // Execute command
                         using (
-                            SqlDataReader reader =
-                                await
-                                    command.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken)
-                                        .ConfigureAwait(false))
+                            SqlCommand command = new SqlCommand(sql, sqlConnection) { CommandType = CommandType.Text })
+                            // Execute command
+                        using (SqlDataReader reader =
+                            // ReSharper disable once PossibleNullReferenceException
+                            await
+                                command.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken)
+                                    .ConfigureAwait(false))
                         {
                             /*
                              * Load SQL Schemas
@@ -638,20 +631,26 @@ namespace WebApplications.Utilities.Database.Schema
 
                             // Create unique program definitions.
                             foreach (SqlProgramDefinition program in programDefinitionData
+                                // ReSharper disable once PossibleNullReferenceException
                                 .GroupBy(d => d.ToString())
                                 .Select(
                                     g =>
                                     {
+                                        Debug.Assert(g != null);
+
                                         // Get columns ordered by ordinal.
                                         SqlProgramParameter[] parameters = g
+                                            // ReSharper disable once PossibleNullReferenceException
                                             .Select(d => d.Parameter)
                                             .Where(p => p != null)
                                             .OrderBy(p => p.Ordinal)
                                             .ToArray();
 
                                         ProgramDefinitionData first = g.First();
-                                        Contract.Assert(first != null);
-                                        Contract.Assert(first.Name != null);
+                                        Debug.Assert(first != null);
+                                        Debug.Assert(first.Name != null);
+
+                                        Debug.Assert(sqlSchemas != null);
 
                                         SqlSchema sqlSchema;
                                         if (!sqlSchemas.TryGetValue(first.SchemaID, out sqlSchema))
@@ -660,7 +659,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                     Resources
                                                     .DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
                                                 first.SchemaID);
-                                        Contract.Assert(sqlSchema != null);
+                                        Debug.Assert(sqlSchema != null);
 
                                         return new SqlProgramDefinition(
                                             first.Type,
@@ -669,7 +668,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             parameters);
                                     }))
                             {
-                                Contract.Assert(program != null);
+                                Debug.Assert(program != null);
                                 programDefinitions[program.FullName] = program;
 
                                 if (!programDefinitions.ContainsKey(program.Name))
@@ -714,7 +713,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                 bool isNullable = reader.GetBoolean(9);
 
-                                int? tableType = reader.IsDBNull(10) ? null : (int?) reader.GetInt32(10);
+                                int? tableType = reader.IsDBNull(10) ? null : (int?)reader.GetInt32(10);
 
                                 tableDefinitionData.Add(
                                     new TableDefinitionData(
@@ -730,21 +729,27 @@ namespace WebApplications.Utilities.Database.Schema
                             }
 
                             // Create unique table definitions.
-                            foreach (SqlTableDefinition table in  tableDefinitionData
+                            foreach (SqlTableDefinition table in tableDefinitionData
+                                // ReSharper disable once PossibleNullReferenceException
                                 .GroupBy(d => d.ToString())
                                 .Select(
                                     g =>
                                     {
+                                        Debug.Assert(g != null);
+
                                         // Get columns ordered by ordinal.
                                         SqlColumn[] columns = g
+                                            // ReSharper disable PossibleNullReferenceException
                                             .Select(d => d.Column)
                                             .OrderBy(c => c.Ordinal)
+                                            // ReSharper restore PossibleNullReferenceException
                                             .ToArray();
-                                        Contract.Assert(columns.Length > 0);
+                                        Debug.Assert(columns.Length > 0);
 
                                         TableDefinitionData first = g.First();
-                                        Contract.Assert(first != null);
-                                        Contract.Assert(first.Name != null);
+                                        Debug.Assert(first != null);
+                                        Debug.Assert(first.Name != null);
+                                        Debug.Assert(sqlSchemas != null);
 
                                         SqlSchema sqlSchema;
                                         if (!sqlSchemas.TryGetValue(first.SchemaID, out sqlSchema))
@@ -753,11 +758,13 @@ namespace WebApplications.Utilities.Database.Schema
                                                     Resources
                                                     .DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
                                                 first.SchemaID);
-                                        Contract.Assert(sqlSchema != null);
+                                        Debug.Assert(sqlSchema != null);
 
                                         SqlTableType tableType;
                                         if (first.TableTypeID != null)
                                         {
+                                            Debug.Assert(typesByID != null);
+
                                             SqlType tType;
                                             if (!typesByID.TryGetValue(first.TableTypeID.Value, out tType))
                                                 throw new DatabaseSchemaException(
@@ -781,7 +788,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             tableType);
                                     }))
                             {
-                                Contract.Assert(table != null);
+                                Debug.Assert(table != null);
                                 tables[table.FullName] = table;
 
                                 if (!tables.ContainsKey(table.Name))
@@ -822,7 +829,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task.</returns>
-        [PublicAPI]
         [NotNull]
         public Task<DatabaseSchema> ReLoad(CancellationToken cancellationToken)
         {
@@ -834,7 +840,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task.</returns>
-        [PublicAPI]
         [NotNull]
         public static Task ReloadAll(CancellationToken cancellationToken = default(CancellationToken))
         {

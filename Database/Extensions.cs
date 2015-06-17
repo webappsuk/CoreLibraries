@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Serialization;
 
@@ -64,15 +61,19 @@ namespace WebApplications.Utilities.Database
             [CanBeNull] object context = null,
             StreamingContextStates contextState = StreamingContextStates.Other)
         {
-            Contract.Requires(reader != null);
-            Contract.Requires(column != null);
+            if (reader == null) throw new ArgumentNullException("reader");
+            if (column == null) throw new ArgumentNullException("column");
+
             int ordinal = reader.GetOrdinal(column);
             if (reader.IsDBNull(ordinal))
                 return nullValue;
 
             SqlBytes bytes = reader.GetSqlBytes(ordinal);
             using (Stream serializationStream = bytes.Stream)
+            {
+                Debug.Assert(serializationStream != null);
                 return Serialize.GetFormatter(context, contextState).Deserialize(serializationStream);
+            }
         }
     }
 }

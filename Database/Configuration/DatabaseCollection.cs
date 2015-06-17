@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,8 @@ namespace WebApplications.Utilities.Database.Configuration
     /// <summary>
     ///   A collection of <see cref="DatabaseElement">database elements</see>.
     /// </summary>
-    [UsedImplicitly]
-    [ConfigurationCollection(typeof (DatabaseElement),
+    [PublicAPI]
+    [ConfigurationCollection(typeof(DatabaseElement),
         CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
     public class DatabaseCollection : ConfigurationElementCollection<string, DatabaseElement>
     {

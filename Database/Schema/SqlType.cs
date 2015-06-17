@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,14 +31,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Linq;
-using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Ranges;
@@ -49,6 +49,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   Holds information about a type.
     /// </summary>
+    [PublicAPI]
     public class SqlType : DatabaseSchemaEntity<SqlType>
     {
         /// <summary>
@@ -57,25 +58,23 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         [NotNull]
         private static readonly Expression<Func<SqlType, object>>[] _properties =
-            new Expression<Func<SqlType, object>>[]
-            {
-                t => t.IsCLR,
-                t => t.IsNullable,
-                t => t.IsUserDefined,
-                t => t.IsTable,
-                t => t.Size,
-                t => t.BaseType
-            };
+        {
+            t => t.IsCLR,
+            t => t.IsNullable,
+            t => t.IsUserDefined,
+            t => t.IsTable,
+            t => t.Size,
+            t => t.BaseType
+        };
 
         /// <summary>
         ///   Valid date ranges for date types.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public static readonly Dictionary<SqlDbType, DateTimeRange> DateTypeSizes =
             new Dictionary<SqlDbType, DateTimeRange>
             {
-                {SqlDbType.Date, new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31))},
+                { SqlDbType.Date, new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31)) },
                 {
                     SqlDbType.DateTime,
                     new DateTimeRange(new DateTime(1753, 1, 1), new DateTime(9999, 12, 31, 23, 59, 59, 997))
@@ -101,84 +100,77 @@ namespace WebApplications.Utilities.Database.Schema
         private static readonly Dictionary<string, SqlDbType> _systemTypes =
             new Dictionary<string, SqlDbType>
             {
-                {"bigint", SqlDbType.BigInt},
-                {"binary", SqlDbType.Binary},
-                {"bit", SqlDbType.Bit},
-                {"char", SqlDbType.Char},
-                {"date", SqlDbType.Date},
-                {"datetime", SqlDbType.DateTime},
-                {"datetime2", SqlDbType.DateTime2},
-                {"datetimeoffset", SqlDbType.DateTimeOffset},
-                {"decimal", SqlDbType.Decimal},
-                {"float", SqlDbType.Float},
-                {"geography", SqlDbType.Udt},
-                {"geometry", SqlDbType.Udt},
-                {"hierarchyid", SqlDbType.Udt},
-                {"image", SqlDbType.Image},
-                {"int", SqlDbType.Int},
-                {"money", SqlDbType.Money},
-                {"nchar", SqlDbType.NChar},
-                {"ntext", SqlDbType.NText},
-                {"numeric", SqlDbType.Decimal},
-                {"nvarchar", SqlDbType.NVarChar},
-                {"real", SqlDbType.Real},
-                {"smalldatetime", SqlDbType.SmallDateTime},
-                {"smallint", SqlDbType.SmallInt},
-                {"smallmoney", SqlDbType.SmallMoney},
-                {"sql_variant", SqlDbType.Variant},
-                {"sysname", SqlDbType.NVarChar},
-                {"text", SqlDbType.Text},
-                {"time", SqlDbType.Time},
-                {"timestamp", SqlDbType.Timestamp},
-                {"tinyint", SqlDbType.TinyInt},
-                {"uniqueidentifier", SqlDbType.UniqueIdentifier},
-                {"varbinary", SqlDbType.VarBinary},
-                {"varchar", SqlDbType.VarChar},
-                {"xml", SqlDbType.Xml}
+                { "bigint", SqlDbType.BigInt },
+                { "binary", SqlDbType.Binary },
+                { "bit", SqlDbType.Bit },
+                { "char", SqlDbType.Char },
+                { "date", SqlDbType.Date },
+                { "datetime", SqlDbType.DateTime },
+                { "datetime2", SqlDbType.DateTime2 },
+                { "datetimeoffset", SqlDbType.DateTimeOffset },
+                { "decimal", SqlDbType.Decimal },
+                { "float", SqlDbType.Float },
+                { "geography", SqlDbType.Udt },
+                { "geometry", SqlDbType.Udt },
+                { "hierarchyid", SqlDbType.Udt },
+                { "image", SqlDbType.Image },
+                { "int", SqlDbType.Int },
+                { "money", SqlDbType.Money },
+                { "nchar", SqlDbType.NChar },
+                { "ntext", SqlDbType.NText },
+                { "numeric", SqlDbType.Decimal },
+                { "nvarchar", SqlDbType.NVarChar },
+                { "real", SqlDbType.Real },
+                { "smalldatetime", SqlDbType.SmallDateTime },
+                { "smallint", SqlDbType.SmallInt },
+                { "smallmoney", SqlDbType.SmallMoney },
+                { "sql_variant", SqlDbType.Variant },
+                { "sysname", SqlDbType.NVarChar },
+                { "text", SqlDbType.Text },
+                { "time", SqlDbType.Time },
+                { "timestamp", SqlDbType.Timestamp },
+                { "tinyint", SqlDbType.TinyInt },
+                { "uniqueidentifier", SqlDbType.UniqueIdentifier },
+                { "varbinary", SqlDbType.VarBinary },
+                { "varchar", SqlDbType.VarChar },
+                { "xml", SqlDbType.Xml }
             };
 
         /// <summary>
         ///   The base type (if any).
         /// </summary>
-        [UsedImplicitly]
         [CanBeNull]
         public readonly SqlType BaseType;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether this is a CLR type.
         /// </summary>
-        [UsedImplicitly]
         public readonly bool IsCLR;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the type accepts nulls.
         /// </summary>
-        [UsedImplicitly]
         public readonly bool IsNullable;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether this type is a table.
         /// </summary>
-        [UsedImplicitly]
         public readonly bool IsTable;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether this is a user defined type.
         /// </summary>
-        [UsedImplicitly]
         public readonly bool IsUserDefined;
 
         /// <summary>
         ///   The type name.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public readonly string Name;
 
         /// <summary>
         ///   The <see cref="SqlTypeSize">size</see> of the type.
         /// </summary>
-        [UsedImplicitly]
         public readonly SqlTypeSize Size;
 
         /// <summary>
@@ -222,8 +214,6 @@ namespace WebApplications.Utilities.Database.Schema
                 isClr,
                 false)
         {
-            Contract.Requires(sqlSchema != null);
-            Contract.Requires(!String.IsNullOrWhiteSpace(name));
         }
 
         /// <summary>
@@ -248,9 +238,6 @@ namespace WebApplications.Utilities.Database.Schema
             bool isTable)
             : base(sqlSchema, name)
         {
-            Contract.Requires(sqlSchema != null);
-            Contract.Requires(name != null);
-            Contract.Requires(!String.IsNullOrWhiteSpace(name));
             Name = name;
             IsTable = isTable;
             IsCLR = isClr;
@@ -272,6 +259,7 @@ namespace WebApplications.Utilities.Database.Schema
                 else
                 {
                     // Log error and return NVarChar as fall back.
+                    // ReSharper disable once ObjectCreationAsStatement
                     new DatabaseSchemaException(
                         LoggingLevel.Warning,
                         () => Resources.SqlType_UnknownSqlSystemType,
@@ -287,6 +275,7 @@ namespace WebApplications.Utilities.Database.Schema
             else
             {
                 // Log error and return NVarChar as fall back.
+                // ReSharper disable once ObjectCreationAsStatement
                 new DatabaseSchemaException(
                     LoggingLevel.Critical,
                     () => Resources.SqlType_UnknownSqlSystemType,
@@ -300,14 +289,9 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <param name="baseType">The base type.</param>
         /// <param name="size">The size information.</param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contact</see>
-        ///   that <paramref name="baseType"/> cannot be <see langword="null"/>.
-        /// </remarks>
         internal SqlType([NotNull] SqlType baseType, SqlTypeSize size)
             : base(baseType.SqlSchema, baseType.Name)
         {
-            Contract.Requires(baseType != null);
             Name = baseType.Name;
             IsTable = baseType.IsTable;
             IsCLR = baseType.IsCLR;
@@ -337,7 +321,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// </remarks>
         public bool AcceptsCLRType([NotNull] Type type)
         {
-            Contract.Requires(type != null);
+            if (type == null) throw new ArgumentNullException("type");
+
             return GetClrToSqlConverter(type) != null;
         }
 
@@ -371,7 +356,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The converter (if found); otherwise returns <see langword="null"/>.
         /// </returns>
         [CanBeNull]
-        [UsedImplicitly]
         public Func<object, TypeConstraintMode, object> GetClrToSqlConverter<T>()
         {
             return GetClrToSqlConverter(typeof(T));
@@ -401,10 +385,10 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>The date was outside the range of accepted dates for the SQL type.</para>
         /// </exception>
         [CanBeNull]
-        [UsedImplicitly]
         public Func<object, TypeConstraintMode, object> GetClrToSqlConverter([NotNull] Type clrType)
         {
-            Contract.Requires(clrType != null);
+            if (clrType == null) throw new ArgumentNullException("clrType");
+
             return _clrTypeConverters.GetOrAdd(
                 clrType,
                 t =>
@@ -413,6 +397,7 @@ namespace WebApplications.Utilities.Database.Schema
                     if (t == null)
                     {
                         // Log error, but don't throw it.
+                        // ReSharper disable once ObjectCreationAsStatement
                         new DatabaseSchemaException(
                             LoggingLevel.Critical,
                             () => Resources.SqlType_GetClrToSqlConverter_NoTypeSpecified,
@@ -483,7 +468,6 @@ namespace WebApplications.Utilities.Database.Schema
                                             if ((SqlDbType != SqlDbType.Image) &&
                                                 (Size.MaximumLength > -1) &&
                                                 (Size.MaximumLength < serializedObject.Length))
-                                            {
                                                 throw new DatabaseSchemaException(
                                                     LoggingLevel.Error,
                                                     () => Resources.
@@ -492,7 +476,6 @@ namespace WebApplications.Utilities.Database.Schema
                                                     FullName,
                                                     serializedObject.Length,
                                                     Size.MaximumLength);
-                                            }
                                             return serializedObject;
                                         };
 
@@ -605,7 +588,10 @@ namespace WebApplications.Utilities.Database.Schema
                                                 return DBNull.Value;
 
                                             DateTime original = (DateTime)c;
+
                                             DateTimeRange range = DateTypeSizes[SqlDbType];
+                                            Debug.Assert(range != null);
+
                                             DateTime bound = range.Bind(original);
 
                                             if ((m != TypeConstraintMode.Silent) &&
@@ -636,6 +622,8 @@ namespace WebApplications.Utilities.Database.Schema
                                         (c, m) =>
                                         {
                                             DateTimeRange range = DateTypeSizes[SqlDbType];
+                                            Debug.Assert(range != null);
+
                                             DateTime bound = range.Bind(c);
 
                                             if ((m != TypeConstraintMode.Silent) &&
@@ -716,6 +704,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         return CreateConverter<SqlHierarchyId>(t, false);
                                     default:
                                         // Log error, but don't throw it.
+                                        // ReSharper disable once ObjectCreationAsStatement
                                         new DatabaseSchemaException(
                                             LoggingLevel.Critical,
                                             () => Resources
@@ -729,6 +718,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 if (tableType == null)
                                 {
                                     // Log error, but don't throw it.
+                                    // ReSharper disable once ObjectCreationAsStatement
                                     new DatabaseSchemaException(
                                         LoggingLevel.Critical,
                                         () => Resources
@@ -746,6 +736,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 // cannot 'skip' columns, and all non-null columns must be supplied.
                                 int minColumns;
                                 for (minColumns = columns; minColumns > 1; minColumns--)
+                                    // ReSharper disable once PossibleNullReferenceException
                                     if (!columnSqlTypes[minColumns - 1].IsNullable)
                                         break;
 
@@ -756,6 +747,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         : t.GetInterfaces()
                                             .FirstOrDefault(
                                                 it =>
+                                                    // ReSharper disable once PossibleNullReferenceException
                                                     it.IsGenericType &&
                                                     it.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
@@ -763,6 +755,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 {
                                     // Get the enumeration type
                                     Type enumerationType = enumerableInterface.GetGenericArguments().First();
+                                    Debug.Assert(enumerationType != null);
 
                                     // If the type passed in is assignable from IEnumerable<SqlDataRecord> then we can pass straight through
                                     // after checking there are rows available.
@@ -781,6 +774,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                     // Check if we are IEnumerable<Tuple<...>>
                                     if (enumerationType.IsGenericType &&
+                                        // ReSharper disable once PossibleNullReferenceException
                                         enumerationType.GetInterfaces().Any(i => i.FullName == "System.ITuple"))
                                     {
                                         // Get converters for tuple elements
@@ -791,6 +785,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         if (items > columns)
                                         {
                                             // Log error, but don't throw it.
+                                            // ReSharper disable once ObjectCreationAsStatement
                                             new DatabaseSchemaException(
                                                 LoggingLevel.Critical,
                                                 () => Resources.
@@ -806,6 +801,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         if (items < minColumns)
                                         {
                                             // Log error, but don't throw it.
+                                            // ReSharper disable once ObjectCreationAsStatement
                                             new DatabaseSchemaException(
                                                 LoggingLevel.Critical,
                                                 () => Resources.
@@ -825,10 +821,12 @@ namespace WebApplications.Utilities.Database.Schema
                                         for (int i = 0; i < tupleTypes.Length; i++)
                                         {
                                             Func<object, TypeConstraintMode, object> columnConverter =
+                                                // ReSharper disable once PossibleNullReferenceException, AssignNullToNotNullAttribute
                                                 columnSqlTypes[i].GetClrToSqlConverter(tupleTypes[i]);
                                             if (columnConverter == null)
                                             {
                                                 // Log error, but don't throw it.
+                                                // ReSharper disable once ObjectCreationAsStatement
                                                 new DatabaseSchemaException(
                                                     LoggingLevel.Critical,
                                                     () => Resources
@@ -860,7 +858,11 @@ namespace WebApplications.Utilities.Database.Schema
                                                 {
                                                     SqlDataRecord record = new SqlDataRecord(sqlMetaData);
                                                     for (int i = 0; i < items; i++)
+                                                    {
+                                                        Debug.Assert(converters[i] != null);
+                                                        // ReSharper disable once AssignNullToNotNullAttribute
                                                         record.SetValue(i, converters[i](o, m));
+                                                    }
                                                     records.Add(record);
                                                 }
 
@@ -876,8 +878,11 @@ namespace WebApplications.Utilities.Database.Schema
                                     {
                                         // Get converter for column type
                                         SqlType columnType = columnSqlTypes[0];
+                                        Debug.Assert(columnType != null);
+
                                         Func<object, TypeConstraintMode, object> enumConverter =
                                             columnType.GetClrToSqlConverter(enumerationType);
+
                                         if (enumConverter != null)
                                             // Create lambda
                                             return (Func<object, TypeConstraintMode, object>)
@@ -892,6 +897,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                     foreach (object o in enumerable)
                                                     {
                                                         SqlDataRecord record = new SqlDataRecord(sqlMetaData);
+                                                        // ReSharper disable once AssignNullToNotNullAttribute
                                                         record.SetValue(0, enumConverter(o, m));
                                                         records.Add(record);
                                                     }
@@ -914,11 +920,16 @@ namespace WebApplications.Utilities.Database.Schema
 
                                         SqlType keyColumnType = columnSqlTypes[0];
                                         SqlType valueColumnType = columnSqlTypes[1];
+                                        Debug.Assert(keyColumnType != null);
+                                        Debug.Assert(valueColumnType != null);
+
+                                        Debug.Assert(kvpTypes[0] != null);
                                         Func<object, TypeConstraintMode, object> keyConverter =
                                             keyColumnType.GetClrToSqlConverter(kvpTypes[0]);
                                         if (keyConverter == null)
                                         {
                                             // Log error, but don't throw it.
+                                            // ReSharper disable once ObjectCreationAsStatement
                                             new DatabaseSchemaException(
                                                 LoggingLevel.Critical,
                                                 () => Resources
@@ -933,14 +944,18 @@ namespace WebApplications.Utilities.Database.Schema
                                         // Create key selector
                                         Func<object, object> keySelector =
                                             enumerationType.GetGetter<object, object>("Key");
+                                        Debug.Assert(keySelector != null);
+
                                         Func<object, TypeConstraintMode, object> k =
                                             (o, m) => keyConverter(keySelector(o), m);
 
+                                        Debug.Assert(kvpTypes[1] != null);
                                         Func<object, TypeConstraintMode, object> valueConverter =
                                             valueColumnType.GetClrToSqlConverter(kvpTypes[1]);
                                         if (valueConverter == null)
                                         {
                                             // Log error, but don't throw it.
+                                            // ReSharper disable once ObjectCreationAsStatement
                                             new DatabaseSchemaException(
                                                 LoggingLevel.Critical,
                                                 () => Resources
@@ -951,9 +966,10 @@ namespace WebApplications.Utilities.Database.Schema
                                         }
                                         Func<object, object> valueSelector =
                                             enumerationType.GetGetter<object, object>("Value");
+                                        Debug.Assert(valueSelector != null);
+
                                         Func<object, TypeConstraintMode, object> v =
                                             (o, m) => valueConverter(valueSelector(o), m);
-
 
                                         // Create lambda
                                         return (Func<object, TypeConstraintMode, object>)
@@ -968,8 +984,10 @@ namespace WebApplications.Utilities.Database.Schema
                                                 foreach (object o in enumerable)
                                                 {
                                                     SqlDataRecord record = new SqlDataRecord(sqlMetaData);
+                                                    // ReSharper disable AssignNullToNotNullAttribute
                                                     record.SetValue(0, k(o, m));
                                                     record.SetValue(1, v(o, m));
+                                                    // ReSharper restore AssignNullToNotNullAttribute
                                                     records.Add(record);
                                                 }
 
@@ -981,6 +999,7 @@ namespace WebApplications.Utilities.Database.Schema
                                     }
 
                                     // Unsupported Log error, but don't throw it.
+                                    // ReSharper disable once ObjectCreationAsStatement
                                     new DatabaseSchemaException(
                                         LoggingLevel.Critical,
                                         () => Resources
@@ -991,6 +1010,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 }
 
                                 // Unsupported Log error, but don't throw it.
+                                // ReSharper disable once ObjectCreationAsStatement
                                 new DatabaseSchemaException(
                                     LoggingLevel.Critical,
                                     () => Resources.SqlType_GetClrToSqlConverter_CannotAcceptType,
@@ -1006,6 +1026,7 @@ namespace WebApplications.Utilities.Database.Schema
                     }
                     catch (Exception e)
                     {
+                        // ReSharper disable once ObjectCreationAsStatement
                         new DatabaseSchemaException(
                             e,
                             LoggingLevel.Critical,
@@ -1039,8 +1060,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] Type actualClrType,
             bool supportNullable = true)
         {
-            Contract.Requires(actualClrType != null);
-            Contract.Requires(!supportNullable || actualClrType != null);
+            if (actualClrType == null) throw new ArgumentNullException("actualClrType");
 
             bool isNullable = false;
 
@@ -1052,6 +1072,7 @@ namespace WebApplications.Utilities.Database.Schema
                 // Get the generic parameter and find the relevant converter
                 actualClrType = actualClrType.GetGenericArguments().First();
                 isNullable = true;
+                Debug.Assert(actualClrType != null);
             }
 
             // Find a conversion if any
@@ -1087,8 +1108,9 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] Type actualClrType,
             [NotNull] Func<TClr, TypeConstraintMode, object> converter)
         {
-            Contract.Requires(actualClrType != null);
-            Contract.Requires(converter != null);
+            if (actualClrType == null) throw new ArgumentNullException("actualClrType");
+            if (converter == null) throw new ArgumentNullException("converter");
+
             Func<object, TClr> toInputType = actualClrType.GetConversion<object, TClr>();
             return toInputType != null
                 ? (Func<object, TypeConstraintMode, object>)((c, m) => converter(toInputType(c), m))

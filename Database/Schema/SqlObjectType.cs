@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,11 +25,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using WebApplications.Utilities.Annotations;
+
+// ReSharper disable InconsistentNaming
+
 namespace WebApplications.Utilities.Database.Schema
 {
     /// <summary>
     ///   The type of a <see cref="WebApplications.Utilities.Database.SqlProgram"/> object.
     /// </summary>
+    [PublicAPI]
     public enum SqlObjectType
     {
         /// <summary>

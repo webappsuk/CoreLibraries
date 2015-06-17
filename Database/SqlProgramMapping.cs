@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
 
@@ -35,26 +35,24 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     /// Maps a <see cref="SqlProgram"/> to a <see cref="SqlProgramDefinition"/>.
     /// </summary>
+    [PublicAPI]
     public class SqlProgramMapping
     {
         /// <summary>
         ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly Connection Connection;
 
         /// <summary>
         ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly SqlProgramDefinition Definition;
 
         /// <summary>
         ///   Holds the <see cref="SqlProgramParameter">parameter definitions</see> that are used by this <see cref="SqlProgram"/>
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly IEnumerable<SqlProgramParameter> Parameters;
 
@@ -69,9 +67,10 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgramDefinition definition,
             [NotNull] IEnumerable<SqlProgramParameter> parameters)
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(definition != null);
-            Contract.Requires(parameters != null);
+            if (connection == null) throw new ArgumentNullException("connection");
+            if (definition == null) throw new ArgumentNullException("definition");
+            if (parameters == null) throw new ArgumentNullException("parameters");
+
             Connection = connection;
             Definition = definition;
             Parameters = parameters;

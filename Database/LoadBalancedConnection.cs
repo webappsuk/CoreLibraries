@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,13 +43,14 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     ///   Allows the specification of a set of connection strings to be selected at random based on a weighting.
     /// </summary>
-    public class LoadBalancedConnection : IEnumerable<Connection>
+    [PublicAPI]
+    public class LoadBalancedConnection : IReadOnlyCollection<Connection>
     {
         /// <summary>
         ///   Holds <see cref="Connection"/>s and their <see cref="Connection.Weight">weighting</see>.
         /// </summary>
         [NotNull]
-        private readonly IEnumerable<Connection> _connections = new List<Connection>();
+        private readonly IReadOnlyCollection<Connection> _connections;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
@@ -59,14 +60,9 @@ namespace WebApplications.Utilities.Database
         /// <para>This is given a weighting of 1.0.</para></param>
         /// <param name="weight">The weight.</param>
         /// <exception cref="LoggingException"><paramref name="connectionString" /> is <see langword="null" />.</exception>
-        /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
-        /// <paramref name="connectionString" /> cannot be <see langword="null" />.</remarks>
-        [PublicAPI]
         public LoadBalancedConnection([NotNull] string connectionString, double weight = 1D)
-            : this(new[] {new Connection(connectionString, weight)})
+            : this(new Connection(connectionString, weight).Yield())
         {
-            Contract.Requires(connectionString != null);
-            Contract.Requires(weight > 0D);
         }
 
         /// <summary>
@@ -76,39 +72,32 @@ namespace WebApplications.Utilities.Database
         /// <param name="connectionStrings">
         ///   The connection strings, which all have a weighting of 1.0.
         /// </param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
-        ///   <paramref name="connectionStrings"/> cannot be <see langword="null"/>.
-        /// </remarks>
         /// <exception cref="LoggingException">
         ///   No connection strings specified in <paramref name="connectionStrings"/> or all strings were <see langword="null"/>.
         /// </exception>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="connectionStrings"/> was <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
         public LoadBalancedConnection([NotNull] params string[] connectionStrings)
             : this(connectionStrings
                        .Where(cs => !string.IsNullOrWhiteSpace(cs))
                        // ReSharper disable once AssignNullToNotNullAttribute
                        .Select(cs => new Connection(cs)))
         {
-            Contract.Requires(connectionStrings != null);
+            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
         /// This creates an evenly balanced set of connections.
         /// </summary>
-        [PublicAPI]
-        public LoadBalancedConnection(
-            [NotNull] IEnumerable<string> connectionStrings)
+        public LoadBalancedConnection([NotNull] IEnumerable<string> connectionStrings)
             : this(connectionStrings
                        .Where(cs => !string.IsNullOrWhiteSpace(cs))
                        // ReSharper disable once AssignNullToNotNullAttribute
                        .Select(cs => new Connection(cs)))
         {
-            Contract.Requires(connectionStrings != null);
+            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
         }
 
         /// <summary>
@@ -118,9 +107,7 @@ namespace WebApplications.Utilities.Database
         /// requesting a new connection.</para>
         /// <para>The connection can be given a unique id for lookup.</para>
         /// </summary>
-        [PublicAPI]
-        public LoadBalancedConnection(
-            [NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings)
+        public LoadBalancedConnection([NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings)
             // ReSharper disable once AssignNullToNotNullAttribute
             : this(connectionStrings
                        .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
@@ -128,7 +115,16 @@ namespace WebApplications.Utilities.Database
                        .Select(kvp => new Connection(kvp.Key, kvp.Value)))
             // ReSharper restore AssignNullToNotNullAttribute
         {
-            Contract.Requires(connectionStrings != null);
+            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadBalancedConnection"/> class.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        public LoadBalancedConnection([NotNull] Connection connection)
+            : this(connection.Yield())
+        {
         }
 
         /// <summary>
@@ -141,11 +137,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="connections">The connections.</param>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException">
         /// </exception>
-        [PublicAPI]
-        public LoadBalancedConnection(
-            [NotNull] IEnumerable<Connection> connections)
+        public LoadBalancedConnection([NotNull] IEnumerable<Connection> connections)
         {
-            Contract.Requires(connections != null);
+            if (connections == null) throw new ArgumentNullException("connections");
 
             Dictionary<string, Connection> dictionary = new Dictionary<string, Connection>();
 
@@ -157,7 +151,7 @@ namespace WebApplications.Utilities.Database
                 Connection c;
                 if (dictionary.TryGetValue(connection.ConnectionString, out c))
                 {
-                    Contract.Assert(c != null);
+                    Debug.Assert(c != null);
                     c = connection.AddWeight(c.Weight);
                 }
                 else
@@ -166,7 +160,7 @@ namespace WebApplications.Utilities.Database
                 dictionary[c.ConnectionString] = c;
             }
 
-            _connections = dictionary.Values;
+            _connections = dictionary.Values.ToArray();
 
             if (!_connections.Any())
                 throw new LoggingException(
@@ -186,10 +180,11 @@ namespace WebApplications.Utilities.Database
                     Guid guid = Guid.Empty;
                     // ReSharper disable PossibleNullReferenceException
                     foreach (DatabaseSchema schema in await
-                        Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, false, t))).ConfigureAwait(false))
+                        Task.WhenAll(_connections.Select(c => DatabaseSchema.GetOrAdd(c, false, t)))
+                            .ConfigureAwait(false))
                         // ReSharper restore PossibleNullReferenceException
                     {
-                        Contract.Assert(schema != null);
+                        Debug.Assert(schema != null);
                         if (guid.Equals(Guid.Empty)) guid = schema.Guid;
                         else if (!guid.Equals(schema.Guid)) return false;
                     }
@@ -214,13 +209,12 @@ namespace WebApplications.Utilities.Database
         ///   <see langword="true"/> if the schemas are identical; otherwise returns <see langword="false"/>.
         /// </value>
         [NotNull]
-        [PublicAPI]
         public Task<bool> CheckIdentical(CancellationToken token = default(CancellationToken))
         {
             return _checkIdenticalFunction.Run(token);
         }
 
-        #region IEnumerable<string> Members
+        #region IReadOnlyCollection<Connection> Members
         /// <summary>
         ///   Returns an enumerator that allows iteration through the connection strings.
         /// </summary>
@@ -244,12 +238,19 @@ namespace WebApplications.Utilities.Database
         {
             return GetEnumerator();
         }
+
+        /// <summary>
+        /// Gets the number of connections in this connection.
+        /// </summary>
+        public int Count
+        {
+            get { return _connections.Count; }
+        }
         #endregion
 
         /// <summary>
         /// Gets a random  <see cref="Connection.ConnectionString">connection string</see>.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public string ChooseConnectionString()
         {
@@ -260,11 +261,10 @@ namespace WebApplications.Utilities.Database
         /// Chooses a random <see cref="Connection"/> from an enumeration of <see cref="Connection">connections</see>.
         /// </summary>
         /// <returns>A <see cref="SqlConnection" /> object.</returns>
-        [PublicAPI]
         [NotNull]
         public static Connection ChooseConnection([NotNull] IEnumerable<Connection> connections)
         {
-            Contract.Requires(connections != null);
+            if (connections == null) throw new ArgumentNullException("connections");
             // Choose a random connection.
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
@@ -280,7 +280,6 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Returns <see langword="true"/> if the schemas have changed; otherwise returns <see langword="false"/>.</returns>
-        [UsedImplicitly]
         [NotNull]
         public Task ReloadSchemas(CancellationToken cancellationToken = default(CancellationToken))
         {

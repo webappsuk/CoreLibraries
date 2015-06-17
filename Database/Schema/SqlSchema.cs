@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
 
@@ -35,6 +34,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     /// Holds information about a SQL schema (e.g. 'dbo').
     /// </summary>
+    [PublicAPI]
     public class SqlSchema : DatabaseEntity<SqlSchema>
     {
         /// <summary>
@@ -43,15 +43,13 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         [NotNull]
         private static readonly Expression<Func<SqlSchema, object>>[] _properties =
-            new Expression<Func<SqlSchema, object>>[]
-            {
-                s => s.ID
-            };
+        {
+            s => s.ID
+        };
 
         /// <summary>
         /// The identifier.
         /// </summary>
-        [PublicAPI]
         public readonly int ID;
 
         /// <summary>
@@ -59,11 +57,10 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="fullName">The name.</param>
-        // ReSharper disable once CodeAnnotationAnalyzer
         internal SqlSchema(int id, [NotNull] string fullName)
             : base(fullName)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(fullName));
+            if (string.IsNullOrWhiteSpace(fullName)) throw new ArgumentNullException("fullName");
             ID = id;
         }
     }

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Database.Configuration
     /// <summary>
     ///   An element that represents a database.
     /// </summary>
+    [PublicAPI]
     public partial class DatabaseElement : ConfigurationElement
     {
         /// <summary>
@@ -57,6 +58,7 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public string Id
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("id"); }
             set { SetProperty("id", value); }
         }
@@ -85,10 +87,12 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("connections", IsRequired = true, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof (LoadBalancedConnectionCollection))]
+        [ConfigurationCollection(typeof(LoadBalancedConnectionCollection))]
         [NotNull]
+        [ItemNotNull]
         public LoadBalancedConnectionCollection Connections
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<LoadBalancedConnectionCollection>("connections"); }
             set { SetProperty("connections", value); }
         }
@@ -103,11 +107,13 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("programs", IsRequired = false, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof (ProgramCollection),
+        [ConfigurationCollection(typeof(ProgramCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
         [NotNull]
+        [ItemNotNull]
         public ProgramCollection Programs
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<ProgramCollection>("programs"); }
             set { SetProperty("programs", value); }
         }
@@ -157,7 +163,7 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(name != null);
+            if (name == null) throw new ArgumentNullException("name");
 
             // Grab the default load balanced connection for the database.
             // ReSharper disable once PossibleNullReferenceException
@@ -226,12 +232,10 @@ namespace WebApplications.Utilities.Database.Configuration
                     Id);
 
             LoadBalancedConnection connection =
-                await
-                    connectionElement.GetLoadBalancedConnection(cancellationToken: cancellationToken)
-                        .ConfigureAwait(false);
+                await connectionElement.GetLoadBalancedConnection(cancellationToken).ConfigureAwait(false);
 
-            Contract.Assert(connection != null);
-            Contract.Assert(name != null);
+            Debug.Assert(connection != null);
+            Debug.Assert(name != null);
             return await SqlProgram.Create(
                 connection,
                 name,
@@ -239,7 +243,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 ignoreValidationErrors.Value,
                 checkOrder.Value,
                 defaultCommandTimeout,
-                (TypeConstraintMode) constraintMode,
+                (TypeConstraintMode)constraintMode,
                 cancellationToken).ConfigureAwait(false);
         }
 
@@ -250,7 +254,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="forceReload">If set to <see langword="true" /> forces the schema to <see cref="DatabaseSchema.Load">reload</see>.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;IEnumerable&lt;DatabaseSchema&gt;&gt;.</returns>
-        [PublicAPI]
         [NotNull]
         public Task<DatabaseSchema> GetSchema(
             [CanBeNull] string connectionName = null,
@@ -279,7 +282,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public Task<LoadBalancedConnection> GetConnection(
             [CanBeNull] string connectionName = null,
@@ -305,7 +307,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<LoadBalancedConnection>> GetConnections(
             [CanBeNull] bool? ensureIdentical = null,
@@ -315,7 +316,7 @@ namespace WebApplications.Utilities.Database.Configuration
             return Task.WhenAll(
                 Connections.Select(c => c.GetLoadBalancedConnection(ensureIdentical, cancellationToken)))
                 .ContinueWith(
-                    t => (IEnumerable<LoadBalancedConnection>) t.Result,
+                    t => (IEnumerable<LoadBalancedConnection>)t.Result,
                     cancellationToken,
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.Current);

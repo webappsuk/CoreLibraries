@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 
@@ -35,6 +34,7 @@ namespace WebApplications.Utilities.Database.Exceptions
     /// <summary>
     ///   Exceptions thrown during the execution of a <see cref="WebApplications.Utilities.Database.SqlProgram"/>.
     /// </summary>
+    [PublicAPI]
     public class SqlProgramExecutionException : LoggingException
     {
         /// <summary>
@@ -46,7 +46,6 @@ namespace WebApplications.Utilities.Database.Exceptions
         /// The program name context key
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly string ProgramNameContextKey = LogContext.ReserveKey(
             "SqlProgram Name",
             _prefixReservation);
@@ -55,7 +54,6 @@ namespace WebApplications.Utilities.Database.Exceptions
         /// The gateway name of the module.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public string ProgramName
         {
             get { return this[ProgramNameContextKey]; }
@@ -75,8 +73,6 @@ namespace WebApplications.Utilities.Database.Exceptions
                 sqlProgram.Name,
                 innerException.Message)
         {
-            Contract.Requires(sqlProgram != null);
-            Contract.Requires(innerException != null);
         }
     }
 }

@@ -1,19 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited.
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
-//
-// ©  Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 #region Designer generated code
@@ -22,7 +31,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -328,8 +336,8 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
             : base(connection, name, parameters, defaultCommandTimeout, constraintMode)
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(name != null);
+            if (connection == null) throw new ArgumentNullException("connection");
+            if (name == null) throw new ArgumentNullException("name");
         }
 
         /// <summary>
@@ -348,8 +356,8 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode)
             : base(program, parameters, defaultCommandTimeout, constraintMode)
         {
-            Contract.Requires(program != null);
-            Contract.Requires(parameters != null);
+            if (program == null) throw new ArgumentNullException("program");
+            if (parameters == null) throw new ArgumentNullException("parameters");
         }
         #endregion
         
@@ -373,7 +381,7 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(connection != null);
+            if (connection == null) throw new ArgumentNullException("connection");
             SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
                 connection,
                 name,
@@ -404,7 +412,7 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(sqlProgram != null);
+            if (sqlProgram == null) throw new ArgumentNullException("sqlProgram");
             SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
                 sqlProgram,
                 new[] { new KeyValuePair<string, Type>(null, typeof(T1)), new KeyValuePair<string, Type>(null, typeof(T2)), new KeyValuePair<string, Type>(null, typeof(T3)), new KeyValuePair<string, Type>(null, typeof(T4)), new KeyValuePair<string, Type>(null, typeof(T5)), new KeyValuePair<string, Type>(null, typeof(T6)), new KeyValuePair<string, Type>(null, typeof(T7)), new KeyValuePair<string, Type>(null, typeof(T8)), new KeyValuePair<string, Type>(null, typeof(T9)), new KeyValuePair<string, Type>(null, typeof(T10)), new KeyValuePair<string, Type>(null, typeof(T11)) },
@@ -460,18 +468,18 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(p1Name != null);
-            Contract.Requires(p2Name != null);
-            Contract.Requires(p3Name != null);
-            Contract.Requires(p4Name != null);
-            Contract.Requires(p5Name != null);
-            Contract.Requires(p6Name != null);
-            Contract.Requires(p7Name != null);
-            Contract.Requires(p8Name != null);
-            Contract.Requires(p9Name != null);
-            Contract.Requires(p10Name != null);
-            Contract.Requires(p11Name != null);
+            if (connection == null) throw new ArgumentNullException("connection");
+            if (p1Name == null) throw new ArgumentNullException("p1Name");
+            if (p2Name == null) throw new ArgumentNullException("p2Name");
+            if (p3Name == null) throw new ArgumentNullException("p3Name");
+            if (p4Name == null) throw new ArgumentNullException("p4Name");
+            if (p5Name == null) throw new ArgumentNullException("p5Name");
+            if (p6Name == null) throw new ArgumentNullException("p6Name");
+            if (p7Name == null) throw new ArgumentNullException("p7Name");
+            if (p8Name == null) throw new ArgumentNullException("p8Name");
+            if (p9Name == null) throw new ArgumentNullException("p9Name");
+            if (p10Name == null) throw new ArgumentNullException("p10Name");
+            if (p11Name == null) throw new ArgumentNullException("p11Name");
             SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
                 connection,
                 name,
@@ -526,18 +534,18 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(sqlProgram != null);
-            Contract.Requires(p1Name != null);
-            Contract.Requires(p2Name != null);
-            Contract.Requires(p3Name != null);
-            Contract.Requires(p4Name != null);
-            Contract.Requires(p5Name != null);
-            Contract.Requires(p6Name != null);
-            Contract.Requires(p7Name != null);
-            Contract.Requires(p8Name != null);
-            Contract.Requires(p9Name != null);
-            Contract.Requires(p10Name != null);
-            Contract.Requires(p11Name != null);
+            if (sqlProgram == null) throw new ArgumentNullException("sqlProgram");
+            if (p1Name == null) throw new ArgumentNullException("p1Name");
+            if (p2Name == null) throw new ArgumentNullException("p2Name");
+            if (p3Name == null) throw new ArgumentNullException("p3Name");
+            if (p4Name == null) throw new ArgumentNullException("p4Name");
+            if (p5Name == null) throw new ArgumentNullException("p5Name");
+            if (p6Name == null) throw new ArgumentNullException("p6Name");
+            if (p7Name == null) throw new ArgumentNullException("p7Name");
+            if (p8Name == null) throw new ArgumentNullException("p8Name");
+            if (p9Name == null) throw new ArgumentNullException("p9Name");
+            if (p10Name == null) throw new ArgumentNullException("p10Name");
+            if (p11Name == null) throw new ArgumentNullException("p11Name");
             SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> newProgram = new SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
                 sqlProgram,
                 new[] { new KeyValuePair<string, Type>(p1Name, typeof(T1)), new KeyValuePair<string, Type>(p2Name, typeof(T2)), new KeyValuePair<string, Type>(p3Name, typeof(T3)), new KeyValuePair<string, Type>(p4Name, typeof(T4)), new KeyValuePair<string, Type>(p5Name, typeof(T5)), new KeyValuePair<string, Type>(p6Name, typeof(T6)), new KeyValuePair<string, Type>(p7Name, typeof(T7)), new KeyValuePair<string, Type>(p8Name, typeof(T8)), new KeyValuePair<string, Type>(p9Name, typeof(T9)), new KeyValuePair<string, Type>(p10Name, typeof(T10)), new KeyValuePair<string, Type>(p11Name, typeof(T11)) },
@@ -770,7 +778,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteReader([NotNull] ResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             ExecuteReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
@@ -797,7 +805,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task ExecuteReaderAsync([NotNull] ResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             return this.ExecuteReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
@@ -822,7 +830,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteReaderAll([NotNull] ResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
@@ -849,7 +857,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task ExecuteReaderAllAsync([NotNull] ResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
@@ -876,7 +884,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public TOut ExecuteReader<TOut>([NotNull] ResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
@@ -905,7 +913,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<TOut> ExecuteReaderAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
@@ -933,7 +941,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<TOut> ExecuteReaderAll<TOut>([NotNull] ResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
@@ -962,7 +970,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteReaderAllAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
@@ -986,7 +994,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             this.ExecuteXmlReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
@@ -1012,7 +1020,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task ExecuteXmlReaderAsync([NotNull] XmlResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             return this.ExecuteXmlReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
@@ -1036,7 +1044,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
@@ -1062,7 +1070,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task ExecuteXmlReaderAllAsync([NotNull] XmlResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
@@ -1088,7 +1096,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public TOut ExecuteXmlReader<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteXmlReader(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
@@ -1116,7 +1124,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<TOut> ExecuteXmlReaderAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteXmlReaderAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
@@ -1143,7 +1151,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<TOut> ExecuteXmlReaderAll<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
@@ -1171,7 +1179,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteXmlReaderAllAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
@@ -1196,7 +1204,7 @@ namespace WebApplications.Utilities.Database.Configuration
     /// Used to specify database configuration.
     /// </summary>
     /// <remarks></remarks>
-    public partial class DatabasesConfiguration : ConfigurationSection<DatabasesConfiguration>
+    public partial class DatabasesConfiguration
     {    
         /// <summary>
         /// Gets the SQL program with the specified name and parameters, respecting the active configured options.
@@ -1252,19 +1260,19 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
-            Contract.Requires(name != null);
-            Contract.Requires(p1Name != null);
-            Contract.Requires(p2Name != null);
-            Contract.Requires(p3Name != null);
-            Contract.Requires(p4Name != null);
-            Contract.Requires(p5Name != null);
-            Contract.Requires(p6Name != null);
-            Contract.Requires(p7Name != null);
-            Contract.Requires(p8Name != null);
-            Contract.Requires(p9Name != null);
-            Contract.Requires(p10Name != null);
-            Contract.Requires(p11Name != null);
+            if (database == null) throw new ArgumentNullException("database");
+            if (name == null) throw new ArgumentNullException("name");
+            if (p1Name == null) throw new ArgumentNullException("p1Name");
+            if (p2Name == null) throw new ArgumentNullException("p2Name");
+            if (p3Name == null) throw new ArgumentNullException("p3Name");
+            if (p4Name == null) throw new ArgumentNullException("p4Name");
+            if (p5Name == null) throw new ArgumentNullException("p5Name");
+            if (p6Name == null) throw new ArgumentNullException("p6Name");
+            if (p7Name == null) throw new ArgumentNullException("p7Name");
+            if (p8Name == null) throw new ArgumentNullException("p8Name");
+            if (p9Name == null) throw new ArgumentNullException("p9Name");
+            if (p10Name == null) throw new ArgumentNullException("p10Name");
+            if (p11Name == null) throw new ArgumentNullException("p11Name");
             return Active.GetSqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(database, name, p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode, cancellationToken);
         }
 
@@ -1322,19 +1330,19 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(database != null);
-            Contract.Requires(name != null);
-            Contract.Requires(p1Name != null);
-            Contract.Requires(p2Name != null);
-            Contract.Requires(p3Name != null);
-            Contract.Requires(p4Name != null);
-            Contract.Requires(p5Name != null);
-            Contract.Requires(p6Name != null);
-            Contract.Requires(p7Name != null);
-            Contract.Requires(p8Name != null);
-            Contract.Requires(p9Name != null);
-            Contract.Requires(p10Name != null);
-            Contract.Requires(p11Name != null);
+            if (database == null) throw new ArgumentNullException("database");
+            if (name == null) throw new ArgumentNullException("name");
+            if (p1Name == null) throw new ArgumentNullException("p1Name");
+            if (p2Name == null) throw new ArgumentNullException("p2Name");
+            if (p3Name == null) throw new ArgumentNullException("p3Name");
+            if (p4Name == null) throw new ArgumentNullException("p4Name");
+            if (p5Name == null) throw new ArgumentNullException("p5Name");
+            if (p6Name == null) throw new ArgumentNullException("p6Name");
+            if (p7Name == null) throw new ArgumentNullException("p7Name");
+            if (p8Name == null) throw new ArgumentNullException("p8Name");
+            if (p9Name == null) throw new ArgumentNullException("p9Name");
+            if (p10Name == null) throw new ArgumentNullException("p10Name");
+            if (p11Name == null) throw new ArgumentNullException("p11Name");
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) ||
@@ -1356,7 +1364,7 @@ namespace WebApplications.Utilities.Database.Configuration
     /// Used to specify database configuration.
     /// </summary>
     /// <remarks></remarks>
-    public partial class DatabaseElement : Utilities.Configuration.ConfigurationElement
+    public partial class DatabaseElement
     {
         /// <summary>
         /// Gets the SQL program with the specified name and parameters, respecting configured options.
@@ -1410,18 +1418,18 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(name != null);
-            Contract.Requires(p1Name != null);
-            Contract.Requires(p2Name != null);
-            Contract.Requires(p3Name != null);
-            Contract.Requires(p4Name != null);
-            Contract.Requires(p5Name != null);
-            Contract.Requires(p6Name != null);
-            Contract.Requires(p7Name != null);
-            Contract.Requires(p8Name != null);
-            Contract.Requires(p9Name != null);
-            Contract.Requires(p10Name != null);
-            Contract.Requires(p11Name != null);
+            if (name == null) throw new ArgumentNullException("name");
+            if (p1Name == null) throw new ArgumentNullException("p1Name");
+            if (p2Name == null) throw new ArgumentNullException("p2Name");
+            if (p3Name == null) throw new ArgumentNullException("p3Name");
+            if (p4Name == null) throw new ArgumentNullException("p4Name");
+            if (p5Name == null) throw new ArgumentNullException("p5Name");
+            if (p6Name == null) throw new ArgumentNullException("p6Name");
+            if (p7Name == null) throw new ArgumentNullException("p7Name");
+            if (p8Name == null) throw new ArgumentNullException("p8Name");
+            if (p9Name == null) throw new ArgumentNullException("p9Name");
+            if (p10Name == null) throw new ArgumentNullException("p10Name");
+            if (p11Name == null) throw new ArgumentNullException("p11Name");
             // Grab the default load balanced connection for the database.
             LoadBalancedConnectionElement connectionElement = this.Connections.FirstOrDefault(c => c.Enabled);
 

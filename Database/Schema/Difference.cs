@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -34,33 +33,30 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     /// Holds a single difference to a <see cref="DatabaseEntity"/>.
     /// </summary>
+    [PublicAPI]
     public abstract class Difference
     {
         /// <summary>
         /// The name.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string Name;
 
         /// <summary>
         /// The value type.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly Type ValueType;
 
         /// <summary>
         /// The left value.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         public readonly object LeftValue;
 
         /// <summary>
         /// The right value.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         public readonly object RightValue;
 
@@ -77,8 +73,9 @@ namespace WebApplications.Utilities.Database.Schema
             [CanBeNull] object leftValue,
             [CanBeNull] object rightValue)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(valueType != null);
+            if (name == null) throw new ArgumentNullException("name");
+            if (valueType == null) throw new ArgumentNullException("valueType");
+
             Name = name;
             ValueType = valueType;
             LeftValue = leftValue;
@@ -95,21 +92,19 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         /// The left value.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         public new T LeftValue
         {
-            get { return (T) base.LeftValue; }
+            get { return (T)base.LeftValue; }
         }
 
         /// <summary>
         /// The right value.
         /// </summary>
-        [PublicAPI]
         [CanBeNull]
         public new T RightValue
         {
-            get { return (T) base.RightValue; }
+            get { return (T)base.RightValue; }
         }
 
         /// <summary>
@@ -119,9 +114,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
         internal Difference([NotNull] string name, [CanBeNull] T leftValue, [CanBeNull] T rightValue)
-            : base(name, typeof (T), leftValue, rightValue)
+            : base(name, typeof(T), leftValue, rightValue)
         {
-            Contract.Requires(name != null);
         }
     }
 }

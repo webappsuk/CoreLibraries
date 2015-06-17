@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,7 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public string Name
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("name"); }
             set { SetProperty("name", value); }
         }
@@ -97,13 +98,15 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("", IsRequired = false, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof (ParameterCollection),
+        [ConfigurationCollection(typeof(ParameterCollection),
             CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
         [NotNull]
+        [ItemNotNull]
         public ParameterCollection Parameters
         {
-            get { return GetProperty<ParameterCollection>(""); }
-            set { SetProperty("", value); }
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return GetProperty<ParameterCollection>(string.Empty); }
+            set { SetProperty(string.Empty, value); }
         }
 
         /// <summary>
@@ -149,7 +152,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// </exception>
         [ConfigurationProperty("defaultCommandTimeout", DefaultValue = "00:00:30", IsRequired = false)]
         [TimeSpanValidator(MinValueString = "00:00:00.5", MaxValueString = "00:10:00")]
-        [UsedImplicitly]
         public TimeSpan DefaultCommandTimeout
         {
             get { return GetProperty<TimeSpan>("defaultCommandTimeout"); }
@@ -166,7 +168,6 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("constraintMode", DefaultValue = TypeConstraintMode.Warn, IsRequired = false)]
-        [UsedImplicitly]
         public TypeConstraintMode ConstraintMode
         {
             get { return GetProperty<TypeConstraintMode>("constraintMode"); }

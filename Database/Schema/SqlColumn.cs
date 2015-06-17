@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,17 @@
 
 using System;
 using System.Data;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
-using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
 {
     /// <summary>
     ///   Holds information about a column.
     /// </summary>
+    [PublicAPI]
     public class SqlColumn : DatabaseEntity<SqlColumn>
     {
         /// <summary>
@@ -46,23 +46,20 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         [NotNull]
         private static readonly Expression<Func<SqlColumn, object>>[] _properties =
-            new Expression<Func<SqlColumn, object>>[]
-            {
-                c => c.Type,
-                c => c.Ordinal,
-                c => c.IsNullable
-            };
+        {
+            c => c.Type,
+            c => c.Ordinal,
+            c => c.IsNullable
+        };
 
         /// <summary>
         ///   The column's zero-indexed ordinal.
         /// </summary>
-        [PublicAPI]
         public readonly int Ordinal;
 
         /// <summary>
         ///   The column's type information.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly SqlType Type;
 
@@ -72,14 +69,12 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   The <see cref="Microsoft.SqlServer.Server.SqlMetaData"/> of the column.
         /// </value>
-        [PublicAPI]
         [NotNull]
         public readonly SqlMetaData SqlMetaData;
 
         /// <summary>
         ///   Whether this column is nullable.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsNullable;
 
         /// <summary>
@@ -92,12 +87,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="isNullable">
         ///   If set to <see langword="true"/> then the column is nullable.
         /// </param>
-        /// <remarks>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
-        ///   <paramref name="type"/> cannot be <see langword="null"/>.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> specifying that
-        ///   <paramref name="type"/> cannot be <see cref="string.IsNullOrWhiteSpace"/>.</para>
-        /// </remarks>
         internal SqlColumn(
             int ordinal,
             [NotNull] string name,
@@ -107,9 +96,9 @@ namespace WebApplications.Utilities.Database.Schema
             : base(name)
             // ReSharper restore PossibleNullReferenceException
         {
-            Contract.Requires(name != null);
-            Contract.Requires(type != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            if (name == null) throw new ArgumentNullException("name");
+            if (type == null) throw new ArgumentNullException("type");
+
             Ordinal = ordinal;
             IsNullable = isNullable;
             Type = type.Size.Equals(size) ? type : new SqlType(type, size);
@@ -148,19 +137,19 @@ namespace WebApplications.Utilities.Database.Schema
                             SqlMetaData = new SqlMetaData(
                                 name,
                                 Type.SqlDbType,
-                                typeof (SqlGeography));
+                                typeof(SqlGeography));
                             break;
                         case "geometry":
                             SqlMetaData = new SqlMetaData(
                                 name,
                                 Type.SqlDbType,
-                                typeof (SqlGeometry));
+                                typeof(SqlGeometry));
                             break;
                         case "hierarchyid":
                             SqlMetaData = new SqlMetaData(
                                 name,
                                 Type.SqlDbType,
-                                typeof (SqlHierarchyId));
+                                typeof(SqlHierarchyId));
                             break;
                         default:
                             SqlMetaData = new SqlMetaData(name, Type.SqlDbType);
@@ -182,7 +171,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
         /// </param>
         /// <returns>The result of the conversion.</returns>
-        [PublicAPI]
         [CanBeNull]
         public object CastCLRValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {

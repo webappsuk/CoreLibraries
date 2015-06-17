@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
+using System;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -41,7 +41,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// The SQL schema.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
         public readonly SqlSchema SqlSchema;
 
         /// <summary>
@@ -52,8 +51,8 @@ namespace WebApplications.Utilities.Database.Schema
         protected DatabaseSchemaEntity([NotNull] SqlSchema sqlSchema, [NotNull] string name)
             : base(string.Format("{0}.{1}", sqlSchema.FullName, name))
         {
-            Contract.Requires(sqlSchema != null);
-            Contract.Requires(name != null);
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
+            if (sqlSchema == null) throw new ArgumentNullException("sqlSchema");
             SqlSchema = sqlSchema;
         }
     }

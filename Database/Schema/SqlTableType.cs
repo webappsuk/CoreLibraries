@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -51,6 +50,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="isClr">
         ///   If set to <see langword="true"/> the value is a CLR type.
         /// </param>
+        // ReSharper disable once NotNullMemberIsNotInitialized
         internal SqlTableType(
             [CanBeNull] SqlType baseType,
             [NotNull] SqlSchema sqlSchema,
@@ -69,9 +69,6 @@ namespace WebApplications.Utilities.Database.Schema
                 isClr,
                 true)
         {
-            Contract.Requires(sqlSchema != null);
-            Contract.Requires(name != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
         }
 
         /// <summary>

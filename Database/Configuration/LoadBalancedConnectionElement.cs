@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +42,7 @@ namespace WebApplications.Utilities.Database.Configuration
     /// <summary>
     ///   A LoadBalanced connection.
     /// </summary>
+    [PublicAPI]
     public class LoadBalancedConnectionElement : ConfigurationElement
     {
         /// <summary>
@@ -54,6 +56,7 @@ namespace WebApplications.Utilities.Database.Configuration
         [NotNull]
         public string Id
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("id"); }
             set { SetProperty("id", value); }
         }
@@ -98,16 +101,16 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("", IsRequired = true, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof (ConnectionCollection),
+        [ConfigurationCollection(typeof(ConnectionCollection),
             CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
         [NotNull]
-        [PublicAPI]
         public ConnectionCollection Connections
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<ConnectionCollection>(""); }
             set
             {
-                Contract.Requires(value != null);
+                if (value == null) throw new ArgumentNullException("value");
                 SetProperty("", value);
             }
         }
@@ -133,7 +136,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;LoadBalancedConnection&gt;.</returns>
         [NotNull]
-        [PublicAPI]
         public Task<LoadBalancedConnection> GetLoadBalancedConnection(
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -148,7 +150,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;LoadBalancedConnection&gt;.</returns>
         [NotNull]
-        [PublicAPI]
         public Task<LoadBalancedConnection> GetLoadBalancedConnection(
             bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -174,7 +175,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 .ContinueWith(
                     t =>
                     {
-                        Contract.Assert(t != null);
+                        Debug.Assert(t != null);
                         if (!t.Result)
                             throw new LoggingException(
                                 () =>
@@ -195,7 +196,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Task&lt;DatabaseSchema&gt;.</returns>
         [NotNull]
-        [PublicAPI]
         public Task<DatabaseSchema> GetSchema(
             bool forceReload,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -203,13 +203,16 @@ namespace WebApplications.Utilities.Database.Configuration
             cancellationToken.ThrowIfCancellationRequested();
             if (!Enabled) return TaskResult<DatabaseSchema>.Default;
 
+            // ReSharper disable AssignNullToNotNullAttribute
             return GetLoadBalancedConnection(true, cancellationToken)
                 .ContinueWith(
+                    // ReSharper disable once PossibleNullReferenceException
                     t => DatabaseSchema.GetOrAdd(t.Result.First(), forceReload, cancellationToken),
                     cancellationToken,
                     TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.Current)
                 .Unwrap();
+            // ReSharper restore AssignNullToNotNullAttribute
         }
     }
 }

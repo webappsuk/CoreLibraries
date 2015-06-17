@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq.Expressions;
-using WebApplications.Utilities.Annotations;
 using Microsoft.SqlServer.Server;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
 {
     /// <summary>
     ///   Holds a table or view definition.
     /// </summary>
+    [PublicAPI]
     public sealed class SqlTableDefinition : DatabaseSchemaEntity<SqlTableDefinition>
     {
         /// <summary>
@@ -45,45 +46,40 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         [NotNull]
         private static readonly Expression<Func<SqlTableDefinition, object>>[] _properties =
-            new Expression<Func<SqlTableDefinition, object>>[]
-            {
-                t => t.TableType,
-                t => t.Type,
-                t => t.Columns
-            };
+        {
+            t => t.TableType,
+            t => t.Type,
+            t => t.Columns
+        };
 
         /// <summary>
         ///   The name of the table/view.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string Name;
 
         /// <summary>
         ///   An enumeration storing the type of object this instance is.
         /// </summary>
-        [PublicAPI]
         public readonly SqlObjectType Type;
 
         /// <summary>
         /// The <see cref="SqlTableType"/> if this instance <see cref="SqlTableType.TableDefinition">defines</see> a <see cref="SqlTableType"/>;
         /// otherwise <see langword="null"/>.
         /// </summary>
-        [PublicAPI]
         public readonly SqlTableType TableType;
 
         /// <summary>
         ///   Storage for the ordered <see cref="Columns">columns</see> (in ordinal order).
         /// </summary>
-        [PublicAPI]
         [NotNull]
+        [ItemNotNull]
         public readonly IEnumerable<SqlColumn> Columns;
 
         /// <summary>
         /// Gets the column count.
         /// </summary>
         /// <value>The column count.</value>
-        [PublicAPI]
         public int ColumnCount
         {
             get { return SqlMetaData.Length; }
@@ -113,9 +109,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="name">The table/view name.</param>
         /// <param name="columns">The columns.</param>
         /// <param name="tableType">Type of the table.</param>
-        /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract" /> specifying
-        /// that <paramref name="sqlSchema" /> and <paramref name="name" /> cannot be
-        /// <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</remarks>
         internal SqlTableDefinition(
             SqlObjectType type,
             [NotNull] SqlSchema sqlSchema,
@@ -125,10 +118,8 @@ namespace WebApplications.Utilities.Database.Schema
             : base(sqlSchema, name)
             // ReSharper restore PossibleNullReferenceException
         {
-            Contract.Requires(sqlSchema != null);
-            Contract.Requires(name != null);
-            Contract.Requires(columns != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            if (columns == null) throw new ArgumentNullException("columns");
+
             Type = type;
             Name = name;
             TableType = tableType;
@@ -144,7 +135,7 @@ namespace WebApplications.Utilities.Database.Schema
             int i = 0;
             foreach (SqlColumn column in columns)
             {
-                Contract.Assert(column != null);
+                Debug.Assert(column != null);
                 SqlMetaData[i++] = column.SqlMetaData;
                 columnsByName[column.FullName] = column;
             }
@@ -155,11 +146,11 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
         /// <returns>Returns a <see cref="SqlColumn"/>, if found; otherwise <see langword="null"/>.</returns>
-        [PublicAPI]
         [CanBeNull]
         public SqlColumn GetColumn([NotNull] string columnName)
         {
-            Contract.Requires(columnName != null);
+            if (columnName == null) throw new ArgumentNullException("columnName");
+
             SqlColumn column;
             return _columnsByName.TryGetValue(columnName.ToLower(), out column)
                 ? column
@@ -174,11 +165,11 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   Returns <see langword="true"/> if the column is found; otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         [ContractAnnotation("=>true, column:notnull;=>false, column:null")]
         public bool TryGetColumn([NotNull] string columnName, out SqlColumn column)
         {
-            Contract.Requires(columnName != null);
+            if (columnName == null) throw new ArgumentNullException("columnName");
+
             return _columnsByName.TryGetValue(columnName.ToLower(), out column);
         }
     }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,14 +29,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
@@ -130,6 +130,7 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     ///   Used to create an object for easy calling of stored procedures or functions in a database.
     /// </summary>
+    [PublicAPI]
     public class SqlProgram
     {
         private class CurrentMapping
@@ -144,7 +145,6 @@ namespace WebApplications.Utilities.Database
             /// <param name="mapping">The mapping.</param>
             public CurrentMapping([NotNull] SqlProgramMapping mapping)
             {
-                Contract.Requires(mapping != null);
                 Loaded = TimeHelpers.Clock.Now;
                 Mapping = mapping;
             }
@@ -155,7 +155,6 @@ namespace WebApplications.Utilities.Database
             /// <param name="exceptionDispatchInfo">The exception dispatch information.</param>
             public CurrentMapping([NotNull] ExceptionDispatchInfo exceptionDispatchInfo)
             {
-                Contract.Requires(exceptionDispatchInfo != null);
                 Loaded = TimeHelpers.Clock.Now;
                 ExceptionDispatchInfo = exceptionDispatchInfo;
             }
@@ -165,34 +164,29 @@ namespace WebApplications.Utilities.Database
         ///   The <see cref="TypeConstraintMode">type constraint mode</see>,
         ///   determines what happens if truncation or loss of precision occurs.
         /// </summary>
-        [PublicAPI]
         public readonly TypeConstraintMode ConstraintMode;
 
         /// <summary>
         /// The connection.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly LoadBalancedConnection Connection;
 
         /// <summary>
         ///   The name of the stored procedure or function.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string Name;
 
         /// <summary>
         ///   The parameters required by this <see cref="SqlProgram"/> (if specified).
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly IEnumerable<KeyValuePair<string, Type>> Parameters;
 
         /// <summary>
         /// The parameter count
         /// </summary>
-        [PublicAPI]
         public readonly int ParameterCount;
 
         /// <summary>
@@ -216,7 +210,6 @@ namespace WebApplications.Utilities.Database
         ///   When setting the default timeout if the value is less than <see cref="TimeSpan.Zero"/>
         ///   then this will be set to the original interval of 30 seconds.
         /// </value>
-        [PublicAPI]
         public TimeSpan DefaultCommandTimeout
         {
             get { return _defaultCommandTimeout; }
@@ -255,15 +248,15 @@ namespace WebApplications.Utilities.Database
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(name != null);
+            if (connection == null) throw new ArgumentNullException("connection");
+            if (name == null) throw new ArgumentNullException("name");
 
             Name = name;
             Connection = connection;
 
             DefaultCommandTimeout = (defaultCommandTimeout == null || defaultCommandTimeout < TimeSpan.Zero)
                 ? TimeSpan.FromSeconds(30)
-                : (TimeSpan) defaultCommandTimeout;
+                : (TimeSpan)defaultCommandTimeout;
 
             ConstraintMode = constraintMode;
 
@@ -297,8 +290,9 @@ namespace WebApplications.Utilities.Database
             TimeSpan? defaultCommandTimeout,
             TypeConstraintMode constraintMode)
         {
-            Contract.Requires(program != null);
-            Contract.Requires(parameters != null);
+            if (program == null) throw new ArgumentNullException("program");
+            if (parameters == null) throw new ArgumentNullException("parameters");
+
             Connection = program.Connection;
             Name = program.Name;
 
@@ -306,13 +300,14 @@ namespace WebApplications.Utilities.Database
             if (defaultCommandTimeout == null)
                 DefaultCommandTimeout = program.DefaultCommandTimeout;
             else
-                DefaultCommandTimeout = (TimeSpan) defaultCommandTimeout;
+                DefaultCommandTimeout = (TimeSpan)defaultCommandTimeout;
             ConstraintMode = constraintMode;
-            KeyValuePair<string, Type>[] p = parameters.ToArray();
-            ParameterCount = p.Length;
+
+            IReadOnlyCollection<KeyValuePair<string, Type>> p = parameters.Enumerate();
+            ParameterCount = p.Count;
             Parameters = p;
 
-            _connectionMappings = new CurrentMapping[Connection.Count()];
+            _connectionMappings = new CurrentMapping[Connection.Count];
             Array.Copy(program._connectionMappings, _connectionMappings, _connectionMappings.Length);
         }
         #endregion
@@ -335,7 +330,6 @@ namespace WebApplications.Utilities.Database
         /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task resulting in the <see cref="SqlProgram" />.</returns>
-        [PublicAPI]
         [NotNull]
         public static Task<SqlProgram> Create(
             [NotNull] Connection connection,
@@ -347,8 +341,7 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(name != null);
+            if (connection == null) throw new ArgumentNullException("connection");
             return Create(
                 new LoadBalancedConnection(connection),
                 name,
@@ -377,7 +370,6 @@ namespace WebApplications.Utilities.Database
         /// <para>By default this is set to log a warning if truncation/loss of precision occurs.</para></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task resulting in the <see cref="SqlProgram" />.</returns>
-        [PublicAPI]
         [NotNull]
         public static async Task<SqlProgram> Create(
             [NotNull] LoadBalancedConnection connection,
@@ -389,8 +381,6 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(name != null);
             SqlProgram program = new SqlProgram(
                 connection,
                 name,
@@ -424,9 +414,6 @@ namespace WebApplications.Utilities.Database
         /// <para>-or-</para>
         /// <para>Invalid program definition.</para></exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameterTypes" /> is <see langword="null" />.</exception>
-        /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract" /> which specifies that
-        /// <paramref name="connection" /> and <paramref name="name" /> cannot be <see langword="null" />.</remarks>
-        [PublicAPI]
         [NotNull]
         protected internal Task<SqlProgram> Create(
             CancellationToken cancellationToken,
@@ -437,9 +424,7 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode,
             [NotNull] params Type[] parameterTypes)
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(name != null);
-            Contract.Requires(parameterTypes != null);
+            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
             return Create(
                 connection,
                 name,
@@ -473,9 +458,6 @@ namespace WebApplications.Utilities.Database
         /// <para>No program <paramref name="name" /> specified.</para>
         /// <para>-or-</para>
         /// <para>Invalid program definition.</para></exception>
-        /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract" /> which specifies that
-        /// <paramref name="connection" /> and <paramref name="name" /> cannot be <see langword="null" />.</remarks>
-        [PublicAPI]
         [NotNull]
         protected internal Task<SqlProgram> Create(
             CancellationToken cancellationToken,
@@ -488,10 +470,9 @@ namespace WebApplications.Utilities.Database
             [NotNull] IEnumerable<string> parameterNames,
             [NotNull] params Type[] parameterTypes)
         {
-            Contract.Requires(connection != null);
-            Contract.Requires(name != null);
-            Contract.Requires(parameterNames != null);
-            Contract.Requires(parameterTypes != null);
+            if (parameterNames == null) throw new ArgumentNullException("parameterNames");
+            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
+
             return Create(
                 connection,
                 name,
@@ -516,7 +497,6 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameterTypes">The parameter types.</param>
         /// <returns>SqlProgram.</returns>
         /// <exception cref="LoggingException">Invalid parameters</exception>
-        [PublicAPI]
         [NotNull]
         protected internal static async Task<SqlProgram> Create(
             CancellationToken cancellationToken,
@@ -526,14 +506,13 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode,
             [NotNull] params Type[] parameterTypes)
         {
-            Contract.Requires(program != null);
-            Contract.Requires(parameterTypes != null);
+            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
+
             SqlProgram newProgram = new SqlProgram(
                 program,
                 parameterTypes.Select(t => new KeyValuePair<string, Type>(null, t)),
                 defaultCommandTimeout,
-                constraintMode
-                );
+                constraintMode);
 
             // Validate
             await newProgram.Validate(true, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
@@ -557,7 +536,6 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameterTypes">The parameter types.</param>
         /// <returns>SqlProgram.</returns>
         /// <exception cref="LoggingException">Invalid parameters</exception>
-        [PublicAPI]
         [NotNull]
         protected internal static async Task<SqlProgram> Create(
             CancellationToken cancellationToken,
@@ -569,19 +547,18 @@ namespace WebApplications.Utilities.Database
             [NotNull] IEnumerable<string> parameterNames,
             [NotNull] params Type[] parameterTypes)
         {
-            Contract.Requires(program != null);
-            Contract.Requires(parameterNames != null);
-            Contract.Requires(parameterTypes != null);
+            if (parameterNames == null) throw new ArgumentNullException("parameterNames");
+            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
+
             SqlProgram newProgram = new SqlProgram(
                 program,
                 SqlProgramDefinition.ToKvp(parameterNames, parameterTypes),
                 defaultCommandTimeout,
-                constraintMode
-                );
+                constraintMode);
 
             // Validate
-            await
-                newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken).ConfigureAwait(false);
+            await newProgram.Validate(checkOrder, false, !ignoreValidationErrors, cancellationToken)
+                .ConfigureAwait(false);
 
             return newProgram;
         }
@@ -590,7 +567,6 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Gets the valid <see cref="SqlProgramMapping">mappings</see> for the <see cref="SqlProgram"/>.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<SqlProgramMapping> Mappings
         {
@@ -611,7 +587,6 @@ namespace WebApplications.Utilities.Database
         /// <param name="throwOnError">If <see langword="true"/> throws any validation exceptions.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Any <see cref="LoggingException">validation errors</see> that occurred (if any).</returns>
-        [PublicAPI]
         [NotNull]
         public async Task<IEnumerable<LoggingException>> Validate(
             bool checkOrder = false,
@@ -635,7 +610,7 @@ namespace WebApplications.Utilities.Database
                     .Where(e => e != null)
                     .ToArray();
                 // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
-                Contract.Assert(errors != null);
+                Debug.Assert(errors != null);
 
                 if (errors.Length < 1) return Enumerable.Empty<LoggingException>();
 
@@ -648,6 +623,7 @@ namespace WebApplications.Utilities.Database
                     errors[0].Throw();
 
                 // Throw aggregate exception.
+                // ReSharper disable once PossibleNullReferenceException
                 throw new AggregateException(errors.Select(edi => edi.SourceException));
             }
         }
@@ -672,8 +648,7 @@ namespace WebApplications.Utilities.Database
             bool forceSchemaReload,
             CancellationToken cancellationToken)
         {
-            Contract.Requires(connection != null);
-            Contract.Assert(connection != null);
+            Debug.Assert(connection != null);
 
             // Get the current mapping.
             CurrentMapping mapping = _connectionMappings[index];
@@ -688,7 +663,7 @@ namespace WebApplications.Utilities.Database
                             .ConfigureAwait(false);
 
                     cancellationToken.ThrowIfCancellationRequested();
-                    Contract.Assert(schema != null);
+                    Debug.Assert(schema != null);
 
                     // Find the program
                     SqlProgramDefinition programDefinition;
@@ -697,7 +672,7 @@ namespace WebApplications.Utilities.Database
                             LoggingLevel.Critical,
                             () => Resources.SqlProgram_Validate_DefinitionsNotFound,
                             Name);
-                    Contract.Assert(programDefinition != null);
+                    Debug.Assert(programDefinition != null);
 
                     // Validate parameters
                     IEnumerable<SqlProgramParameter> parameters = programDefinition.ValidateParameters(
@@ -723,7 +698,7 @@ namespace WebApplications.Utilities.Database
                 _connectionMappings[index] = mapping;
             }
 
-            Contract.Assert(mapping != null);
+            Debug.Assert(mapping != null);
             return mapping;
         }
 
@@ -736,7 +711,6 @@ namespace WebApplications.Utilities.Database
         /// </param>
         /// <returns>A <see cref="SqlProgramCommand"/>.</returns>
         [NotNull]
-        [PublicAPI]
         public SqlProgramCommand CreateCommand(TimeSpan? timeout = null)
         {
             // Select a random valid mapping.
@@ -750,7 +724,7 @@ namespace WebApplications.Utilities.Database
                 sqlProgramMapping,
                 (timeout == null || timeout < TimeSpan.Zero)
                     ? DefaultCommandTimeout
-                    : (TimeSpan) timeout);
+                    : (TimeSpan)timeout);
         }
 
         /// <summary>
@@ -761,13 +735,12 @@ namespace WebApplications.Utilities.Database
         ///   <para>If <see langword="null"/> or less than <see cref="TimeSpan.Zero"/> then <see cref="DefaultCommandTimeout"/> is used.</para>
         /// </param>
         /// <returns>An enumeration of <see cref="SqlProgramCommand"/> (one for each connection).</returns>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<SqlProgramCommand> CreateCommandsForAllConnections(TimeSpan? timeout = null)
         {
             TimeSpan t = (timeout == null || timeout < TimeSpan.Zero)
                 ? DefaultCommandTimeout
-                : (TimeSpan) timeout;
+                : (TimeSpan)timeout;
             // ReSharper disable once PossibleNullReferenceException
             return Mappings
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -804,7 +777,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteScalar<T>()
         {
@@ -837,7 +809,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<T> ExecuteScalarAll<T>()
         {
@@ -862,11 +833,11 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteScalar<T>([NotNull] SetParametersDelegate setParameters)
         {
-            Contract.Requires(setParameters != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteScalar<T>();
@@ -898,16 +869,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<T> ExecuteScalarAll<T>([NotNull] SetParametersDelegate setParameters)
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             // ReSharper disable PossibleNullReferenceException
-            Contract.Requires(setParameters != null);
             return CreateCommandsForAllConnections().Select(
                 command =>
                 {
-                    Contract.Assert(command != null);
+                    Debug.Assert(command != null);
                     setParameters(command);
                     return command.ExecuteScalar<T>();
                 })
@@ -939,7 +910,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteScalarAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -965,7 +935,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteScalarAllAsync<T>(
             CancellationToken cancellationToken = default(CancellationToken))
@@ -976,7 +945,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>) t.Result,
+                        t => (IEnumerable<T>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1004,13 +973,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteScalarAsync<T>(
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(setParameters != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteScalarAsync<T>(cancellationToken);
@@ -1036,14 +1005,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteScalarAllAsync<T>(
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            Contract.Requires(setParameters != null);
             return Task.WhenAll(
                 CreateCommandsForAllConnections()
                     .Select(
@@ -1053,7 +1022,7 @@ namespace WebApplications.Utilities.Database
                             return command.ExecuteScalarAsync<T>(cancellationToken);
                         }))
                 .ContinueWith(
-                    t => (IEnumerable<T>) t.Result,
+                    t => (IEnumerable<T>)t.Result,
                     cancellationToken,
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.Current);
@@ -1076,7 +1045,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         public int ExecuteNonQuery()
         {
             SqlProgramCommand command = CreateCommand();
@@ -1097,7 +1065,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<int> ExecuteNonQueryAll()
         {
@@ -1120,10 +1087,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         public int ExecuteNonQuery([NotNull] SetParametersDelegate setParameters)
         {
-            Contract.Requires(setParameters != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteNonQuery();
@@ -1144,16 +1111,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<int> ExecuteNonQueryAll([NotNull] SetParametersDelegate setParameters)
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             // ReSharper disable PossibleNullReferenceException
-            Contract.Requires(setParameters != null);
             return CreateCommandsForAllConnections().Select(
                 command =>
                 {
-                    Contract.Assert(command != null);
+                    Debug.Assert(command != null);
                     setParameters(command);
                     return command.ExecuteNonQuery();
                 })
@@ -1178,7 +1145,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1201,7 +1167,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(
             CancellationToken cancellationToken = default(CancellationToken))
@@ -1212,7 +1177,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<int>) t.Result,
+                        t => (IEnumerable<int>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1239,13 +1204,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<int> ExecuteNonQueryAsync(
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(setParameters != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteNonQueryAsync(cancellationToken);
@@ -1267,14 +1232,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            Contract.Requires(setParameters != null);
             return Task.WhenAll(
                 CreateCommandsForAllConnections()
                     .Select(
@@ -1284,7 +1249,7 @@ namespace WebApplications.Utilities.Database
                             return command.ExecuteNonQueryAsync(cancellationToken);
                         }))
                 .ContinueWith(
-                    t => (IEnumerable<int>) t.Result,
+                    t => (IEnumerable<int>)t.Result,
                     cancellationToken,
                     TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                     TaskScheduler.Current);
@@ -1306,7 +1271,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteReader()
         {
             SqlProgramCommand command = CreateCommand();
@@ -1326,7 +1290,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteReaderAll()
         {
             // ReSharper disable once PossibleNullReferenceException, ReturnValueOfPureMethodIsNotUsed
@@ -1349,7 +1312,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteReader<T>()
         {
@@ -1372,7 +1334,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<T> ExecuteReaderAll<T>()
         {
@@ -1396,12 +1357,11 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteReader(
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             SqlProgramCommand command = CreateCommand();
             command.ExecuteReader(resultAction, behavior);
         }
@@ -1421,12 +1381,11 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteReaderAll(
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
                 // ReSharper disable once PossibleNullReferenceException
                 command.ExecuteReader(resultAction, behavior);
@@ -1449,13 +1408,12 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteReader<T>(
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteReader(resultFunc, behavior);
         }
@@ -1480,13 +1438,12 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public IEnumerable<T> ExecuteReaderAll<T>(
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             // ReSharper disable once PossibleNullReferenceException
             return
                 CreateCommandsForAllConnections()
@@ -1511,14 +1468,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteReader(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             command.ExecuteReader(resultAction, behavior);
@@ -1540,18 +1497,17 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteReaderAll(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            // If there's no action, we can execute non query!
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
-                Contract.Assert(command != null);
+                Debug.Assert(command != null);
                 setParameters(command);
                 command.ExecuteReader(resultAction, behavior);
             }
@@ -1575,15 +1531,15 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteReader<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteReader(resultFunc, behavior);
@@ -1610,19 +1566,18 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<T> ExecuteReaderAll<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
 
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
-                Contract.Assert(command != null);
+                Debug.Assert(command != null);
                 setParameters(command);
                 yield return command.ExecuteReader(resultFunc, behavior);
             }
@@ -1649,7 +1604,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteReaderAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1672,7 +1626,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteReaderAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1682,7 +1635,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<int>) t.Result,
+                        t => (IEnumerable<int>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1705,7 +1658,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteReaderAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1729,7 +1681,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(
             CancellationToken cancellationToken = default(CancellationToken))
@@ -1740,7 +1691,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>) t.Result,
+                        t => (IEnumerable<T>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1764,14 +1715,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteReaderAsync(
             [NotNull] ResultDelegateAsync resultAction,
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
         }
@@ -1793,14 +1744,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteReaderAllAsync(
             [NotNull] ResultDelegateAsync resultAction,
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
                 Task.WhenAll(
@@ -1827,14 +1778,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteReaderAsync<T>(
             [NotNull] ResultDelegateAsync<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
         }
@@ -1857,21 +1808,21 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(
             [NotNull] ResultDelegateAsync<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
                 Task.WhenAll(
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>) t.Result,
+                        t => (IEnumerable<T>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -1896,7 +1847,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteReaderAsync(
             [NotNull] SetParametersDelegate setParameters,
@@ -1904,8 +1854,9 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
@@ -1929,7 +1880,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteReaderAllAsync(
             [NotNull] SetParametersDelegate setParameters,
@@ -1937,9 +1887,10 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
             return
                 Task.WhenAll(
                     CreateCommandsForAllConnections()
@@ -1971,7 +1922,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteReaderAsync<T>(
             [NotNull] SetParametersDelegate setParameters,
@@ -1979,8 +1929,9 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
@@ -2005,7 +1956,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(
             [NotNull] SetParametersDelegate setParameters,
@@ -2013,23 +1963,23 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(
-                            command =>
-                            {
-                                setParameters(command);
-                                return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
-                            }))
-                    .ContinueWith(
-                        t => (IEnumerable<T>) t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(
+                        command =>
+                        {
+                            setParameters(command);
+                            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+                        }))
+                .ContinueWith(
+                    t => (IEnumerable<T>)t.Result,
+                    cancellationToken,
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.Current);
             // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
         #endregion
@@ -2048,7 +1998,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteXmlReader()
         {
             SqlProgramCommand command = CreateCommand();
@@ -2068,7 +2017,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteXmlReaderAll()
         {
             // ReSharper disable once PossibleNullReferenceException, ReturnValueOfPureMethodIsNotUsed
@@ -2091,7 +2039,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteXmlReader<T>()
         {
@@ -2114,7 +2061,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<T> ExecuteXmlReaderAll<T>()
         {
@@ -2137,10 +2083,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             SqlProgramCommand command = CreateCommand();
             command.ExecuteXmlReader(resultAction);
         }
@@ -2159,10 +2105,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction)
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
                 // ReSharper disable once PossibleNullReferenceException
                 command.ExecuteXmlReader(resultAction);
@@ -2184,11 +2130,11 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteXmlReader<T>([NotNull] XmlResultDelegate<T> resultFunc)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteXmlReader(resultFunc);
         }
@@ -2212,11 +2158,11 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public IEnumerable<T> ExecuteXmlReaderAll<T>([NotNull] XmlResultDelegate<T> resultFunc)
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             // ReSharper disable once PossibleNullReferenceException
             return CreateCommandsForAllConnections().Select(command => command.ExecuteXmlReader(resultFunc)).ToArray();
         }
@@ -2237,13 +2183,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteXmlReader(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate resultAction)
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             command.ExecuteXmlReader(resultAction);
@@ -2264,17 +2210,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         public void ExecuteXmlReaderAll(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate resultAction)
         {
-            // If there's no action, we can execute non query!
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
-                Contract.Assert(command != null);
+                Debug.Assert(command != null);
                 setParameters(command);
                 command.ExecuteXmlReader(resultAction);
             }
@@ -2297,14 +2242,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [CanBeNull]
         public T ExecuteXmlReader<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate<T> resultFunc)
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteXmlReader(resultFunc);
@@ -2330,18 +2275,17 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public IEnumerable<T> ExecuteXmlReaderAll<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate<T> resultFunc)
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
 
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
-                Contract.Assert(command != null);
+                Debug.Assert(command != null);
                 setParameters(command);
                 yield return command.ExecuteXmlReader(resultFunc);
             }
@@ -2368,7 +2312,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteXmlReaderAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -2391,7 +2334,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteXmlReaderAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -2401,7 +2343,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<int>) t.Result,
+                        t => (IEnumerable<int>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -2424,7 +2366,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteXmlReaderAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -2448,7 +2389,6 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
             CancellationToken cancellationToken = default(CancellationToken))
@@ -2459,7 +2399,7 @@ namespace WebApplications.Utilities.Database
                     CreateCommandsForAllConnections()
                         .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
                     .ContinueWith(
-                        t => (IEnumerable<T>) t.Result,
+                        t => (IEnumerable<T>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);
@@ -2482,13 +2422,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteXmlReaderAsync(
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
         }
@@ -2509,18 +2449,17 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteXmlReaderAllAsync(
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultAction != null);
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteXmlReaderAsync(resultAction, cancellationToken)));
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(command => command.ExecuteXmlReaderAsync(resultAction, cancellationToken)));
             // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
 
@@ -2541,13 +2480,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteXmlReaderAsync<T>(
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
         }
@@ -2569,23 +2508,22 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(resultFunc != null);
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteXmlReaderAsync(resultFunc, cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<T>) t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(command => command.ExecuteXmlReaderAsync(resultFunc, cancellationToken)))
+                .ContinueWith(
+                    t => (IEnumerable<T>)t.Result,
+                    cancellationToken,
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.Current);
             // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
 
@@ -2606,15 +2544,15 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteXmlReaderAsync(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
@@ -2637,25 +2575,24 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task ExecuteXmlReaderAllAsync(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultAction == null) throw new ArgumentNullException("resultAction");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultAction != null);
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(
-                            command =>
-                            {
-                                setParameters(command);
-                                return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
-                            }));
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(
+                        command =>
+                        {
+                            setParameters(command);
+                            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+                        }));
             // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
 
@@ -2677,15 +2614,15 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<T> ExecuteXmlReaderAsync<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
             return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
@@ -2709,16 +2646,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [PublicAPI]
         [NotNull]
         public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            Contract.Requires(setParameters != null);
-            Contract.Requires(resultFunc != null);
             return
                 Task.WhenAll(
                     CreateCommandsForAllConnections()
@@ -2729,7 +2666,7 @@ namespace WebApplications.Utilities.Database
                                 return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
                             }))
                     .ContinueWith(
-                        t => (IEnumerable<T>) t.Result,
+                        t => (IEnumerable<T>)t.Result,
                         cancellationToken,
                         TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Current);

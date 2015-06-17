@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
@@ -39,6 +39,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     ///   Holds a definition for SQL stored procedure or function.
     /// </summary>
+    [PublicAPI]
     public sealed class SqlProgramDefinition : DatabaseSchemaEntity<SqlProgramDefinition>
     {
         /// <summary>
@@ -47,23 +48,20 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         [NotNull]
         private static readonly Expression<Func<SqlProgramDefinition, object>>[] _properties =
-            new Expression<Func<SqlProgramDefinition, object>>[]
-            {
-                p => p.Type,
-                p => p.Parameters
-            };
+        {
+            p => p.Type,
+            p => p.Parameters
+        };
 
         /// <summary>
         ///   The program name.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string Name;
 
         /// <summary>
         ///   The <see cref="SqlObjectType"/> of the program.
         /// </summary>
-        [PublicAPI]
         public readonly SqlObjectType Type;
 
         /// <summary>
@@ -86,10 +84,8 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] params SqlProgramParameter[] parameters)
             : base(sqlSchema, name)
         {
-            Contract.Requires(sqlSchema != null);
-            Contract.Requires(name != null);
-            Contract.Requires(parameters != null);
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            if (parameters == null) throw new ArgumentNullException("parameters");
+
             Type = type;
             Name = name;
             Parameters = parameters;
@@ -103,7 +99,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   The parameters in ordinal order.
         /// </value>
-        [PublicAPI]
         [NotNull]
         public readonly IEnumerable<SqlProgramParameter> Parameters;
 
@@ -112,11 +107,11 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <param name="parameterName">Name of the parameter.</param>
         /// <returns>The <see cref="SqlProgramParameter"/> if found; otherwise <see langword="null"/>.</returns>
-        [PublicAPI]
         [CanBeNull]
         public SqlProgramParameter GetParameter([NotNull] string parameterName)
         {
-            Contract.Requires(parameterName != null);
+            if (parameterName == null) throw new ArgumentNullException("parameterName");
+
             SqlProgramParameter parameter;
             return _parametersByName.TryGetValue(parameterName, out parameter)
                 ? parameter
@@ -132,11 +127,11 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Returns <see langword="true"/> if a parameter with the specified <paramref name="parameterName"/> was found;
         ///   otherwise returns <see langword="false"/>.
         /// </returns>
-        [PublicAPI]
         [ContractAnnotation("=>true, parameter:notnull;=>false, parameter:null")]
         public bool TryGetParameter([NotNull] string parameterName, out SqlProgramParameter parameter)
         {
-            Contract.Requires(parameterName != null);
+            if (parameterName == null) throw new ArgumentNullException("parameterName");
+
             return _parametersByName.TryGetValue(parameterName, out parameter);
         }
 
@@ -153,12 +148,12 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
             bool validateOrder,
             [NotNull] params string[] parameters)
         {
-            Contract.Requires(parameters != null);
+            if (parameters == null) throw new ArgumentNullException("parameters");
+
             return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
         }
 
@@ -175,7 +170,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
             [NotNull] IEnumerable<string> parameters,
             bool validateOrder = false)
@@ -195,7 +189,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied parameters count did not match the parameters of the SQL program.
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
             [NotNull] params Type[] parameters)
         {
@@ -214,7 +207,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied <paramref name="parameters"/> count did not match the parameters of the SQL program.
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
             [NotNull] IEnumerable<Type> parameters)
         {
@@ -234,9 +226,12 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] IEnumerable<string> names,
             [NotNull] params Type[] types)
         {
-            Contract.Requires(names != null);
-            Contract.Requires(types != null);
+            if (names == null) throw new ArgumentNullException("names");
+            if (types == null) throw new ArgumentNullException("types");
+
             List<Type> t = types.ToList();
+
+            names = names.Enumerate();
             int nCount = names.Count();
             int tCount = t.Count();
             if (nCount != tCount)
@@ -281,7 +276,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied parameters count did not match the parameters of the SQL program.
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
             [NotNull] IEnumerable<string> names,
             [NotNull] params Type[] types)
@@ -313,18 +307,18 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>The parameter type does not accept the CLR type specified.</para>
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
-            [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters,
+            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters,
             bool validateOrder = false)
         {
-            int sCount;
-
-            // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            if ((parameters == null) ||
-                ((sCount = parameters.Count()) < 1))
+            if (parameters == null)
                 return Enumerable.Empty<SqlProgramParameter>();
-            // ReSharper restore ConditionIsAlwaysTrueOrFalse
+
+            parameters = parameters.Enumerate();
+
+            int sCount = parameters.Count();
+            if (sCount < 1)
+                return Enumerable.Empty<SqlProgramParameter>();
 
             int dCount = Parameters.Count();
             if (dCount < sCount)
@@ -363,6 +357,7 @@ namespace WebApplications.Utilities.Database.Schema
                             return sqlParameters;
 
                         SqlProgramParameter parameter = p1.Current;
+                        Debug.Assert(parameter != null);
 
                         // Add parameter to return enumeration
                         sqlParameters.Add(parameter);
@@ -411,6 +406,7 @@ namespace WebApplications.Utilities.Database.Schema
                         () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
                         name,
                         FullName);
+                Debug.Assert(parameter != null);
 
                 // Add parameter to return enumeration
                 sqlParameters.Add(parameter);
@@ -439,7 +435,6 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The parameters that were validated (in the order specified).
         /// </returns>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
             [NotNull] params SqlDbType[] parameters)
         {
@@ -454,7 +449,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// </param>
         /// <returns>The parameters that were validated (in the order specified).</returns>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
             [NotNull] IEnumerable<SqlDbType> parameters)
         {
@@ -485,16 +479,17 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>Must specify parameter names when <see paramref="validateOrder"/> is <see langword="false"/>.</para>
         /// </exception>
         [NotNull]
-        [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
-            [NotNull] IEnumerable<KeyValuePair<string, SqlDbType>> parameters,
+            [CanBeNull] IEnumerable<KeyValuePair<string, SqlDbType>> parameters,
             bool validateOrder = false)
         {
-            int sCount;
+            if (parameters == null)
+                return Enumerable.Empty<SqlProgramParameter>();
 
-            // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            if ((parameters == null) ||
-                ((sCount = parameters.Count()) < 1))
+            parameters = parameters.Enumerate();
+
+            int sCount = parameters.Count();
+            if (sCount < 1)
                 return Enumerable.Empty<SqlProgramParameter>();
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
@@ -535,6 +530,7 @@ namespace WebApplications.Utilities.Database.Schema
                             return sqlParameters;
 
                         SqlProgramParameter parameter = p1.Current;
+                        Debug.Assert(parameter != null);
 
                         // Add parameter to return enumeration
                         sqlParameters.Add(parameter);
@@ -579,6 +575,7 @@ namespace WebApplications.Utilities.Database.Schema
                         () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
                         name,
                         FullName);
+                Debug.Assert(parameter != null);
 
                 // Add parameter to return enumeration
                 sqlParameters.Add(parameter);

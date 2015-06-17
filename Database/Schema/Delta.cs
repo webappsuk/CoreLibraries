@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -36,6 +36,7 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     /// Holds all the differences between two database entities.
     /// </summary>
+    [PublicAPI]
     public class Delta : IEnumerable<Difference>
     {
         /// <summary>
@@ -52,14 +53,12 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         /// The left entity.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly DatabaseEntity Left;
 
         /// <summary>
         /// The right entity.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly DatabaseEntity Right;
 
@@ -74,12 +73,12 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] DatabaseEntity right,
             [NotNull] ICollection<Difference> differences)
         {
-            Contract.Requires(left != null);
-            Contract.Requires(right != null);
-            Contract.Requires(differences != null);
+            if (left == null) throw new ArgumentNullException("left");
+            if (right == null) throw new ArgumentNullException("right");
 
             Left = left;
             Right = right;
+            _differences = differences;
             IsEmpty = differences.Count > 0;
             _differences = IsEmpty ? Enumerable.Empty<Difference>() : differences;
         }
@@ -106,27 +105,26 @@ namespace WebApplications.Utilities.Database.Schema
     /// <summary>
     /// Holds all the differences between two database entities.
     /// </summary>
+    [PublicAPI]
     public class Delta<T> : Delta
         where T : DatabaseEntity<T>
     {
         /// <summary>
         /// The left entity.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public new T Left
         {
-            get { return (T) base.Left; }
+            get { return (T)base.Left; }
         }
 
         /// <summary>
         /// The right entity.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public new T Right
         {
-            get { return (T) base.Right; }
+            get { return (T)base.Right; }
         }
 
         /// <summary>
@@ -139,9 +137,6 @@ namespace WebApplications.Utilities.Database.Schema
         internal Delta([NotNull] T left, [NotNull] T right, [NotNull] ICollection<Difference> differences)
             : base(left, right, differences)
         {
-            Contract.Requires(left != null);
-            Contract.Requires(right != null);
-            Contract.Requires(differences != null);
         }
     }
 }
