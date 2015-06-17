@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -61,7 +60,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
@@ -76,7 +74,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description")]
         public abstract void Install(
             [NotNull] TextWriter writer,
@@ -90,7 +87,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description")]
         public abstract Task<bool> Uninstall(
             [NotNull] TextWriter writer,
@@ -104,12 +100,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
         public abstract Task<bool> StartService(
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args,
-            CancellationToken token = default (CancellationToken));
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Stops this instance.
@@ -117,7 +112,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="token">The token.</param>
         [NotNull]
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description")]
         public abstract Task<bool> StopService(
             [NotNull] TextWriter writer,
@@ -129,7 +123,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="token">The token.</param>
         [NotNull]
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description")]
         public abstract Task<bool> Pause(
             [NotNull] TextWriter writer,
@@ -141,7 +134,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="token">The token.</param>
         [NotNull]
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description")]
         public abstract Task<bool> Continue(
             [NotNull] TextWriter writer,
@@ -150,7 +142,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Shuts down this instance.
         /// </summary>
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description")]
         public abstract bool Shutdown([NotNull] TextWriter writer);
 
@@ -162,12 +153,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description")]
         public abstract Task<bool> CustomCommand(
             [NotNull] TextWriter writer,
             [SCP(typeof(ServiceResources), "Cmd_CustomCommand_Command_Description")] int command,
-            CancellationToken token = default (CancellationToken));
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Sends the <see cref="PowerBroadcastStatus" /> to the service.
@@ -177,7 +167,6 @@ namespace WebApplications.Utilities.Service
         /// <returns>
         ///   <see langword="true" /> if failed, or the result of the call was <see langword="true" />; <see langword="false" /> otherwise.
         /// </returns>
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description")]
         public abstract bool PowerEvent(
             [NotNull] TextWriter writer,
@@ -189,7 +178,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="changeReason">The change reason.</param>
         /// <param name="sessionId">The session identifier.</param>
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description")]
         public abstract void SessionChange(
             [NotNull] TextWriter writer,
@@ -202,7 +190,6 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="category">The category.</param>
-        [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true)]
         public abstract void Performance(
             [NotNull] TextWriter writer,
@@ -316,19 +303,19 @@ namespace WebApplications.Utilities.Service
                     (_, c) =>
                         // ReSharper disable PossibleNullReferenceException
                         string.Equals(c.Tag, "commands", StringComparison.CurrentCultureIgnoreCase)
-                        // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             ? Commands.Values.Distinct().OrderBy(d => d.Name)
-                        // ReSharper restore PossibleNullReferenceException
+                            // ReSharper restore PossibleNullReferenceException
                             : Resolution.Unknown);
                 return;
             }
-            Contract.Assert(cmd != null);
+            Debug.Assert(cmd != null);
 
             ParameterInfo parameterInfo =
                 parameter == null
                     ? null
                     : cmd.ArgumentParameters.FirstOrDefault(
-                // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         p => string.Equals(p.Name, parameter, StringComparison.CurrentCultureIgnoreCase));
 
             // If the parameter name given does not exist, show an error
@@ -339,8 +326,8 @@ namespace WebApplications.Utilities.Service
                     null,
                     (_, c) =>
                     {
-                        Contract.Assert(c != null);
-                        Contract.Assert(c.Tag != null);
+                        Debug.Assert(c != null);
+                        Debug.Assert(c.Tag != null);
                         switch (c.Tag.ToLowerInvariant())
                         {
                             case "paramname":
@@ -372,8 +359,8 @@ namespace WebApplications.Utilities.Service
                 null,
                 (_, c) =>
                 {
-                    Contract.Assert(c != null);
-                    Contract.Assert(c.Tag != null);
+                    Debug.Assert(c != null);
+                    Debug.Assert(c.Tag != null);
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "command":
@@ -393,16 +380,15 @@ namespace WebApplications.Utilities.Service
         /// <param name="args">The arguments.</param>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        [PublicAPI]
         public override Task<bool> StartService(
             TextWriter writer,
             string[] args,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             if (args == null)
                 args = Array<string>.Empty;
 
-            Contract.Assert(ServiceName != null);
+            Debug.Assert(ServiceName != null);
             if (IsService)
                 return Controller.StartService(ServiceName, token: token);
 
@@ -424,10 +410,9 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="token">The token.</param>
-        [PublicAPI]
         public override Task<bool> StopService(TextWriter writer, CancellationToken token = default(CancellationToken))
         {
-            Contract.Assert(ServiceName != null);
+            Debug.Assert(ServiceName != null);
             if (IsService)
                 return Controller.StopService(ServiceName, token);
 
@@ -448,10 +433,9 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Pauses this instance.
         /// </summary>
-        [PublicAPI]
         public override Task<bool> Pause(TextWriter writer, CancellationToken token = default(CancellationToken))
         {
-            Contract.Assert(ServiceName != null);
+            Debug.Assert(ServiceName != null);
             if (IsService)
                 return Controller.PauseService(ServiceName, token);
 
@@ -471,10 +455,9 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        [PublicAPI]
         public override Task<bool> Continue(TextWriter writer, CancellationToken token = default(CancellationToken))
         {
-            Contract.Assert(ServiceName != null);
+            Debug.Assert(ServiceName != null);
             if (IsService)
                 return Controller.ContinueService(ServiceName, token);
 
@@ -491,7 +474,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Shuts down this instance.
         /// </summary>
-        [PublicAPI]
         public override bool Shutdown(TextWriter writer)
         {
             if (IsService)
@@ -514,11 +496,10 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">The command.</param>
         /// <param name="token">The token.</param>
         /// <returns></returns>
-        [PublicAPI]
         public override Task<bool> CustomCommand(
             TextWriter writer,
             int command,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             if (command < 128 ||
                 command > 255)
@@ -527,7 +508,7 @@ namespace WebApplications.Utilities.Service
                 return TaskResult.False;
             }
 
-            Contract.Assert(ServiceName != null);
+            Debug.Assert(ServiceName != null);
             if (IsService)
                 return Controller.CommandService(ServiceName, command, token);
 
@@ -543,7 +524,6 @@ namespace WebApplications.Utilities.Service
         /// <returns>
         ///   <see langword="true" /> if failed, or the result of the call was <see langword="true" />; <see langword="false" /> otherwise.
         /// </returns>
-        [PublicAPI]
         public override bool PowerEvent(TextWriter writer, PowerBroadcastStatus powerStatus)
         {
             lock (_lock)
@@ -574,7 +554,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="changeReason">The change reason.</param>
         /// <param name="sessionId">The session identifier.</param>
-        [PublicAPI]
         public override void SessionChange(TextWriter writer, SessionChangeReason changeReason, int sessionId)
         {
             lock (_lock)
@@ -607,7 +586,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
-        [PublicAPI]
         public override void Install(TextWriter writer, string userName = null, string password = null)
         {
             if (!IsAdministrator)
@@ -679,12 +657,12 @@ namespace WebApplications.Utilities.Service
 
             foreach (string file in Directory.GetFiles(currentDirectory, "*", SearchOption.AllDirectories))
             {
-                Contract.Assert(file != null);
+                Debug.Assert(file != null);
 
                 string target = Path.Combine(installDirectory, file.Substring(currentDirectory.Length + 1));
                 string targetDir = Path.GetDirectoryName(target);
 
-                Contract.Assert(targetDir != null);
+                Debug.Assert(targetDir != null);
 
                 if (!Directory.Exists(targetDir))
                     Directory.CreateDirectory(targetDir);
@@ -697,7 +675,7 @@ namespace WebApplications.Utilities.Service
             // Change filename to new location.
             fileName = Path.Combine(installDirectory, Path.GetFileName(fileName));
 
-            Contract.Assert(ServiceName != null);
+            Debug.Assert(ServiceName != null);
             Controller.Install(ServiceName, DisplayName, AssemblyDescription, fileName, userName, password);
             writer.WriteLine(
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -709,10 +687,9 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Uninstall services.
         /// </summary>
-        [PublicAPI]
         public override async Task<bool> Uninstall(
             TextWriter writer,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             if (!IsAdministrator)
             {
@@ -734,7 +711,7 @@ namespace WebApplications.Utilities.Service
                 ServiceName);
             Stopwatch s = Stopwatch.StartNew();
 
-            Contract.Assert(ServiceName != null);
+            Debug.Assert(ServiceName != null);
             await Controller.Uninstall(ServiceName, token).ConfigureAwait(false);
 
             writer.WriteLine(
@@ -750,7 +727,6 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="category">The category.</param>
-        [PublicAPI]
         public override void Performance(TextWriter writer, string category = null)
         {
             lock (_lock)
@@ -760,7 +736,7 @@ namespace WebApplications.Utilities.Service
                 PerfCategory cat = categoryOmitted
                     ? null
                     : PerfCategory.All.FirstOrDefault(
-                    // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         p => string.Equals(p.CategoryName, category, StringComparison.CurrentCultureIgnoreCase));
 
                 if (!categoryOmitted &&
@@ -781,8 +757,8 @@ namespace WebApplications.Utilities.Service
                         null,
                         (_, c) =>
                         {
-                            Contract.Assert(c != null);
-                            Contract.Assert(c.Tag != null);
+                            Debug.Assert(c != null);
+                            Debug.Assert(c.Tag != null);
                             switch (c.Tag.ToLowerInvariant())
                             {
                                 case "counters":

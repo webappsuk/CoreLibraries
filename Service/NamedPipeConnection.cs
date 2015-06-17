@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,8 @@ namespace WebApplications.Utilities.Service
             /// The currently executing commands.
             /// </summary>
             [NotNull]
-            private static readonly ConcurrentDictionary<Guid, ConnectedCommand> _commands = new ConcurrentDictionary<Guid, ConnectedCommand>();
+            private static readonly ConcurrentDictionary<Guid, ConnectedCommand> _commands =
+                new ConcurrentDictionary<Guid, ConnectedCommand>();
 
             /// <summary>
             /// Initializes a new instance of the <see cref="NamedPipeConnection"/> class.
@@ -223,11 +224,14 @@ namespace WebApplications.Utilities.Service
                                                     continue;
                                                 }
 
-                                                CommandCancelRequest commandCancelRequest = request as CommandCancelRequest;
+                                                CommandCancelRequest commandCancelRequest =
+                                                    request as CommandCancelRequest;
                                                 if (commandCancelRequest != null)
                                                 {
                                                     ConnectedCommand cancelled;
-                                                    if (_commands.TryRemove(commandCancelRequest.CancelCommandId, out cancelled))
+                                                    if (_commands.TryRemove(
+                                                        commandCancelRequest.CancelCommandId,
+                                                        out cancelled))
                                                         // ReSharper disable once PossibleNullReferenceException
                                                         cancelled.Cancel(commandCancelRequest);
                                                     continue;
@@ -240,7 +244,6 @@ namespace WebApplications.Utilities.Service
                                                     disconnectGuid = disconnectRequest.ID;
                                                     break;
                                                 }
-
                                             }
                                         }
                                         catch (TaskCanceledException)

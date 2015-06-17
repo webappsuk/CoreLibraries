@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,8 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service
 {
@@ -43,7 +41,6 @@ namespace WebApplications.Utilities.Service
             /// <summary>
             /// The identifier.
             /// </summary>
-            [PublicAPI]
             public readonly Guid ID;
 
             /// <summary>
@@ -59,7 +56,7 @@ namespace WebApplications.Utilities.Service
             /// <param name="connection">The connection.</param>
             public Connection(Guid id, [NotNull] IConnection connection)
             {
-                Contract.Requires<RequiredContractException>(connection != null, "Parameter_Null");
+                if (connection == null) throw new ArgumentNullException("connection");
                 ID = id;
                 _connection = connection;
             }

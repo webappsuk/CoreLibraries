@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,18 +34,17 @@ namespace WebApplications.Utilities.Service.Common
     /// <summary>
     /// Common code for named pipes.
     /// </summary>
+    [PublicAPI]
     public static class Constants
     {
         /// <summary>
         /// The name suffix.
         /// </summary>
-        [PublicAPI]
         public const string NameSuffix = "_WAUKService";
 
         /// <summary>
         /// The timeout used when sending 'fire and forget' messages.
         /// </summary>
-        [PublicAPI]
         public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
         /// <summary>
@@ -54,7 +53,10 @@ namespace WebApplications.Utilities.Service.Common
         /// <value>
         /// The fire and forget token.
         /// </value>
-        [NotNull,PublicAPI]
-        public static CancellationTokenSource FireAndForgetTokenSource { get { return new CancellationTokenSource(Timeout); } }
+        [NotNull]
+        public static CancellationTokenSource FireAndForgetTokenSource
+        {
+            get { return new CancellationTokenSource(Timeout); }
+        }
     }
 }

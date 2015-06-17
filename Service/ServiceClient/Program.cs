@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ namespace WebApplications.Utilities.ServiceClient
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        private static void Main([CanBeNull][PublicAPI] string[] args)
+        private static void Main([CanBeNull] [PublicAPI] string[] args)
         {
             ConsoleClient.Run("Test Client");
         }

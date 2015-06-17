@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,9 @@ namespace WebApplications.Utilities.Service.Common
         /// </summary>
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        internal CommonServiceException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        internal CommonServiceException(
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
             : base(resource, parameters)
         {
         }

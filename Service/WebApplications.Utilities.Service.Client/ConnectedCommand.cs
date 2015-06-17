@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -126,7 +125,7 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     TaskCompletionSource<bool> tcs = _completionTask;
                     return tcs == null ||
-                        // ReSharper disable once PossibleNullReferenceException
+                           // ReSharper disable once PossibleNullReferenceException
                            tcs.Task.IsCompleted ||
                            tcs.Task.IsFaulted ||
                            tcs.Task.IsCanceled;
@@ -140,10 +139,10 @@ namespace WebApplications.Utilities.Service.Client
             // ReSharper disable once UnusedParameter.Local
             public void Cancel([NotNull] CommandCancelResponse response)
             {
-                Contract.Requires<RequiredContractException>(response != null, "Parameter_Null");
-                Contract.Requires<RequiredContractException>(
-                    response.CancelledCommandId == Request.ID,
-                    "Cancel_IDMismatch");
+                if (response == null) throw new ArgumentNullException("response");
+                if (response.CancelledCommandId != Request.ID)
+                    throw new ArgumentException(CommonResources.Cancel_IDMismatch, "response");
+
                 _isCancelled = true;
                 Dispose();
             }
@@ -155,7 +154,7 @@ namespace WebApplications.Utilities.Service.Client
             /// <returns><see langword="true"/> if the response is complete; otherwise <see langword="false"/>.</returns>
             public bool Received([NotNull] Response response)
             {
-                Contract.Requires<RequiredContractException>(response != null, "Parameter_Null");
+                if (response == null) throw new ArgumentNullException("response");
 
                 IObserver<Response> observer = _observer;
                 if (observer == null) return true;
@@ -189,9 +188,7 @@ namespace WebApplications.Utilities.Service.Client
                                 }
 
                                 if (sequence == -1)
-                                {
                                     observer.OnNext(response);
-                                }
                                 else
                                     error = new ApplicationException(((CommandResponse)response).Chunk);
                                 return true;
@@ -207,7 +204,7 @@ namespace WebApplications.Utilities.Service.Client
 
                             LinkedListNode<CommandResponse> current = _oooResponses.First;
                             while (current != null &&
-                                // ReSharper disable once PossibleNullReferenceException
+                                   // ReSharper disable once PossibleNullReferenceException
                                    current.Value.Sequence < sequence)
                                 current = current.Next;
 
@@ -224,7 +221,7 @@ namespace WebApplications.Utilities.Service.Client
                             observer.OnNext(response);
                             _expectedSequence++;
                             while (_oooResponses.First != null &&
-                                // ReSharper disable once PossibleNullReferenceException
+                                   // ReSharper disable once PossibleNullReferenceException
                                    _oooResponses.First.Value.Sequence == _expectedSequence)
                             {
                                 observer.OnNext(_oooResponses.First.Value);
@@ -270,7 +267,7 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         observer.OnError(new TaskCanceledException());
                     }
-                    // ReSharper disable once EmptyGeneralCatchClause
+                        // ReSharper disable once EmptyGeneralCatchClause
                     catch
                     {
                     }

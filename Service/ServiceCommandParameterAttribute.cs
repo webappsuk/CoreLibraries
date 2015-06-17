@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,14 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
     /// Add to a parameter of a command indicated by a <see cref="ServiceCommandAttribute"/> to add a description for the parameter.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Parameter)]
     [Serializable]
     [PublicAPI]
     public class ServiceCommandParameterAttribute : Attribute
@@ -44,14 +42,12 @@ namespace WebApplications.Utilities.Service
         /// The resource type.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Type ResourceType;
 
         /// <summary>
         /// The resource property for the description.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string DescriptionProperty;
 
         /// <summary>
@@ -61,8 +57,8 @@ namespace WebApplications.Utilities.Service
         /// <param name="descriptionProperty">The description property.</param>
         public ServiceCommandParameterAttribute([NotNull] Type resourceType, [NotNull] string descriptionProperty)
         {
-            Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(descriptionProperty != null, "Parameter_Null");
+            if (resourceType == null) throw new ArgumentNullException("resourceType");
+            if (descriptionProperty == null) throw new ArgumentNullException("descriptionProperty");
             ResourceType = resourceType;
             DescriptionProperty = descriptionProperty;
         }

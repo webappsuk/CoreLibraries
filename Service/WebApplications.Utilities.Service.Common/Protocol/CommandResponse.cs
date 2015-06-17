@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,8 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using ProtoBuf;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Service.Common.Protocol
 {
@@ -48,6 +47,7 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// The response chunk.
         /// </summary>
         [ProtoMember(2)]
+        [NotNull]
         public readonly string Chunk;
 
         /// <summary>
@@ -59,7 +59,8 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         public CommandResponse(Guid id, int sequence, [NotNull] string chunk)
             : base(id)
         {
-            Contract.Requires(chunk != null);
+            if (chunk == null) throw new ArgumentNullException("chunk");
+
             Sequence = sequence;
             Chunk = chunk;
         }

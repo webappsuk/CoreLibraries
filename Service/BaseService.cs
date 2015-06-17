@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -44,7 +43,6 @@ using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
-using WebApplications.Utilities.Service.Common;
 using WebApplications.Utilities.Service.Common.Control;
 using WebApplications.Utilities.Threading;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
@@ -54,6 +52,7 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Base implementation of a service, you should always extends the generic version of this class.
     /// </summary>
+    [PublicAPI]
     public abstract partial class BaseService : ServiceBase
     {
         #region Performance Counters
@@ -100,7 +99,6 @@ namespace WebApplications.Utilities.Service
         /// Gets the current state of the service.
         /// </summary>
         /// <value>The state.</value>
-        [PublicAPI]
         public abstract ServiceControllerStatus State { get; }
 
         /// <summary>
@@ -139,7 +137,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     WindowsIdentity identity = WindowsIdentity.GetCurrent();
-                    Contract.Assert(identity != null);
+                    Debug.Assert(identity != null);
                     WindowsPrincipal principal = new WindowsPrincipal(identity);
                     return principal.IsInRole(WindowsBuiltInRole.Administrator);
                 }
@@ -154,14 +152,12 @@ namespace WebApplications.Utilities.Service
         /// Gets a <see cref="Utilities.Threading.PauseToken"/> that is paused when the service is not running, or paused.
         /// </summary>
         /// <value>A pause token.</value>
-        [PublicAPI]
         public abstract PauseToken PauseToken { get; }
 
         /// <summary>
         /// Gets a <see cref="CancellationToken"/> that is cancelled when the service is not running.
         /// </summary>
         /// <value>A pause token.</value>
-        [PublicAPI]
         public abstract CancellationToken CancellationToken { get; }
 
         /// <summary>
@@ -185,7 +181,8 @@ namespace WebApplications.Utilities.Service
             [CanBeNull] string description,
             [CanBeNull] ServerConfig serverConfiguration = null)
         {
-            Contract.Requires<RequiredContractException>(name != null, "Parameter_Null");
+            if (name == null) throw new ArgumentNullException("name");
+
             ServiceName = name;
             DisplayName = displayName ?? name;
             Description = description ?? DisplayName;
@@ -228,45 +225,40 @@ namespace WebApplications.Utilities.Service
             if (_eventLog.MachineName == ".")
             {
                 // Create the event log if necessary.
-                ((ISupportInitialize) (_eventLog)).BeginInit();
+                ((ISupportInitialize)(_eventLog)).BeginInit();
                 if (!EventLog.SourceExists(_eventLog.Source))
                     EventLog.CreateEventSource(_eventLog.Source, _eventLog.Log);
-                ((ISupportInitialize) (_eventLog)).EndInit();
+                ((ISupportInitialize)(_eventLog)).EndInit();
             }
         }
 
         /// <summary>
         /// Whether the service is running as a service.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsService;
 
         /// <summary>
         /// The display name.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string DisplayName;
 
         /// <summary>
         /// The description.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string Description;
 
         /// <summary>
         /// The server configuration.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly ServerConfig ServerConfiguration;
 
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
         /// <param name="runMode">The run mode.</param>
-        [PublicAPI]
         public void Run(RunMode runMode = RunMode.Default)
         {
             // ReSharper disable MethodSupportsCancellation
@@ -283,7 +275,6 @@ namespace WebApplications.Utilities.Service
         /// An awaitable task.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public abstract Task RunAsync(
             RunMode runMode = RunMode.Default,
             CancellationToken token = default(CancellationToken));
@@ -292,17 +283,16 @@ namespace WebApplications.Utilities.Service
         /// When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.
         /// </summary>
         /// <param name="args">Data passed by the start command.</param>
-        [PublicAPI]
+
         // ReSharper disable VirtualMemberNeverOverriden.Global
         protected virtual void DoStart([NotNull] string[] args)
         {
-            Contract.Requires<RequiredContractException>(args != null, "Parameter_Null");
+            if (args == null) throw new ArgumentNullException("args");
         }
 
         /// <summary>
         /// When implemented in a derived class, executes when a Stop command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service stops running.
         /// </summary>
-        [PublicAPI]
         protected virtual void DoStop()
         {
         }
@@ -310,7 +300,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// When implemented in a derived class, executes when a Pause command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service pauses.
         /// </summary>
-        [PublicAPI]
         protected virtual void DoPause()
         {
         }
@@ -318,7 +307,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// When implemented in a derived class, <see cref="M:System.ServiceProcess.ServiceBase.OnContinue" /> runs when a Continue command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service resumes normal functioning after being paused.
         /// </summary>
-        [PublicAPI]
         protected virtual void DoContinue()
         {
         }
@@ -326,7 +314,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// When implemented in a derived class, executes when the system is shutting down. Specifies what should occur immediately prior to the system shutting down.
         /// </summary>
-        [PublicAPI]
         protected virtual void DoShutdown()
         {
         }
@@ -335,7 +322,6 @@ namespace WebApplications.Utilities.Service
         /// When implemented in a derived class, <see cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" /> executes when the Service Control Manager (SCM) passes a custom command to the service. Specifies actions to take when a command with the specified parameter value occurs.
         /// </summary>
         /// <param name="command">The command message sent to the service.</param>
-        [PublicAPI]
         protected virtual void DoCustomCommand(int command)
         {
         }
@@ -345,7 +331,6 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="powerStatus">A <see cref="T:System.ServiceProcess.PowerBroadcastStatus" /> that indicates a notification from the system about its power status.</param>
         /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
-        [PublicAPI]
         protected virtual bool DoPowerEvent(PowerBroadcastStatus powerStatus)
         {
             return true;
@@ -355,7 +340,6 @@ namespace WebApplications.Utilities.Service
         /// Executes when a change event is received from a Terminal Server session.
         /// </summary>
         /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
-        [PublicAPI]
         protected virtual void DoSessionChange(SessionChangeDescription changeDescription)
         {
         }
@@ -403,7 +387,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The commands supported by this service.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
         public static readonly IReadOnlyDictionary<string, ServiceCommand> Commands;
@@ -411,7 +394,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The service assembly description.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
         public static readonly string AssemblyTitle;
@@ -419,7 +401,6 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The service assembly description.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
         public static readonly string AssemblyDescription;
@@ -428,7 +409,7 @@ namespace WebApplications.Utilities.Service
         /// The assembly unique identifier
         /// </summary>
         [NotNull]
-        [PublicAPI]
+
         // ReSharper disable once StaticFieldInGenericType
         public static readonly string AssemblyGuid;
 
@@ -475,7 +456,6 @@ namespace WebApplications.Utilities.Service
         /// Gets a <see cref="Utilities.Threading.PauseToken"/> that is paused when the service is not running, or paused.
         /// </summary>
         /// <value>A pause token.</value>
-        [PublicAPI]
         public override PauseToken PauseToken
         {
             get { return _pauseTokenSource.Token; }
@@ -485,7 +465,6 @@ namespace WebApplications.Utilities.Service
         /// Gets a <see cref="CancellationToken"/> that is cancelled when the service is not running.
         /// </summary>
         /// <value>A pause token.</value>
-        [PublicAPI]
         public override CancellationToken CancellationToken
         {
             get
@@ -501,9 +480,10 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Initializes static members of the <see cref="BaseService"/> class.
         /// </summary>
+        // ReSharper disable once NotNullMemberIsNotInitialized
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof (TService)
+            MethodInfo[] allMethods = typeof(TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceCommand> commands =
@@ -512,12 +492,12 @@ namespace WebApplications.Utilities.Service
                     StringComparer.CurrentCultureIgnoreCase);
             foreach (MethodInfo method in allMethods)
             {
-                Contract.Assert(method != null);
+                Debug.Assert(method != null);
                 ServiceCommand src;
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -545,11 +525,11 @@ namespace WebApplications.Utilities.Service
                 // Add command aliases to dictionary
                 foreach (string name in src.AllNames)
                 {
-                    Contract.Assert(name != null);
+                    Debug.Assert(name != null);
                     ServiceCommand existing;
                     if (commands.TryGetValue(name, out existing))
                     {
-                        Contract.Assert(existing != null);
+                        Debug.Assert(existing != null);
                         Log.Add(
                             LoggingLevel.Warning,
                             () => ServiceResources.Wrn_Command_Alias_Already_Used_By_Other_Command,
@@ -562,31 +542,31 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
-            Assembly assembly = typeof (TService).Assembly;
+            Assembly assembly = typeof(TService).Assembly;
 
-            if (assembly.IsDefined(typeof (AssemblyTitleAttribute), false))
+            if (assembly.IsDefined(typeof(AssemblyTitleAttribute), false))
             {
                 AssemblyTitleAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyTitleAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute)) as
                         AssemblyTitleAttribute;
                 if (a != null)
                 {
-                    Contract.Assert(a.Title != null);
+                    Debug.Assert(a.Title != null);
                     AssemblyTitle = a.Title;
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(AssemblyDescription))
-                AssemblyDescription = "A windows service.";
+            if (string.IsNullOrWhiteSpace(AssemblyTitle))
+                AssemblyTitle = "Service";
 
-            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
+            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
-                    Contract.Assert(a.Description != null);
+                    Debug.Assert(a.Description != null);
                     AssemblyDescription = a.Description;
                 }
             }
@@ -595,12 +575,12 @@ namespace WebApplications.Utilities.Service
                 AssemblyDescription = "A windows service.";
 
 
-            if (assembly.IsDefined(typeof (GuidAttribute), false))
+            if (assembly.IsDefined(typeof(GuidAttribute), false))
             {
-                GuidAttribute g = Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
+                GuidAttribute g = Attribute.GetCustomAttribute(assembly, typeof(GuidAttribute)) as GuidAttribute;
                 if (g != null)
                 {
-                    Contract.Assert(g.Value != null);
+                    Debug.Assert(g.Value != null);
                     AssemblyGuid = g.Value;
                 }
             }
@@ -658,7 +638,7 @@ namespace WebApplications.Utilities.Service
                 _eventWaitHandleSecurity.AddAccessRule(
                     new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
 
-                Contract.Assert(ServiceName != null);
+                Debug.Assert(ServiceName != null);
                 _state = IsService ? Controller.GetServiceStatus(ServiceName) : ServiceControllerStatus.Stopped;
             }
             catch (Exception e)
@@ -694,7 +674,7 @@ namespace WebApplications.Utilities.Service
                 _lifeTimeTaskCompletionSource = new TaskCompletionSource<bool>();
                 // ReSharper disable AssignNullToNotNullAttribute
                 return ConsoleHelper.IsConsole
-                    ? (Task) Task.WhenAny(
+                    ? (Task)Task.WhenAny(
                         _lifeTimeTaskCompletionSource.Task,
                         ConsoleConnection.RunAsync(this, runMode, token: token))
                     : _lifeTimeTaskCompletionSource.Task;
@@ -842,7 +822,7 @@ namespace WebApplications.Utilities.Service
                             _namedPipeServer = null;
                         }
                         DoStop();
-                        Contract.Assert(_cancellationTokenSource != null);
+                        Debug.Assert(_cancellationTokenSource != null);
                         _cancellationTokenSource.Cancel();
                         _cancellationTokenSource = null;
                         _pauseTokenSource.IsPaused = true;
@@ -996,7 +976,7 @@ namespace WebApplications.Utilities.Service
                     // Disconnect all connected user interfaces
                     foreach (Connection connection in _connections.Values.ToArray())
                     {
-                        Contract.Assert(connection != null);
+                        Debug.Assert(connection != null);
                         Disconnect(connection.ID);
                     }
 
@@ -1204,7 +1184,7 @@ namespace WebApplications.Utilities.Service
                 return;
             }
 
-            Contract.Assert(src != null);
+            Debug.Assert(src != null);
             try
             {
                 if (await src.RunAsync(this, writer, id, commandLine, token).ConfigureAwait(false)) return;
@@ -1227,8 +1207,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
-        [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
             idParameter: "id")]
         public override bool Disconnect(Guid id)
         {
@@ -1239,7 +1218,7 @@ namespace WebApplications.Utilities.Service
                     return false;
 
                 _connections.Remove(id);
-                Contract.Assert(connection != null);
+                Debug.Assert(connection != null);
                 connection.Dispose();
                 return true;
             }

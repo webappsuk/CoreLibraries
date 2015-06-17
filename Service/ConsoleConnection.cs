@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Globalization;
 using System.Security.Principal;
 using System.ServiceProcess;
@@ -45,25 +45,29 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Implements a console-based service connection, if running in a console.
     /// </summary>
+    [PublicAPI]
     public class ConsoleConnection : IDisposable, IConnection
     {
         /// <summary>
         /// The command prompt format.
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _promptBuilder = new FormatBuilder(ServiceResources.ConsoleConnection_PromptFormat, true);
+        private static readonly FormatBuilder _promptBuilder =
+            new FormatBuilder(ServiceResources.ConsoleConnection_PromptFormat, true);
 
         /// <summary>
         /// The installation prompt.
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _promptInstall = new FormatBuilder(ServiceResources.ConsoleConnection_InstallPromptFormat, true);
+        private static readonly FormatBuilder _promptInstall =
+            new FormatBuilder(ServiceResources.ConsoleConnection_InstallPromptFormat, true);
 
         /// <summary>
         /// The error format
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _errorFormat = new FormatBuilder(ServiceResources.ConsoleConnection_ErrorFormat, true);
+        private static readonly FormatBuilder _errorFormat =
+            new FormatBuilder(ServiceResources.ConsoleConnection_ErrorFormat, true);
 
         /// <summary>
         /// The task completion source
@@ -91,7 +95,7 @@ namespace WebApplications.Utilities.Service
             LoggingLevels defaultLoggingLevels,
             CancellationToken token)
         {
-            Contract.Requires<RequiredContractException>(ConsoleHelper.IsConsole, "Not_In_Console");
+            if (!ConsoleHelper.IsConsole) throw new InvalidOperationException(CommonResources.Not_In_Console);
             _defaultLogFormat = defaultLogFormat;
             _defaultLoggingLevels = defaultLoggingLevels;
             _cancellationTokenSource = token.CanBeCanceled
@@ -119,20 +123,21 @@ namespace WebApplications.Utilities.Service
             LoggingLevels defaultLoggingLevels = LoggingLevels.All,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
+            if (service == null) throw new ArgumentNullException("service");
+
             if (!ConsoleHelper.IsConsole)
                 return;
             Console.Clear();
             Log.SetTrace(validLevels: LoggingLevels.None);
             Log.SetConsole(defaultLogFormat ?? Log.ShortFormat, defaultLoggingLevels);
             await Log.Flush(token).ConfigureAwait(false);
-            
+
             Impersonator impersonator = null;
             try
             {
                 if (runMode.HasFlag(RunMode.Prompt))
                 {
-                    Contract.Assert(service.ServiceName != null);
+                    Debug.Assert(service.ServiceName != null);
 
                     // Whether we start will depend on the selected option in prompt.
                     runMode = runMode.Clear(RunMode.Start, true);
@@ -146,18 +151,18 @@ namespace WebApplications.Utilities.Service
 
                         Dictionary<string, string> options = new Dictionary<string, string>
                         {
-                            {"I", ServiceResources.ConsoleConnection_RunAsync_OptionInstall},
-                            {"U", ServiceResources.ConsoleConnection_RunAsync_OptionUninstall},
-                            {"S", ServiceResources.ConsoleConnection_RunAsync_OptionStart},
-                            {"R", ServiceResources.ConsoleConnection_RunAsync_OptionRestart},
-                            {"T", ServiceResources.ConsoleConnection_RunAsync_OptionStop},
-                            {"P", ServiceResources.ConsoleConnection_RunAsync_OptionPause},
-                            {"C", ServiceResources.ConsoleConnection_RunAsync_OptionContinue},
-                            {"Y", ServiceResources.ConsoleConnection_RunAsync_OptionRunCmd},
-                            {"V", ServiceResources.ConsoleConnection_RunAsync_OptionStartCmd},
-                            {"W", ServiceResources.ConsoleConnection_RunAsync_OptionRunCmdNewCredentials},
-                            {"Z", ServiceResources.ConsoleConnection_RunAsync_OptionRunNoInteraction},
-                            {"X", ServiceResources.ConsoleConnection_RunAsync_OptionExit}
+                            { "I", ServiceResources.ConsoleConnection_RunAsync_OptionInstall },
+                            { "U", ServiceResources.ConsoleConnection_RunAsync_OptionUninstall },
+                            { "S", ServiceResources.ConsoleConnection_RunAsync_OptionStart },
+                            { "R", ServiceResources.ConsoleConnection_RunAsync_OptionRestart },
+                            { "T", ServiceResources.ConsoleConnection_RunAsync_OptionStop },
+                            { "P", ServiceResources.ConsoleConnection_RunAsync_OptionPause },
+                            { "C", ServiceResources.ConsoleConnection_RunAsync_OptionContinue },
+                            { "Y", ServiceResources.ConsoleConnection_RunAsync_OptionRunCmd },
+                            { "V", ServiceResources.ConsoleConnection_RunAsync_OptionStartCmd },
+                            { "W", ServiceResources.ConsoleConnection_RunAsync_OptionRunCmdNewCredentials },
+                            { "Z", ServiceResources.ConsoleConnection_RunAsync_OptionRunNoInteraction },
+                            { "X", ServiceResources.ConsoleConnection_RunAsync_OptionExit }
                         };
 
                         if (!runMode.HasFlag(RunMode.Interactive))
@@ -173,7 +178,7 @@ namespace WebApplications.Utilities.Service
                         {
                             WindowsIdentity identity = WindowsIdentity.GetCurrent();
                             currentUser = identity.Name;
-                            Contract.Assert(identity != null);
+                            Debug.Assert(identity != null);
                             WindowsPrincipal principal = new WindowsPrincipal(identity);
                             isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
                         }
@@ -369,7 +374,7 @@ namespace WebApplications.Utilities.Service
                                     GetUserNamePassword(out userName, out password);
                                     if (userName == null)
                                         break;
-                                    Contract.Assert(password != null);
+                                    Debug.Assert(password != null);
 
                                     Impersonator ei = impersonator;
                                     impersonator = null;
@@ -404,10 +409,8 @@ namespace WebApplications.Utilities.Service
                     } while (!done);
                 }
                 else if (!runMode.HasFlag(RunMode.Interactive))
-                {
                     // If we don't show prompt and we're not interactive we should always start the service.
                     runMode = runMode.Set(RunMode.Start, true);
-                }
 
                 // Create connection
                 Console.Title = ServiceResources.ConsoleConnection_RunAsync_RunningTitle + service.ServiceName;
@@ -459,7 +462,7 @@ namespace WebApplications.Utilities.Service
                                     .ContinueWith(
                                         task =>
                                         {
-                                            Contract.Assert(task != null);
+                                            Debug.Assert(task != null);
 
                                             completed = true;
 
@@ -469,7 +472,7 @@ namespace WebApplications.Utilities.Service
 
                                             if (task.IsFaulted)
                                             {
-                                                Contract.Assert(task.Exception != null);
+                                                Debug.Assert(task.Exception != null);
                                                 _errorFormat.WriteToConsoleInstance(null, task.Exception);
                                             }
                                         },
@@ -587,7 +590,6 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <value>The default log format.</value>
         [CanBeNull]
-        [PublicAPI]
         public FormatBuilder DefaultLogFormat
         {
             get { return _defaultLogFormat; }
@@ -597,7 +599,6 @@ namespace WebApplications.Utilities.Service
         /// Gets the default logging levels, this can be changed by commands.
         /// </summary>
         /// <value>The default logging levels.</value>
-        [PublicAPI]
         public LoggingLevels DefaultLoggingLevels
         {
             get { return _defaultLoggingLevels; }
@@ -614,8 +615,8 @@ namespace WebApplications.Utilities.Service
                 null,
                 (_, c) =>
                 {
-                    Contract.Assert(c != null);
-                    Contract.Assert(c.Tag != null);
+                    Debug.Assert(c != null);
+                    Debug.Assert(c.Tag != null);
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":

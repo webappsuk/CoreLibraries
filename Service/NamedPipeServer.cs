@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
@@ -131,11 +131,10 @@ namespace WebApplications.Utilities.Service
             [NotNull] BaseService service,
             [NotNull] ServerConfig configuration)
         {
-            Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(configuration != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(
-                configuration.MaximumConnections > 0,
-                "NamedPipeServer_MaxConnections");
+            if (service == null) throw new ArgumentNullException("service");
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            if (configuration.MaximumConnections < 1)
+                throw new ArgumentOutOfRangeException("configuration", CommonResources.NamedPipeServer_MaxConnections);
 
             Service = service;
             MaximumConnections = configuration.MaximumConnections;
@@ -147,7 +146,7 @@ namespace WebApplications.Utilities.Service
                 StringBuilder builder = new StringBuilder();
                 builder.Append(Guid.NewGuid().ToString("D"))
                     .Append('_');
-                Contract.Assert(service.ServiceName != null);
+                Debug.Assert(service.ServiceName != null);
                 foreach (char c in service.ServiceName)
                     builder.Append(char.IsLetterOrDigit(c) ? c : '_');
                 builder.Append(Constants.NameSuffix);
@@ -186,7 +185,7 @@ namespace WebApplications.Utilities.Service
 
             // Create a connection, before adding it to the list and starting.
             NamedPipeConnection connection = new NamedPipeConnection(this);
-            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) {connection};
+            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
             connection.Start();
             _logger = new NamedPipeServerLogger(this);
             Log.AddLogger(_logger);
@@ -229,7 +228,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="connection">The connection.</param>
         private void Remove([NotNull] NamedPipeConnection connection)
         {
-            Contract.Requires<RequiredContractException>(connection != null, "Parameter_Null");
             lock (_namedPipeConnections)
                 _namedPipeConnections.Remove(connection);
 

@@ -590,4 +590,10 @@ Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a sp
   <data name="ConsoleConnection_RunAsync_OptionStartCmd" xml:space="preserve">
     <value>Run service from command line with interaction and start the service.</value>
   </data>
+  <data name="ServiceCommand_NoDeclaringType" xml:space="preserve">
+    <value>Service command method must have a declaring type</value>
+  </data>
+  <data name="ServiceCommand_Generic" xml:space="preserve">
+    <value>Service command method cannot be generic</value>
+  </data>
 </root>

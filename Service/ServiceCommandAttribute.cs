@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,14 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
     /// Add to an instance method to indicate it implements a <see cref="BaseService">service</see> command.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Method)]
     [Serializable]
     [PublicAPI]
     [MeansImplicitUse]
@@ -45,40 +43,34 @@ namespace WebApplications.Utilities.Service
         /// The resource type.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly Type ResourceType;
 
         /// <summary>
         /// The resource property for a comma-separated list of names.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string NamesProperty;
 
         /// <summary>
         /// The resource property for the description.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly string DescriptionProperty;
 
         /// <summary>
         /// If <see langword="true"/> then the last parameter should accept the entire line; otherwise <see langword="false"/>.
         /// </summary>
-        [PublicAPI]
         public readonly bool ConsumeLine;
 
         /// <summary>
         /// The minimum arguments.
         /// </summary>
-        [PublicAPI]
         public readonly int MinimumArguments;
 
         /// <summary>
         /// The identifier parameter. If specified, this parameter must be of type <see cref="Guid"/>, and it will be passed the current connection ID.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public readonly string IDParameter;
 
         /// <summary>
@@ -100,9 +92,10 @@ namespace WebApplications.Utilities.Service
             int minimumArguments = 0,
             [CanBeNull] string idParameter = null)
         {
-            Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(namesProperty != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(descriptionProperty != null, "Parameter_Null");
+            if (resourceType == null) throw new ArgumentNullException("resourceType");
+            if (namesProperty == null) throw new ArgumentNullException("namesProperty");
+            if (descriptionProperty == null) throw new ArgumentNullException("descriptionProperty");
+
             ResourceType = resourceType;
             NamesProperty = namesProperty;
             DescriptionProperty = descriptionProperty;

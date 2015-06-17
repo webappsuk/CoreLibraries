@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
+using System;
 using ProtoBuf;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Service.Common.Protocol
 {
@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// The command line to execute.
         /// </summary>
         [ProtoMember(1)]
+        [NotNull]
         public readonly string CommandLine;
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// <param name="commandLine">The command line to execute.</param>
         public CommandRequest([NotNull] string commandLine)
         {
-            Contract.Requires(commandLine != null);
+            if (commandLine == null) throw new ArgumentNullException("commandLine");
             CommandLine = commandLine;
         }
     }

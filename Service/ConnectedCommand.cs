@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -103,7 +103,7 @@ namespace WebApplications.Utilities.Service
                 [NotNull] BaseService service,
                 [NotNull] NamedPipeConnection connection,
                 [NotNull] CommandRequest request,
-                CancellationToken token = default (CancellationToken))
+                CancellationToken token = default(CancellationToken))
             {
                 ConnectionGuid = connectionGuid;
                 _connection = connection;
@@ -139,7 +139,9 @@ namespace WebApplications.Utilities.Service
                         bool cancelled = false;
                         try
                         {
-                            await service.ExecuteAsync(ConnectionGuid, _request.CommandLine, this, token).ConfigureAwait(false);
+                            await
+                                service.ExecuteAsync(ConnectionGuid, _request.CommandLine, this, token)
+                                    .ConfigureAwait(false);
                             if (!token.IsCancellationRequested)
                                 await Flush(-1, token).ConfigureAwait(false);
                             else
@@ -155,7 +157,6 @@ namespace WebApplications.Utilities.Service
                         }
 
                         if (cancelled)
-                        {
                             using (await _flushLock.LockAsync(token).ConfigureAwait(false))
                             {
                                 try
@@ -168,10 +169,11 @@ namespace WebApplications.Utilities.Service
                                             cts.Token)
                                             .ConfigureAwait(false);
                                 }
-                                catch (OperationCanceledException) { }
+                                catch (OperationCanceledException)
+                                {
+                                }
                                 return;
                             }
-                        }
 
                         if (exception != null)
                             try
@@ -180,7 +182,7 @@ namespace WebApplications.Utilities.Service
                                 _builder.Append(exception.Message);
                                 await Flush(-2, token).ConfigureAwait(false);
                             }
-                            // ReSharper disable once EmptyGeneralCatchClause
+                                // ReSharper disable once EmptyGeneralCatchClause
                             catch
                             {
                             }
@@ -196,7 +198,7 @@ namespace WebApplications.Utilities.Service
             /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
             public override string ToString()
             {
-                Contract.Assert(_request.CommandLine != null);
+                Debug.Assert(_request.CommandLine != null);
                 return _request.CommandLine;
             }
 
@@ -206,7 +208,7 @@ namespace WebApplications.Utilities.Service
             /// <param name="request">The request.</param>
             public void Cancel([NotNull] CommandCancelRequest request)
             {
-                Contract.Requires<RequiredContractException>(request != null, "Parameter_Null");
+                if (request == null) throw new ArgumentNullException("request");
                 _cancelRequest = request;
                 ICancelableTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                 if (cts != null)
@@ -376,7 +378,7 @@ namespace WebApplications.Utilities.Service
             /// Writes a string followed by a line terminator to the text string or stream.
             /// </summary>
             /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-            public override void WriteLine([NotNull] string value)
+            public override void WriteLine(string value)
             {
                 lock (_builder)
                 {

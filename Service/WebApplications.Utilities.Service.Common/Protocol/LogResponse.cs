@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,10 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
 using ProtoBuf;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service.Common.Protocol
@@ -43,6 +43,8 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// The logs.
         /// </summary>
         [ProtoMember(1, OverwriteList = true)]
+        [ItemNotNull]
+        [NotNull]
         public readonly IEnumerable<Log> Logs;
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// <param name="logs">The logs.</param>
         public LogResponse([NotNull] IEnumerable<Log> logs)
         {
-            Contract.Requires(logs != null);
+            if (logs == null) throw new ArgumentNullException("logs");
             Logs = logs;
         }
     }

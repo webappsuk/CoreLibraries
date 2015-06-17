@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Service
 {
@@ -33,16 +34,19 @@ namespace WebApplications.Utilities.Service
     /// Enumeration of options for how the service should start when running from a command line.
     /// </summary>
     [Flags]
+    [PublicAPI]
     public enum RunMode
     {
         /// <summary>
         /// Shows the user a prompt when first run, but doesn't allow interactive mode.
         /// </summary>
         Prompt = 1,
+
         /// <summary>
         /// Allows the user to enter interactive mode.
         /// </summary>
         Interactive = 2,
+
         /// <summary>
         /// Starts the service.
         /// </summary>
@@ -52,10 +56,12 @@ namespace WebApplications.Utilities.Service
         /// Shows the user a prompt when first run, and allows the selection of interactive mode.
         /// </summary>
         Default = Prompt | Interactive,
+
         /// <summary>
         /// Starts the service in non-interactive mode.
         /// </summary>
         NonInteractive = Start,
+
         /// <summary>
         /// Starts the service and enters interactive mode.
         /// </summary>

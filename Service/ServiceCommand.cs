@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -60,43 +60,34 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         [NotNull]
         private static readonly MethodInfo _stringSplit =
-            InfoHelper.GetMethodInfo<string>(s => s.Split(default(char[]), default(StringSplitOptions)));
+            InfoHelper.GetMethodInfo<string>(s => s.Split(default(char[]), default(StringSplitOptions)), true);
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="string.IsNullOrEmpty(string)"/>.
         /// </summary>
         [NotNull]
         private static readonly MethodInfo _stringIsNullOrEmpty =
-            InfoHelper.GetMethodInfo(() => string.IsNullOrEmpty(default(string)));
+            InfoHelper.GetMethodInfo(() => string.IsNullOrEmpty(default(string)), true);
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="Enum.Parse(Type, string, bool)"/>.
         /// </summary>
         [NotNull]
         private static readonly MethodInfo _enumParse =
-            InfoHelper.GetMethodInfo(() => Enum.Parse(default(Type), default(string), default(bool)));
+            InfoHelper.GetMethodInfo(() => Enum.Parse(default(Type), default(string), default(bool)), true);
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="Task.ContinueWith{T}(Func{Task,T}, CancellationToken, TaskContinuationOptions, TaskScheduler)"/>
         /// </summary>
         [NotNull]
         private static readonly MethodInfo _continueWith =
-            typeof (Task).GetMethods()
-                // ReSharper disable PossibleNullReferenceException
-                .Where(m => string.Equals(m.Name, "ContinueWith"))
-                .Select(
-                    m => new
-                    {
-                        Method = m,
-                        Params = m.GetParameters(),
-                        Args = m.GetGenericArguments()
-                    })
-                .Where(
-                    x => x.Params.Length == 4
-                         && x.Args.Length == 1)
-                .Select(x => x.Method.MakeGenericMethod(typeof (bool)))
-                // ReSharper restore PossibleNullReferenceException
-                .First();
+            InfoHelper.GetMethodInfo<Task>(
+                t => t.ContinueWith(
+                    default(Func<Task, bool>),
+                    default(CancellationToken),
+                    default(TaskContinuationOptions),
+                    default(TaskScheduler)),
+                true);
 
         /// <summary>
         /// Parameter types that are reserved for special parameters
@@ -104,9 +95,9 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private static readonly HashSet<Type> _reservedParameterTypes = new HashSet<Type>
         {
-            typeof (TextWriter),
-            typeof (string[]),
-            typeof (CancellationToken)
+            typeof(TextWriter),
+            typeof(string[]),
+            typeof(CancellationToken)
         };
 
         [NotNull]
@@ -126,7 +117,7 @@ namespace WebApplications.Utilities.Service
             get
             {
                 string name = _names[0];
-                Contract.Assert(name != null);
+                Debug.Assert(name != null);
                 return name;
             }
         }
@@ -182,8 +173,8 @@ namespace WebApplications.Utilities.Service
                 return _parameters.Keys.Where(
                     p => (p != _idParameter) &&
                          // ReSharper disable once PossibleNullReferenceException
-                         (p.ParameterType != typeof (TextWriter)) &&
-                         (p.ParameterType != typeof (CancellationToken)));
+                         (p.ParameterType != typeof(TextWriter)) &&
+                         (p.ParameterType != typeof(CancellationToken)));
             }
         }
 
@@ -215,23 +206,24 @@ namespace WebApplications.Utilities.Service
         /// <exception cref="System.NotImplementedException"></exception>
         internal ServiceCommand([NotNull] MethodInfo method, [NotNull] ServiceCommandAttribute attribute)
         {
-            Contract.Requires<RequiredContractException>(method != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(attribute != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(method.DeclaringType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(!method.IsGenericMethod, "Method_Generic");
+            if (method == null) throw new ArgumentNullException("method");
+            if (attribute == null) throw new ArgumentNullException("attribute");
+            if (method.DeclaringType == null)
+                throw new ArgumentException(ServiceResources.ServiceCommand_NoDeclaringType, "method");
+            if (method.IsGenericMethod) throw new ArgumentException(ServiceResources.ServiceCommand_Generic, "method");
 
             InstanceType = method.DeclaringType;
 
             bool needIdParameter = attribute.IDParameter != null;
 
-            ParameterExpression instanceParameterExpression = Expression.Parameter(typeof (object), "instance");
-            ParameterExpression argsParameterExpression = Expression.Parameter(typeof (string), "arguments");
-            ParameterExpression writerParameterExpression = Expression.Parameter(typeof (TextWriter), "writer");
-            ParameterExpression connectionParameterExpression = Expression.Parameter(typeof (Guid), "connection");
-            ParameterExpression cancellationTokenExpression = Expression.Parameter(typeof (CancellationToken), "token");
+            ParameterExpression instanceParameterExpression = Expression.Parameter(typeof(object), "instance");
+            ParameterExpression argsParameterExpression = Expression.Parameter(typeof(string), "arguments");
+            ParameterExpression writerParameterExpression = Expression.Parameter(typeof(TextWriter), "writer");
+            ParameterExpression connectionParameterExpression = Expression.Parameter(typeof(Guid), "connection");
+            ParameterExpression cancellationTokenExpression = Expression.Parameter(typeof(CancellationToken), "token");
 
-            Expression instance = InstanceType == typeof (object)
-                ? (Expression) instanceParameterExpression
+            Expression instance = InstanceType == typeof(object)
+                ? (Expression)instanceParameterExpression
                 : Expression.Convert(instanceParameterExpression, InstanceType);
 
             ParameterInfo[] parameters = method.GetParameters();
@@ -248,12 +240,12 @@ namespace WebApplications.Utilities.Service
             for (int i = 0; i < inputs.Length; i++)
             {
                 ParameterInfo parameter = parameters[i];
-                Contract.Assert(parameter != null);
+                Debug.Assert(parameter != null);
                 Type parameterType = parameter.ParameterType;
 
                 if (parameter.Name == attribute.IDParameter)
                 {
-                    if (parameterType != typeof (Guid))
+                    if (parameterType != typeof(Guid))
                         throw new ServiceException(
                             LoggingLevel.Error,
                             () => ServiceResources.Err_ServiceCommand_IDParameterWrongType,
@@ -263,12 +255,12 @@ namespace WebApplications.Utilities.Service
                     _idParameter = parameter;
                     extraParams++;
                 }
-                else if (parameterType == typeof (string[]))
+                else if (parameterType == typeof(string[]))
                 {
                     if (splitArgs == null)
                     {
                         // Split the arguments
-                        splitArgs = Expression.Variable(typeof (string[]), "splitArguments");
+                        splitArgs = Expression.Variable(typeof(string[]), "splitArguments");
 
                         // Assign split arguments to body
                         locals.Add(splitArgs);
@@ -278,7 +270,7 @@ namespace WebApplications.Utilities.Service
                                 Expression.Call(
                                     argsParameterExpression,
                                     _stringSplit,
-                                    Expression.Constant(null, typeof (char[])),
+                                    Expression.Constant(null, typeof(char[])),
                                     Expression.Constant(StringSplitOptions.RemoveEmptyEntries))));
                     }
 
@@ -286,12 +278,12 @@ namespace WebApplications.Utilities.Service
                     inputs[i] = splitArgs;
                     extraParams++;
                 }
-                else if (parameterType == typeof (TextWriter))
+                else if (parameterType == typeof(TextWriter))
                 {
                     inputs[i] = writerParameterExpression;
                     extraParams++;
                 }
-                else if (parameterType == typeof (CancellationToken))
+                else if (parameterType == typeof(CancellationToken))
                 {
                     inputs[i] = cancellationTokenExpression;
                     extraParams++;
@@ -315,8 +307,8 @@ namespace WebApplications.Utilities.Service
                 int p = 0;
                 for (; p < parameters.Length; p++)
                 {
-                    Contract.Assert(parameters[p] != null);
-                    if (parameters[p].ParameterType == typeof (string))
+                    Debug.Assert(parameters[p] != null);
+                    if (parameters[p].ParameterType == typeof(string))
                     {
                         parameter = parameters[p];
                         break;
@@ -342,7 +334,7 @@ namespace WebApplications.Utilities.Service
                 minimumArguments =
                     // ReSharper disable once PossibleNullReferenceException
                     parameters.Select((p, i) => p.IsOptional ? i : int.MaxValue)
-                        .Union(new[] {parameters.Length})
+                        .Union(new[] { parameters.Length })
                         .Min() -
                     parameters.Count(
                         // ReSharper disable PossibleNullReferenceException
@@ -358,12 +350,12 @@ namespace WebApplications.Utilities.Service
                     for (int p = 0, a = 0; p < parameters.Length; p++)
                     {
                         ParameterInfo parameter = parameters[p];
-                        Contract.Assert(parameter != null);
+                        Debug.Assert(parameter != null);
 
                         // These should already have been set
                         if (parameter.Name == attribute.IDParameter)
                         {
-                            Contract.Assert(inputs[p] != null);
+                            Debug.Assert(inputs[p] != null);
                             continue;
                         }
                         if (inputs[p] != null)
@@ -372,7 +364,7 @@ namespace WebApplications.Utilities.Service
                         if (splitArgs == null)
                         {
                             // Split the arguments
-                            splitArgs = Expression.Variable(typeof (string[]), "splitArguments");
+                            splitArgs = Expression.Variable(typeof(string[]), "splitArguments");
 
                             // Assign split arguments to body
                             locals.Add(splitArgs);
@@ -382,7 +374,7 @@ namespace WebApplications.Utilities.Service
                                     Expression.Call(
                                         argsParameterExpression,
                                         _stringSplit,
-                                        Expression.Constant(null, typeof (char[])),
+                                        Expression.Constant(null, typeof(char[])),
                                         Expression.Constant(StringSplitOptions.RemoveEmptyEntries))));
                         }
 
@@ -391,7 +383,7 @@ namespace WebApplications.Utilities.Service
                         Expression input;
 
                         // We can pass strings straight through
-                        if (parameterType == typeof (string))
+                        if (parameterType == typeof(string))
                             input = argExpression;
                         else
                         {
@@ -399,12 +391,12 @@ namespace WebApplications.Utilities.Service
 
                             // Check for nullable
                             bool isNullable = parameterType.IsGenericType &&
-                                              parameterType.GetGenericTypeDefinition() == typeof (Nullable<>);
+                                              parameterType.GetGenericTypeDefinition() == typeof(Nullable<>);
 
                             if (isNullable)
                                 parameterType = parameterType.GetGenericArguments()[0];
 
-                            Contract.Assert(parameterType != null);
+                            Debug.Assert(parameterType != null);
                             MethodInfo parseMethod;
                             if (parameterType.IsEnum)
                                 input = Expression.Convert(
@@ -414,7 +406,7 @@ namespace WebApplications.Utilities.Service
                                         argExpression,
                                         Expression.Constant(true)),
                                     parameterType);
-                            else if ((parseMethod = parameterType.GetMethod("Parse", new[] {typeof (string)})) != null)
+                            else if ((parseMethod = parameterType.GetMethod("Parse", new[] { typeof(string) })) != null)
                                 input = Expression.Call(parseMethod, argExpression);
                             else if (!argExpression.TryConvert(parameterType, out input))
                                 throw new ServiceException(
@@ -447,24 +439,24 @@ namespace WebApplications.Utilities.Service
             Expression methodCall = Expression.Call(instance, method, inputs);
 
             // If the method doesn't return a bool, return true
-            if (method.ReturnType != typeof (Task<bool>))
-                if (method.ReturnType == typeof (Task))
+            if (method.ReturnType != typeof(Task<bool>))
+                if (method.ReturnType == typeof(Task))
                     methodCall = Expression.Call(
                         methodCall,
                         _continueWith,
-                        Expression.Constant(new Func<Task, bool>(t => true), typeof (Func<Task, bool>)),
+                        Expression.Constant(new Func<Task, bool>(t => true), typeof(Func<Task, bool>)),
                         cancellationTokenExpression,
                         Expression.Constant(
                             TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously,
-                            typeof (TaskContinuationOptions)),
-                        Expression.Constant(TaskScheduler.Default, typeof (TaskScheduler)));
-                else if (method.ReturnType == typeof (bool))
+                            typeof(TaskContinuationOptions)),
+                        Expression.Constant(TaskScheduler.Default, typeof(TaskScheduler)));
+                else if (method.ReturnType == typeof(bool))
                     methodCall = Expression.Condition(
                         methodCall,
-                        Expression.Constant(TaskResult.True, typeof (Task<bool>)),
-                        Expression.Constant(TaskResult.False, typeof (Task<bool>)));
+                        Expression.Constant(TaskResult.True, typeof(Task<bool>)),
+                        Expression.Constant(TaskResult.False, typeof(Task<bool>)));
                 else
-                    methodCall = Expression.Block(methodCall, Expression.Constant(TaskResult.True, typeof (Task<bool>)));
+                    methodCall = Expression.Block(methodCall, Expression.Constant(TaskResult.True, typeof(Task<bool>)));
 
             // Validate min & max arguments
             if (minimumArguments > 0)
@@ -473,21 +465,21 @@ namespace WebApplications.Utilities.Service
                         ? (Expression)
                         Expression.LessThan(Expression.ArrayLength(splitArgs), Expression.Constant(minimumArguments))
                         : Expression.Call(_stringIsNullOrEmpty, argsParameterExpression),
-                    Expression.Constant(TaskResult.False, typeof (Task<bool>)),
+                    Expression.Constant(TaskResult.False, typeof(Task<bool>)),
                     methodCall);
             if (!hasParams)
                 if (maximumArguments == 0)
                     methodCall = Expression.Condition(
                         Expression.Not(Expression.Call(_stringIsNullOrEmpty, argsParameterExpression)),
-                        Expression.Constant(TaskResult.False, typeof (Task<bool>)),
+                        Expression.Constant(TaskResult.False, typeof(Task<bool>)),
                         methodCall);
                 else if (!attribute.ConsumeLine &&
                          (maximumArguments < int.MaxValue))
                 {
-                    Contract.Assert(splitArgs != null);
+                    Debug.Assert(splitArgs != null);
                     methodCall = Expression.Condition(
                         Expression.GreaterThan(Expression.ArrayLength(splitArgs), Expression.Constant(maximumArguments)),
-                        Expression.Constant(TaskResult.False, typeof (Task<bool>)),
+                        Expression.Constant(TaskResult.False, typeof(Task<bool>)),
                         methodCall);
                 }
             MinimumArguments = minimumArguments;
@@ -520,7 +512,7 @@ namespace WebApplications.Utilities.Service
             {
                 Log.Add(LoggingLevel.Warning, () => ServiceResources.Wrn_No_Names_For_Command, methodName);
                 // Use the method name.
-                _names = new[] {methodName};
+                _names = new[] { methodName };
             }
             else
                 _names = names.Message
@@ -532,7 +524,7 @@ namespace WebApplications.Utilities.Service
                     .Distinct(StringComparer.CurrentCultureIgnoreCase)
                     .ToArray();
 
-            Contract.Assert(_names.Length > 0);
+            Debug.Assert(_names.Length > 0);
 
             // Get the description.
             Translation description = Translation.Get(attribute.ResourceType, attribute.DescriptionProperty);
@@ -552,7 +544,7 @@ namespace WebApplications.Utilities.Service
                 {
                     ServiceCommandParameterAttribute att =
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        p.GetCustomAttributes(typeof (ServiceCommandParameterAttribute))
+                        p.GetCustomAttributes(typeof(ServiceCommandParameterAttribute))
                             .Cast<ServiceCommandParameterAttribute>()
                             .FirstOrDefault();
 
@@ -595,9 +587,11 @@ namespace WebApplications.Utilities.Service
             [NotNull] string arguments,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(instance != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(arguments != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(InstanceType.IsInstanceOfType(instance), "Bad_Instance");
+            if (instance == null) throw new ArgumentNullException("instance");
+            if (writer == null) throw new ArgumentNullException("writer");
+            if (arguments == null) throw new ArgumentNullException("arguments");
+            if (!InstanceType.IsInstanceOfType(instance))
+                throw new ArgumentException(CommonResources.Bad_Instance, "instance");
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return _execute(instance, writer, connectionId, arguments, token);
@@ -611,20 +605,20 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         public object ResolveParameter([NotNull] ParameterInfo parameter)
         {
-            Contract.Assert(_parameters.ContainsKey(parameter));
+            Debug.Assert(_parameters.ContainsKey(parameter));
             return new DictionaryResolvable
             {
-                {"name", parameter.Name},
+                { "name", parameter.Name },
                 {
                     "defaultvalue",
                     parameter.HasDefaultValue
                         ? parameter.RawDefaultValueSafe() ?? "<null>"
                         : Resolution.Null
                 },
-                {"description", _parameters[parameter] ?? Resolution.Null},
+                { "description", _parameters[parameter] ?? Resolution.Null },
                 {
                     "params",
-                    !parameter.IsOptional && (parameter.ParameterType == typeof (string[]))
+                    !parameter.IsOptional && (parameter.ParameterType == typeof(string[]))
                         ? Resolution.Empty
                         : Resolution.Null
                 }
@@ -641,7 +635,7 @@ namespace WebApplications.Utilities.Service
         /// </returns>
         public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
-            Contract.Assert(chunk.Tag != null);
+            Debug.Assert(chunk.Tag != null);
             switch (chunk.Tag.ToLowerInvariant())
             {
                 case "name":

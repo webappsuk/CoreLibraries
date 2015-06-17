@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,10 +34,10 @@ namespace WebApplications.Utilities.Service.Common.Protocol
     /// Base response message, sent by the server in response to requests from the client.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof (CommandResponse))]
-    [ProtoInclude(200, typeof (CommandCancelResponse))]
-    [ProtoInclude(300, typeof (ConnectResponse))]
-    [ProtoInclude(400, typeof (DisconnectResponse))]
+    [ProtoInclude(100, typeof(CommandResponse))]
+    [ProtoInclude(200, typeof(CommandCancelResponse))]
+    [ProtoInclude(300, typeof(ConnectResponse))]
+    [ProtoInclude(400, typeof(DisconnectResponse))]
     public abstract class Response : Message
     {
         /// <summary>

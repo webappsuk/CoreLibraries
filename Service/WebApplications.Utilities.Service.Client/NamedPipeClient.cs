@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
@@ -49,18 +49,17 @@ namespace WebApplications.Utilities.Service.Client
     /// <summary>
     /// Implements a client for talking to a service.
     /// </summary>
+    [PublicAPI]
     public partial class NamedPipeClient : IDisposable
     {
         /// <summary>
         /// The input buffer size
         /// </summary>
-        [PublicAPI]
         public const int InBufferSize = 32768;
 
         /// <summary>
         /// The output buffer size
         /// </summary>
-        [PublicAPI]
         public const int OutBufferSize = 16384;
 
         [NotNull]
@@ -133,9 +132,10 @@ namespace WebApplications.Utilities.Service.Client
             [NotNull] Action<Message> onReceive,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(server != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(onReceive != null, "Parameter_Null");
+            if (description == null) throw new ArgumentNullException("description");
+            if (server == null) throw new ArgumentNullException("server");
+            if (onReceive == null) throw new ArgumentNullException("onReceive");
+
             _server = server;
 
             _cancellationTokenSource = new CancellationTokenSource();
@@ -231,7 +231,6 @@ namespace WebApplications.Utilities.Service.Client
                                         // Check for cancellation responses.
                                         CommandCancelResponse cancelResponse = response as CommandCancelResponse;
                                         if (cancelResponse != null)
-                                        {
                                             // Cancel the associated request
                                             if (_commandRequests.TryGetValue(
                                                 cancelResponse.CancelledCommandId,
@@ -239,14 +238,13 @@ namespace WebApplications.Utilities.Service.Client
                                                 // ReSharper disable once PossibleNullReferenceException
                                                 connectedCommand.Cancel(cancelResponse);
 
-                                            // And fall through to complete the response...
-                                        }
+                                        // And fall through to complete the response...
 
                                         // Find command the response is related to, and notify it of the response.
                                         if (!_commandRequests.TryGetValue(response.ID, out connectedCommand))
                                             continue;
 
-                                        Contract.Assert(connectedCommand != null);
+                                        Debug.Assert(connectedCommand != null);
                                         if (connectedCommand.Received(response))
                                             _commandRequests.TryRemove(response.ID, out connectedCommand);
                                     }
@@ -298,7 +296,7 @@ namespace WebApplications.Utilities.Service.Client
                                 ConnectedCommand connectedCommand;
                                 if (_commandRequests.TryGetValue(disconnectResponse.ID, out connectedCommand))
                                 {
-                                    Contract.Assert(connectedCommand != null);
+                                    Debug.Assert(connectedCommand != null);
                                     if (connectedCommand.Received(disconnectResponse))
                                         _commandRequests.TryRemove(disconnectResponse.ID, out connectedCommand);
                                 }
@@ -351,7 +349,6 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns>A new <see cref="NamedPipeClient" /> that is connected to the given pipe.</returns>
         [CanBeNull]
-        [PublicAPI]
         public static Task<NamedPipeClient> Connect(
             [NotNull] string description,
             [CanBeNull] string pipe,
@@ -375,15 +372,12 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns>A new <see cref="NamedPipeClient" /> that is connected to the given pipe.</returns>
         [NotNull]
-        [PublicAPI]
         public static Task<NamedPipeClient> Connect(
             [NotNull] string description,
             [CanBeNull] NamedPipeServerInfo server,
             [NotNull] Action<Message> onReceive,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(onReceive != null, "Parameter_Null");
             if (server == null ||
                 !server.IsValid)
                 return TaskResult<NamedPipeClient>.Default;
@@ -401,7 +395,6 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns>An observable of responses..</returns>
         [NotNull]
-        [PublicAPI]
         public IObservable<Response> Send(
             [NotNull] Request request,
             CancellationToken token = default(CancellationToken))
@@ -416,7 +409,7 @@ namespace WebApplications.Utilities.Service.Client
             return Observable.Create<Response>(
                 async (observer, t) =>
                 {
-                    Contract.Assert(observer != null);
+                    Debug.Assert(observer != null);
 
                     using (ITokenSource tokenSource = token.CreateLinked(t))
                     {
@@ -430,17 +423,23 @@ namespace WebApplications.Utilities.Service.Client
                             await cr.CompletionTask.WithCancellation(token).ConfigureAwait(false);
                         }
                             // ReSharper disable once EmptyGeneralCatchClause
-                        catch { }
+                        catch
+                        {
+                        }
 
                         // If the command is not explicitly cancelled and is still running, and we've been cancelled
                         // then ask the server to cancel.
-                        if (!cr.IsCancelled && !cr.IsCompleted && token.IsCancellationRequested)
+                        if (!cr.IsCancelled &&
+                            !cr.IsCompleted &&
+                            token.IsCancellationRequested)
                             try
                             {
                                 using (CancellationTokenSource cts = Constants.FireAndForgetTokenSource)
                                     await CancelCommand(request.ID, cts.Token).ConfigureAwait(false);
                             }
-                            catch (TaskCanceledException) { }
+                            catch (TaskCanceledException)
+                            {
+                            }
 
                         // Remove the command request.
                         _commandRequests.TryRemove(request.ID, out cr);
@@ -463,10 +462,9 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The cancellation token.</param>
         /// <returns>An awaitable task that contains the result of the execution.</returns>
         [NotNull]
-        [PublicAPI]
         public IObservable<string> Execute(
             [CanBeNull] string commandLine,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             Guid commandGuid;
             return Execute(commandLine, out commandGuid, token);
@@ -482,11 +480,10 @@ namespace WebApplications.Utilities.Service.Client
         /// An awaitable task that contains the result of the execution.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public IObservable<string> Execute(
             [CanBeNull] string commandLine,
             out Guid commandGuid,
-            CancellationToken token = default (CancellationToken))
+            CancellationToken token = default(CancellationToken))
         {
             if (_clientTask == null ||
                 State != PipeState.Connected ||
@@ -526,7 +523,6 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         /// <returns>Task.</returns>
         [NotNull]
-        [PublicAPI]
         public Task Disconnect(CancellationToken token = default(CancellationToken))
         {
             if (_clientTask == null ||
@@ -546,7 +542,6 @@ namespace WebApplications.Utilities.Service.Client
         /// Task.
         /// </returns>
         [NotNull]
-        [PublicAPI]
         public Task CancelCommand(Guid commandGuid, CancellationToken token = default(CancellationToken))
         {
             if (_clientTask == null ||
@@ -586,7 +581,7 @@ namespace WebApplications.Utilities.Service.Client
                 ConnectedCommand cc;
                 if (_commandRequests.TryRemove(id, out cc))
                 {
-                    Contract.Assert(cc != null);
+                    Debug.Assert(cc != null);
                     cc.Dispose();
                 }
             }
@@ -679,7 +674,7 @@ namespace WebApplications.Utilities.Service.Client
             return
                 GetServices()
                     .FirstOrDefault(
-                // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         n => string.Equals(serviceName, n.Name, StringComparison.CurrentCultureIgnoreCase) ||
                              string.Equals(serviceName, n.Pipe, StringComparison.CurrentCultureIgnoreCase));
         }

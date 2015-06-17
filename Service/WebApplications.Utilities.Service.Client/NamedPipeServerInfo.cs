@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
@@ -37,12 +36,12 @@ namespace WebApplications.Utilities.Service.Client
     /// <summary>
     /// Class NamedPipeServerInfo.
     /// </summary>
+    [PublicAPI]
     public class NamedPipeServerInfo : ResolvableWriteable
     {
         /// <summary>
         /// The verbose format
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder()
@@ -58,40 +57,34 @@ namespace WebApplications.Utilities.Service.Client
         /// <summary>
         /// Whether this is a valid service pipe name.
         /// </summary>
-        [PublicAPI]
         public readonly bool IsValid;
 
         /// <summary>
         /// The unique identifier
         /// </summary>
-        [PublicAPI]
         public readonly Guid Guid;
 
         /// <summary>
         /// The host
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string Host;
 
         /// <summary>
         /// The service name.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string Name;
 
         /// <summary>
         /// The service full name.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string FullName;
 
         /// <summary>
         /// The full pipe path.
         /// </summary>
-        [PublicAPI]
         [NotNull]
         public readonly string Pipe;
 
@@ -114,7 +107,7 @@ namespace WebApplications.Utilities.Service.Client
             if (string.IsNullOrWhiteSpace(directory))
                 return;
 
-            string[] rootParts = directory.Split(new[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+            string[] rootParts = directory.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
             if (rootParts.Length != 2 ||
                 !string.Equals(rootParts[1], "pipe", StringComparison.CurrentCultureIgnoreCase))
                 return;
@@ -152,7 +145,8 @@ namespace WebApplications.Utilities.Service.Client
         // ReSharper disable once CodeAnnotationAnalyzer
         public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
-            Contract.Assert(chunk.Tag != null);
+            if (chunk.Tag == null) throw new ArgumentException();
+
             switch (chunk.Tag.ToLowerInvariant())
             {
                 case "isvalid":

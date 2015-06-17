@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -109,11 +108,10 @@ namespace WebApplications.Utilities.Service.Common.Control
         /// <returns><see langword="true" /> if installed, <see langword="false" /> otherwise.</returns>
         public static bool ServiceIsInstalled([NotNull] string serviceName)
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
-            return
-                ServiceController.GetServices()
-                    // ReSharper disable once PossibleNullReferenceException
-                    .Any(sc => string.Equals(sc.ServiceName, serviceName, StringComparison.CurrentCulture));
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+            return ServiceController.GetServices()
+                // ReSharper disable once PossibleNullReferenceException
+                .Any(sc => string.Equals(sc.ServiceName, serviceName, StringComparison.CurrentCulture));
         }
 
         /// <summary>
@@ -136,7 +134,8 @@ namespace WebApplications.Utilities.Service.Common.Control
             [NotNull] string serviceName,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+
             if (!ServiceIsInstalled(serviceName))
                 return;
 
@@ -230,10 +229,11 @@ namespace WebApplications.Utilities.Service.Common.Control
             [CanBeNull] string userName = null,
             [CanBeNull] string password = null)
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(displayName != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(fileName != null, "Parameter_Null");
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+            if (displayName == null) throw new ArgumentNullException("displayName");
+            if (description == null) throw new ArgumentNullException("description");
+            if (fileName == null) throw new ArgumentNullException("fileName");
+
             if (ServiceIsInstalled(serviceName))
                 return;
 
@@ -308,7 +308,7 @@ namespace WebApplications.Utilities.Service.Common.Control
             ServiceControllerStatus status,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(serviceController != null, "Parameter_Null");
+            if (serviceController == null) throw new ArgumentNullException("serviceController");
 
             // TODO Remove constant timeout
             using (ITokenSource tokenSource = token.WithTimeout(TimeSpan.FromMinutes(1)))
@@ -340,39 +340,46 @@ namespace WebApplications.Utilities.Service.Common.Control
             [CanBeNull] string[] args = null,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
-            if (args == null) args = new string[] {};
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+
+            if (args == null) args = new string[] { };
             try
             {
                 new ServiceControllerPermission(
                     ServiceControllerPermissionAccess.Control,
                     Environment.MachineName,
                     serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
-                    )
-                    switch (serviceController.Status)
+                using (ServiceController controller = new ServiceController(serviceName, Environment.MachineName))
+                    switch (controller.Status)
                     {
                         case ServiceControllerStatus.Running:
                             return true;
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
-                            serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            controller.Continue();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.PausePending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false))
+                            if (!await WaitForAsync(controller, ServiceControllerStatus.Paused, token)
+                                .ConfigureAwait(false))
                                 return false;
-                            serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            controller.Continue();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.Stopped:
-                            serviceController.Start(args);
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            controller.Start(args);
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.StopPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false))
+                            if (!await WaitForAsync(controller, ServiceControllerStatus.Stopped, token)
+                                .ConfigureAwait(false))
                                 return false;
-                            serviceController.Start(args);
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            controller.Start(args);
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -394,30 +401,34 @@ namespace WebApplications.Utilities.Service.Common.Control
             [NotNull] string serviceName,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+
             try
             {
                 new ServiceControllerPermission(
                     ServiceControllerPermissionAccess.Control,
                     Environment.MachineName,
                     serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
-                    )
-                    switch (serviceController.Status)
+                using (ServiceController controller = new ServiceController(serviceName, Environment.MachineName))
+                    switch (controller.Status)
                     {
                         case ServiceControllerStatus.Running:
-                            serviceController.Pause();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false);
+                            controller.Pause();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Paused, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false))
+                            if (!await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false))
                                 return false;
-                            serviceController.Pause();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false);
+                            controller.Pause();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Paused, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
                             return true;
                         case ServiceControllerStatus.PausePending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false);
+                            return await WaitForAsync(controller, ServiceControllerStatus.Paused, token)
+                                .ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -439,30 +450,34 @@ namespace WebApplications.Utilities.Service.Common.Control
             [NotNull] string serviceName,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+
             try
             {
                 new ServiceControllerPermission(
                     ServiceControllerPermissionAccess.Control,
                     Environment.MachineName,
                     serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
-                    )
-                    switch (serviceController.Status)
+                using (ServiceController controller = new ServiceController(serviceName, Environment.MachineName))
+                    switch (controller.Status)
                     {
                         case ServiceControllerStatus.Running:
                             return true;
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
-                            serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            controller.Continue();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.PausePending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false))
+                            if (!await WaitForAsync(controller, ServiceControllerStatus.Paused, token)
+                                .ConfigureAwait(false))
                                 return false;
-                            serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
+                            controller.Continue();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -484,38 +499,46 @@ namespace WebApplications.Utilities.Service.Common.Control
             [NotNull] string serviceName,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+
             try
             {
                 new ServiceControllerPermission(
                     ServiceControllerPermissionAccess.Control,
                     Environment.MachineName,
                     serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
+                using (ServiceController controller = new ServiceController(serviceName, Environment.MachineName)
                     )
-                    switch (serviceController.Status)
+                    switch (controller.Status)
                     {
                         case ServiceControllerStatus.Running:
-                            serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
+                            controller.Stop();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Stopped, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false))
+                            if (!await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false))
                                 return false;
-                            serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
+                            controller.Stop();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Stopped, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
-                            serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
+                            controller.Stop();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Stopped, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.PausePending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false))
+                            if (!await WaitForAsync(controller, ServiceControllerStatus.Paused, token)
+                                .ConfigureAwait(false))
                                 return false;
-                            serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
+                            controller.Stop();
+                            return await WaitForAsync(controller, ServiceControllerStatus.Stopped, token)
+                                .ConfigureAwait(false);
                         case ServiceControllerStatus.Stopped:
                             return true;
                         case ServiceControllerStatus.StopPending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
+                            return await WaitForAsync(controller, ServiceControllerStatus.Stopped, token)
+                                .ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -539,27 +562,28 @@ namespace WebApplications.Utilities.Service.Common.Control
             int command,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+
             try
             {
                 new ServiceControllerPermission(
                     ServiceControllerPermissionAccess.Control,
                     Environment.MachineName,
                     serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
-                    )
-                    switch (serviceController.Status)
+                using (ServiceController controller = new ServiceController(serviceName, Environment.MachineName))
+                    switch (controller.Status)
                     {
                         case ServiceControllerStatus.Running:
                             // ReSharper disable once AccessToDisposedClosure, PossibleNullReferenceException
-                            await Task.Run(() => serviceController.ExecuteCommand(command), token).ConfigureAwait(false);
+                            await Task.Run(() => controller.ExecuteCommand(command), token).ConfigureAwait(false);
                             return !token.IsCancellationRequested;
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false))
+                            if (!await WaitForAsync(controller, ServiceControllerStatus.Running, token)
+                                .ConfigureAwait(false))
                                 return false;
                             // ReSharper disable once AccessToDisposedClosure, PossibleNullReferenceException
-                            await Task.Run(() => serviceController.ExecuteCommand(command), token).ConfigureAwait(false);
+                            await Task.Run(() => controller.ExecuteCommand(command), token).ConfigureAwait(false);
                             return !token.IsCancellationRequested;
                         default:
                             return false;
@@ -578,16 +602,16 @@ namespace WebApplications.Utilities.Service.Common.Control
         /// <returns>ServiceControllerStatus.</returns>
         public static ServiceControllerStatus GetServiceStatus([NotNull] string serviceName)
         {
-            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (serviceName == null) throw new ArgumentNullException("serviceName");
+
             try
             {
                 new ServiceControllerPermission(
                     ServiceControllerPermissionAccess.Browse,
                     Environment.MachineName,
                     serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
-                    )
-                    return serviceController.Status;
+                using (ServiceController controller = new ServiceController(serviceName, Environment.MachineName))
+                    return controller.Status;
             }
             catch (TaskCanceledException)
             {

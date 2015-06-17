@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Security.Principal;
 using WebApplications.Utilities.Annotations;
@@ -37,20 +36,19 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Configuration for the NamedPipeServer.
     /// </summary>
+    [PublicAPI]
     public class ServerConfig
     {
         /// <summary>
         /// The default configuration.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly ServerConfig Default = new ServerConfig();
 
         /// <summary>
         /// The disabled configuration.
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly ServerConfig Disabled = new ServerConfig(
             maximumConnections: 0,
             heartbeat: TimeSpan.MinValue);
@@ -58,27 +56,23 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The maximum number of remote connections (defaults to 1)
         /// </summary>
-        [PublicAPI]
         public readonly int MaximumConnections;
 
         /// <summary>
         /// The pipe name
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
         public readonly string Name;
 
         /// <summary>
         /// The identity of clients that can access the pipe (defaults to BuiltinUsers).
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public readonly IdentityReference Identity;
 
         /// <summary>
         /// The heartbeat timespan, ensures a connection is always available, defaults to once every 5 seconds.
         /// </summary>
-        [PublicAPI]
         public readonly TimeSpan Heartbeat;
 
         #region Constructor overloads
@@ -182,7 +176,11 @@ namespace WebApplications.Utilities.Service
             int maximumConnections = 1,
             TimeSpan heartbeat = default(TimeSpan))
         {
-            Contract.Requires<RequiredContractException>(maximumConnections >= 0, "NamedPipeServer_MaxConnections");
+            if (maximumConnections < 1)
+                throw new ArgumentOutOfRangeException(
+                    "maximumConnections",
+                    CommonResources.NamedPipeServer_MaxConnections);
+
             MaximumConnections = maximumConnections;
             Identity = identity ?? new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
             Heartbeat = heartbeat < TimeSpan.Zero
@@ -196,7 +194,7 @@ namespace WebApplications.Utilities.Service
             string directory = Path.GetDirectoryName(name);
             if (string.IsNullOrWhiteSpace(directory))
                 throw new ServiceException(() => ServiceResources.Err_ServerConfig_InvalidPipeName, name);
-            string[] rootParts = name.Split(new[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+            string[] rootParts = name.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
             if (rootParts.Length != 2 ||
                 !string.Equals(rootParts[1], "pipe", StringComparison.CurrentCultureIgnoreCase))
                 throw new ServiceException(() => ServiceResources.Err_ServerConfig_InvalidPipeName, name);

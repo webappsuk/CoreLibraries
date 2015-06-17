@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,10 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
+using System;
 using System.IO;
-using WebApplications.Utilities.Annotations;
 using ProtoBuf;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Service.Common.Protocol
 {
@@ -36,9 +36,9 @@ namespace WebApplications.Utilities.Service.Common.Protocol
     /// Base message class, used for communication between named pipe client and server.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof (Request))]
-    [ProtoInclude(200, typeof (Response))]
-    [ProtoInclude(300, typeof (LogResponse))]
+    [ProtoInclude(100, typeof(Request))]
+    [ProtoInclude(200, typeof(Response))]
+    [ProtoInclude(300, typeof(LogResponse))]
     public abstract class Message
     {
         /// <summary>
@@ -63,7 +63,8 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         [NotNull]
         public static Message Deserialize([NotNull] byte[] data)
         {
-            Contract.Requires(data != null);
+            if (data == null) throw new ArgumentNullException("data");
+
             using (MemoryStream ms = new MemoryStream(data))
                 // ReSharper disable once AssignNullToNotNullAttribute
                 return Serializer.Deserialize<Message>(ms);

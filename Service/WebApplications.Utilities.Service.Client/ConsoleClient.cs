@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +40,10 @@ using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service.Client
 {
+    /// <summary>
+    /// Implements a console based client for talking to a service using a <see cref="NamedPipeClient"/>.
+    /// </summary>
+    [PublicAPI]
     public static class ConsoleClient
     {
         [NotNull]
@@ -79,10 +83,8 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         /// <param name="description">The description.</param>
         /// <param name="pipe">The pipe.</param>
-        [PublicAPI]
         public static void Run([NotNull] string description, [CanBeNull] string pipe)
         {
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             Run(description, new NamedPipeServerInfo(pipe));
         }
 
@@ -92,10 +94,8 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         /// <param name="description">The description.</param>
         /// <param name="server">The server.</param>
-        [PublicAPI]
         public static void Run([NotNull] string description, [CanBeNull] NamedPipeServerInfo server = null)
         {
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)
                 return;
 
@@ -111,13 +111,11 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static Task RunAsync(
             [NotNull] string description,
             [CanBeNull] string pipe,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             return RunAsync(description, new NamedPipeServerInfo(pipe), token);
         }
 
@@ -130,13 +128,13 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [NotNull]
-        [PublicAPI]
         public static async Task RunAsync(
             [NotNull] string description,
             [CanBeNull] NamedPipeServerInfo service = null,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
+            if (description == null) throw new ArgumentNullException("description");
+
             if (!ConsoleHelper.IsConsole)
                 return;
 
@@ -157,6 +155,7 @@ namespace WebApplications.Utilities.Service.Client
                         NamedPipeServerInfo[] services = null;
                         await Log.Flush(token).ConfigureAwait(false);
 
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_ScanningForService);
                         while (services == null ||
                                services.Length < 1)
@@ -172,6 +171,7 @@ namespace WebApplications.Utilities.Service.Client
                         if (services.Length > 0)
                             WriteServerList(services);
 
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_EnterServiceName);
                         string serviceName = Console.ReadLine();
                         service = !string.IsNullOrWhiteSpace(serviceName)
@@ -204,6 +204,7 @@ namespace WebApplications.Utilities.Service.Client
                         ConsoleTextWriter.Default.WriteLine(
                             ClientResources.ConsoleClient_RunAsync_TimedOut,
                             service.Name);
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_PressAnyKeyContinue);
                         client = null;
                         service = null;
@@ -220,7 +221,7 @@ namespace WebApplications.Utilities.Service.Client
                     null,
                     new Dictionary<string, object>
                     {
-                        {"ServiceName", client.ServiceName}
+                        { "ServiceName", client.ServiceName }
                     });
 
                 // ReSharper disable once PossibleNullReferenceException
@@ -242,25 +243,19 @@ namespace WebApplications.Utilities.Service.Client
                                 c => new FormatBuilder(c).WriteToConsole(),
                                 e =>
                                 {
-                                    Contract.Assert(e != null);
+                                    Debug.Assert(e != null);
                                     if (!(e is TaskCanceledException))
-                                    {
                                         new FormatBuilder()
                                             .AppendForegroundColor(ConsoleColor.Red)
                                             .AppendLine(e.Message)
                                             .AppendResetForegroundColor()
                                             .WriteToConsole();
-                                    }
                                     completed = true;
                                 },
-                                () =>
-                                {
-                                    completed = true;
-                                },
+                                () => { completed = true; },
                                 token);
 
                         if (commandGuid != Guid.Empty)
-                        {
                             do
                             {
                                 if (Console.KeyAvailable &&
@@ -274,7 +269,6 @@ namespace WebApplications.Utilities.Service.Client
                                 // ReSharper disable once PossibleNullReferenceException
                                 await Task.Delay(100, token).ConfigureAwait(false);
                             } while (!completed);
-                        }
                     }
 
                     // Wait to allow any disconnects or logs to come through.
@@ -314,7 +308,7 @@ namespace WebApplications.Utilities.Service.Client
                             ConsoleTextWriter.Default.WriteLine();
                         foreach (Log log in logResponse.Logs)
                         {
-                            Contract.Assert(log != null);
+                            Debug.Assert(log != null);
                             log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
                         }
                     });
@@ -337,8 +331,8 @@ namespace WebApplications.Utilities.Service.Client
                 null,
                 (_, c) =>
                 {
-                    Contract.Assert(c != null);
-                    Contract.Assert(c.Tag != null);
+                    Debug.Assert(c != null);
+                    Debug.Assert(c.Tag != null);
                     if (!string.Equals(c.Tag, "servers", StringComparison.CurrentCultureIgnoreCase))
                         return Resolution.Unknown;
                     return (servers != null) && (servers.Length > 0)
@@ -358,8 +352,8 @@ namespace WebApplications.Utilities.Service.Client
                 null,
                 (_, c) =>
                 {
-                    Contract.Assert(c != null);
-                    Contract.Assert(c.Tag != null);
+                    Debug.Assert(c != null);
+                    Debug.Assert(c.Tag != null);
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":

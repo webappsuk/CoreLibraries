@@ -18,7 +18,6 @@
     </references>
   </metadata>
   <files>
-    <file src="bin\Release\CodeContracts\*.*" target="lib\net452\CodeContracts" />
     <file src="ServiceClient\bin\Release\ServiceClient.exe" target="lib\net452\" />
     <file src="ServiceClient\bin\Release\ServiceClient.exe.config" target="lib\net452\" />
     <file src="WebApplications.Utilities.Service.Client\bin\Release\WebApplications.Utilities.Service.Client.dll" target="lib\net452\" />

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Annotations;
+using System;
 using ProtoBuf;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Service.Common.Protocol
 {
@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// The description of the client.
         /// </summary>
         [ProtoMember(1)]
+        [NotNull]
         public readonly string Description;
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// <param name="description">The description.</param>
         public ConnectRequest([NotNull] string description)
         {
-            Contract.Requires(description != null);
+            if (description == null) throw new ArgumentNullException("description");
             Description = description;
         }
     }
