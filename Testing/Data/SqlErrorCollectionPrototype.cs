@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 using System;
 using System.Collections;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -46,22 +46,26 @@ namespace WebApplications.Testing.Data
     /// <para>In the same way, this class supports implicit conversion to <see cref="SqlErrorCollection"/>.</para>
     /// </remarks>
     /// <seealso cref="SqlErrorPrototype"/>
-    public sealed class SqlErrorCollectionPrototype : ICollection, IEnumerable
+    [PublicAPI]
+    public sealed class SqlErrorCollectionPrototype : ICollection
     {
         /// <summary>
         /// Creates a new <see cref="SqlErrorCollection"/>.
         /// </summary>
-        [NotNull] private static readonly Func<SqlErrorCollection> _constructor;
+        [NotNull]
+        private static readonly Func<SqlErrorCollection> _constructor;
 
         /// <summary>
         /// Adds a <see cref="SqlError"/> to a <see cref="SqlErrorCollection"/>.
         /// </summary>
-        [NotNull] private static readonly Action<SqlErrorCollection, SqlError> _adder;
+        [NotNull]
+        private static readonly Action<SqlErrorCollection, SqlError> _adder;
 
         /// <summary>
         /// The equivalent <see cref="SqlErrorCollection" />.
         /// </summary>
-        [NotNull] public readonly SqlErrorCollection SqlErrorCollection;
+        [NotNull]
+        public readonly SqlErrorCollection SqlErrorCollection;
 
         /// <summary>
         /// Creates the <see cref="_constructor"/> function and the <see cref="_adder"/> action.
@@ -70,31 +74,36 @@ namespace WebApplications.Testing.Data
         {
             // Find constructor
             ConstructorInfo constructorInfo =
-                typeof (SqlErrorCollection).GetConstructor(
+                typeof(SqlErrorCollection).GetConstructor(
                     BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
-                    null, Type.EmptyTypes, null);
-            Contract.Assert(constructorInfo != null);
+                    null,
+                    Type.EmptyTypes,
+                    null);
+            Debug.Assert(constructorInfo != null);
 
             // Create lambda expression.
-            _constructor =
-                Expression.Lambda<Func<SqlErrorCollection>>(Expression.New(constructorInfo),
-                                                            Enumerable.Empty<ParameterExpression>()).Compile();
+            _constructor = Expression.Lambda<Func<SqlErrorCollection>>(
+                Expression.New(constructorInfo),
+                Enumerable.Empty<ParameterExpression>()).Compile();
 
             // Find the add method
-            MethodInfo addMethod = typeof (SqlErrorCollection).GetMethod("Add",
-                                                                         BindingFlags.NonPublic | BindingFlags.Instance |
-                                                                         BindingFlags.InvokeMethod);
-            Contract.Assert(addMethod != null);
+            MethodInfo addMethod = typeof(SqlErrorCollection).GetMethod(
+                "Add",
+                BindingFlags.NonPublic | BindingFlags.Instance |
+                BindingFlags.InvokeMethod);
+            Debug.Assert(addMethod != null);
 
             // Create instance parameter
-            ParameterExpression instanceParameter = Expression.Parameter(typeof (SqlErrorCollection), "collection");
+            ParameterExpression instanceParameter = Expression.Parameter(typeof(SqlErrorCollection), "collection");
 
             // Create method parameter
-            ParameterExpression errorParamter = Expression.Parameter(typeof (SqlError), "error");
+            ParameterExpression errorParamter = Expression.Parameter(typeof(SqlError), "error");
 
             _adder =
                 Expression.Lambda<Action<SqlErrorCollection, SqlError>>(
-                    Expression.Call(instanceParameter, addMethod, errorParamter), instanceParameter, errorParamter).
+                    Expression.Call(instanceParameter, addMethod, errorParamter),
+                    instanceParameter,
+                    errorParamter).
                     Compile();
         }
 
@@ -102,7 +111,9 @@ namespace WebApplications.Testing.Data
         /// Initializes a new instance of the <see cref="SqlErrorCollectionPrototype" /> class.
         /// </summary>
         /// <remarks></remarks>
-        public SqlErrorCollectionPrototype() : this(_constructor())
+        public SqlErrorCollectionPrototype()
+        // ReSharper disable once AssignNullToNotNullAttribute
+            : this(_constructor())
         {
         }
 
@@ -113,7 +124,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public SqlErrorCollectionPrototype([NotNull] SqlErrorCollection collection)
         {
-            Contract.Requires(collection != null);
+            if (collection == null) throw new ArgumentNullException("collection");
             SqlErrorCollection = collection;
         }
 
@@ -129,38 +140,6 @@ namespace WebApplications.Testing.Data
         {
             get { return SqlErrorCollection[index]; }
         }
-
-        #region ICollection Members
-        /// <inheritdoc/>
-        public IEnumerator GetEnumerator()
-        {
-            return SqlErrorCollection.GetEnumerator();
-        }
-
-        /// <inheritdoc/>
-        public void CopyTo(Array array, int index)
-        {
-            SqlErrorCollection.CopyTo(array, index);
-        }
-
-        /// <inheritdoc/>
-        public int Count
-        {
-            get { return SqlErrorCollection.Count; }
-        }
-
-        /// <inheritdoc/>
-        public object SyncRoot
-        {
-            get { return ((ICollection) SqlErrorCollection).SyncRoot; }
-        }
-
-        /// <inheritdoc/>
-        public bool IsSynchronized
-        {
-            get { return false; }
-        }
-        #endregion
 
         /// <summary>
         /// Adds the specified error to the collection.
@@ -187,8 +166,8 @@ namespace WebApplications.Testing.Data
         public static implicit operator SqlErrorCollection(SqlErrorCollectionPrototype prototype)
         {
             return prototype != null
-                       ? prototype.SqlErrorCollection
-                       : null;
+                ? prototype.SqlErrorCollection
+                : null;
         }
 
         /// <summary>
@@ -200,8 +179,40 @@ namespace WebApplications.Testing.Data
         public static implicit operator SqlErrorCollectionPrototype(SqlErrorCollection collection)
         {
             return collection != null
-                       ? new SqlErrorCollectionPrototype(collection)
-                       : null;
+                ? new SqlErrorCollectionPrototype(collection)
+                : null;
         }
+
+        #region ICollection Members
+        /// <inheritdoc/>
+        public IEnumerator GetEnumerator()
+        {
+            return SqlErrorCollection.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        public void CopyTo(Array array, int index)
+        {
+            SqlErrorCollection.CopyTo(array, index);
+        }
+
+        /// <inheritdoc/>
+        public int Count
+        {
+            get { return SqlErrorCollection.Count; }
+        }
+
+        /// <inheritdoc/>
+        public object SyncRoot
+        {
+            get { return ((ICollection)SqlErrorCollection).SyncRoot; }
+        }
+
+        /// <inheritdoc/>
+        public bool IsSynchronized
+        {
+            get { return false; }
+        }
+        #endregion
     }
 }

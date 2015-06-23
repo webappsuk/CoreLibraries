@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
@@ -37,17 +36,20 @@ namespace WebApplications.Testing.Data
     /// Holds a collection of records.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public class ObjectSet : IObjectSet, ICollection<IObjectRecord>
     {
         /// <summary>
         /// Holds the <see cref="RecordSetDefinition"/>.
         /// </summary>
-        [NotNull] private readonly RecordSetDefinition _definition;
+        [NotNull]
+        private readonly RecordSetDefinition _definition;
 
         /// <summary>
         /// The underlying list of records.
         /// </summary>
-        [NotNull] private readonly List<IObjectRecord> _records = new List<IObjectRecord>();
+        [NotNull]
+        private readonly List<IObjectRecord> _records = new List<IObjectRecord>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectSet" /> class.
@@ -57,7 +59,8 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public ObjectSet([NotNull] RecordSetDefinition recordSetDefinition, IEnumerable<IObjectRecord> records = null)
         {
-            Contract.Requires(recordSetDefinition != null);
+            if (recordSetDefinition == null) throw new ArgumentNullException("recordSetDefinition");
+
             _definition = recordSetDefinition;
 
             if (records == null)
@@ -65,6 +68,12 @@ namespace WebApplications.Testing.Data
 
             foreach (IObjectRecord record in records)
                 Add(record);
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return _records.ToString();
         }
 
         #region ICollection<IObjectRecord> Members
@@ -77,7 +86,8 @@ namespace WebApplications.Testing.Data
             if ((item.RecordSetDefinition != _definition) &&
                 (item.RecordSetDefinition != RecordSetDefinition.ExceptionRecord))
                 throw new ArgumentException(
-                    "The record must have an identical recordset definition to be added to the current record.", "item");
+                    "The record must have an identical recordset definition to be added to the current record.",
+                    "item");
 
             _records.Add(item);
         }
@@ -138,11 +148,5 @@ namespace WebApplications.Testing.Data
             return GetEnumerator();
         }
         #endregion
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            return _records.ToString();
-        }
     }
 }

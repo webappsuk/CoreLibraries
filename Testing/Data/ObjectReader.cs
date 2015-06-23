@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Globalization;
 using System.Linq;
 using WebApplications.Testing.Annotations;
 
@@ -40,12 +38,14 @@ namespace WebApplications.Testing.Data
     /// The object reader.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public sealed class ObjectReader : IDataReader, ICollection<IObjectSet>
     {
         /// <summary>
         /// Holds the internal record sets.
         /// </summary>
-        [NotNull] private readonly List<IObjectSet> _recordSets;
+        [NotNull]
+        private readonly List<IObjectSet> _recordSets;
 
         /// <summary>
         /// Whether the reader is closed.
@@ -55,12 +55,14 @@ namespace WebApplications.Testing.Data
         /// <summary>
         /// The internal enumeror over the records in the current set.
         /// </summary>
-        [CanBeNull] private IEnumerator<IObjectRecord> _recordEnumerator;
+        [CanBeNull]
+        private IEnumerator<IObjectRecord> _recordEnumerator;
 
         /// <summary>
         /// The internal enumeror over the sets.
         /// </summary>
-        [CanBeNull] private IEnumerator<IObjectSet> _setEnumerator;
+        [CanBeNull]
+        private IEnumerator<IObjectSet> _setEnumerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectReader" /> class.
@@ -70,8 +72,8 @@ namespace WebApplications.Testing.Data
         public ObjectReader(IEnumerable<IObjectSet> recordSets = null)
         {
             _recordSets = recordSets == null
-                              ? new List<IObjectSet>()
-                              : recordSets.ToList();
+                ? new List<IObjectSet>()
+                : recordSets.ToList();
         }
 
         /// <summary>
@@ -127,6 +129,16 @@ namespace WebApplications.Testing.Data
 
                 return _recordEnumerator.Current;
             }
+        }
+
+        /// <summary>
+        /// Resets the data reader, clearing enumerators, re-opening and allowing recordset collection to be modified.
+        /// </summary>
+        /// <remarks></remarks>
+        public void Reset()
+        {
+            _isClosed = false;
+            Dispose();
         }
 
         #region ICollection<IObjectSet> Members
@@ -265,8 +277,10 @@ namespace WebApplications.Testing.Data
         public object GetValue(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetValue"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetValue"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -278,8 +292,10 @@ namespace WebApplications.Testing.Data
         public int GetValues(object[] values)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetValues"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetValues"));
 
             IObjectRecord record = Current;
             if (record == null)
@@ -292,8 +308,10 @@ namespace WebApplications.Testing.Data
         public bool GetBoolean(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetBoolean"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetBoolean"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -305,8 +323,10 @@ namespace WebApplications.Testing.Data
         public byte GetByte(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetByte"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetByte"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -318,8 +338,10 @@ namespace WebApplications.Testing.Data
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetBytes"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetBytes"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -331,8 +353,10 @@ namespace WebApplications.Testing.Data
         public char GetChar(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetChar"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetChar"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -344,8 +368,10 @@ namespace WebApplications.Testing.Data
         public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetChars"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetChars"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -357,8 +383,10 @@ namespace WebApplications.Testing.Data
         public Guid GetGuid(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetGuid"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetGuid"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -370,8 +398,10 @@ namespace WebApplications.Testing.Data
         public short GetInt16(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetInt16"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetInt16"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -383,8 +413,10 @@ namespace WebApplications.Testing.Data
         public int GetInt32(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetInt32"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetInt32"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -396,8 +428,10 @@ namespace WebApplications.Testing.Data
         public long GetInt64(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetInt64"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetInt64"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -409,8 +443,10 @@ namespace WebApplications.Testing.Data
         public float GetFloat(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetFloat"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetFloat"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -422,8 +458,10 @@ namespace WebApplications.Testing.Data
         public double GetDouble(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetDouble"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetDouble"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -435,8 +473,10 @@ namespace WebApplications.Testing.Data
         public string GetString(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetString"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetString"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -448,8 +488,10 @@ namespace WebApplications.Testing.Data
         public decimal GetDecimal(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetDecimal"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetDecimal"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -461,8 +503,10 @@ namespace WebApplications.Testing.Data
         public DateTime GetDateTime(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetDateTime"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetDateTime"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -474,8 +518,10 @@ namespace WebApplications.Testing.Data
         public IDataReader GetData(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "GetData"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "GetData"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -487,8 +533,10 @@ namespace WebApplications.Testing.Data
         public bool IsDBNull(int i)
         {
             if (_isClosed)
-                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
-                                                                  "IsDBNull"));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Invalid attempt to call {0} when reader is closed.",
+                        "IsDBNull"));
             IObjectRecord record = Current;
             if (record == null)
                 throw new InvalidOperationException("Invalid attempt to read when no data is present.");
@@ -578,15 +626,5 @@ namespace WebApplications.Testing.Data
             get { return -1; }
         }
         #endregion
-
-        /// <summary>
-        /// Resets the data reader, clearing enumerators, re-opening and allowing recordset collection to be modified.
-        /// </summary>
-        /// <remarks></remarks>
-        public void Reset()
-        {
-            _isClosed = false;
-            Dispose();
-        }
     }
 }

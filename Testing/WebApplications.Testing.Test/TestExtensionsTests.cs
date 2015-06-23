@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,8 +45,10 @@ namespace WebApplications.Testing.Test
             s.Stop();
             string randomString = random.RandomString();
             Assert.AreEqual(
-                String.Format("Test stopwatch {0} completed in {1}ms.", randomString,
-                              (s.ElapsedTicks*1000M)/Stopwatch.Frequency),
+                String.Format(
+                    "Test stopwatch {0} completed in {1}ms.",
+                    randomString,
+                    (s.ElapsedTicks * 1000M) / Stopwatch.Frequency),
                 s.ToString("Test stopwatch {0}", randomString));
         }
     }

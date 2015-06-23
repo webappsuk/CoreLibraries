@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,15 +26,18 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing
 {
     /// <summary>
     /// Base class for unit tests on Databases.
     /// </summary>
+    [PublicAPI]
     public abstract class TestDatabaseBase : TestBase
     {
         /// <summary>
@@ -45,16 +48,20 @@ namespace WebApplications.Testing
         static TestDatabaseBase()
         {
             // Find the data directory
-            string path = Path.GetDirectoryName(typeof (TestBase).Assembly.Location);
+            string path = Path.GetDirectoryName(typeof(TestBase).Assembly.Location);
             string root = Path.GetPathRoot(path);
             string dataDirectory;
             do
             {
+                Debug.Assert(path != null);
+
                 // Look recursively for directory called Data containing mdf files.
                 dataDirectory = Directory
                     .GetDirectories(path, "Data", SearchOption.AllDirectories)
-                    .SingleOrDefault(d => Directory.GetFiles(d, "*.mdf", SearchOption.TopDirectoryOnly)
-                        .Any());
+                    .SingleOrDefault(
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        d => Directory.GetFiles(d, "*.mdf", SearchOption.TopDirectoryOnly)
+                            .Any());
 
                 // Move up a directory
                 path = Path.GetDirectoryName(path);

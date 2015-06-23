@@ -12,12 +12,9 @@
     <description>$description$</description>
     <tags>Test Testing</tags>
     <references>
-      <group targetFramework="net451">
+      <group targetFramework="net452">
         <reference file="WebApplications.Testing.dll" />
       </group>
     </references>
   </metadata>
-  <files>
-    <file src="bin\CodeContracts\*.*" target="lib\net451\CodeContracts" />
-  </files>
 </package>

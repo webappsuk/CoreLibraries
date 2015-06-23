@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using WebApplications.Testing.Annotations;
 
@@ -55,14 +54,17 @@ namespace WebApplications.Testing.Data
             int minRows = 0,
             int maxRows = 1000,
             double nullProbability = 0.1,
-            [CanBeNull]Func<int, object>[] columnGenerators = null)
+            [CanBeNull] Func<int, object>[] columnGenerators = null)
             : this(
-                Tester.RandomGenerator.RandomRecordSetDefinition(columns), minRows, maxRows, nullProbability,
+                Tester.RandomGenerator.RandomRecordSetDefinition(columns),
+                minRows,
+                maxRows,
+                nullProbability,
                 columnGenerators)
         {
-            Contract.Requires(minRows > -1);
-            Contract.Requires(maxRows > -1);
-            Contract.Requires(minRows <= maxRows);
+            if (minRows < 0) throw new ArgumentOutOfRangeException("minRows");
+            if (maxRows < 0) throw new ArgumentOutOfRangeException("maxRows");
+            if (minRows > maxRows) throw new ArgumentOutOfRangeException("maxRows");
         }
 
         /// <summary>
@@ -77,16 +79,16 @@ namespace WebApplications.Testing.Data
         /// the current row number as it's only parameter and must return an object of the correct type for the column.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        public RandomSet([NotNull] RecordSetDefinition recordSetDefinition, int minRows = 0, int maxRows = 1000,
-                         double nullProbability = 0.1, [CanBeNull] Func<int, object>[] columnGenerators = null)
+        public RandomSet(
+            [NotNull] RecordSetDefinition recordSetDefinition,
+            int minRows = 0,
+            int maxRows = 1000,
+            double nullProbability = 0.1,
+            [CanBeNull] Func<int, object>[] columnGenerators = null)
             : base(
                 recordSetDefinition,
                 GenerateRecords(recordSetDefinition, minRows, maxRows, nullProbability, columnGenerators))
         {
-            Contract.Requires(recordSetDefinition != null);
-            Contract.Requires(minRows > -1);
-            Contract.Requires(maxRows > -1);
-            Contract.Requires(minRows <= maxRows);
         }
 
         /// <summary>
@@ -105,13 +107,17 @@ namespace WebApplications.Testing.Data
         ///   <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
         [NotNull]
-        private static IEnumerable<IObjectRecord> GenerateRecords([NotNull] RecordSetDefinition recordSetDefinition,
-                                                                  int minRows, int maxRows, double nullProbability, [CanBeNull] Func<int, object>[] columnGenerators = null)
+        private static IEnumerable<IObjectRecord> GenerateRecords(
+            [NotNull] RecordSetDefinition recordSetDefinition,
+            int minRows,
+            int maxRows,
+            double nullProbability,
+            [CanBeNull] Func<int, object>[] columnGenerators = null)
         {
-            Contract.Requires(recordSetDefinition != null);
-            Contract.Requires(minRows > -1);
-            Contract.Requires(maxRows > -1);
-            Contract.Requires(minRows <= maxRows);
+            if (recordSetDefinition == null) throw new ArgumentNullException("recordSetDefinition");
+            if (minRows < 0) throw new ArgumentOutOfRangeException("minRows");
+            if (maxRows < 0) throw new ArgumentOutOfRangeException("maxRows");
+            if (minRows > maxRows) throw new ArgumentOutOfRangeException("maxRows");
 
             // Calculate number of rows.
             int rows = minRows == maxRows

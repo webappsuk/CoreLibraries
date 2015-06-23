@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Globalization;
 using WebApplications.Testing.Annotations;
 
@@ -39,6 +39,7 @@ namespace WebApplications.Testing.Data
     /// Implements a record.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public sealed class ObjectRecord : IObjectRecord
     {
         /// <summary>
@@ -65,10 +66,15 @@ namespace WebApplications.Testing.Data
         /// the current row number as it's only parameter and must return an object of the correct type for the column.</param>
         /// <param name="rowNumber">The optional row number to pass to the generator.</param>
         /// <exception cref="System.ArgumentException">Thrown if the number of column generators exceeds the number of columns in the record set definition.</exception>
-        public ObjectRecord([NotNull] RecordSetDefinition recordSetDefinition, bool randomData = false,
-                            double nullProbability = 0.1, [CanBeNull] Func<int, object>[] columnGenerators = null, int rowNumber = 1)
+        public ObjectRecord(
+            [NotNull] RecordSetDefinition recordSetDefinition,
+            bool randomData = false,
+            double nullProbability = 0.1,
+            [CanBeNull] Func<int, object>[] columnGenerators = null,
+            int rowNumber = 1)
         {
-            Contract.Requires(recordSetDefinition != null);
+            if (recordSetDefinition == null) throw new ArgumentNullException("recordSetDefinition");
+
             _recordSetDefinition = recordSetDefinition;
             int columnCount = recordSetDefinition.FieldCount;
             _columnValues = new object[columnCount];
@@ -80,26 +86,18 @@ namespace WebApplications.Testing.Data
                     "columnGenerators");
 
             for (int c = 0; c < columnCount; c++)
-            {
                 // Check if we have a generator
                 if ((columnGenerators != null) &&
                     (columnGenerators.Length > c) &&
                     (columnGenerators[c] != null))
-                {
                     // Use generator to get value
                     this[c] = columnGenerators[c](rowNumber);
-                }
                 else if (randomData)
-                {
                     // Generate random value.
                     this[c] = recordSetDefinition[c].GetRandomValue(nullProbability);
-                }
                 else
-                {
-                    // Just set to default value (no need to revalidate so set directly).
+                // Just set to default value (no need to revalidate so set directly).
                     _columnValues[c] = recordSetDefinition[c].DefaultValue;
-                }
-            }
         }
 
         /// <summary>
@@ -113,15 +111,18 @@ namespace WebApplications.Testing.Data
         /// </remarks>
         public ObjectRecord([NotNull] RecordSetDefinition recordSetDefinition, [NotNull] params object[] columnValues)
         {
-            Contract.Requires(recordSetDefinition != null);
-            Contract.Requires(columnValues != null);
+            if (recordSetDefinition == null) throw new ArgumentNullException("recordSetDefinition");
+            if (columnValues == null) throw new ArgumentNullException("columnValues");
+
             int length = columnValues.Length;
             int columns = recordSetDefinition.FieldCount;
             if (length > columns)
                 throw new ArgumentException(
                     string.Format(
                         "The number of values specified '{0}' cannot exceed the number of expected columns '{1}'.",
-                        length, columns), "columnValues");
+                        length,
+                        columns),
+                    "columnValues");
 
             _recordSetDefinition = recordSetDefinition;
             _columnValues = new object[recordSetDefinition.FieldCount];
@@ -165,7 +166,7 @@ namespace WebApplications.Testing.Data
                 throw new ArgumentException(
                     string.Format(
                         "Cannot set the value of column '{0}' to {1}.",
-                        _recordSetDefinition[i].ToString(),
+                        _recordSetDefinition[i],
                         value == null ? "null" : "'" + value + "'"),
                     "value");
 
@@ -269,7 +270,7 @@ namespace WebApplications.Testing.Data
                 throw new InvalidCastException();
             byte[] bytes = (byte[])o;
             length = (bytes.Length - fieldOffset) < length ? (int)(bytes.Length - fieldOffset) : length;
-            Contract.Assert(length >= 0);
+            Debug.Assert(length >= 0);
             Array.Copy(bytes, fieldOffset, buffer, bufferoffset, length);
             return length;
         }
@@ -291,11 +292,10 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public long GetChars(int i, long fieldOffset, char[] buffer, int bufferoffset, int length)
         {
+            if (buffer == null) throw new ArgumentNullException("buffer");
             if ((i < 0) ||
                 (i > FieldCount))
                 throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
-            if (buffer == null)
-                return 0;
 
             object o = _columnValues[i];
             if (o == null)
@@ -304,7 +304,7 @@ namespace WebApplications.Testing.Data
                 throw new InvalidCastException();
             char[] chars = (char[])o;
             length = (chars.Length - fieldOffset) < length ? (int)(chars.Length - fieldOffset) : length;
-            Contract.Assert(length >= 0);
+            Debug.Assert(length >= 0);
             Array.Copy(chars, fieldOffset, buffer, bufferoffset, length);
             return length;
         }

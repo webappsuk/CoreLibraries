@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,47 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using WebApplications.Testing.Annotations;
+using System.Diagnostics;
 using Microsoft.SqlServer.Server;
+using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
 {
     /// <summary>
     /// Holds UDT information.
     /// </summary>
+    [PublicAPI]
     public class SqlUdtInfo
     {
-        [ThreadStatic] private static Dictionary<Type, SqlUdtInfo> m_types2UdtInfo;
+        [ThreadStatic]
+        private static Dictionary<Type, SqlUdtInfo> _types2UdtInfo;
+
         /// <summary>
         /// The bytes are ordered.
         /// </summary>
         public readonly bool IsByteOrdered;
+
         /// <summary>
         /// Is fixed length
         /// </summary>
         public readonly bool IsFixedLength;
+
         /// <summary>
         /// The maximum byte size
         /// </summary>
         public readonly int MaxByteSize;
+
         /// <summary>
         /// The name
         /// </summary>
         [NotNull]
         public readonly string Name;
+
         /// <summary>
         /// The serialization format
         /// </summary>
         public readonly Format SerializationFormat;
+
         /// <summary>
         /// The validation method name
         /// </summary>
@@ -72,13 +80,16 @@ namespace WebApplications.Testing.Data
         /// <param name="attr">The attribute.</param>
         private SqlUdtInfo([NotNull] SqlUserDefinedTypeAttribute attr)
         {
-            Contract.Requires(attr != null);
+            if (attr == null) throw new ArgumentNullException("attr");
+
             SerializationFormat = attr.Format;
             IsByteOrdered = attr.IsByteOrdered;
             IsFixedLength = attr.IsFixedLength;
             MaxByteSize = attr.MaxByteSize;
+            // ReSharper disable AssignNullToNotNullAttribute
             Name = attr.Name;
             ValidationMethodName = attr.ValidationMethodName;
+            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>
@@ -90,12 +101,12 @@ namespace WebApplications.Testing.Data
         [NotNull]
         internal static SqlUdtInfo GetFromType([NotNull] Type target)
         {
-            Contract.Requires(target != null);
+            if (target == null) throw new ArgumentNullException("target");
+
             SqlUdtInfo fromType = TryGetFromType(target);
             if (fromType == null)
                 throw new InvalidOperationException();
-            else
-                return fromType;
+            return fromType;
         }
 
         /// <summary>
@@ -106,17 +117,21 @@ namespace WebApplications.Testing.Data
         [NotNull]
         internal static SqlUdtInfo TryGetFromType([NotNull] Type target)
         {
-            Contract.Requires(target != null);
-            if (m_types2UdtInfo == null)
-                m_types2UdtInfo = new Dictionary<Type, SqlUdtInfo>();
+            if (target == null) throw new ArgumentNullException("target");
+
+            if (_types2UdtInfo == null)
+                _types2UdtInfo = new Dictionary<Type, SqlUdtInfo>();
             SqlUdtInfo sqlUdtInfo;
-            if (!m_types2UdtInfo.TryGetValue(target, out sqlUdtInfo))
+            if (!_types2UdtInfo.TryGetValue(target, out sqlUdtInfo))
             {
-                object[] customAttributes = target.GetCustomAttributes(typeof (SqlUserDefinedTypeAttribute), false);
-                if (customAttributes != null && customAttributes.Length == 1)
-                    sqlUdtInfo = new SqlUdtInfo((SqlUserDefinedTypeAttribute) customAttributes[0]);
-                m_types2UdtInfo.Add(target, sqlUdtInfo);
+                object[] customAttributes = target.GetCustomAttributes(typeof(SqlUserDefinedTypeAttribute), false);
+                if (customAttributes.Length == 1)
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    sqlUdtInfo = new SqlUdtInfo((SqlUserDefinedTypeAttribute)customAttributes[0]);
+                _types2UdtInfo.Add(target, sqlUdtInfo);
             }
+
+            Debug.Assert(sqlUdtInfo != null);
             return sqlUdtInfo;
         }
     }

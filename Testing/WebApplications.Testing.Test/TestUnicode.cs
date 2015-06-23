@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,10 +42,12 @@ namespace WebApplications.Testing.Test
         {
             XmlDocument xmlDocument = new XmlDocument();
             XmlElement xmlNode = xmlDocument.CreateElement("TestNode");
-            xmlNode.InnerText = Random.RandomString(100000, true);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            xmlNode.InnerText = Random.RandomString(100000);
             xmlDocument.AppendChild(xmlNode);
             XmlNodeReader xmlNodeReader = new XmlNodeReader(xmlDocument);
             // The SqlXml constructor applies stricter tests to Unicode strings than Encoding.Unicode:
+            // ReSharper disable once UnusedVariable
             SqlXml dummy = new SqlXml(xmlNodeReader);
         }
     }

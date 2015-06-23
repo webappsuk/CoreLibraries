@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing.Data;
@@ -39,77 +40,85 @@ namespace WebApplications.Testing.Test
         [TestMethod]
         public void TestSqlExceptionPrototype()
         {
-            Parallel.For(0, 100,
-                         i =>
-                             {
-                                 Random random = Tester.RandomGenerator;
-                                 SqlErrorCollectionPrototype errorCollectionPrototype =
-                                     new SqlErrorCollectionPrototype();
+            Parallel.For(
+                0,
+                100,
+                i =>
+                {
+                    Random random = Tester.RandomGenerator;
+                    SqlErrorCollectionPrototype errorCollectionPrototype =
+                        new SqlErrorCollectionPrototype();
 
-                                 int loops = Tester.RandomGenerator.Next(10) + 1;
-                                 for (int loop = 0; loop < loops; loop++)
-                                 {
-                                     // Generate random values.
-                                     int infoNumber = random.RandomInt32();
-                                     byte errorState = random.RandomByte();
-                                     byte errorClass = (byte) random.Next(1, 26);
-                                     string server = random.RandomString();
-                                     string errorMessage = random.RandomString();
-                                     string procedure = random.RandomString();
-                                     int lineNumber = random.RandomInt32();
-                                     uint wind32ErrorCode = (uint) Math.Abs(random.RandomInt32());
+                    int loops = Tester.RandomGenerator.Next(10) + 1;
+                    for (int loop = 0; loop < loops; loop++)
+                    {
+                        // Generate random values.
+                        int infoNumber = random.RandomInt32();
+                        byte errorState = random.RandomByte();
+                        byte errorClass = (byte)random.Next(1, 26);
+                        string server = random.RandomString();
+                        string errorMessage = random.RandomString();
+                        string procedure = random.RandomString();
+                        int lineNumber = random.RandomInt32();
+                        uint wind32ErrorCode = (uint)Math.Abs(random.RandomInt32());
 
-                                     // Create prototype.
-                                     SqlErrorPrototype sqlErrorPrototype = new SqlErrorPrototype(infoNumber, errorState,
-                                                                                                 errorClass, server,
-                                                                                                 errorMessage, procedure,
-                                                                                                 lineNumber,
-                                                                                                 wind32ErrorCode);
+                        // Create prototype.
+                        SqlErrorPrototype sqlErrorPrototype = new SqlErrorPrototype(
+                            infoNumber,
+                            errorState,
+                            errorClass,
+                            server,
+                            errorMessage,
+                            procedure,
+                            lineNumber,
+                            wind32ErrorCode);
 
-                                     // Test implicit cast
-                                     SqlError sqlError = sqlErrorPrototype;
-                                     Assert.IsNotNull(sqlError);
+                        // Test implicit cast
+                        SqlError sqlError = sqlErrorPrototype;
+                        Assert.IsNotNull(sqlError);
 
-                                     // Check SqlError created properly
-                                     Assert.AreEqual(infoNumber, sqlError.Number);
-                                     Assert.AreEqual(errorState, sqlError.State);
-                                     Assert.AreEqual(errorClass, sqlError.Class);
-                                     Assert.AreEqual(server, sqlError.Server);
-                                     Assert.AreEqual(errorMessage, sqlError.Message);
-                                     Assert.AreEqual(procedure, sqlError.Procedure);
-                                     Assert.AreEqual(lineNumber, sqlError.LineNumber);
-                                     Assert.AreEqual(sqlErrorPrototype.ToString(), sqlError.ToString());
+                        // Check SqlError created properly
+                        Assert.AreEqual(infoNumber, sqlError.Number);
+                        Assert.AreEqual(errorState, sqlError.State);
+                        Assert.AreEqual(errorClass, sqlError.Class);
+                        Assert.AreEqual(server, sqlError.Server);
+                        Assert.AreEqual(errorMessage, sqlError.Message);
+                        Assert.AreEqual(procedure, sqlError.Procedure);
+                        Assert.AreEqual(lineNumber, sqlError.LineNumber);
+                        Assert.AreEqual(sqlErrorPrototype.ToString(), sqlError.ToString());
 
-                                     errorCollectionPrototype.Add(sqlError);
-                                 }
+                        errorCollectionPrototype.Add(sqlError);
+                    }
 
-                                 Assert.AreEqual(loops, errorCollectionPrototype.Count);
+                    Assert.AreEqual(loops, errorCollectionPrototype.Count);
 
-                                 // Test implicit cast
-                                 SqlErrorCollection collection = errorCollectionPrototype;
+                    // Test implicit cast
+                    SqlErrorCollection collection = errorCollectionPrototype;
 
-                                 Assert.AreSame(errorCollectionPrototype.SqlErrorCollection, collection);
+                    Assert.AreSame(errorCollectionPrototype.SqlErrorCollection, collection);
 
-                                 // Now create a SqlException
-                                 Guid connectionId = Guid.NewGuid();
-                                 SqlExceptionPrototype sqlExceptionPrototype = new SqlExceptionPrototype(collection,
-                                                                                                         "9.0.0.0",
-                                                                                                         connectionId);
+                    // Now create a SqlException
+                    Guid connectionId = Guid.NewGuid();
+                    SqlExceptionPrototype sqlExceptionPrototype = new SqlExceptionPrototype(
+                        collection,
+                        "9.0.0.0",
+                        connectionId);
 
-                                 // Test implicit conversion
-                                 SqlException sqlException = sqlExceptionPrototype;
-                                 Assert.IsNotNull(sqlException);
+                    // Test implicit conversion
+                    SqlException sqlException = sqlExceptionPrototype;
+                    Assert.IsNotNull(sqlException);
 
-                                 // Check SqlException created properly - it uses the first error from the collection.
-                                 SqlError first = collection[0];
-                                 Assert.AreEqual(first.Number, sqlException.Number);
-                                 Assert.AreEqual(first.State, sqlException.State);
-                                 Assert.AreEqual(first.Class, sqlException.Class);
-                                 Assert.AreEqual(first.Server, sqlException.Server);
-                                 //Assert.AreEqual(first.Message, sqlException.Message);
-                                 Assert.AreEqual(first.Procedure, sqlException.Procedure);
-                                 Assert.AreEqual(first.LineNumber, sqlException.LineNumber);
-                             });
+                    // Check SqlException created properly - it uses the first error from the collection.
+                    SqlError first = collection[0];
+                    Debug.Assert(first != null);
+                    Assert.AreEqual(first.Number, sqlException.Number);
+                    Assert.AreEqual(first.State, sqlException.State);
+                    Assert.AreEqual(first.Class, sqlException.Class);
+                    Assert.AreEqual(first.Server, sqlException.Server);
+                    //Assert.AreEqual(first.Message, sqlException.Message);
+                    Assert.AreEqual(first.Procedure, sqlException.Procedure);
+                    Assert.AreEqual(first.LineNumber, sqlException.LineNumber);
+                });
         }
     }
 }

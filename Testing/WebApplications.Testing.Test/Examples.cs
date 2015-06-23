@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Testing.Annotations;
 using WebApplications.Testing.Data;
+using WebApplications.Testing.Data.Exceptions;
 
 namespace WebApplications.Testing.Test
 {
@@ -46,7 +48,7 @@ namespace WebApplications.Testing.Test
                 new ColumnDefinition("Name", SqlDbType.Char, 50),
                 new ColumnDefinition("Description", SqlDbType.NVarChar),
                 // This column is not nullable so defaults to true
-                new ColumnDefinition("Active", SqlDbType.Bit, isNullable:false, defaultValue:true)
+                new ColumnDefinition("Active", SqlDbType.Bit, isNullable: false, defaultValue: true)
                 );
 
             // Now we can create a record
@@ -60,10 +62,16 @@ namespace WebApplications.Testing.Test
 
             // SqlExceptions are made from a collection of SqlErrors - which can make like this :
             SqlErrorCollection errorCollection = new SqlErrorCollectionPrototype
-                                                {
-                                                    new SqlErrorPrototype(1000, 80, 17, "MyFakeServer",
-                                                                          "Connection Timeout.", "spMySproc", 54)
-                                                };
+            {
+                new SqlErrorPrototype(
+                    1000,
+                    80,
+                    17,
+                    "MyFakeServer",
+                    "Connection Timeout.",
+                    "spMySproc",
+                    54)
+            };
 
             SqlException sqlException = new SqlExceptionPrototype(errorCollection, "9.0.0.0", Guid.NewGuid());
             IObjectRecord exceptionRecord = new ExceptionRecord(sqlException);
@@ -72,17 +80,17 @@ namespace WebApplications.Testing.Test
             // Note the records must have the same RecordSetDefinition (unless it's an exception record)
             // The final record will through an exception when reached!
             ObjectSet recordSet = new ObjectSet(recordSetDefinition)
-                                      {
-                                          dataRecord,
-                                          randomRecord,
-                                          //exceptionRecord
-                                      };
+            {
+                dataRecord,
+                randomRecord,
+                //exceptionRecord
+            };
 
             // We can add recordsets to an ObjectReader
             ObjectReader reader = new ObjectReader
-                                      {
-                                          recordSet
-                                      };
+            {
+                recordSet
+            };
 
             // We can also add random record sets - this one has the same definition as the first.
             reader.Add(new RandomSet(recordSetDefinition));
@@ -90,8 +98,10 @@ namespace WebApplications.Testing.Test
             // We can also fix certain rows values using the column generators arry, a null indicates
             // that the column should us a random value, otherwise a lambda can be supplied - in this case
             // it sets the row to the row number (1 - indexed).
-            reader.Add(new RandomSet(recordSetDefinition,
-                                     columnGenerators: new Func<int, object>[] {null, row => "Row #" + row}));
+            reader.Add(
+                new RandomSet(
+                    recordSetDefinition,
+                    columnGenerators: new Func<int, object>[] { null, row => "Row #" + row }));
 
             // Whereas this one has a random set of columns (with random types).
             reader.Add(new RandomSet(10));
@@ -128,28 +138,28 @@ namespace WebApplications.Testing.Test
             IObjectRecord dataRecord = new ObjectRecord(recordSetDefinition, 1, "Test", "This is my test record");
 
             // To create a record that throws an exception we first create an ExceptionRecord
-            IObjectRecord exceptionRecord = new ExceptionRecord(new Data.Exceptions.SqlInvalidSyntaxException());
+            IObjectRecord exceptionRecord = new ExceptionRecord(new SqlInvalidSyntaxException());
 
             // We can stick these records into a recordset
             // Note the records must have the same RecordSetDefinition (unless it's an exception record)
             // The final record will through an exception when reached!
             ObjectSet recordSet = new ObjectSet(recordSetDefinition)
-                                      {
-                                          dataRecord,
-                                          exceptionRecord
-                                      };
+            {
+                dataRecord,
+                exceptionRecord
+            };
 
             // We can add recordsets to an ObjectReader
             ObjectReader reader = new ObjectReader
-                                      {
-                                          recordSet
-                                      };
+            {
+                recordSet
+            };
 
             // Now that we have a reader we can use it like a normal reader - it even simulates disposal.
             ReadFromRecordSet(reader);
         }
 
-        private static void ReadFromRecordSet(ObjectReader reader)
+        private static void ReadFromRecordSet([NotNull] ObjectReader reader)
         {
             try
             {
@@ -163,7 +173,7 @@ namespace WebApplications.Testing.Test
                         do
                         {
                             rows++;
-                            Trace.WriteLine("Value : "+dataReader.GetInt32(0)+"\n");
+                            Trace.WriteLine("Value : " + dataReader.GetInt32(0) + "\n");
                         } while (dataReader.Read());
 
                         Trace.WriteLine(rows + " rows.");
@@ -174,7 +184,7 @@ namespace WebApplications.Testing.Test
             catch (SqlException sqlE)
             {
                 //Custom exception message is thrown rather than the general SqlException message. 
-                Trace.WriteLine(String.Format(sqlE.Message,"from"));
+                Trace.WriteLine(String.Format(sqlE.Message, "from"));
             }
         }
     }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Data;
-using System.Diagnostics.Contracts;
 using WebApplications.Testing.Annotations;
 
 namespace WebApplications.Testing.Data
@@ -36,21 +35,23 @@ namespace WebApplications.Testing.Data
     /// Record that throws an exception.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public sealed class ExceptionRecord : IObjectRecord
     {
         /// <summary>
         /// The exception that will be thrown when accessing this record.
         /// </summary>
-        [NotNull] public readonly Exception Exception;
+        [NotNull]
+        public readonly Exception Exception;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExceptionRecord" /> class.
         /// </summary>
         /// <param name="exception">The exception that will be thrown when accessing this record.</param>
         /// <remarks></remarks>
-        public ExceptionRecord([NotNull] Exception exception = null)
+        public ExceptionRecord([NotNull] Exception exception)
         {
-            Contract.Requires(exception != null);
+            if (exception == null) throw new ArgumentNullException("exception");
             Exception = exception;
         }
 

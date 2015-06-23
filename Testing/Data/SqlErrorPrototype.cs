@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using WebApplications.Testing.Annotations;
@@ -40,6 +40,7 @@ namespace WebApplications.Testing.Data
     /// Allows creation of a <see cref="SqlError"/>.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public class SqlErrorPrototype
     {
         /// <summary>
@@ -49,13 +50,14 @@ namespace WebApplications.Testing.Data
         /// This calls the
         /// internal SqlError(int infoNumber, byte errorState, byte errorClass, string server, string errorMessage, string procedure, int lineNumber, uint win32ErrorCode)
         /// constructor.</remarks>
-        [NotNull] private static readonly Func<int, byte, byte, string, string, string, int, uint, SqlError>
-            _constructor;
+        [NotNull]
+        private static readonly Func<int, byte, byte, string, string, string, int, uint, SqlError> _constructor;
 
         /// <summary>
         /// The equivalent <see cref="SqlError"/>.
         /// </summary>
-        [NotNull] public readonly SqlError SqlError;
+        [NotNull]
+        public readonly SqlError SqlError;
 
         /// <summary>
         /// Creates the <see cref="_constructor"/> lambda.
@@ -65,37 +67,40 @@ namespace WebApplications.Testing.Data
         {
             // Find SqlError constructor.
             ConstructorInfo constructorInfo =
-                typeof (SqlError).GetConstructor(
-                    BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance, null,
+                typeof(SqlError).GetConstructor(
+                    BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
+                    null,
                     new[]
-                        {
-                            typeof (int),
-                            typeof (byte),
-                            typeof (byte),
-                            typeof (string),
-                            typeof (string),
-                            typeof (string),
-                            typeof (int),
-                            typeof (uint)
-                        }, null);
-            Contract.Assert(constructorInfo != null);
+                    {
+                        typeof(int),
+                        typeof(byte),
+                        typeof(byte),
+                        typeof(string),
+                        typeof(string),
+                        typeof(string),
+                        typeof(int),
+                        typeof(uint)
+                    },
+                    null);
+            Debug.Assert(constructorInfo != null);
 
             // Create parameters
             List<ParameterExpression> parameters = new List<ParameterExpression>(4)
-                                                       {
-                                                           Expression.Parameter(typeof (int), "infoNumber"),
-                                                           Expression.Parameter(typeof (byte), "errorState"),
-                                                           Expression.Parameter(typeof (byte), "errorClass"),
-                                                           Expression.Parameter(typeof (string), "server"),
-                                                           Expression.Parameter(typeof (string), "errorMessage"),
-                                                           Expression.Parameter(typeof (string), "procedure"),
-                                                           Expression.Parameter(typeof (int), "lineNumber"),
-                                                           Expression.Parameter(typeof (uint), "win32ErrorCode")
-                                                       };
+            {
+                Expression.Parameter(typeof(int), "infoNumber"),
+                Expression.Parameter(typeof(byte), "errorState"),
+                Expression.Parameter(typeof(byte), "errorClass"),
+                Expression.Parameter(typeof(string), "server"),
+                Expression.Parameter(typeof(string), "errorMessage"),
+                Expression.Parameter(typeof(string), "procedure"),
+                Expression.Parameter(typeof(int), "lineNumber"),
+                Expression.Parameter(typeof(uint), "win32ErrorCode")
+            };
 
             // Create lambda expression.
             _constructor = Expression.Lambda<Func<int, byte, byte, string, string, string, int, uint, SqlError>>(
-                Expression.New(constructorInfo, parameters), parameters).Compile();
+                Expression.New(constructorInfo, parameters),
+                parameters).Compile();
         }
 
         /// <summary>
@@ -112,12 +117,26 @@ namespace WebApplications.Testing.Data
         /// this value will create an <see cref="Exception.InnerException">inner exception</see> of type <see cref="Win32Exception"/>.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        public SqlErrorPrototype(int infoNumber, byte errorState, byte errorClass = 17,
-                                 string server = "Unspecified server", string errorMessage = "Unspecified error",
-                                 string procedure = "Unspecified procedure", int lineNumber = 0, uint win32ErrorCode = 0)
+        public SqlErrorPrototype(
+            int infoNumber,
+            byte errorState,
+            byte errorClass = 17,
+            string server = "Unspecified server",
+            string errorMessage = "Unspecified error",
+            string procedure = "Unspecified procedure",
+            int lineNumber = 0,
+            uint win32ErrorCode = 0)
             : this(
-                _constructor(infoNumber, errorState, errorClass, server, errorMessage, procedure, lineNumber,
-                             win32ErrorCode))
+                // ReSharper disable once AssignNullToNotNullAttribute
+                _constructor(
+                    infoNumber,
+                    errorState,
+                    errorClass,
+                    server,
+                    errorMessage,
+                    procedure,
+                    lineNumber,
+                    win32ErrorCode))
         {
         }
 
@@ -128,7 +147,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public SqlErrorPrototype([NotNull] SqlError error)
         {
-            Contract.Requires(error != null);
+            if (error == null) throw new ArgumentNullException("error");
             SqlError = error;
         }
 
@@ -251,8 +270,8 @@ namespace WebApplications.Testing.Data
         public static implicit operator SqlError(SqlErrorPrototype prototype)
         {
             return prototype != null
-                       ? prototype.SqlError
-                       : null;
+                ? prototype.SqlError
+                : null;
         }
 
         /// <summary>
@@ -264,8 +283,8 @@ namespace WebApplications.Testing.Data
         public static implicit operator SqlErrorPrototype(SqlError sqlError)
         {
             return sqlError != null
-                       ? new SqlErrorPrototype(sqlError)
-                       : null;
+                ? new SqlErrorPrototype(sqlError)
+                : null;
         }
     }
 }

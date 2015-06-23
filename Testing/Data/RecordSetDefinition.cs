@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using WebApplications.Testing.Annotations;
@@ -40,6 +40,7 @@ namespace WebApplications.Testing.Data
     /// Defines a record set.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public class RecordSetDefinition
     {
         /// <summary>
@@ -54,7 +55,8 @@ namespace WebApplications.Testing.Data
         /// </summary>
         /// <value>The column definitions array.</value>
         /// <remarks></remarks>
-        [NotNull] private readonly ColumnDefinition[] _columnsArray;
+        [NotNull]
+        private readonly ColumnDefinition[] _columnsArray;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RecordSetDefinition" /> class.
@@ -63,20 +65,26 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public RecordSetDefinition([NotNull] IEnumerable<ColumnDefinition> columnDefinitions)
         {
-            Contract.Requires(columnDefinitions != null);
+            if (columnDefinitions == null) throw new ArgumentNullException("columnDefinitions");
+
             _columnsArray = columnDefinitions.ToArray();
 
             if (_columnsArray.Length < 1)
-                throw new ArgumentOutOfRangeException("columnDefinitions", columnDefinitions,
+                throw new ArgumentOutOfRangeException(
+                    "columnDefinitions",
+                    columnDefinitions,
                     "The column definitions must have at least one column.");
 
             for (int c = 0; c < _columnsArray.Length; c++)
             {
                 ColumnDefinition columnDefinition = _columnsArray[c];
                 if (columnDefinition == null)
-                    throw new ArgumentOutOfRangeException("columnDefinitions", columnDefinitions,
+                    throw new ArgumentOutOfRangeException(
+                        "columnDefinitions",
+                        columnDefinitions,
                         string.Format(
-                            "The column definition at index '{0} must not be null.", c));
+                            "The column definition at index '{0} must not be null.",
+                            c));
 
                 if (columnDefinition.RecordSetDefinition != null)
                     throw new InvalidOperationException(
@@ -95,9 +103,8 @@ namespace WebApplications.Testing.Data
         /// <param name="columnDefinitions">The column definitions.</param>
         /// <remarks></remarks>
         public RecordSetDefinition([NotNull] params ColumnDefinition[] columnDefinitions)
-            : this((IEnumerable<ColumnDefinition>) columnDefinitions)
+            : this((IEnumerable<ColumnDefinition>)columnDefinitions)
         {
-            Contract.Requires(columnDefinitions != null);
         }
 
         /// <summary>
@@ -137,10 +144,10 @@ namespace WebApplications.Testing.Data
                 if ((index < 0) ||
                     (index > FieldCount))
                     throw new IndexOutOfRangeException(index.ToString(CultureInfo.InvariantCulture));
+                Debug.Assert(_columnsArray[index] != null);
                 return _columnsArray[index];
             }
         }
-
 
         /// <summary>
         /// Gets the ordinal.
@@ -154,10 +161,12 @@ namespace WebApplications.Testing.Data
             CompareInfo compare = CultureInfo.InvariantCulture.CompareInfo;
             for (int c = 0; c < FieldCount; c++)
             {
-                if (
-                    compare.Compare(_columnsArray[c].Name, name,
-                                    CompareOptions.IgnoreCase | CompareOptions.IgnoreKanaType |
-                                    CompareOptions.IgnoreWidth) == 0)
+                Debug.Assert(_columnsArray[c] != null);
+                if (compare.Compare(
+                    _columnsArray[c].Name,
+                    name,
+                    CompareOptions.IgnoreCase | CompareOptions.IgnoreKanaType |
+                    CompareOptions.IgnoreWidth) == 0)
                     return c;
             }
             throw new IndexOutOfRangeException(name);

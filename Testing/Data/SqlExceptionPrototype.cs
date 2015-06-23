@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using WebApplications.Testing.Annotations;
@@ -40,6 +40,7 @@ namespace WebApplications.Testing.Data
     /// </summary>
     /// <filterpriority>1</filterpriority>
     [Serializable]
+    [PublicAPI]
     public class SqlExceptionPrototype
     {
         /// <summary>
@@ -49,12 +50,14 @@ namespace WebApplications.Testing.Data
         /// This calls the
         /// internal static SqlException CreateException(SqlErrorCollection errorCollection, string serverVersion, Guid conId)
         /// constructor.</remarks>
-        [NotNull] private static readonly Func<SqlErrorCollection, string, Guid, Exception, SqlException> _constructor;
+        [NotNull]
+        private static readonly Func<SqlErrorCollection, string, Guid, Exception, SqlException> _constructor;
 
         /// <summary>
         /// The equivalent <see cref="SqlException"/>.
         /// </summary>
-        [NotNull] public readonly SqlException SqlException;
+        [NotNull]
+        public readonly SqlException SqlException;
 
         /// <summary>
         /// Creates the <see cref="_constructor"/> lambda.
@@ -64,31 +67,35 @@ namespace WebApplications.Testing.Data
         {
             // Find SqlError constructor (note we don't get about the overload that accepts uint win32ErrorCode
             MethodInfo methodInfo =
-                typeof (SqlException).GetMethod("CreateException",
-                                                BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod,
-                                                null,
-                                                new[]
-                                                    {
-                                                        typeof (SqlErrorCollection),
-                                                        typeof (string),
-                                                        typeof (Guid),
-                                                        typeof (Exception)
-                                                    }, null);
-            Contract.Assert(methodInfo != null);
+                typeof(SqlException).GetMethod(
+                    "CreateException",
+                    BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod,
+                    null,
+                    new[]
+                    {
+                        typeof(SqlErrorCollection),
+                        typeof(string),
+                        typeof(Guid),
+                        typeof(Exception)
+                    },
+                    null);
+            Debug.Assert(methodInfo != null);
 
             // Create parameters
             List<ParameterExpression> parameters = new List<ParameterExpression>(4)
-                                                       {
-                                                           Expression.Parameter(typeof (SqlErrorCollection),
-                                                                                "errorCollection"),
-                                                           Expression.Parameter(typeof (string), "serverVersion"),
-                                                           Expression.Parameter(typeof (Guid), "conId"),
-                                                           Expression.Parameter(typeof (Exception), "innerException")
-                                                       };
+            {
+                Expression.Parameter(
+                    typeof(SqlErrorCollection),
+                    "errorCollection"),
+                Expression.Parameter(typeof(string), "serverVersion"),
+                Expression.Parameter(typeof(Guid), "conId"),
+                Expression.Parameter(typeof(Exception), "innerException")
+            };
 
             // Create lambda expression.
             _constructor = Expression.Lambda<Func<SqlErrorCollection, string, Guid, Exception, SqlException>>(
-                Expression.Call(methodInfo, parameters), parameters).Compile();
+                Expression.Call(methodInfo, parameters),
+                parameters).Compile();
         }
 
         /// <summary>
@@ -98,8 +105,18 @@ namespace WebApplications.Testing.Data
         /// <param name="serverVersion">The server version.</param>
         /// <param name="conId">The connection id.</param>
         /// <param name="innerException">The inner exception.</param>
-        public SqlExceptionPrototype(SqlErrorCollection errorCollection, string serverVersion = null, Guid conId = default(Guid), Exception innerException = null)
-            : this(_constructor(errorCollection, serverVersion, conId == default(Guid) ? Guid.NewGuid() : conId, innerException))
+        public SqlExceptionPrototype(
+            SqlErrorCollection errorCollection,
+            string serverVersion = null,
+            Guid conId = default(Guid),
+            Exception innerException = null)
+            : this(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                _constructor(
+                    errorCollection,
+                    serverVersion,
+                    conId == default(Guid) ? Guid.NewGuid() : conId,
+                    innerException))
         {
         }
 
@@ -110,7 +127,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public SqlExceptionPrototype([NotNull] SqlException exception)
         {
-            Contract.Requires(exception != null);
+            if (exception == null) throw new ArgumentNullException("exception");
             SqlException = exception;
         }
 
@@ -252,8 +269,8 @@ namespace WebApplications.Testing.Data
         public static implicit operator SqlException(SqlExceptionPrototype prototype)
         {
             return prototype != null
-                       ? prototype.SqlException
-                       : null;
+                ? prototype.SqlException
+                : null;
         }
 
         /// <summary>
@@ -265,21 +282,25 @@ namespace WebApplications.Testing.Data
         public static implicit operator SqlExceptionPrototype(SqlException exception)
         {
             return exception != null
-                       ? new SqlExceptionPrototype(exception)
-                       : null;
+                ? new SqlExceptionPrototype(exception)
+                : null;
         }
 
         /// <summary>
         /// Generates the collection.
         /// </summary>
         /// <returns></returns>
-        protected static SqlErrorCollection GenerateCollection(int infoNumber, byte errorState, byte errorClass, string errorMessage)
+        protected static SqlErrorCollection GenerateCollection(
+            int infoNumber,
+            byte errorState,
+            byte errorClass,
+            string errorMessage)
         {
             return new
                 SqlErrorCollectionPrototype
-                       {
-                           new SqlErrorPrototype(infoNumber, errorState, errorClass, errorMessage: errorMessage)
-                       };
+            {
+                new SqlErrorPrototype(infoNumber, errorState, errorClass, errorMessage: errorMessage)
+            };
         }
     }
 }
