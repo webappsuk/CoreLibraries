@@ -146,7 +146,7 @@ namespace WebApplications.Utilities.Serialization.Test
         public void Serialize_SerializableAndImplementsISerializableTestClass_FirstChildHasTypeAttributeMatchingTypeName
             ()
         {
-            String className = typeof (SerializableAndImplementsISerializableTestClass).Name;
+            String className = typeof (SerializableAndImplementsISerializableTestClass).FullName;
             String propertyName;
             int propertyValue;
             Object testObject = GenerateSerializableAndImplementsISerializableTestClass(out propertyName,
@@ -159,11 +159,10 @@ namespace WebApplications.Utilities.Serialization.Test
         }
 
         [TestMethod]
-        // TODO XML Currently uses type name as node name which causes this to fail as it will include a `1 for generics which is invalid in node name.
         public void
             Serialize_SerializableAndImplementsISerializableGenericTestClass_FirstChildHasTypeAttributeMatchingTypeName()
         {
-            String className = typeof (SerializableAndImplementsISerializableGenericTestClass<int>).Name;
+            String className = typeof(SerializableAndImplementsISerializableGenericTestClass<int>).FullName;
             Object testObject = new SerializableAndImplementsISerializableGenericTestClass<int>(Random.Next());
             XmlDocument xml = SerializeWithXmlFormatterAndReturnXml(testObject);
             Assert.IsNotNull(xml.FirstChild.Attributes);

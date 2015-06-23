@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using WebApplications.Utilities.Annotations;
@@ -41,11 +42,20 @@ namespace WebApplications.Utilities.Serialization
     /// </remarks>
     [Serializable]
     [PublicAPI]
-    // TODO This doesnt work for combined delegates
     public sealed class DelegateSerializer : ISerializable
     {
+        private const string DelegateTypeName = "delegateType";
+        private const string IsCombinedName = "isCombined";
+        private const string DelegatesName = "delegates";
+        private const string IsSerializableName = "isSerializable";
+        private const string DelegateName = "delegate";
+        private const string MethodName = "method";
+        private const string ClassName = "class";
+
         [NotNull]
-        private readonly Delegate _delegate;
+        private Delegate _delegate;
+
+        private DelegateSerializer[] _delegateSerializers;
 
         /// <summary>
         ///   Creates a new instance of <see cref="WebApplications.Utilities.Serialization.DelegateSerializer"/>
@@ -54,8 +64,7 @@ namespace WebApplications.Utilities.Serialization
         /// <example>
         ///   <code>formatter.Serialize(stream, new DelegateSerializer(del));</code>
         /// </example>
-        // TODO Make public when fixed
-        internal DelegateSerializer([NotNull] Delegate @delegate)
+        public DelegateSerializer([NotNull] Delegate @delegate)
         {
             if (@delegate == null) throw new ArgumentNullException("delegate");
             _delegate = @delegate;
@@ -74,31 +83,56 @@ namespace WebApplications.Utilities.Serialization
         /// <example>
         ///   <code>formatter.Serialize(stream, new DelegateSerializer(info, context));</code>
         /// </example>
+        // ReSharper disable once NotNullMemberIsNotInitialized - In the case of combined delegates, _delegate will be set in OnDeserialize
         internal DelegateSerializer([NotNull] SerializationInfo info, StreamingContext context)
         {
             if (info == null) throw new ArgumentNullException("info");
 
-            Type delType = (Type)info.GetValue("delegateType", typeof(Type));
+            Type delType = (Type)info.GetValue(DelegateTypeName, typeof(Type));
             Debug.Assert(delType != null);
 
-            // If it's a "simple" delegate we just read it straight off
-            if (info.GetBoolean("isSerializable"))
+            // If the delegate is a combined delegate, we need to read the delegates it contains
+            if (info.GetBoolean(IsCombinedName))
             {
-                Delegate @delegate = (Delegate)info.GetValue("delegate", delType);
-                Debug.Assert(@delegate != null);
-                _delegate = @delegate;
+                _delegateSerializers = (DelegateSerializer[])info.GetValue(DelegatesName, typeof(DelegateSerializer[]));
+                Debug.Assert(_delegateSerializers != null);
             }
-
-            // Otherwise, we need to read its anonymous class
             else
             {
-                MethodInfo method = (MethodInfo)info.GetValue("method", typeof(MethodInfo));
-                Debug.Assert(method != null);
+                // If it's a "simple" delegate we just read it straight off
+                if (info.GetBoolean(IsSerializableName))
+                {
+                    Delegate @delegate = (Delegate)info.GetValue(DelegateName, delType);
+                    Debug.Assert(@delegate != null);
+                    _delegate = @delegate;
+                }
 
-                AnonymousClassWrapper w = (AnonymousClassWrapper)info.GetValue("class", typeof(AnonymousClassWrapper));
-                Debug.Assert(w != null);
+                // Otherwise, we need to read its anonymous class
+                else
+                {
+                    MethodInfo method = (MethodInfo)info.GetValue(MethodName, typeof(MethodInfo));
+                    Debug.Assert(method != null);
 
-                _delegate = Delegate.CreateDelegate(delType, w.Obj, method);
+                    AnonymousClassWrapper w = (AnonymousClassWrapper)info.GetValue(ClassName, typeof(AnonymousClassWrapper));
+                    Debug.Assert(w != null);
+
+                    _delegate = Delegate.CreateDelegate(delType, w.Obj, method);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when the class has been deserialized.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            if (_delegateSerializers != null)
+            {
+                // ReSharper disable once AssignNullToNotNullAttribute, PossibleNullReferenceException
+                _delegate = Delegate.Combine(_delegateSerializers.Select(ds => ds._delegate).ToArray());
+                _delegateSerializers = null;
             }
         }
 
@@ -117,26 +151,39 @@ namespace WebApplications.Utilities.Serialization
         /// <exception cref="System.Security.SecurityException">The caller does not have the required permission.</exception>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("delegateType", _delegate.GetType());
+            info.AddValue(DelegateTypeName, _delegate.GetType());
 
-            Debug.Assert(_delegate.Method != null);
-            Debug.Assert(_delegate.Method.DeclaringType != null);
-
-            // If it's a "simple" delegate we can serialize it directly
-            if (_delegate.Target == null ||
-                (_delegate.Method.DeclaringType.GetCustomAttributes(typeof(SerializableAttribute), false).Length > 0))
+            // If the delegate is a combined delegate, serialise the delegates separately
+            Delegate[] allDelegates = _delegate.GetInvocationList();
+            if (allDelegates.Length > 1)
             {
-                info.AddValue("isSerializable", true);
-                info.AddValue("delegate", _delegate);
+                info.AddValue(IsCombinedName, true);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                info.AddValue(DelegatesName, allDelegates.Select(d => new DelegateSerializer(d)).ToArray(), typeof(DelegateSerializer[]));
             }
-            // Otherwise, serialize the anonymous class
             else
             {
-                info.AddValue("isSerializable", false);
-                info.AddValue("method", _delegate.Method);
-                info.AddValue(
-                    "class",
-                    new AnonymousClassWrapper(_delegate.Method.DeclaringType, _delegate.Target));
+                Debug.Assert(_delegate.Method != null);
+                Debug.Assert(_delegate.Method.DeclaringType != null);
+
+                info.AddValue(IsCombinedName, false);
+
+                // If it's a "simple" delegate we can serialize it directly
+                if (_delegate.Target == null ||
+                    (_delegate.Method.DeclaringType.GetCustomAttributes(typeof(SerializableAttribute), false).Length > 0))
+                {
+                    info.AddValue(IsSerializableName, true);
+                    info.AddValue(DelegateName, _delegate);
+                }
+                // Otherwise, serialize the anonymous class
+                else
+                {
+                    info.AddValue(IsSerializableName, false);
+                    info.AddValue(MethodName, _delegate.Method);
+                    info.AddValue(
+                        ClassName,
+                        new AnonymousClassWrapper(_delegate.Method.DeclaringType, _delegate.Target));
+                }
             }
         }
         #endregion
@@ -148,6 +195,11 @@ namespace WebApplications.Utilities.Serialization
         [Serializable]
         private class AnonymousClassWrapper : ISerializable
         {
+            /// <summary>
+            /// The class type info name. Note: the space at the start is to prevent conflicts with field names.
+            /// </summary>
+            private const string ClassTypeName = " classType";
+
             public readonly object Obj;
             private readonly Type _type;
 
@@ -176,7 +228,7 @@ namespace WebApplications.Utilities.Serialization
             {
                 if (info == null) throw new ArgumentNullException("info");
 
-                _type = (Type)info.GetValue("classType", typeof(Type));
+                _type = (Type)info.GetValue(ClassTypeName, typeof(Type));
                 if (_type == null)
                     return;
 
@@ -220,12 +272,14 @@ namespace WebApplications.Utilities.Serialization
             /// </exception>
             void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             {
-                info.AddValue("classType", _type);
+                info.AddValue(ClassTypeName, _type);
 
                 if (_type == null)
                     return;
 
-                foreach (FieldInfo field in _type.GetFields())
+                foreach (
+                    FieldInfo field in
+                        _type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                 {
                     Debug.Assert(field != null);
 

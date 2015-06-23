@@ -147,6 +147,29 @@ namespace WebApplications.Utilities.Serialization
                 objectToSerialize.GetType());
         }
 
+        [NotNull]
+        private static string GetXmlSafeElementName([NotNull] string name)
+        {
+            char[] cs = new char[name.Length];
+
+            bool anyInvalid = false;
+            for (int i = 0; i < name.Length; i++)
+            {
+                char c = name[i];
+
+                if (c == '_' ||
+                    (i == 0 ? char.IsLetter(c) : (char.IsLetterOrDigit(c) || c == '.')))
+                    cs[i] = c;
+                else
+                {
+                    anyInvalid = true;
+                    cs[i] = '_';
+                }
+            }
+
+            return anyInvalid ? new string(cs) : name;
+        }
+
         /// <summary>
         ///   Deserializes an object from the passed stream.
         /// </summary>
@@ -179,11 +202,13 @@ namespace WebApplications.Utilities.Serialization
             // Include type information when using ISerializable.
             bool includeTypeInfo = (objectToSerialize is ISerializable);
 
+            elementName = GetXmlSafeElementName(elementName);
+
             // Write the opening tag.
             writer.WriteStartElement(elementName);
 
             // If the name of the tag differs from the type name, include type information.
-            if (elementName != objectType.Name || includeTypeInfo)
+            if (elementName != objectType.FullName || includeTypeInfo)
                 WriteAttributes(writer, objectType, false);
 
             // for each serializable item in this object
@@ -218,7 +243,7 @@ namespace WebApplications.Utilities.Serialization
                                 // write the element
                                 WriteValueElement("Value", writer, entry);
                             else
-                            // serialize the object (recursive call)
+                                // serialize the object (recursive call)
                                 Serialize(
                                     writer,
                                     converter,
@@ -242,23 +267,25 @@ namespace WebApplications.Utilities.Serialization
 
                     if (entry.Value != null)
                     {
-                        // BUG using entry.ObjectType.GetElementType() here is wrong
+                        Type elementType = entry.ObjectType.GetElementType();
+                        Debug.Assert(elementType != null);
 
                         // loop through the list
                         foreach (object item in (IList)entry.Value)
                             // serialize the object (recursive call)
-                            Serialize(writer, converter, entry.ObjectType.GetElementType().Name, item, entry.ObjectType);
-
+                            Serialize(writer, converter, elementType.Name, item, entry.ObjectType);
                     }
 
                     // write the closing tag
                     writer.WriteEndElement();
                 }
                 else
-                    // serialize the object (recursive call)
+                // serialize the object (recursive call)
                     Serialize(writer, converter, entry.Name, entry.Value, entry.ObjectType);
+
             // write the closing tag
             writer.WriteEndElement();
+
             // flush the contents of the writer to the stream
             writer.Flush();
         }
@@ -276,12 +303,11 @@ namespace WebApplications.Utilities.Serialization
         {
             writer.WriteStartAttribute("type", "http://www.w3.org/2001/XMLSchema-instance");
 
-            if (objectType.IsPrimitive ||
-                objectType == typeof(string))
+            if (objectType.IsPrimitive || objectType == typeof(string))
+                writer.WriteString(objectType.Name);
+            else
                 // ReSharper disable once AssignNullToNotNullAttribute
                 writer.WriteString(objectType.FullName);
-            else
-                writer.WriteString(objectType.Name);
 
             writer.WriteEndAttribute();
 
@@ -380,7 +406,7 @@ namespace WebApplications.Utilities.Serialization
                     if (!objectToSerializeType.IsSerializable)
                         throw new SerializationException(
                             string.Format(
-                            // ReSharper disable once AssignNullToNotNullAttribute
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.XmlFormatter_GetMemberInfo_TypeNotSerializable,
                                 objectToSerializeType.FullName));
 
@@ -416,7 +442,7 @@ namespace WebApplications.Utilities.Serialization
                 if (!objectToSerializeType.IsSerializable)
                     throw new SerializationException(
                         string.Format(
-                        // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.XmlFormatter_GetMemberInfo_TypeNotSerializable,
                             objectToSerializeType.FullName));
 
@@ -512,7 +538,7 @@ namespace WebApplications.Utilities.Serialization
                 default:
                     throw new NotSupportedException(
                         string.Format(
-                        // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.XmlFormatter_GetMemberValue_MemberCannotBeSerialized,
                             member.MemberType));
             }
@@ -668,7 +694,7 @@ namespace WebApplications.Utilities.Serialization
                     if (possibleMembers.Length > 1)
                         throw new SerializationException(
                             string.Format(
-                            // ReSharper disable once AssignNullToNotNullAttribute
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.XmlFormatter_InitializeObject_MoreThanOneMemberFound,
                                 reader.Name));
 
@@ -682,7 +708,7 @@ namespace WebApplications.Utilities.Serialization
                         if (list == null)
                             throw new SerializationException(
                                 string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                                    // ReSharper disable once AssignNullToNotNullAttribute
                                     Resources.XmlFormatter_InitializeObject_MemberListIsNull,
                                     possibleMembers[0].DeclaringType.FullName,
                                     possibleMembers[0].Name));
@@ -767,7 +793,7 @@ namespace WebApplications.Utilities.Serialization
                     info.AddValue(
                         reader.Name,
                         isArray
-                        // ReSharper disable once PossibleNullReferenceException
+                            // ReSharper disable once PossibleNullReferenceException
                             ? type.MakeArrayType().GetConstructor(new[] { typeof(Int32) }).Invoke(new object[] { 0 })
                             : null);
 
@@ -845,7 +871,7 @@ namespace WebApplications.Utilities.Serialization
                 // ReSharper disable once AssignNullToNotNullAttribute
                 parsedObject = converter.Convert(reader.ReadString(), objectType);
             else
-                // Initialize the object (recursive call)
+            // Initialize the object (recursive call)
                 parsedObject = InitializeObject(reader, converter, objectType);
 
             return parsedObject;
