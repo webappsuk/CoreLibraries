@@ -74,6 +74,7 @@
     <Compile Include="AESCryptographerTests.cs" />
     <Compile Include="CryptoProviderWrapperTests.cs" />
     <Compile Include="KeyElementTests.cs" />
+    <Compile Include="PBKDF2Tests.cs" />
     <Compile Include="ProviderElementTests.cs" />
     <Compile Include="RSACryptographerTests.cs" />
     <Compile Include="CryptographyConfigurationTests.cs" />

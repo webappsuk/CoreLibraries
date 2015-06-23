@@ -144,4 +144,10 @@
   <data name="CryptoProviderWrapper_Constructor_ProviderNotEnabled" xml:space="preserve">
     <value>The provider with id: '{0}' wasn't enabled in the configuration.</value>
   </data>
+  <data name="PBKDF2_PasswordEmpty" xml:space="preserve">
+    <value>Password cannot be empty</value>
+  </data>
+  <data name="PBKDF2_SaltEmpty" xml:space="preserve">
+    <value>Salt cannot be empty</value>
+  </data>
 </root>
