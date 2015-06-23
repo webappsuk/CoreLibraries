@@ -156,20 +156,8 @@
   <data name="CultureHelper_RegionInfoCannotBeNull" xml:space="preserve">
     <value>Parameter 'regionInfo' can not be null</value>
   </data>
-  <data name="CurrencyInfo_CultureInfoCannotBeNull" xml:space="preserve">
-    <value>Parameter 'cultureInfo' can not be null</value>
-  </data>
-  <data name="CurrencyInfo_CurrencyCodeCannotBeNull" xml:space="preserve">
-    <value>Parameter 'currencyCode' can not be null</value>
-  </data>
-  <data name="CurrencyInfo_RegionInfoCannotBeNull" xml:space="preserve">
-    <value>Parameter 'regionInfo' can not be null</value>
-  </data>
   <data name="CurrencyInfo_ToString" xml:space="preserve">
     <value>Currency: {0}, Code: {1}, ISO: {2}</value>
-  </data>
-  <data name="DebuggingExtensions_Stopwatch_ToString" xml:space="preserve">
-    <value>{0} completed in {1}ms.</value>
   </data>
   <data name="EnhancedMemoryCache_Clear_CannotSafelyFlush" xml:space="preserve">
     <value>Cannot safely flush the default enhanced memory cache.</value>
@@ -282,45 +270,6 @@
   <data name="Reflection_GetFunc_ReturnTypeNotAssignable" xml:space="preserve">
     <value>Can not create a lambda function from '{0}', cannot assign return type {1} to {2}.</value>
   </data>
-  <data name="Reflection_GetGetter_NoGetterForFieldOrProperty" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' getter on the type '{1}' as the name does not correspond to a field or property with a get accessor.</value>
-  </data>
-  <data name="Reflection_GetGetter_ParameterTypeNotAssignable" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
-  </data>
-  <data name="Reflection_GetGetter_ReturnTypeNotAssignable" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
-  </data>
-  <data name="Reflection_GetSetter_MemberTypeNotAssignable" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the {1} type '{3}' is not assignable from the '{4}' value type.</value>
-  </data>
-  <data name="Reflection_GetSetter_NoSetterForFieldOrProperty" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' setter on the type '{1}' as the name does not correspond to a field or property with a set accessor.</value>
-  </data>
-  <data name="Reflection_GetSetter_ParameterTypeNotAssignable" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
-  </data>
-  <data name="Reflection_GetSetter_ReturnTypeNotAssignable" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
-  </data>
-  <data name="Reflector_GetGetter_DoesNotHaveGetter" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' getter on the type '{1}' as the name does not correspond to a field or property with a get accessor.</value>
-  </data>
-  <data name="Reflector_GetGetter_MemberDoesNotExist" xml:space="preserve">
-    <value>The member '{0}' does not exist on the type '{1}'.</value>
-  </data>
-  <data name="Reflector_GetGetter_ParameterTypeNotAssignable" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
-  </data>
-  <data name="Reflector_GetGetter_ReturnTypeNotAssignable" xml:space="preserve">
-    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
-  </data>
-  <data name="Serialize_AddOrUpdateSurrogate_MustBeConcrete" xml:space="preserve">
-    <value>The surrogateType must be a concrete type and not an interface.</value>
-  </data>
-  <data name="Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate" xml:space="preserve">
-    <value>The surrogateType must implement ISerializationSurrogate.</value>
-  </data>
   <data name="TaskExtensions_AfterAll_AntecedentTaskCancelled" xml:space="preserve">
     <value>An antecedent task was cancelled.</value>
   </data>
@@ -369,24 +318,6 @@
   <data name="WeakConcurrentDictionary_KeyIsNull" xml:space="preserve">
     <value>The key cannot be null.</value>
   </data>
-  <data name="XmlFormatter_GetMemberInfo_TypeNotSerializable" xml:space="preserve">
-    <value>Type is not serializable : {0}.</value>
-  </data>
-  <data name="XmlFormatter_GetMemberValue_MemberCannotBeSerialized" xml:space="preserve">
-    <value>Member cannot be serialized. {0}</value>
-  </data>
-  <data name="XmlFormatter_InitializeObject_ElementNotFound" xml:space="preserve">
-    <value>Serialization stream contained element not found in type. {0}</value>
-  </data>
-  <data name="XmlFormatter_InitializeObject_MemberListIsNull" xml:space="preserve">
-    <value>List in object is null. {0}, member {1}</value>
-  </data>
-  <data name="XmlFormatter_InitializeObject_MoreThanOneMemberFound" xml:space="preserve">
-    <value>More than one member found for tag {0}</value>
-  </data>
-  <data name="XmlFormatter_Serialize_EmptyStream" xml:space="preserve">
-    <value>Empty serializationStream!</value>
-  </data>
   <data name="LimitedConcurrentQueue_SyncRoot_ICollection_SyncRoot_Unsupported" xml:space="preserve">
     <value>ICollection.SyncRoot unsupported.</value>
   </data>
@@ -431,9 +362,6 @@
   </data>
   <data name="CurrencyInfoProvider_CurrencyInfoProvider_LoadError" xml:space="preserve">
     <value>A fatal exception occurred whilst trying to load the ISO 4217 file '{0}.</value>
-  </data>
-  <data name="CultureInfoProvider_CultureNameCannotBeNull" xml:space="preserve">
-    <value>Parameter 'cultureCode' can not be null</value>
   </data>
   <data name="CancelableTask_CancelableTask_NullTask" xml:space="preserve">
     <value>The action returned a null Task</value>
@@ -518,9 +446,6 @@
   </data>
   <data name="LocalRange_DurationMustBePositive" xml:space="preserve">
     <value>Duration must be positive</value>
-  </data>
-  <data name="LocalDateRange_StartEnd" xml:space="preserve">
-    <value>Start must be less than end</value>
   </data>
   <data name="LocalTimeRange_StepCannotHaveDate" xml:space="preserve">
     <value>Step cannot have date component</value>

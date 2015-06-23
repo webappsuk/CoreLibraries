@@ -241,42 +241,6 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;cultureCode&apos; can not be null.
-        /// </summary>
-        internal static string CultureInfoProvider_CultureNameCannotBeNull {
-            get {
-                return ResourceManager.GetString("CultureInfoProvider_CultureNameCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;cultureInfo&apos; can not be null.
-        /// </summary>
-        internal static string CurrencyInfo_CultureInfoCannotBeNull {
-            get {
-                return ResourceManager.GetString("CurrencyInfo_CultureInfoCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;currencyCode&apos; can not be null.
-        /// </summary>
-        internal static string CurrencyInfo_CurrencyCodeCannotBeNull {
-            get {
-                return ResourceManager.GetString("CurrencyInfo_CurrencyCodeCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;regionInfo&apos; can not be null.
-        /// </summary>
-        internal static string CurrencyInfo_RegionInfoCannotBeNull {
-            get {
-                return ResourceManager.GetString("CurrencyInfo_RegionInfoCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Currency: {0}, Code: {1}, ISO: {2}.
         /// </summary>
         internal static string CurrencyInfo_ToString {
@@ -318,15 +282,6 @@ namespace WebApplications.Utilities {
         internal static string CyclicQueue_QueueEmpty {
             get {
                 return ResourceManager.GetString("CyclicQueue_QueueEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} completed in {1}ms..
-        /// </summary>
-        internal static string DebuggingExtensions_Stopwatch_ToString {
-            get {
-                return ResourceManager.GetString("DebuggingExtensions_Stopwatch_ToString", resourceCulture);
             }
         }
         
@@ -709,15 +664,6 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start must be less than end.
-        /// </summary>
-        internal static string LocalDateRange_StartEnd {
-            get {
-                return ResourceManager.GetString("LocalDateRange_StartEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Step cannot have time component.
         /// </summary>
         internal static string LocalDateRange_StepCannotHaveTime {
@@ -934,110 +880,11 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; getter on the type &apos;{1}&apos; as the name does not correspond to a field or property with a get accessor..
-        /// </summary>
-        internal static string Reflection_GetGetter_NoGetterForFieldOrProperty {
-            get {
-                return ResourceManager.GetString("Reflection_GetGetter_NoGetterForFieldOrProperty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; {1} getter on the type &apos;{2}&apos; as the parameter type &apos;{3}&apos; is not assignable from the &apos;{2}&apos; declaring type..
-        /// </summary>
-        internal static string Reflection_GetGetter_ParameterTypeNotAssignable {
-            get {
-                return ResourceManager.GetString("Reflection_GetGetter_ParameterTypeNotAssignable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; {1} getter on the type &apos;{2}&apos; as the {1} type &apos;{3}&apos; is not assignable to the &apos;{4}&apos; return type..
-        /// </summary>
-        internal static string Reflection_GetGetter_ReturnTypeNotAssignable {
-            get {
-                return ResourceManager.GetString("Reflection_GetGetter_ReturnTypeNotAssignable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; {1} setter on the type &apos;{2}&apos; as the {1} type &apos;{3}&apos; is not assignable from the &apos;{4}&apos; value type..
-        /// </summary>
-        internal static string Reflection_GetSetter_MemberTypeNotAssignable {
-            get {
-                return ResourceManager.GetString("Reflection_GetSetter_MemberTypeNotAssignable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; setter on the type &apos;{1}&apos; as the name does not correspond to a field or property with a set accessor..
-        /// </summary>
-        internal static string Reflection_GetSetter_NoSetterForFieldOrProperty {
-            get {
-                return ResourceManager.GetString("Reflection_GetSetter_NoSetterForFieldOrProperty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; {1} setter on the type &apos;{2}&apos; as the parameter type &apos;{3}&apos; is not assignable from the &apos;{2}&apos; declaring type..
-        /// </summary>
-        internal static string Reflection_GetSetter_ParameterTypeNotAssignable {
-            get {
-                return ResourceManager.GetString("Reflection_GetSetter_ParameterTypeNotAssignable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; {1} setter on the type &apos;{2}&apos; as the {1} type &apos;{3}&apos; is not assignable to the &apos;{4}&apos; return type..
-        /// </summary>
-        internal static string Reflection_GetSetter_ReturnTypeNotAssignable {
-            get {
-                return ResourceManager.GetString("Reflection_GetSetter_ReturnTypeNotAssignable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The type must be an interface.
         /// </summary>
         internal static string Reflection_ImplementsInterface_MustBeInterface {
             get {
                 return ResourceManager.GetString("Reflection_ImplementsInterface_MustBeInterface", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; getter on the type &apos;{1}&apos; as the name does not correspond to a field or property with a get accessor..
-        /// </summary>
-        internal static string Reflector_GetGetter_DoesNotHaveGetter {
-            get {
-                return ResourceManager.GetString("Reflector_GetGetter_DoesNotHaveGetter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The member &apos;{0}&apos; does not exist on the type &apos;{1}&apos;..
-        /// </summary>
-        internal static string Reflector_GetGetter_MemberDoesNotExist {
-            get {
-                return ResourceManager.GetString("Reflector_GetGetter_MemberDoesNotExist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; {1} getter on the type &apos;{2}&apos; as the parameter type &apos;{3}&apos; is not assignable from the &apos;{2}&apos; declaring type..
-        /// </summary>
-        internal static string Reflector_GetGetter_ParameterTypeNotAssignable {
-            get {
-                return ResourceManager.GetString("Reflector_GetGetter_ParameterTypeNotAssignable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create a lambda function of the &apos;{0}&apos; {1} getter on the type &apos;{2}&apos; as the {1} type &apos;{3}&apos; is not assignable to the &apos;{4}&apos; return type..
-        /// </summary>
-        internal static string Reflector_GetGetter_ReturnTypeNotAssignable {
-            get {
-                return ResourceManager.GetString("Reflector_GetGetter_ReturnTypeNotAssignable", resourceCulture);
             }
         }
         
@@ -1119,24 +966,6 @@ namespace WebApplications.Utilities {
         internal static string SemanticVersion_SemanticVersion_PreReleaseInvalid {
             get {
                 return ResourceManager.GetString("SemanticVersion_SemanticVersion_PreReleaseInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The surrogateType must be a concrete type and not an interface..
-        /// </summary>
-        internal static string Serialize_AddOrUpdateSurrogate_MustBeConcrete {
-            get {
-                return ResourceManager.GetString("Serialize_AddOrUpdateSurrogate_MustBeConcrete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The surrogateType must implement ISerializationSurrogate..
-        /// </summary>
-        internal static string Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate {
-            get {
-                return ResourceManager.GetString("Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate", resourceCulture);
             }
         }
         
@@ -1326,60 +1155,6 @@ namespace WebApplications.Utilities {
         internal static string WeakConcurrentDictionary_KeyIsNull {
             get {
                 return ResourceManager.GetString("WeakConcurrentDictionary_KeyIsNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type is not serializable : {0}..
-        /// </summary>
-        internal static string XmlFormatter_GetMemberInfo_TypeNotSerializable {
-            get {
-                return ResourceManager.GetString("XmlFormatter_GetMemberInfo_TypeNotSerializable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Member cannot be serialized. {0}.
-        /// </summary>
-        internal static string XmlFormatter_GetMemberValue_MemberCannotBeSerialized {
-            get {
-                return ResourceManager.GetString("XmlFormatter_GetMemberValue_MemberCannotBeSerialized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Serialization stream contained element not found in type. {0}.
-        /// </summary>
-        internal static string XmlFormatter_InitializeObject_ElementNotFound {
-            get {
-                return ResourceManager.GetString("XmlFormatter_InitializeObject_ElementNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to List in object is null. {0}, member {1}.
-        /// </summary>
-        internal static string XmlFormatter_InitializeObject_MemberListIsNull {
-            get {
-                return ResourceManager.GetString("XmlFormatter_InitializeObject_MemberListIsNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to More than one member found for tag {0}.
-        /// </summary>
-        internal static string XmlFormatter_InitializeObject_MoreThanOneMemberFound {
-            get {
-                return ResourceManager.GetString("XmlFormatter_InitializeObject_MoreThanOneMemberFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Empty serializationStream!.
-        /// </summary>
-        internal static string XmlFormatter_Serialize_EmptyStream {
-            get {
-                return ResourceManager.GetString("XmlFormatter_Serialize_EmptyStream", resourceCulture);
             }
         }
     }
