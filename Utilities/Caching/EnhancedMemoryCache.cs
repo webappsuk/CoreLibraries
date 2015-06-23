@@ -43,6 +43,12 @@ namespace WebApplications.Utilities.Caching
     internal static class EnhancedMemoryCache
     {
         internal static readonly TimeSpan MaxSlidingExpiration = TimeSpan.FromDays(365);
+
+        /// <summary>
+        /// The sentinel used by <see cref="EnhancedMemoryCacheNull{TKey,TValue}"/> to store a <see langword="null"/> value in the cache.
+        /// </summary>
+        [NotNull]
+        internal static readonly object NullSentinel = new object();
     }
 
     /// <summary>
@@ -56,7 +62,7 @@ namespace WebApplications.Utilities.Caching
     ///   The type of the key - it is vital that the <see cref="object.ToString()" /> method returns a unique value for discrimination.
     /// </typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public class EnhancedMemoryCache<TKey, TValue> : CachingDictionaryBase<TKey, TValue>
+    public class EnhancedMemoryCache<TKey, TValue> : CachingDictionaryBase<TKey, TValue>, IDisposable
     {
         /// <summary>
         ///   We implement the enhanced memory cache using the default memory cache.
@@ -68,7 +74,7 @@ namespace WebApplications.Utilities.Caching
         private readonly string _instanceGuid = Guid.NewGuid().ToString();
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="EnhancedMemoryCache&lt;TKey, TValue&gt;" /> class.
+        ///   Initializes a new instance of the <see cref="EnhancedMemoryCache{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="cacheName">The name of the cache.</param>
         public EnhancedMemoryCache(string cacheName = null)
@@ -87,7 +93,7 @@ namespace WebApplications.Utilities.Caching
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="EnhancedMemoryCache&lt;TKey, TValue&gt;"/> class.
+        ///   Initializes a new instance of the <see cref="EnhancedMemoryCache{TKey, TValue}"/> class.
         /// </summary>
         /// <param name="defaultAbsoluteExpiration">
         ///   <para>The default absolute expiration.</para>
@@ -270,16 +276,31 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Flushes this instance.
         /// </summary>
-        /// <exception cref="NotImplementedException">
+        /// <exception cref="NotSupportedException">
         ///   <see cref="MemoryCache.Default"/> cannot be safely flushed.
         /// </exception>
         public override void Clear()
         {
             // Don't allow flushing of the default memory cache.
             if (string.IsNullOrWhiteSpace(_cacheName))
-                throw new NotImplementedException(Resources.EnhancedMemoryCache_Clear_CannotSafelyFlush);
+                throw new NotSupportedException(Resources.EnhancedMemoryCache_Clear_CannotSafelyFlush);
 
             _cache.Trim(100);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">
+        ///   <see cref="MemoryCache.Default"/> cannot be safely disposed.
+        /// </exception>
+        public void Dispose()
+        {
+            // Don't allow disposing of the default memory cache.
+            if (string.IsNullOrWhiteSpace(_cacheName))
+                throw new NotSupportedException(Resources.EnhancedMemoryCache_Dispose_CannotSafelyDispose);
+
+            _cache.Dispose();
         }
     }
 }

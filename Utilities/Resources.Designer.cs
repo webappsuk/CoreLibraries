@@ -349,6 +349,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot safely dispose the default enhanced memory cache..
+        /// </summary>
+        internal static string EnhancedMemoryCache_Dispose_CannotSafelyDispose {
+            get {
+                return ResourceManager.GetString("EnhancedMemoryCache_Dispose_CannotSafelyDispose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The action expression is expected to return void..
         /// </summary>
         internal static string ExpressionExtensions_ActionReturnsNonVoid {
@@ -754,6 +763,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The number of parameter replacement expressions &apos;{0}&apos; does not match the number of parameters in the lambda expression &apos;{1}&apos;..
+        /// </summary>
+        internal static string ParameterReplacerVisitor_ExpressionCountMismatch {
+            get {
+                return ResourceManager.GetString("ParameterReplacerVisitor_ExpressionCountMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The configuration system couldn&apos;t convert the value &apos;{0}&apos; for the parameter &apos;{1}&apos; to type &apos;{2}&apos;..
         /// </summary>
         internal static string PInfo_TypeProperty_CannotConvertValueStrToDestinationType {
@@ -1020,6 +1038,33 @@ namespace WebApplications.Utilities {
         internal static string Reflector_GetGetter_ReturnTypeNotAssignable {
             get {
                 return ResourceManager.GetString("Reflector_GetGetter_ReturnTypeNotAssignable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ValueFactory attempted to access the Value property of this instance..
+        /// </summary>
+        internal static string ResettableLazy_CreateValue_ValueFactoryAccessedValue {
+            get {
+                return ResourceManager.GetString("ResettableLazy_CreateValue_ValueFactoryAccessedValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The lazily-initialized type does not have a public, parameterless constructor..
+        /// </summary>
+        internal static string ResettableLazy_GetCtorFunc_NoDefaultCtor {
+            get {
+                return ResourceManager.GetString("ResettableLazy_GetCtorFunc_NoDefaultCtor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value is not created..
+        /// </summary>
+        internal static string ResettableLazy_ToString_ValueNotCreated {
+            get {
+                return ResourceManager.GetString("ResettableLazy_ToString_ValueNotCreated", resourceCulture);
             }
         }
         

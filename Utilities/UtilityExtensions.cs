@@ -1236,7 +1236,7 @@ namespace WebApplications.Utilities
         public static string StripHTML([NotNull] this string input)
         {
             if (input == null) throw new ArgumentNullException("input");
-            // TODO: a) make more efficient b) question purpose/usage
+            // TODO: a) make more efficient b) question purpose/usage c) support CDATA?
             int depthCounter = 0;
             StringBuilder builder = new StringBuilder(input.Length);
             foreach (char c in input)
@@ -3956,7 +3956,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <returns></returns>
         [NotNull]
-        public static IEnumerable<T> Yield<T>(this T value)
+        public static IReadOnlyList<T> Yield<T>(this T value)
         {
             return new SingleEnumerable<T>(value);
         }

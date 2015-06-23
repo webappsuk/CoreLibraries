@@ -470,8 +470,8 @@ namespace WebApplications.Utilities
                     throw new ArgumentOutOfRangeException(
                         "parameters",
                         String.Format(
-                            "The number of parameter replacement expressions '{0}' does not match the number of parameters in the lambda expression '{1}'.",
-                            // TODO Translate?
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.ParameterReplacerVisitor_ExpressionCountMismatch,
                             parameters.Length,
                             pcount));
 

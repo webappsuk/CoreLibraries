@@ -45,7 +45,8 @@ namespace WebApplications.Utilities
         IEquatable<Optional<T>>,
         IEquatable<T>,
         IComparable<Optional<T>>,
-        IComparable<T>
+        IComparable<T>,
+        IFormattable
     {
         /// <summary>
         /// The delegate used for methods that return true when successful.
@@ -248,6 +249,24 @@ namespace WebApplications.Utilities
                     ? "null"
                     : _value.ToString())
                 : "Unassigned";
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            if (!_isAssigned)
+                return "Unassigned";
+            if (ReferenceEquals(_value, null)) 
+                return "null";
+            IFormattable formattable = _value as IFormattable;
+            return formattable == null ? _value.ToString() : formattable.ToString(format, formatProvider);
         }
 
         /// <summary>

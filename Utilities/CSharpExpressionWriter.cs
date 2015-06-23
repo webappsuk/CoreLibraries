@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -375,6 +376,14 @@ namespace WebApplications.Utilities
             {
                 if (node.DelegateType != null)
                     AddType(node.DelegateType);
+
+                ConvertBinder convert = node.Binder as ConvertBinder;
+                if (convert != null)
+                {
+                    Debug.Assert(convert.Type != null);
+                    AddType(convert.Type);
+                }
+
                 return base.VisitDynamic(node);
             }
 
@@ -832,7 +841,8 @@ namespace WebApplications.Utilities
                         isChecked = true;
                         break;
                     default:
-                        throw new NotImplementedException();
+                        op = node.NodeType.ToString();
+                        break;
                 }
 
                 if (isChecked)
@@ -1022,8 +1032,17 @@ namespace WebApplications.Utilities
         /// </returns>
         protected override Expression VisitDebugInfo(DebugInfoExpression node)
         {
-            // TODO Implement properly
-            Out(node.ToString());
+            Debug.Assert(node.Document != null);
+
+            Out(
+                string.Format(
+                    "/* {0}: [{1}, {2}] - [{3}, {4}] */",
+                    node.Document.FileName,
+                    node.StartLine,
+                    node.StartColumn,
+                    node.EndLine,
+                    node.EndColumn)
+                );
             return node;
         }
 
@@ -1037,8 +1056,157 @@ namespace WebApplications.Utilities
         [NotNull]
         protected override Expression VisitDynamic(DynamicExpression node)
         {
-            // TODO Implement properly
-            Out(node.ToString());
+            ConvertBinder convert;
+            GetMemberBinder getMember;
+            SetMemberBinder setMember;
+            DeleteMemberBinder deleteMember;
+            InvokeMemberBinder call;
+            UnaryOperationBinder unary;
+            BinaryOperationBinder binary;
+
+            Out("/* dynamic */ ");
+
+            CallSiteBinder binder = node.Binder;
+
+            Debug.Assert(node.Arguments != null);
+            Debug.Assert(binder != null);
+
+            if ((convert = binder as ConvertBinder) != null)
+            {
+                Debug.Assert(convert.Type != null);
+
+                Out("((" + GetTypeName(convert.Type) + ")");
+                Visit(node.Arguments[0]);
+                Out(")");
+            }
+            else if ((getMember = binder as GetMemberBinder) != null)
+            {
+                Debug.Assert(getMember.Name != null);
+
+                Visit(node.Arguments[0]);
+                Out(".");
+                Out(getMember.Name);
+            }
+            else if ((setMember = binder as SetMemberBinder) != null)
+            {
+                Debug.Assert(setMember.Name != null);
+
+                Visit(node.Arguments[0]);
+                Out(".");
+                Out(setMember.Name);
+                Out(" = ");
+                Visit(node.Arguments[1]);
+                Out(")");
+
+            }
+            else if ((deleteMember = binder as DeleteMemberBinder) != null)
+            {
+                Debug.Assert(deleteMember.Name != null);
+
+                Out("(delete ");
+                Visit(node.Arguments[0]);
+                Out(".");
+                Out(deleteMember.Name);
+                Out(")");
+            }
+            else if ((binder as GetIndexBinder) != null)
+            {
+                Visit(node.Arguments[0]);
+                VisitMethod(
+                    string.Empty,
+                    Array<Type>.Empty,
+                    node.Arguments.Skip(1).ToArray(),
+                    "[",
+                    "]",
+                    Array<ParameterInfo>.Empty);
+            }
+            else if ((binder as SetIndexBinder) != null)
+            {
+                Out("(");
+                Visit(node.Arguments[0]);
+                VisitMethod(
+                    string.Empty,
+                    Array<Type>.Empty,
+                    node.Arguments.Skip(1).Take(node.Arguments.Count - 2).ToArray(),
+                    "[",
+                    "]",
+                    Array<ParameterInfo>.Empty);
+                Out(" = ");
+                Visit(node.Arguments[node.Arguments.Count - 1]);
+                Out(")");
+            }
+            else if ((binder as DeleteIndexBinder) != null)
+            {
+                Out("(delete ");
+                Visit(node.Arguments[0]); 
+                VisitMethod(
+                     string.Empty,
+                     Array<Type>.Empty,
+                     node.Arguments.Skip(1).ToArray(),
+                     "[",
+                     "]",
+                     Array<ParameterInfo>.Empty);
+                Out(")");
+            }
+            else if ((call = binder as InvokeMemberBinder) != null)
+            {
+                Debug.Assert(call.Name != null);
+
+                Visit(node.Arguments[0]);
+                Out(".");
+                VisitMethod(
+                     call.Name,
+                     Array<Type>.Empty,
+                     node.Arguments.Skip(1).ToArray(),
+                     "(",
+                     ")",
+                     Array<ParameterInfo>.Empty);
+            }
+            else if ((binder as InvokeBinder) != null)
+            {
+                Visit(node.Arguments[0]);
+                VisitMethod(
+                     String.Empty, 
+                     Array<Type>.Empty,
+                     node.Arguments.Skip(1).ToArray(),
+                     "(",
+                     ")",
+                     Array<ParameterInfo>.Empty);
+            }
+            else if ((binder as CreateInstanceBinder) != null)
+            {
+                Out("new ");
+                Visit(node.Arguments[0]);
+                VisitMethod(
+                     String.Empty,
+                     Array<Type>.Empty,
+                     node.Arguments.Skip(1).ToArray(),
+                     "(",
+                     ")",
+                     Array<ParameterInfo>.Empty);
+            }
+            else if ((unary = binder as UnaryOperationBinder) != null)
+            {
+                // ReSharper disable AssignNullToNotNullAttribute
+                UnaryExpression unaryExp = Expression.MakeUnary(unary.Operation, node.Arguments[0], null);
+                // ReSharper restore AssignNullToNotNullAttribute
+
+                VisitUnary(unaryExp);
+            }
+            else if ((binary = binder as BinaryOperationBinder) != null)
+            {
+                // ReSharper disable AssignNullToNotNullAttribute
+                BinaryExpression binaryExp = Expression.MakeBinary(binary.Operation, node.Arguments[0], node.Arguments[1]);
+                // ReSharper restore AssignNullToNotNullAttribute
+
+                VisitBinary(binaryExp);
+            }
+            else
+            {
+                Out(binder.ToString());
+                Visit(node.Arguments);
+            }
+
             return node;
         }
 
@@ -1123,7 +1291,13 @@ namespace WebApplications.Utilities
         protected override Expression VisitInvocation([NotNull] InvocationExpression node)
         {
             Visit(node.Expression);
-            VisitMethod(".Invoke", Array<Type>.Empty, node.Arguments.ToArray(), "(", ")");
+
+            ParameterInfo[] parameters = Array<ParameterInfo>.Empty;
+            MethodInfo invokeMethod = node.Type.GetMethod("Invoke");
+            if (invokeMethod != null)
+                parameters = invokeMethod.GetParameters();
+
+            VisitMethod(".Invoke", Array<Type>.Empty, node.Arguments, "(", ")", parameters);
 
             return node;
         }
@@ -1310,8 +1484,10 @@ namespace WebApplications.Utilities
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             if (!_preVisitor.FullTypeNames &&
+                node.Object == null &&
                 node.Method.GetCustomAttribute<ExtensionAttribute>() != null)
             {
+
                 Visit(node.Arguments[0]);
                 Out(".");
                 VisitMethod(
@@ -1319,7 +1495,8 @@ namespace WebApplications.Utilities
                     node.Method.GetGenericArguments(),
                     node.Arguments.Skip(1).ToArray(),
                     "(",
-                    ")");
+                    ")",
+                    node.Method.GetParameters().Skip(1).ToArray());
 
                 return node;
             }
@@ -1330,7 +1507,13 @@ namespace WebApplications.Utilities
                 Visit(node.Object);
 
             Out(".");
-            VisitMethod(node.Method.Name, node.Method.GetGenericArguments(), node.Arguments.ToArray(), "(", ")");
+            VisitMethod(
+                node.Method.Name,
+                node.Method.GetGenericArguments(),
+                node.Arguments,
+                "(",
+                ")",
+                node.Method.GetParameters());
 
             return node;
         }
@@ -1343,12 +1526,14 @@ namespace WebApplications.Utilities
         /// <param name="args">The arguments.</param>
         /// <param name="openBracket">The open bracket.</param>
         /// <param name="closeBracket">The close bracket.</param>
+        /// <param name="parameters">The parameters.</param>
         private void VisitMethod(
             [NotNull] string name,
             [NotNull] [ItemNotNull] IReadOnlyCollection<Type> typeArgs,
-            [NotNull] IEnumerable<Expression> args,
+            [NotNull] IReadOnlyList<Expression> args,
             [NotNull] string openBracket,
-            [NotNull] string closeBracket)
+            [NotNull] string closeBracket,
+            [NotNull] IReadOnlyList<ParameterInfo> parameters)
         {
             Out(name);
 
@@ -1372,14 +1557,22 @@ namespace WebApplications.Utilities
             Out(openBracket);
 
             first = true;
-            foreach (Expression index in args)
+            for (int i = 0; i < args.Count; i++)
             {
                 if (first) first = false;
                 else Out(", ");
 
-                // TODO Add "ref " for by ref parameters
+                if (i < parameters.Count)
+                {
+                    ParameterInfo parameter = parameters[i];
+                    Debug.Assert(parameter != null);
+                    if (parameter.IsOut)
+                        Out("out ");
+                    else if (parameter.ParameterType.IsByRef)
+                        Out("ref ");
+                }
 
-                Visit(index);
+                Visit(args[i]);
             }
 
             Out(closeBracket);
@@ -1399,11 +1592,25 @@ namespace WebApplications.Utilities
             Debug.Assert(elementType != null);
 
             if (node.NodeType == ExpressionType.NewArrayBounds)
-                VisitMethod(GetTypeName(elementType), Array<Type>.Empty, node.Expressions.ToArray(), "[", "]");
+            {
+                VisitMethod(
+                    GetTypeName(elementType),
+                    Array<Type>.Empty,
+                    node.Expressions,
+                    "[",
+                    "]",
+                    Array<ParameterInfo>.Empty);
+            }
             else
             {
                 Debug.Assert(node.NodeType == ExpressionType.NewArrayInit);
-                VisitMethod(GetTypeName(elementType) + "[]", Array<Type>.Empty, node.Expressions.ToArray(), "{ ", " }");
+                VisitMethod(
+                    GetTypeName(elementType) + "[]",
+                    Array<Type>.Empty,
+                    node.Expressions,
+                    "{ ",
+                    " }",
+                    Array<ParameterInfo>.Empty);
             }
 
             return node;
@@ -1419,7 +1626,14 @@ namespace WebApplications.Utilities
         protected override Expression VisitNew(NewExpression node)
         {
             Out("new ");
-            VisitMethod(GetTypeName(node.Type), Array<Type>.Empty, node.Arguments.ToArray(), "(", ")");
+
+            VisitMethod(
+                GetTypeName(node.Type),
+                Array<Type>.Empty,
+                node.Arguments,
+                "(",
+                ")",
+                node.Constructor.GetParameters());
 
             return node;
         }
@@ -1687,14 +1901,17 @@ namespace WebApplications.Utilities
                 return node;
             }
 
+            Visit(node.Expression);
+
             if (node.Expression.Type.IsNullableType())
             {
-                // TODO Something...
+                // C#6 Null-conditional operator
+                Out("?");
             }
 
-            Visit(node.Expression);
-            Out(".GetType() == ");
+            Out(".GetType() == typeof(");
             Out(GetTypeName(node.TypeOperand));
+            Out(")");
 
             return node;
         }
@@ -1725,8 +1942,6 @@ namespace WebApplications.Utilities
                     {
                         Out("throw ");
                         Visit(node.Operand);
-
-                        // TODO If operand is not of type exception, wrap in new RuntimeWrappedException?
                     }
                     break;
                 case ExpressionType.ConvertChecked:

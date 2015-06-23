@@ -56,7 +56,6 @@ namespace WebApplications.Utilities.Configuration
             [NotNull] ConfigurationChangedEventArgs e);
         #endregion
 
-        // ReSharper disable StaticFieldInGenericType
         /// <summary>
         ///   Holds the constructor function.
         /// </summary>

@@ -41,7 +41,6 @@ namespace WebApplications.Utilities
     public abstract class Singleton<TKey, TSingleton>
         where TSingleton : Singleton<TKey, TSingleton>
     {
-        // ReSharper disable StaticFieldInGenericType
         /// <summary>
         ///   Holds all singletons of the type <typeparamref name="TSingleton"/>.
         /// </summary>
@@ -54,8 +53,6 @@ namespace WebApplications.Utilities
         /// </summary>
         [NotNull]
         protected static readonly Func<TKey, TSingleton> Constructor;
-
-        // ReSharper restore StaticFieldInGenericType
 
         /// <summary>
         ///   The singleton key.

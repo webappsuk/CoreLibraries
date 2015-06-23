@@ -37,6 +37,14 @@ using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Caching
 {
+    internal static class CachingDictionary
+    {
+        /// <summary>
+        ///   The maximum sliding expiration
+        /// </summary>
+        internal static readonly TimeSpan MaxSlidingExpiration = TimeSpan.FromDays(365);
+    }
+
     /// <summary>
     ///   A thread safe dictionary that caches and keeps track of elements in the cache.
     ///   This allows for greater functionality than the <see cref="EnhancedMemoryCache{TKey, TValue}" />,
@@ -48,14 +56,6 @@ namespace WebApplications.Utilities.Caching
     public class CachingDictionary<TKey, TValue> : CachingDictionaryBase<TKey, TValue>, IDictionary<TKey, TValue>,
         IDictionary
     {
-        // ReSharper disable StaticFieldInGenericType
-        /// <summary>
-        ///   The maximum sliding expiration
-        /// </summary>
-        private static readonly TimeSpan _maxSlidingExpiration = TimeSpan.FromDays(365);
-
-        // ReSharper restore StaticFieldInGenericType
-
         /// <summary>
         ///   The cache.
         /// </summary>
@@ -439,7 +439,7 @@ namespace WebApplications.Utilities.Caching
             if (!_keys.TryAdd(key, guid))
                 return false;
 
-            if (slidingExpiration > _maxSlidingExpiration)
+            if (slidingExpiration > CachingDictionary.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
             return _cache.Add(
                 guid,
@@ -487,7 +487,7 @@ namespace WebApplications.Utilities.Caching
             string guid = _keys.GetOrAdd(key, k => Guid.NewGuid().ToString());
             Debug.Assert(guid != null);
 
-            if (slidingExpiration > _maxSlidingExpiration)
+            if (slidingExpiration > CachingDictionary.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
             object result = _cache.AddOrGetExisting(
                 guid,
@@ -514,7 +514,7 @@ namespace WebApplications.Utilities.Caching
             string guid = _keys.GetOrAdd(key, k => Guid.NewGuid().ToString());
             Debug.Assert(guid != null);
 
-            if (slidingExpiration > _maxSlidingExpiration)
+            if (slidingExpiration > CachingDictionary.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
             _cache.Set(
                 guid,

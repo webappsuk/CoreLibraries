@@ -56,7 +56,6 @@ namespace WebApplications.Utilities.Caching
         ///   Whether the type is disposable.
         /// </summary>
         public static readonly bool Disposable;
-
         // ReSharper restore StaticFieldInGenericType
 
         /// <summary>

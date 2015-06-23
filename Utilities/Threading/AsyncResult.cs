@@ -337,9 +337,9 @@ namespace WebApplications.Utilities.Threading
 
         [NotNull]
         private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperWithReturnValue;
+        // ReSharper restore StaticFieldInGenericType
 
         private TResult _result;
-        // ReSharper restore StaticFieldInGenericType
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="AsyncResult&lt;TResult&gt;"/> class.

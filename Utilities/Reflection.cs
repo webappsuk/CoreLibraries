@@ -778,7 +778,7 @@ namespace WebApplications.Utilities
             }
             catch (FormatException)
             {
-                // Bug in RawDefaultValue that doesn't cope with default(struct) being the default value.
+                // RawDefaultValue doesn't cope with default(struct) being the default value.
                 // just specify the default of the type.
                 value = null;
             }
@@ -2338,6 +2338,68 @@ namespace WebApplications.Utilities
             if (member == null) throw new ArgumentNullException("member");
             // ReSharper disable once AssignNullToNotNullAttribute
             return member.GetCustomAttributes(typeof(CompilerGeneratedAttribute)).Any();
+        }
+
+        /// <summary>
+        /// Gets the type of the items in the enumerable type given, or <see langword="null"/> if the type is not an enumerable.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>The type of the items in the enumerable type given, or <see langword="null"/> if the type is not an enumerable</returns>
+        public static Type GetEnumerableItemType([NotNull] this Type type)
+        {
+            Type itemType;
+            return IsEnumerable(type, out itemType) ? itemType : null;
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is an <see cref="IEnumerable{T}" />.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">type</exception>
+        public static bool IsEnumerable([NotNull] this Type type)
+        {
+            Type itemType;
+            return IsEnumerable(type, out itemType);
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is an <see cref="IEnumerable{T}" />.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <param name="itemType">If the type is an <see cref="IEnumerable{T}" /> with type arguments supplied,
+        /// will contain the type of the items in the enumerable. Otherwise <see langword="null" />.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">type</exception>
+        [ContractAnnotation("=>false,itemType:null;=>true,itemType:canbenull")]
+        public static bool IsEnumerable([NotNull] this Type type, out Type itemType)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+
+            itemType = null;
+
+            if (type == typeof(IEnumerable<>))
+                return true;
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
+                itemType = type.GetGenericArguments()[0];
+                return true;
+            }
+
+            foreach (Type iface in type.GetInterfaces())
+            {
+                Debug.Assert(iface != null);
+
+                if (iface == typeof(IEnumerable<>))
+                    return true;
+                if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    itemType = iface.GetGenericArguments()[0];
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

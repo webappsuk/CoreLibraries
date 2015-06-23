@@ -174,6 +174,9 @@
   <data name="EnhancedMemoryCache_Clear_CannotSafelyFlush" xml:space="preserve">
     <value>Cannot safely flush the default enhanced memory cache.</value>
   </data>
+  <data name="EnhancedMemoryCache_Dispose_CannotSafelyDispose" xml:space="preserve">
+    <value>Cannot safely dispose the default enhanced memory cache.</value>
+  </data>
   <data name="ExtendedEnumGeneric_Clear_CouldNotClearFlags" xml:space="preserve">
     <value>The '{0}' value of the {1} enum does could not be cleared with the value '{2}'.</value>
   </data>
@@ -542,5 +545,17 @@
   </data>
   <data name="InfoHelper_GetMemberInfoInternal_NotFound" xml:space="preserve">
     <value>MemberInfo not found in expression</value>
+  </data>
+  <data name="ResettableLazy_GetCtorFunc_NoDefaultCtor" xml:space="preserve">
+    <value>The lazily-initialized type does not have a public, parameterless constructor.</value>
+  </data>
+  <data name="ResettableLazy_ToString_ValueNotCreated" xml:space="preserve">
+    <value>Value is not created.</value>
+  </data>
+  <data name="ResettableLazy_CreateValue_ValueFactoryAccessedValue" xml:space="preserve">
+    <value>ValueFactory attempted to access the Value property of this instance.</value>
+  </data>
+  <data name="ParameterReplacerVisitor_ExpressionCountMismatch" xml:space="preserve">
+    <value>The number of parameter replacement expressions '{0}' does not match the number of parameters in the lambda expression '{1}'.</value>
   </data>
 </root>

@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Caching
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public class EnhancedMemoryCacheNull<TKey, TValue> : CachingDictionaryBase<TKey, TValue>
+    public class EnhancedMemoryCacheNull<TKey, TValue> : CachingDictionaryBase<TKey, TValue>, IDisposable
     {
         /// <summary>
         ///   We implement the enhanced memory cache using the default memory cache.
@@ -61,14 +61,43 @@ namespace WebApplications.Utilities.Caching
         private readonly string _instanceGuid = Guid.NewGuid().ToString();
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="EnhancedMemoryCache&lt;TKey, TValue&gt;" /> class.
+        ///   Initializes a new instance of the <see cref="EnhancedMemoryCacheNull{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="cacheName">The name of the cache.</param>
-        /// <param name="isolateKeys">
-        ///   If set to <see langword="true"/> then isolates keys as underlying cache is shared.
-        /// </param>
-        public EnhancedMemoryCacheNull(string cacheName = null, bool isolateKeys = true)
+        public EnhancedMemoryCacheNull(string cacheName = null)
         {
+            if (string.IsNullOrWhiteSpace(cacheName))
+            {
+                // ReSharper disable once AssignNullToNotNullAttribute
+                _cache = MemoryCache.Default;
+                _cacheName = null;
+            }
+            else
+            {
+                _cache = new MemoryCache(cacheName);
+                _cacheName = cacheName;
+            }
+        }
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="EnhancedMemoryCacheNull{TKey, TValue}"/> class.
+        /// </summary>
+        /// <param name="defaultAbsoluteExpiration">
+        ///   <para>The default absolute expiration.</para>
+        ///   <para>This sets when the cache entry will be expired.</para>
+        /// </param>
+        /// <param name="defaultSlidingExpiration">
+        ///   <para>The default sliding expiration.</para>
+        ///   <para>This is the duration to wait before expiring the cache (if no requests are made for it during that period).</para>
+        /// </param>
+        /// <param name="cacheName">The name of the cache.</param>
+        public EnhancedMemoryCacheNull(
+            TimeSpan defaultAbsoluteExpiration,
+            TimeSpan defaultSlidingExpiration,
+            string cacheName = null)
+        {
+            DefaultAbsoluteExpiration = defaultAbsoluteExpiration;
+            DefaultSlidingExpiration = defaultSlidingExpiration;
             if (string.IsNullOrWhiteSpace(cacheName))
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -117,12 +146,15 @@ namespace WebApplications.Utilities.Caching
 
             if (slidingExpiration > EnhancedMemoryCache.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
-            Wrapper wrapper = new Wrapper(value);
             object result = _cache.AddOrGetExisting(
                 _instanceGuid + key,
-                wrapper,
+                (object)value ?? EnhancedMemoryCache.NullSentinel,
                 new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration });
-            return result == null ? value : ((Wrapper)result).Value;
+            return result == null
+                ? value
+                : (ReferenceEquals(result, EnhancedMemoryCache.NullSentinel)
+                    ? default(TValue)
+                    : (TValue)result);
         }
 
         /// <summary>
@@ -148,10 +180,9 @@ namespace WebApplications.Utilities.Caching
 
             if (slidingExpiration > EnhancedMemoryCache.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
-            Wrapper wrapper = new Wrapper(value);
             _cache.Set(
                 _instanceGuid + key,
-                wrapper,
+                (object)value ?? EnhancedMemoryCache.NullSentinel,
                 new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration });
             return value;
         }
@@ -175,7 +206,9 @@ namespace WebApplications.Utilities.Caching
                 value = default(TValue);
                 return false;
             }
-            value = ((Wrapper)result).Value;
+            value = ReferenceEquals(result, EnhancedMemoryCache.NullSentinel)
+                ? default(TValue)
+                : (TValue)result;
             return true;
         }
 
@@ -198,7 +231,9 @@ namespace WebApplications.Utilities.Caching
                 value = default(TValue);
                 return false;
             }
-            value = ((Wrapper)result).Value;
+            value = ReferenceEquals(result, EnhancedMemoryCache.NullSentinel)
+                ? default(TValue)
+                : (TValue)result;
             return true;
         }
 
@@ -222,41 +257,40 @@ namespace WebApplications.Utilities.Caching
 
             if (slidingExpiration > EnhancedMemoryCache.MaxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
-            Wrapper wrapper = new Wrapper(value);
             return _cache.Add(
                 _instanceGuid + key,
-                wrapper,
+                (object)value ?? EnhancedMemoryCache.NullSentinel,
                 new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration, SlidingExpiration = slidingExpiration });
         }
 
         /// <summary>
         ///   Flushes this instance.
         /// </summary>
-        /// <exception cref="NotImplementedException">
+        /// <exception cref="NotSupportedException">
         ///   <see cref="MemoryCache.Default"/> cannot be safely flushed.
         /// </exception>
         public override void Clear()
         {
             // Don't allow flushing of the default memory cache.
             if (string.IsNullOrWhiteSpace(_cacheName))
-                throw new NotImplementedException(Resources.EnhancedMemoryCache_Clear_CannotSafelyFlush);
+                throw new NotSupportedException(Resources.EnhancedMemoryCache_Clear_CannotSafelyFlush);
 
             _cache.Trim(100);
         }
 
-        #region Nested type: Wrapper
         /// <summary>
-        ///   A wrapper struct used to prevent nulls being placed in cache.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        private struct Wrapper
+        /// <exception cref="System.NotSupportedException">
+        ///   <see cref="MemoryCache.Default"/> cannot be safely disposed.
+        /// </exception>
+        public void Dispose()
         {
-            public readonly TValue Value;
+            // Don't allow disposing of the default memory cache.
+            if (string.IsNullOrWhiteSpace(_cacheName))
+                throw new NotSupportedException(Resources.EnhancedMemoryCache_Dispose_CannotSafelyDispose);
 
-            public Wrapper(TValue value)
-            {
-                Value = value;
-            }
+            _cache.Dispose();
         }
-        #endregion
     }
 }

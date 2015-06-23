@@ -111,9 +111,7 @@ namespace WebApplications.Utilities
         private static Func<T> GetCtorFunc()
         {
             if (_ctorFunc == null)
-                // TODO Translate
-                throw new ArgumentException(
-                    "The lazily-initialized type does not have a public, parameterless constructor.");
+                throw new ArgumentException(Resources.ResettableLazy_GetCtorFunc_NoDefaultCtor);
             return _ctorFunc;
         }
 
@@ -295,12 +293,12 @@ namespace WebApplications.Utilities
             if (edi != null)
             {
                 edi.Throw();
-                // TODO Translate
+                // NOTE: Never actually returned
                 return "Value has exception";
             }
 
-            // TODO Translate
-            return "Value is not created.";
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return Resources.ResettableLazy_ToString_ValueNotCreated;
         }
 
         /// <summary>
@@ -474,9 +472,7 @@ namespace WebApplications.Utilities
             {
                 // check for recursion
                 if (mode != LazyThreadSafetyMode.PublicationOnly && _initialized)
-                    // TODO Translate
-                    throw new InvalidOperationException(
-                        "ValueFactory attempted to access the Value property of this instance.");
+                    throw new InvalidOperationException(Resources.ResettableLazy_CreateValue_ValueFactoryAccessedValue);
 
                 Func<T> factory = _valueFactory;
                 if (mode != LazyThreadSafetyMode.PublicationOnly)
