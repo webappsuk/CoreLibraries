@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         [NotNull]
         protected static readonly PropertyInfo HashCodeProperty =
-            InfoHelper.GetPropertyInfo<DatabaseEntity, long>(e => e.HashCode, true);
+            InfoHelper.GetPropertyInfo<DatabaseEntity>(e => e.HashCode, true);
 
         /// <summary>
         /// The <see cref="List{T}.Add"/> method for a <see cref="List{T}">list of</see> <see cref="Difference">differences</see>.
@@ -193,19 +193,13 @@ namespace WebApplications.Utilities.Database.Schema
                     e =>
                     {
                         Debug.Assert(e != null);
-                        // TODO Use InfoHelper.GetMemberInfo when added
-                        return ((MemberExpression)
-                            (e.Body.NodeType == ExpressionType.Convert
-                                ? ((UnaryExpression)e.Body).Operand
-                                : e.Body))
-                            .Member;
+                        return InfoHelper.GetMemberInfo(e, true);
                     })
                 .ToArray();
             Debug.Assert(properties != null);
 
             ParameterExpression inputExpression = Expression.Parameter(typeof(T), "input");
             Expression hcExpression = null;
-
 
             ParameterExpression leftExpression = Expression.Parameter(typeof(T), "left");
             ParameterExpression rightExpression = Expression.Parameter(typeof(T), "right");
