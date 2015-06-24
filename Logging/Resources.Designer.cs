@@ -520,6 +520,30 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {!fgcolor:LogLevel}{!header}{!layout:aCentre}{level:{Value}}{!fgcolor}{!layout}{message:
+        ///{!fgcolor:Teal}{Key}{!fgcolor}	: {!fgcolor:White}{Value}{!fgcolor}}{resource}{culture}{time}{guid}{thread:
+        ///{!fgcolor:Teal}{Key}{!fgcolor}	: {Value}{threadid: ({Value})}}{exception}{innerexception}{sproc}{application}{applicationguid}{context}{stack:
+        ///{!fgcolor:Gray}{!header:-}{!layout:aCentre}{!fgcolor:Teal}{Key}{!fgcolor}{!layout:i6;f3;aLeft}
+        ///{!fgcolor:Gray}{Value}{!fgcolor}{!layout}}
+        ///{!fgcolor:LogLevel}{!header}{! [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string LogFormat_All {
+            get {
+                return ResourceManager.GetString("LogFormat_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {!layout:f4}{level:{jsonFirst}}{message:{json}}{time:{json}}{guid:{json}}{thread:{json}}{threadid:{json}}{exception:{json}}{innerexception:{json}}{sproc:{json}}{context:,
+        ///{json}}{stack:{json}}{!layout}.
+        /// </summary>
+        internal static string LogFormat_JSON {
+            get {
+                return ResourceManager.GetString("LogFormat_JSON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {!fgcolor:Teal}{time:{Value:HH:mm:ss.ffff}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}
         ///.
         /// </summary>

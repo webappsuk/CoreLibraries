@@ -37,7 +37,7 @@ namespace WebApplications.Utilities.Logging
     public sealed partial class Log
     {
         /// <summary>
-        /// The default format
+        /// The verbose element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementVerboseFormat = new FormatBuilder()
@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The single line element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementNoLineFormat = new FormatBuilder()
@@ -60,7 +60,7 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The XML element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementXMLFormat = new FormatBuilder()
@@ -68,13 +68,21 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The JSON format for the first key-value pair in an object.
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder ElementJSONFirstFormat = new FormatBuilder()
+            .AppendFormat("\"{Key}\"={ValueJSON}")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The JSON format for the rest of the key-value pairs in an object.
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementJSONFormat = new FormatBuilder()
             .Append(',')
             .AppendLine()
-            .AppendFormat("\"{Key}\"=\"{Value}\"")
+            .AppendFormat("\"{Key}\"={ValueJSON}")
             .MakeReadOnly();
 
         private class LogElement : ResolvableWriteable
@@ -121,6 +129,8 @@ namespace WebApplications.Utilities.Logging
                         return ElementXMLFormat;
                     case "json":
                         return ElementJSONFormat;
+                    case "jsonfirst":
+                        return ElementJSONFirstFormat;
                     case "noline":
                         return ElementNoLineFormat;
                     case "key":
@@ -148,6 +158,8 @@ namespace WebApplications.Utilities.Logging
                         return Value;
                     case "valuexml":
                         return Value == null ? Resolution.Null : Value.XmlEscape();
+                    case "valuejson":
+                        return Value == null ? "null" : Value.ToString().ToJSON();
                     default:
                         return Resolution.Unknown;
                 }

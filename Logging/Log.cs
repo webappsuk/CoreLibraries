@@ -1771,20 +1771,27 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The full format.
         /// </summary>
-        // TODO Create AllFormat
         [NotNull]
         public static readonly FormatBuilder AllFormat =
-            new FormatBuilder()
-                .MakeReadOnly();
+            new FormatBuilder(
+                120,
+                22,
+                alignment: Alignment.Left,
+                tabStops: new[] { 20, 22 },
+                format: Resources.LogFormat_All,
+                isReadOnly: true);
 
         /// <summary>
         /// The JSON object format.
         /// </summary>
-        // TODO Create JSONFormat
         [NotNull]
         public static readonly FormatBuilder JSONFormat =
-            new FormatBuilder(int.MaxValue, alignment: Alignment.Left)
-                .MakeReadOnly();
+            new FormatBuilder(
+                int.MaxValue,
+                alignment: Alignment.Left)
+                .AppendLine('{')
+                .AppendFormatLine(Resources.LogFormat_JSON)
+                .Append('}');
 
         /// <summary>
         /// The XML Node format.

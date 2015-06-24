@@ -400,4 +400,16 @@
   <data name="Log_FormatAndResource" xml:space="preserve">
     <value>Cannot use both a format string and a resource.</value>
   </data>
+  <data name="LogFormat_All" xml:space="preserve">
+    <value>{!fgcolor:LogLevel}{!header}{!layout:aCentre}{level:{Value}}{!fgcolor}{!layout}{message:
+{!fgcolor:Teal}{Key}{!fgcolor}	: {!fgcolor:White}{Value}{!fgcolor}}{resource}{culture}{time}{guid}{thread:
+{!fgcolor:Teal}{Key}{!fgcolor}	: {Value}{threadid: ({Value})}}{exception}{innerexception}{sproc}{application}{applicationguid}{context}{stack:
+{!fgcolor:Gray}{!header:-}{!layout:aCentre}{!fgcolor:Teal}{Key}{!fgcolor}{!layout:i6;f3;aLeft}
+{!fgcolor:Gray}{Value}{!fgcolor}{!layout}}
+{!fgcolor:LogLevel}{!header}{!fgcolor}</value>
+  </data>
+  <data name="LogFormat_JSON" xml:space="preserve">
+    <value>{!layout:f4}{level:{jsonFirst}}{message:{json}}{time:{json}}{guid:{json}}{thread:{json}}{threadid:{json}}{exception:{json}}{innerexception:{json}}{sproc:{json}}{context:,
+{json}}{stack:{json}}{!layout}</value>
+  </data>
 </root>

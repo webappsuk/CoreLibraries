@@ -34,13 +34,13 @@ using WebApplications.Utilities.Logging.Loggers;
 
 namespace WebApplications.Utilities.Logging.TestConsole
 {
-    internal static class Program
+    internal class Program
     {
         private static void Main([NotNull] string[] args)
         {
             Log.SetTrace(validLevels: LoggingLevels.None);
-            Log.SetConsole(Log.VerboseFormat);
-            Log.AddLogger(new EventLogger("Events"));
+            Log.SetConsole(Log.ShortFormat);
+            //Log.AddLogger(new EventLogger("Events"));
 
             FormatBuilder prompt = new FormatBuilder()
                 .AppendForegroundColor(Color.Chartreuse)

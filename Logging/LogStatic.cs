@@ -121,7 +121,7 @@ namespace WebApplications.Utilities.Logging
 
         #region Format Tags
         /// <summary>
-        /// The message format tag.
+        /// The header control format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagHeader = "!header";
@@ -145,73 +145,73 @@ namespace WebApplications.Utilities.Logging
         public const string FormatTagCulture = "culture";
 
         /// <summary>
-        /// The culture format tag.
+        /// The time format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagTimeStamp = "time";
 
         /// <summary>
-        /// The culture format tag.
+        /// The level format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagLevel = "level";
 
         /// <summary>
-        /// The culture format tag.
+        /// The guid format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagGuid = "guid";
 
         /// <summary>
-        /// The culture format tag.
+        /// The exception format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagException = "exception";
 
         /// <summary>
-        /// The culture format tag.
+        /// The stack format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagStackTrace = "stack";
 
         /// <summary>
-        /// The culture format tag.
+        /// The thread ID format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagThreadID = "threadid";
 
         /// <summary>
-        /// The culture format tag.
+        /// The thread format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagThreadName = "thread";
 
         /// <summary>
-        /// The culture format tag.
+        /// The application name format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagApplicationName = "application";
 
         /// <summary>
-        /// The culture format tag.
+        /// The application guid format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagApplicationGuid = "applicationguid";
 
         /// <summary>
-        /// The culture format tag.
+        /// The sproc format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagStoredProcedure = "sproc";
 
         /// <summary>
-        /// The culture format tag.
+        /// The innter exception format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagInnerException = "innerexception";
 
         /// <summary>
-        /// The culture format tag.
+        /// The context format tag.
         /// </summary>
         [NotNull]
         public const string FormatTagContext = "context";

@@ -51,12 +51,12 @@ namespace WebApplications.Utilities.Logging
     public partial class LogContext : ResolvableWriteable, IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
-        /// The default format
+        /// The verbose format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder VerboseFormat = new FormatBuilder()
             .AppendLine()
-            .AppendForegroundColor(Color.Gray)
+            .AppendForegroundColor(Color.Teal)
             .AppendFormat("{" + Log.FormatTagHeader + ":-}")
             .AppendLayout(alignment: Alignment.Centre)
             .AppendFormat("{Key}")
@@ -66,17 +66,19 @@ namespace WebApplications.Utilities.Logging
             .AppendPopLayout();
 
         /// <summary>
-        /// The default format
+        /// The single line format
         /// </summary>
-        // TODO Create Context NoLine format
         [NotNull]
         public static readonly FormatBuilder NoLineFormat = new FormatBuilder()
+            .AppendForegroundColor(Color.Teal)
+            .AppendFormat("{Key}")
+            .AppendResetForegroundColor()
+            .AppendFormat("\t: [{Value:{<items>:{<item>:{noline}}}{<join>:;\t}}]")
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The XML format
         /// </summary>
-        // TODO Create Context XMLFormat format
         [NotNull]
         public static readonly FormatBuilder XMLFormat = new FormatBuilder()
             .AppendFormatLine("<{KeyXmlTag}>")
@@ -87,11 +89,16 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The JSON format
         /// </summary>
-        // TODO Create Context JSONFormat format
         [NotNull]
         public static readonly FormatBuilder JSONFormat = new FormatBuilder()
+            .AppendFormatLine("\"{Key}\"=")
+            .AppendLine("{")
+            .AppendLayout(firstLineIndentSize: 8)
+            .AppendFormatLine("{Value:{<items>:{<item>:{json}}}{<join>:,\r\n}}")
+            .AppendPopLayout()
+            .Append('}')
             .MakeReadOnly();
 
         /// <summary>

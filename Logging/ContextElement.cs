@@ -35,30 +35,30 @@ namespace WebApplications.Utilities.Logging
     public partial class LogContext
     {
         /// <summary>
-        /// The default format
+        /// The verbose element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementVerboseFormat = new FormatBuilder()
             .AppendLine()
-            .AppendForegroundColor(Color.DarkCyan)
+            .AppendForegroundColor(Color.Cyan)
             .AppendFormat("{Key}")
             .AppendResetForegroundColor()
             .AppendFormat("\t: {Value}")
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The single line element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementNoLineFormat = new FormatBuilder()
-            .AppendForegroundColor(Color.DarkCyan)
+            .AppendForegroundColor(Color.Cyan)
             .AppendFormat("{Key}")
             .AppendResetForegroundColor()
             .AppendFormat("\t: {Value}")
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The XML element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementXMLFormat = new FormatBuilder()
@@ -66,13 +66,11 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The JSON element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementJSONFormat = new FormatBuilder()
-            .Append(',')
-            .AppendLine()
-            .AppendFormat("\"{Key}\"=\"{Value}\"")
+            .AppendFormat("\"{Key}\"={ValueJSON}")
             .MakeReadOnly();
 
         private class ContextElement : ResolvableWriteable
@@ -132,6 +130,8 @@ namespace WebApplications.Utilities.Logging
                         return Value;
                     case "valuexml":
                         return Value.XmlEscape();
+                    case "valuejson":
+                        return Value == null ? "null" : Value.ToJSON();
                     default:
                         return Resolution.Unknown;
                 }
