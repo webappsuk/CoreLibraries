@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// Defines a schedule that runs after a specific gap.
     /// </summary>
     [PublicAPI]
-    public class GapSchedule : ISchedule
+    public class GapSchedule : ISchedule, IEquatable<GapSchedule>
     {
         /// <summary>
         /// The duration between runs.
@@ -44,7 +44,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
 
         private readonly string _name;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the optional name.
+        /// </summary>
         public string Name
         {
             get { return _name; }
@@ -52,7 +54,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
 
         private readonly ScheduleOptions _options;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the options.
+        /// </summary>
         public ScheduleOptions Options
         {
             get { return _options; }
@@ -108,13 +112,81 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             _options = options;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the next scheduled event.
+        /// </summary>
+        /// <param name="last">The last <see cref="Instant" /> the action was completed.</param>
+        /// <returns>
+        /// The next <see cref="Instant" /> in the schedule, or <see cref="Instant.MaxValue" /> for never/end of time.
+        /// </returns>
         public Instant Next(Instant last)
         {
             return last + Duration;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="GapSchedule"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(GapSchedule other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _options == other._options &&
+                   Duration.Equals(other.Duration) &&
+                   string.Equals(_name, other._name);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="ISchedule"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(ISchedule other)
+        {
+            return Equals(other as GapSchedule);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as GapSchedule);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = Duration.GetHashCode();
+                hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int)_options;
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return "Run every " + Duration.TotalMilliseconds() + "ms";

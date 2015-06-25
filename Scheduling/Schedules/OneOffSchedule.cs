@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// Defines a schedule that runs at a specific <see cref="Instant"/>.
     /// </summary>
     [PublicAPI]
-    public class OneOffSchedule : ISchedule
+    public class OneOffSchedule : ISchedule, IEquatable<OneOffSchedule>
     {
         /// <summary>
         /// An instant in time.
@@ -44,7 +44,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
 
         private readonly string _name;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the optional name.
+        /// </summary>
         public string Name
         {
             get { return _name; }
@@ -52,7 +54,9 @@ namespace WebApplications.Utilities.Scheduling.Schedules
 
         private readonly ScheduleOptions _options;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the options.
+        /// </summary>
         public ScheduleOptions Options
         {
             get { return _options; }
@@ -158,13 +162,79 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         }
         #endregion
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the next scheduled event.
+        /// </summary>
+        /// <param name="last">The last <see cref="Instant" /> the action was completed.</param>
+        /// <returns>
+        /// The next <see cref="Instant" /> in the schedule, or <see cref="NodaTime.Instant.MaxValue" /> for never/end of time.
+        /// </returns>
         public Instant Next(Instant last)
         {
             return Instant >= last ? Instant : Instant.MaxValue;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(OneOffSchedule other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _options == other._options && Instant.Equals(other.Instant) && string.Equals(_name, other._name);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(ISchedule other)
+        {
+            return Equals(other as OneOffSchedule);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as OneOffSchedule);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = Instant.GetHashCode();
+                hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int)_options;
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return "Run Once at " + Instant;

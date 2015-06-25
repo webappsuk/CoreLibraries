@@ -39,18 +39,17 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// Creates a schedule made up of multiple other schedules
     /// </summary>
     [PublicAPI]
-    public class AggregateSchedule : ISchedule, IEnumerable<ISchedule>
+    public class AggregateSchedule : ISchedule, IEnumerable<ISchedule>, IEquatable<AggregateSchedule>
     {
         [NotNull]
+        [ItemNotNull]
         private readonly ISchedule[] _schedules;
 
         private readonly string _name;
 
-        /// <inheritdoc/>
-        public string Name
-        {
-            get { return _name; }
-        }
+        private readonly ScheduleOptions _options;
+
+        private readonly int _hashCode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateSchedule" /> class, used by configuration system.
@@ -204,7 +203,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             if (schedules == null) throw new ArgumentNullException("schedules");
 
             // Duplicate collection
-            _schedules = schedules;
+            _schedules = schedules.Where(s => s != null).ToArray();
             _name = name;
             if (!_schedules.Any())
             {
@@ -212,27 +211,42 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 return;
             }
 
-            // Calculate options and ensure all are identical.
-            bool first = true;
-            foreach (ISchedule schedule in _schedules)
+            unchecked
             {
-                if (schedule == null)
-                    continue;
+                int hashCode = _schedules.Length;
 
-                if (first)
+                // Calculate options and ensure all are identical.
+                bool first = true;
+                foreach (ISchedule schedule in _schedules.OrderBy(s => s.Name))
                 {
-                    _options = schedule.Options;
-                    first = false;
-                    continue;
+                    Debug.Assert(schedule != null);
+
+                    hashCode = (hashCode * 397) ^ schedule.GetHashCode();
+
+                    if (first)
+                    {
+                        _options = schedule.Options;
+                        first = false;
+                        continue;
+                    }
+
+                    if (schedule.Options != _options)
+                        throw new ArgumentException(Resource.AggregateSchedule_Different_Options, "schedules");
                 }
-                if (schedule.Options != _options)
-                    throw new ArgumentException(Resource.AggregateSchedule_Different_Options, "schedules");
+
+                hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int)_options;
+                _hashCode = hashCode;
             }
         }
 
-        private readonly ScheduleOptions _options;
-
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the next scheduled event.
+        /// </summary>
+        /// <param name="last">The last <see cref="Instant" /> the action was completed.</param>
+        /// <returns>
+        /// The next <see cref="Instant" /> in the schedule, or <see cref="Instant.MaxValue" /> for never/end of time.
+        /// </returns>
         public Instant Next(Instant last)
         {
             Instant next = Instant.MaxValue;
@@ -249,7 +263,18 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             return next;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the optional name.
+        /// </summary>
+        public string Name
+        {
+            get { return _name; }
+        }
+
+        /// <summary>
+        /// Gets the options.
+        /// </summary>
+        /// <remarks></remarks>
         public ScheduleOptions Options
         {
             get { return _options; }
@@ -273,13 +298,72 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             return GetEnumerator();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return string.Format(
                 "Aggregate Schedule ({0} schedules), next Run at {1}",
                 _schedules.Length,
                 Next(TimeHelpers.Clock.Now));
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="AggregateSchedule"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(AggregateSchedule other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _hashCode == other._hashCode &&
+                    _options == other._options &&
+                   string.Equals(_name, other._name) &&
+                // ReSharper disable PossibleNullReferenceException
+                   _schedules.OrderBy(s => s.Name).SequenceEqual(other._schedules.OrderBy(s => s.Name));
+            // ReSharper restore PossibleNullReferenceException
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="ISchedule"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(ISchedule other)
+        {
+            return Equals(other as AggregateSchedule);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as AggregateSchedule);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return _hashCode;
         }
     }
 }

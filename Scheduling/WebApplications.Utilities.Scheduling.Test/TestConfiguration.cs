@@ -29,6 +29,9 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Scheduling.Configuration;
 using WebApplications.Utilities.Scheduling.Schedules;
 
 namespace WebApplications.Utilities.Scheduling.Test
@@ -59,7 +62,6 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.IsNotNull(etm);
             Assert.IsInstanceOfType(etm, typeof(PeriodicSchedule));
 
-
             ISchedule aggregate = Scheduler.GetSchedule("Aggregate");
             Assert.IsNotNull(aggregate);
             Assert.IsInstanceOfType(aggregate, typeof(AggregateSchedule));
@@ -72,6 +74,192 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.AreSame(oneOff, array[0]);
             Assert.AreSame(gap, array[1]);
             Assert.AreSame(etm, array[2]);
+        }
+
+        [TestMethod]
+        public void TestConfigurationChangeNoChanges()
+        {
+            SchedulerConfiguration current = SchedulerConfiguration.Active;
+            try
+            {
+                ISchedule oneOff = Scheduler.GetSchedule("OneOff");
+                ISchedule gap = Scheduler.GetSchedule("Gap");
+                ISchedule etm = Scheduler.GetSchedule("EveryTwoMonths");
+                ISchedule aggregate = Scheduler.GetSchedule("Aggregate");
+                bool enabled = Scheduler.Enabled;
+                Duration defaultMaxDuration = Scheduler.DefaultMaximumDuration;
+                int defaultMaxHistory = Scheduler.DefaultMaximumHistory;
+
+                SchedulerConfiguration.Active = CloneConfig(current);
+
+                Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
+                Assert.AreSame(gap, Scheduler.GetSchedule("Gap"));
+                Assert.AreSame(etm, Scheduler.GetSchedule("EveryTwoMonths"));
+                Assert.AreSame(aggregate, Scheduler.GetSchedule("Aggregate"));
+                Assert.AreEqual(Scheduler.Enabled, enabled);
+                Assert.AreEqual(Scheduler.DefaultMaximumDuration, defaultMaxDuration);
+                Assert.AreEqual(Scheduler.DefaultMaximumHistory, defaultMaxHistory);
+            }
+            finally
+            {
+                SchedulerConfiguration.Active = current;
+            }
+        }
+
+        [TestMethod]
+        public void TestConfigurationChangeEnabled()
+        {
+            SchedulerConfiguration current = SchedulerConfiguration.Active;
+            try
+            {
+                ISchedule oneOff = Scheduler.GetSchedule("OneOff");
+                ISchedule gap = Scheduler.GetSchedule("Gap");
+                ISchedule etm = Scheduler.GetSchedule("EveryTwoMonths");
+                ISchedule aggregate = Scheduler.GetSchedule("Aggregate");
+
+                Assert.AreEqual(Scheduler.Enabled, true);
+
+                SchedulerConfiguration newConfig = CloneConfig(current);
+                newConfig.Enabled = false;
+
+                SchedulerConfiguration.Active = newConfig;
+
+                Assert.AreEqual(Scheduler.Enabled, false);
+
+                Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
+                Assert.AreSame(gap, Scheduler.GetSchedule("Gap"));
+                Assert.AreSame(etm, Scheduler.GetSchedule("EveryTwoMonths"));
+                Assert.AreSame(aggregate, Scheduler.GetSchedule("Aggregate"));
+            }
+            finally
+            {
+                SchedulerConfiguration.Active = current;
+            }
+        }
+
+        [TestMethod]
+        public void TestConfigurationChangeAggregate()
+        {
+            SchedulerConfiguration current = SchedulerConfiguration.Active;
+            try
+            {
+                ISchedule oneOff = Scheduler.GetSchedule("OneOff");
+                ISchedule gap = Scheduler.GetSchedule("Gap");
+                ISchedule etm = Scheduler.GetSchedule("EveryTwoMonths");
+                ISchedule aggregate = Scheduler.GetSchedule("Aggregate");
+
+                SchedulerConfiguration newConfig = CloneConfig(current);
+                newConfig.Schedules["Aggregate"].Parameters.Remove("schedule3");
+
+                SchedulerConfiguration.Active = newConfig;
+
+                Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
+                Assert.AreSame(gap, Scheduler.GetSchedule("Gap"));
+                Assert.AreSame(etm, Scheduler.GetSchedule("EveryTwoMonths"));
+                AggregateSchedule newAggregate = Scheduler.GetSchedule("Aggregate") as AggregateSchedule;
+                Assert.IsNotNull(newAggregate);
+                Assert.AreNotSame(aggregate, newAggregate);
+                Assert.AreEqual(2, newAggregate.Count());
+            }
+            finally
+            {
+                SchedulerConfiguration.Active = current;
+            }
+        }
+
+        [TestMethod]
+        public void TestConfigurationChangeGap()
+        {
+            SchedulerConfiguration current = SchedulerConfiguration.Active;
+            try
+            {
+                ISchedule oneOff = Scheduler.GetSchedule("OneOff");
+                ISchedule gap = Scheduler.GetSchedule("Gap");
+                ISchedule etm = Scheduler.GetSchedule("EveryTwoMonths");
+                ISchedule aggregate = Scheduler.GetSchedule("Aggregate");
+
+                SchedulerConfiguration newConfig = CloneConfig(current);
+                newConfig.Schedules["Gap"].Parameters["timeSpan"].Value = "4.00:00:00";
+
+                SchedulerConfiguration.Active = newConfig;
+
+                Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
+                Assert.AreNotSame(gap, Scheduler.GetSchedule("Gap"));
+                Assert.AreSame(etm, Scheduler.GetSchedule("EveryTwoMonths"));
+                Assert.AreNotSame(aggregate, Scheduler.GetSchedule("Aggregate"));
+
+                ISchedule newGap = Scheduler.GetSchedule("Gap");
+                Assert.IsNotNull(newGap);
+                Assert.IsInstanceOfType(newGap, typeof(GapSchedule));
+
+                Instant i = Instant.FromDateTimeOffset(DateTimeOffset.Parse("13/01/2100 09:10:11 +00:00"));
+                Duration d = Duration.FromTimeSpan(TimeSpan.Parse("4.00:00:00"));
+                Assert.AreEqual(i + d, newGap.Next(i));
+
+                AggregateSchedule newAggregate = Scheduler.GetSchedule("Aggregate") as AggregateSchedule;
+                Assert.IsNotNull(newAggregate);
+
+                ISchedule[] array = newAggregate.ToArray();
+                Assert.AreEqual(3, array.Length);
+                Assert.AreSame(oneOff, array[0]);
+                Assert.AreSame(newGap, array[1]);
+                Assert.AreSame(etm, array[2]);
+            }
+            finally
+            {
+                SchedulerConfiguration.Active = current;
+            }
+        } 
+
+        [NotNull]
+        private SchedulerConfiguration CloneConfig([NotNull] SchedulerConfiguration config)
+        {
+            return new SchedulerConfiguration
+            {
+                DefaultMaximumDuration = config.DefaultMaximumDuration,
+                DefautlMaximumHistory = config.DefautlMaximumHistory,
+                Enabled = config.Enabled,
+                Schedules = CloneCollection(config.Schedules)
+            };
+        }
+
+        [NotNull]
+        private ScheduleCollection CloneCollection([NotNull][ItemNotNull] ScheduleCollection collection)
+        {
+            ScheduleCollection newCollection = new ScheduleCollection();
+
+            foreach (ScheduleElement element in collection)
+            {
+                newCollection.Add(new ScheduleElement
+                {
+                    Name = element.Name,
+                    Options = element.Options,
+                    Type = element.Type,
+                    Parameters = CloneCollection(element.Parameters)
+                });
+            }
+
+            return newCollection;
+        }
+
+        [NotNull]
+        private ParameterCollection CloneCollection([NotNull] [ItemNotNull] ParameterCollection collection)
+        {
+            ParameterCollection newCollection = new ParameterCollection();
+
+            foreach (ParameterElement element in collection)
+            {
+                newCollection.Add(new ParameterElement
+                {
+                    Name = element.Name,
+                    Value = element.Value,
+                    IsRequired = element.IsRequired,
+                    Type = element.Type,
+                    TypeConverter = element.TypeConverter
+                });
+            }
+
+            return newCollection;
         }
     }
 }

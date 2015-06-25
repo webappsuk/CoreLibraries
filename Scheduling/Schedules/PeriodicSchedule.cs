@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// Defines a schedule.
     /// </summary>
     [PublicAPI]
-    public class PeriodicSchedule : FunctionalSchedule
+    public class PeriodicSchedule : FunctionalSchedule, IEquatable<PeriodicSchedule>
     {
         /// <summary>
         /// The calendar.
@@ -372,6 +372,96 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                             second,
                             calendarSystem,
                             timeZone));
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="PeriodicSchedule"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(PeriodicSchedule other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return Options == other.Options &&
+                   Day == other.Day && 
+                   FirstDayOfWeek == other.FirstDayOfWeek &&
+                   Hour == other.Hour &&
+                   Minute == other.Minute &&
+                   Month == other.Month &&
+                   Second == other.Second &&
+                   Week == other.Week &&
+                   WeekDay == other.WeekDay &&
+                   MinimumGap.Equals(other.MinimumGap) &&
+                   string.Equals(Name, other.Name) &&
+                   CalendarSystem.Equals(other.CalendarSystem) &&
+                   DateTimeZone.Equals(other.DateTimeZone);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="FunctionalSchedule" />.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public override bool Equals(FunctionalSchedule other)
+        {
+            return Equals(other as PeriodicSchedule);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="ISchedule" />.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public override bool Equals(ISchedule other)
+        {
+            return Equals(other as PeriodicSchedule);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as PeriodicSchedule);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (int)Options;
+                hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ CalendarSystem.GetHashCode();
+                hashCode = (hashCode * 397) ^ DateTimeZone.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int)Day;
+                hashCode = (hashCode * 397) ^ (int)FirstDayOfWeek;
+                hashCode = (hashCode * 397) ^ (int)Hour;
+                hashCode = (hashCode * 397) ^ MinimumGap.GetHashCode();
+                hashCode = (hashCode * 397) ^ Minute.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int)Month;
+                hashCode = (hashCode * 397) ^ Second.GetHashCode();
+                hashCode = (hashCode * 397) ^ Week.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int)WeekDay;
+                return hashCode;
+            }
         }
     }
 }

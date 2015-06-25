@@ -36,7 +36,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
     /// </summary>
     /// <remarks></remarks>
     [PublicAPI]
-    public class FunctionalSchedule : ISchedule
+    public class FunctionalSchedule : ISchedule, IEquatable<FunctionalSchedule>
     {
         private readonly ScheduleOptions _options;
         private readonly string _name;
@@ -77,22 +77,87 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             _name = name;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the optional name.
+        /// </summary>
         public string Name
         {
             get { return _name; }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the next scheduled event.
+        /// </summary>
+        /// <param name="last">The last <see cref="Instant" /> the action was completed.</param>
+        /// <returns>
+        /// The next <see cref="Instant" /> in the schedule, or <see cref="Instant.MaxValue" /> for never/end of time.
+        /// </returns>
         public Instant Next(Instant last)
         {
             return _function(last);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the options.
+        /// </summary>
         public ScheduleOptions Options
         {
             get { return _options; }
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="FunctionalSchedule"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(FunctionalSchedule other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _options == other._options && string.Equals(_name, other._name) && _function.Equals(other._function);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of type <see cref="ISchedule"/>.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public virtual bool Equals(ISchedule other)
+        {
+            return Equals(other as FunctionalSchedule);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as FunctionalSchedule);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (int)_options;
+                hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ _function.GetHashCode();
+                return hashCode;
+            }
         }
 
         /// <inheritdoc/>

@@ -27,7 +27,9 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
@@ -58,8 +60,82 @@ namespace WebApplications.Utilities.Scheduling
         /// The named schedules.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, ISchedule> _schedules =
-            new ConcurrentDictionary<string, ISchedule>();
+        private static readonly ConcurrentDictionary<string, ScheduleInfo> _schedules =
+            new ConcurrentDictionary<string, ScheduleInfo>();
+
+        private struct ScheduleInfo : IEquatable<ScheduleInfo>
+        {
+            /// <summary>
+            /// Whether the schedule was loaded from the configuration.
+            /// </summary>
+            public readonly bool IsFromConfiguration;
+
+            [NotNull]
+            private readonly ISchedule _schedule;
+
+            /// <summary>
+            /// Gets the schedule.
+            /// </summary>
+            [NotNull]
+            public ISchedule Schedule
+            {
+                get
+                {
+                    Debug.Assert(_schedule != null);
+                    return _schedule;
+                }
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ScheduleInfo"/> struct.
+            /// </summary>
+            /// <param name="isFromConfiguration">if set to <see langword="true" /> [is from configuration].</param>
+            /// <param name="schedule">The schedule.</param>
+            /// <exception cref="System.ArgumentNullException">schedule</exception>
+            public ScheduleInfo(bool isFromConfiguration, [NotNull] ISchedule schedule)
+            {
+                IsFromConfiguration = isFromConfiguration;
+                _schedule = schedule;
+            }
+
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <param name="other">An object to compare with this object.</param>
+            /// <returns>
+            /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+            /// </returns>
+            public bool Equals(ScheduleInfo other)
+            {
+                return IsFromConfiguration == other.IsFromConfiguration && _schedule.Equals(other._schedule);
+            }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <returns>
+            ///   <see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.
+            /// </returns>
+            public override bool Equals(object obj)
+            {
+                return obj is ScheduleInfo && Equals((ScheduleInfo)obj);
+            }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (IsFromConfiguration.GetHashCode() * 397) ^ _schedule.GetHashCode();
+                }
+            }
+        }
 
         /// <summary>
         /// Holds all scheduled actions.
@@ -80,9 +156,23 @@ namespace WebApplications.Utilities.Scheduling
         private static readonly Timer _ticker;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Scheduler" /> class.
+        /// Initializes the <see cref="Scheduler"/> class.
         /// </summary>
         static Scheduler()
+        {
+            SchedulerConfiguration schedulerConfiguration = SchedulerConfiguration.Active;
+            Debug.Assert(schedulerConfiguration != null);
+
+            _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
+
+            LoadConfiguration();
+            SchedulerConfiguration.Changed += (s, e) => LoadConfiguration();
+        }
+
+        /// <summary>
+        /// Loads the configuration.
+        /// </summary>
+        private static void LoadConfiguration()
         {
             SchedulerConfiguration schedulerConfiguration = SchedulerConfiguration.Active;
             Debug.Assert(schedulerConfiguration != null);
@@ -90,14 +180,26 @@ namespace WebApplications.Utilities.Scheduling
             DefaultMaximumHistory = schedulerConfiguration.DefautlMaximumHistory;
             DefaultMaximumDuration = schedulerConfiguration.DefaultMaximumDuration;
 
-            _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
+            // Get the names of the schedules that were last loaded from the configuration
+            HashSet<string> current = new HashSet<string>(
+                _schedules.Values.Where(s => s.IsFromConfiguration).Select(s => s.Schedule.Name));
 
             foreach (ScheduleElement scheduleElement in schedulerConfiguration.Schedules)
-                // ReSharper disable once PossibleNullReferenceException
-                AddSchedule(scheduleElement.GetInstance<ISchedule>());
+            {
+                ISchedule schedule = AddSchedule(scheduleElement.GetInstance<ISchedule>(), true);
+
+                // Remove the names of schedules that are in the config
+                current.Remove(schedule.Name);
+            }
+
+            // Any schedules left should be removed.
+            foreach (string name in current)
+            {
+                Debug.Assert(name != null);
+                RemoveSchedule(name);
+            }
 
             Enabled = schedulerConfiguration.Enabled;
-            // ReSharper restore PossibleNullReferenceException
         }
 
         #region Named Schedules
@@ -111,7 +213,7 @@ namespace WebApplications.Utilities.Scheduling
         {
             if (name == null) throw new ArgumentNullException("name");
 
-            ISchedule schedule;
+            ScheduleInfo schedule;
             if (!_schedules.TryGetValue(name, out schedule))
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -120,9 +222,8 @@ namespace WebApplications.Utilities.Scheduling
                     string.Format(Resource.Scheduler_GetSchedule_NotFound, name));
             }
 
-            Debug.Assert(schedule != null);
-            Debug.Assert(Equals(schedule.Name, name));
-            return schedule;
+            Debug.Assert(Equals(schedule.Schedule.Name, name));
+            return schedule.Schedule;
         }
 
         /// <summary>
@@ -135,7 +236,15 @@ namespace WebApplications.Utilities.Scheduling
         public static bool TryGetSchedule([NotNull] string name, out ISchedule schedule)
         {
             if (name == null) throw new ArgumentNullException("name");
-            return _schedules.TryGetValue(name, out schedule);
+
+            ScheduleInfo scheduleInfo;
+            if (_schedules.TryGetValue(name, out scheduleInfo))
+            {
+                schedule = scheduleInfo.Schedule;
+                return true;
+            }
+            schedule = null;
+            return false;
         }
 
         /// <summary>
@@ -146,12 +255,26 @@ namespace WebApplications.Utilities.Scheduling
         [NotNull]
         public static ISchedule AddSchedule([NotNull] ISchedule schedule)
         {
+            return AddSchedule(schedule, false);
+        }
+
+        /// <summary>
+        /// Adds the <see cref="ISchedule"/> with the specified <see cref="ISchedule.Name"/> - which must not be <see langword="null"/>.
+        /// </summary>
+        /// <param name="schedule">The schedule.</param>
+        /// <param name="isFromConfiguration"></param>
+        /// <returns>The <see cref="ISchedule" /> removed, if any; otherwise <see langword="null" />.</returns>
+        [NotNull]
+        private static ISchedule AddSchedule([NotNull] ISchedule schedule, bool isFromConfiguration)
+        {
             if (schedule == null) throw new ArgumentNullException("schedule");
             if (schedule.Name == null)
                 throw new ArgumentNullException("schedule", Resource.Scheduler_AddSchedule_SchenduleNameNull);
 
+            ScheduleInfo info = new ScheduleInfo(isFromConfiguration, schedule);
+
             // ReSharper disable AssignNullToNotNullAttribute
-            return _schedules.AddOrUpdate(schedule.Name, schedule, (k, v) => schedule);
+            return _schedules.AddOrUpdate(schedule.Name, info, (k, v) => Equals(v, info) ? v : info).Schedule;
             // ReSharper restore AssignNullToNotNullAttribute
         }
 
@@ -165,9 +288,10 @@ namespace WebApplications.Utilities.Scheduling
         {
             if (name == null) throw new ArgumentNullException("name");
 
-            ISchedule schedule;
+            ScheduleInfo schedule;
             return _schedules.TryRemove(name, out schedule)
-                ? schedule
+                // ReSharper disable once PossibleNullReferenceException
+                ? schedule.Schedule
                 : null;
         }
         #endregion

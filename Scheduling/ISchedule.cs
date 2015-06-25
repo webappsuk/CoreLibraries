@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 
@@ -33,7 +34,7 @@ namespace WebApplications.Utilities.Scheduling
     /// <summary>
     /// Schedule Interface
     /// </summary>
-    public interface ISchedule
+    public interface ISchedule : IEquatable<ISchedule>
     {
         /// <summary>
         /// Gets the optional name.
