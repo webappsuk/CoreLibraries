@@ -62,8 +62,8 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=5.1.5652.23364, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebApplications.Testing.5.1.5652.23364\lib\net452\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing, Version=5.1.5654.22732, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApplications.Testing.5.1.5654.22732\lib\net452\WebApplications.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
