@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -24,6 +24,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
+
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Initializer
 {
@@ -50,7 +52,7 @@ namespace WebApplications.Utilities.Initializer
         /// <param name="format">The format.</param>
         /// <param name="args">The args.</param>
         /// <remarks></remarks>
-        public Output(OutputImportance importance, string format, params object[] args)
+        public Output(OutputImportance importance, [NotNull] string format, [NotNull] params object[] args)
         {
             Importance = importance;
             Message = string.Format(format, args);

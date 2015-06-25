@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -35,6 +36,7 @@ using System.Security.Permissions;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
+using WebApplications.Utilities.Annotations;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 
 namespace WebApplications.Utilities.Initializer
@@ -48,23 +50,15 @@ namespace WebApplications.Utilities.Initializer
     internal class Injector : MarshalByRefObject
     {
         /// <summary>
-        /// The current domain.
-        /// </summary>
-        private static readonly AppDomain _currentDomain = AppDomain.CurrentDomain;
-
-        /// <summary>
-        /// The type of the injector.
-        /// </summary>
-        private static readonly Type _injectorType;
-
-        /// <summary>
         /// The injector assembly.
         /// </summary>
+        [NotNull]
         private static readonly string _assemblyFileName;
 
         /// <summary>
         /// The injector type.
         /// </summary>
+        [NotNull]
         private static readonly string _typeName;
 
         /// <summary>
@@ -73,9 +67,10 @@ namespace WebApplications.Utilities.Initializer
         /// <remarks></remarks>
         static Injector()
         {
-            _injectorType = typeof (Injector);
-            _assemblyFileName = _injectorType.Assembly.Location;
-            _typeName = _injectorType.FullName;
+            Type injectorType = typeof(Injector);
+            _assemblyFileName = injectorType.Assembly.Location;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _typeName = injectorType.FullName;
         }
 
         /// <summary>
@@ -96,8 +91,14 @@ namespace WebApplications.Utilities.Initializer
         /// <param name="useIsolatedAppDomain">if set to <c>true</c> uses a new <see cref="AppDomain"/>.</param>
         /// <returns>Any errors; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public static IEnumerable<Output> Inject(string assemblyFile, string typeName, string methodName,
-                                                 string strongNameKeyPair, bool useIsolatedAppDomain)
+        [NotNull]
+        [ItemNotNull]
+        public static IEnumerable<Output> Inject(
+            string assemblyFile,
+            string typeName,
+            string methodName,
+            string strongNameKeyPair,
+            bool useIsolatedAppDomain)
         {
             Injector injector;
             if (!useIsolatedAppDomain)
@@ -113,7 +114,7 @@ namespace WebApplications.Utilities.Initializer
                 childDomain = AppDomain.CreateDomain("InjectionDomain");
 
                 // Create an instance of the injector object in the new domain.
-                injector = (Injector) childDomain.CreateInstanceFromAndUnwrap(
+                injector = (Injector)childDomain.CreateInstanceFromAndUnwrap(
                     _assemblyFileName,
                     _typeName,
                     false,
@@ -122,6 +123,7 @@ namespace WebApplications.Utilities.Initializer
                     null,
                     null,
                     null);
+                Debug.Assert(injector != null);
 
                 // Call the DoInject method on the injector in the child domain.
                 return injector.DoInject(assemblyFile, typeName, methodName, strongNameKeyPair);
@@ -143,8 +145,13 @@ namespace WebApplications.Utilities.Initializer
         /// <returns>Any errors; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         [SecuritySafeCritical]
-        private IEnumerable<Output> DoInject(string assemblyFile, string typeName, string methodName,
-                                             string strongNameKeyPair)
+        [NotNull]
+        [ItemNotNull]
+        private IEnumerable<Output> DoInject(
+            string assemblyFile,
+            string typeName,
+            string methodName,
+            string strongNameKeyPair)
         {
             OutputCollection outputCollection = new OutputCollection();
             try
@@ -165,8 +172,10 @@ namespace WebApplications.Utilities.Initializer
                 {
                     if (!File.Exists(strongNameKeyPair))
                     {
-                        outputCollection.Add(OutputImportance.Error, "The '{0}' strong name keypair was not found.",
-                                             strongNameKeyPair);
+                        outputCollection.Add(
+                            OutputImportance.Error,
+                            "The '{0}' strong name keypair was not found.",
+                            strongNameKeyPair);
                         return outputCollection;
                     }
 
@@ -178,10 +187,11 @@ namespace WebApplications.Utilities.Initializer
                     }
                     catch (Exception e)
                     {
-                        outputCollection.Add(OutputImportance.Error,
-                                             "Could not instrument '{0}' as cannot resign assembly, UnmanagedCode security permission denied.",
-                                             strongNameKeyPair,
-                                             e.Message);
+                        outputCollection.Add(
+                            OutputImportance.Error,
+                            "Could not instrument '{0}' as cannot resign assembly, UnmanagedCode security permission denied.",
+                            strongNameKeyPair,
+                            e.Message);
                         return outputCollection;
                     }
 
@@ -194,27 +204,25 @@ namespace WebApplications.Utilities.Initializer
                          * us to successfully resign (who knew?).
                          */
                         using (FileStream fs = new FileStream(strongNameKeyPair, FileMode.Open, FileAccess.Read))
-                        {
                             snkpair = new StrongNameKeyPair(fs);
-                        }
 
                         // Ensure we can access public key - this will be done by mono later so check works now.
+                        // ReSharper disable once UnusedVariable
                         byte[] publicKey = snkpair.PublicKey;
                     }
                     catch (Exception e)
                     {
-                        outputCollection.Add(OutputImportance.Error,
-                                             "Error occurred whilst accessing public key from '{0}' strong name keypair. {1}",
-                                             strongNameKeyPair,
-                                             e.Message);
+                        outputCollection.Add(
+                            OutputImportance.Error,
+                            "Error occurred whilst accessing public key from '{0}' strong name keypair. {1}",
+                            strongNameKeyPair,
+                            e.Message);
                         return outputCollection;
                     }
                 }
                 else
-                {
                     // No resigning necessary.
                     snkpair = null;
-                }
 
                 if (!File.Exists(assemblyFile))
                 {
@@ -237,8 +245,10 @@ namespace WebApplications.Utilities.Initializer
                 AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemblyFile, readParams);
                 if (assembly == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Failed to load assembly definition for '{0}'.",
-                                         assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Error,
+                        "Failed to load assembly definition for '{0}'.",
+                        assemblyFile);
                     return outputCollection;
                 }
 
@@ -246,89 +256,122 @@ namespace WebApplications.Utilities.Initializer
                 ModuleDefinition module = assembly.MainModule;
                 if (module == null)
                 {
-                    outputCollection.Add(OutputImportance.Error,
-                                         "Failed to load main module definition from assembly '{0}'.", assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Error,
+                        "Failed to load main module definition from assembly '{0}'.",
+                        assemblyFile);
                     return outputCollection;
                 }
 
                 if (module.Types == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Failed to load main module types from assembly '{0}'.",
-                                         assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Error,
+                        "Failed to load main module types from assembly '{0}'.",
+                        assemblyFile);
                     return outputCollection;
                 }
 
                 // Find the <Module> type definition
+                // ReSharper disable once PossibleNullReferenceException
                 TypeDefinition moduleType = module.Types.SingleOrDefault(t => t.Name == "<Module>");
                 if (moduleType == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Could not find type '<Module>' in assembly '{0}'.",
-                                         assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Error,
+                        "Could not find type '<Module>' in assembly '{0}'.",
+                        assemblyFile);
                     return outputCollection;
                 }
 
                 // Find void type
+                // ReSharper disable once PossibleNullReferenceException
                 TypeReference voidRef = module.TypeSystem.Void;
                 if (voidRef == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Could not find type 'void' in assembly '{0}'.",
-                                         assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Error,
+                        "Could not find type 'void' in assembly '{0}'.",
+                        assemblyFile);
                     return outputCollection;
                 }
 
                 // Find the type definition
+                // ReSharper disable once PossibleNullReferenceException
                 TypeDefinition typeDefinition = module.Types.SingleOrDefault(t => t.Name == typeName);
 
                 if (typeDefinition == null)
                 {
-                    outputCollection.Add(OutputImportance.Warning, "Could not find type '{0}' in assembly '{1}'.",
-                                         typeName, assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Warning,
+                        "Could not find type '{0}' in assembly '{1}'.",
+                        typeName,
+                        assemblyFile);
                     return outputCollection;
                 }
 
                 // Find the method
                 MethodDefinition callee = typeDefinition.Methods != null
-                                              ? typeDefinition.Methods.FirstOrDefault(
-                                                  m => m.Name == methodName && m.Parameters.Count == 0)
-                                              : null;
+                    ? typeDefinition.Methods.FirstOrDefault(
+                    // ReSharper disable PossibleNullReferenceException
+                        m => m.Name == methodName && m.Parameters.Count == 0)
+                    // ReSharper restore PossibleNullReferenceException
+                    : null;
 
                 if (callee == null)
                 {
-                    outputCollection.Add(OutputImportance.Warning,
-                                         "Could not find method '{0}' with no parameters in type '{1}' in assembly '{2}'.",
-                                         methodName, typeName, assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Warning,
+                        "Could not find method '{0}' with no parameters in type '{1}' in assembly '{2}'.",
+                        methodName,
+                        typeName,
+                        assemblyFile);
                     return outputCollection;
                 }
 
                 if (callee.IsPrivate)
                 {
-                    outputCollection.Add(OutputImportance.Error,
-                                         "Method '{0}' in type '{1}' in assembly '{2}' cannot be private as it can't be accessed by the Module Initializer.",
-                                         methodName, typeName, assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Error,
+                        "Method '{0}' in type '{1}' in assembly '{2}' cannot be private as it can't be accessed by the Module Initializer.",
+                        methodName,
+                        typeName,
+                        assemblyFile);
                     return outputCollection;
                 }
 
                 if (!callee.IsStatic)
                 {
-                    outputCollection.Add(OutputImportance.Error,
-                                         "Method '{0}' in type '{1}' in assembly '{2}' cannot be an instance method as it can't be instantiated by the Module Initializer.",
-                                         methodName, typeName, assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.Error,
+                        "Method '{0}' in type '{1}' in assembly '{2}' cannot be an instance method as it can't be instantiated by the Module Initializer.",
+                        methodName,
+                        typeName,
+                        assemblyFile);
                     return outputCollection;
                 }
 
 
-                outputCollection.Add(OutputImportance.MessageHigh,
-                                     "Method '{0}' in type '{1}' in assembly '{2}' will be called during Module initialization.",
-                                     methodName, typeName, assemblyFile);
+                outputCollection.Add(
+                    OutputImportance.MessageHigh,
+                    "Method '{0}' in type '{1}' in assembly '{2}' will be called during Module initialization.",
+                    methodName,
+                    typeName,
+                    assemblyFile);
 
                 // Create the module initializer.
-                MethodDefinition cctor = new MethodDefinition(".cctor", MethodAttributes.Static
-                                                                        | MethodAttributes.SpecialName
-                                                                        | MethodAttributes.RTSpecialName, voidRef);
+                MethodDefinition cctor = new MethodDefinition(
+                    ".cctor",
+                    MethodAttributes.Static
+                    | MethodAttributes.SpecialName
+                    | MethodAttributes.RTSpecialName,
+                    voidRef);
+                // ReSharper disable PossibleNullReferenceException
                 ILProcessor il = cctor.Body.GetILProcessor();
                 il.Append(il.Create(OpCodes.Call, callee));
                 il.Append(il.Create(OpCodes.Ret));
                 moduleType.Methods.Add(cctor);
+                // ReSharper restore PossibleNullReferenceException
 
                 WriterParameters writeParams = new WriterParameters();
                 if (hasPdb)
@@ -339,15 +382,18 @@ namespace WebApplications.Utilities.Initializer
                 if (snkpair != null)
                 {
                     writeParams.StrongNameKeyPair = snkpair;
-                    outputCollection.Add(OutputImportance.MessageHigh,
-                                         "Assembly '{0}' is being resigned by '{1}.",
-                                         assemblyFile, strongNameKeyPair);
+                    outputCollection.Add(
+                        OutputImportance.MessageHigh,
+                        "Assembly '{0}' is being resigned by '{1}.",
+                        assemblyFile,
+                        strongNameKeyPair);
                 }
                 else
                 {
-                    outputCollection.Add(OutputImportance.MessageHigh,
-                                         "Assembly '{0}' will not be resigned.",
-                                         assemblyFile);
+                    outputCollection.Add(
+                        OutputImportance.MessageHigh,
+                        "Assembly '{0}' will not be resigned.",
+                        assemblyFile);
                 }
 
                 assembly.Write(assemblyFile, writeParams);

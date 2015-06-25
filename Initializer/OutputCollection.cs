@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Initializer
 {
@@ -39,16 +40,19 @@ namespace WebApplications.Utilities.Initializer
         /// <summary>
         /// List of outputs.
         /// </summary>
+        [NotNull]
         private readonly List<Output> _outputs = new List<Output>();
 
         /// <summary>
         /// Has errors.
         /// </summary>
+        [PublicAPI]
         public bool HasErrors;
 
         /// <summary>
         /// Has warnings.
         /// </summary>
+        [PublicAPI]
         public bool HasWarnings;
 
         #region IEnumerable<Output> Members
@@ -81,7 +85,7 @@ namespace WebApplications.Utilities.Initializer
         /// <param name="args">The args.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        public Output Add(OutputImportance importance, string format, params object[] args)
+        public Output Add(OutputImportance importance, [NotNull] string format, [NotNull] params object[] args)
         {
             Output o = new Output(importance, format, args);
             _outputs.Add(o);

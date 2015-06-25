@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,10 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Initializer
 {
@@ -36,6 +37,7 @@ namespace WebApplications.Utilities.Initializer
     /// Build task for injecting a module initializer.
     /// </summary>
     /// <remarks></remarks>
+    [PublicAPI]
     public class InjectModuleInitializer : Task
     {
         /// <summary>
@@ -81,12 +83,9 @@ namespace WebApplications.Utilities.Initializer
         /// <remarks></remarks>
         public override bool Execute()
         {
-            Contract.Assert(Log != null);
-            bool hasErrors = false;
-            foreach (
-                Output output in
-                    Injector.Inject(AssemblyFile, TypeName, MethodName, StrongNameKeyPair, UseIsolatedAppDomain))
-            {
+            Debug.Assert(Log != null);
+            foreach (Output output in
+                Injector.Inject(AssemblyFile, TypeName, MethodName, StrongNameKeyPair, UseIsolatedAppDomain))
                 switch (output.Importance)
                 {
                     case OutputImportance.Error:
@@ -107,8 +106,7 @@ namespace WebApplications.Utilities.Initializer
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-            }
-            return !hasErrors;
+            return true;
         }
     }
 }

@@ -21,6 +21,5 @@
     <file src="InjectModuleInitializer.targets" target="tools\InjectModuleInitializer.targets" />
     <file src="*.pp" target="content" />
     <file src="bin\Release\*.dll" target="tools" />
-    <file src="bin\Release\CodeContracts\*.*" target="tools\CodeContracts" />
   </files>
 </package>
