@@ -54,12 +54,12 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Testing, Version=5.1.5652.23364, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebApplications.Testing.5.1.5652.23364\lib\net452\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing, Version=5.1.5654.22732, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApplications.Testing.5.1.5654.22732\lib\net452\WebApplications.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=5.1.5652.23484, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5652.23484\lib\net452\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities, Version=5.1.5654.22766, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5654.22766\lib\net452\WebApplications.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -96,8 +96,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5652.23484\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5652.23484\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5652.23484\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5652.23484\tools\utility.targets')" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5654.22766\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5654.22766\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5654.22766\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5654.22766\tools\utility.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
