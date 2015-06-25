@@ -176,7 +176,6 @@ namespace WebApplications.Utilities.Logging.Test
 
             foreach (KeyValuePair<string, string> kvp in _logDictionary)
             {
-                Contract.Assert(kvp.Key != null);
                 Assert.AreEqual(kvp.Value, log.Get(kvp.Key), "The value for the key {0} did not match the expected", kvp.Key);
                 Assert.AreEqual(kvp.Value, log[kvp.Key], "The value for the key {0} did not match the expected", kvp.Key);
             }
@@ -373,8 +372,6 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public void TestResource()
         {
-            Contract.Assert(Resources.TestString != null);
-
             Log log = new Log(() => Resources.TestString, "p0").Add();
             Assert.AreEqual(typeof(Resources).FullName + ".TestString", log.ResourceProperty);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
@@ -383,7 +380,6 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public void TestTranslations()
         {
-            Contract.Assert(Resources.TestString != null);
             Log log = new Log(() => Resources.TestString, "p0").Add();
 
             var culture = Resources.Culture;
@@ -421,7 +417,6 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public void TestDeferredExecution()
         {
-            Contract.Assert(Resources.TestString != null);
             ExecutionCounter ec = new ExecutionCounter();
             Assert.AreEqual(0, ec.Count, "Execution Counter incorrectly initialized.");
             Log.ValidLevels = LoggingLevels.AtLeastError;

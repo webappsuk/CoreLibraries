@@ -48,8 +48,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, true, validLevels)
         {
-            Contract.Requires(name != null);
-            Contract.Requires(connectionString != null);
         }
 
         /// <summary>
