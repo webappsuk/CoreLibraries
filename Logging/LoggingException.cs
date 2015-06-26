@@ -345,7 +345,7 @@ namespace WebApplications.Utilities.Logging
             : base(exception == null ? string.Empty : exception.Message, exception)
         {
             // Log the exception
-            Log = new Log(this, level, resource, parameters);
+            Log = new Log(this, level, resource, parameters).Add();
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
