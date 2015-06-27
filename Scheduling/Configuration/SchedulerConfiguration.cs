@@ -40,6 +40,12 @@ namespace WebApplications.Utilities.Scheduling.Configuration
     [PublicAPI]
     public class SchedulerConfiguration : ConfigurationSection<SchedulerConfiguration>
     {
+        static SchedulerConfiguration()
+        {
+            // NOTE: Handler assigned here to ensure it will always be the first one invoked
+            Changed += (s, e) => Scheduler.LoadConfiguration();
+        }
+        
         /// <summary>
         ///   Gets a value indicating whether the scheduler is enabled is enabled.
         /// </summary>

@@ -160,19 +160,15 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         static Scheduler()
         {
-            SchedulerConfiguration schedulerConfiguration = SchedulerConfiguration.Active;
-            Debug.Assert(schedulerConfiguration != null);
-
             _ticker = new Timer(CheckSchedule, null, Timeout.Infinite, Timeout.Infinite);
 
             LoadConfiguration();
-            SchedulerConfiguration.Changed += (s, e) => LoadConfiguration();
         }
 
         /// <summary>
         /// Loads the configuration.
         /// </summary>
-        private static void LoadConfiguration()
+        internal static void LoadConfiguration()
         {
             SchedulerConfiguration schedulerConfiguration = SchedulerConfiguration.Active;
             Debug.Assert(schedulerConfiguration != null);
