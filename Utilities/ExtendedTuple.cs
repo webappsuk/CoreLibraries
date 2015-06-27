@@ -80,7 +80,7 @@ namespace WebApplications.Utilities
             if (!typeof(TItem).IsAssignableFrom(t))
                 throw new InvalidCastException(
                     string.Format(
-                        // ReSharper disable once AssignNullToNotNullAttribute
+                    // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ExtendedTuple_CannotCastItemAtIndex,
                         index,
                         t,
@@ -188,11 +188,27 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Type[] GetIndexTypes([NotNull] this Type tupleType)
         {
+            // ReSharper disable once PossibleNullReferenceException
+            if (!tupleType.IsGenericType ||
+                (!tupleType.FullName.StartsWith("System.Tuple`")))
+                throw new ArgumentException(
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    String.Format(Resources.ExtendedTuple_TypeIsNotValidTuple, tupleType),
+                    "tupleType");
+
             // ReSharper disable AssignNullToNotNullAttribute
             return _tupleTypes.GetOrAdd(
                 tupleType,
                 t =>
                 {
+                    // ReSharper disable PossibleNullReferenceException
+                    Type[] types = t.GetGenericArguments();
+                    if (types.Length < 8) return types;
+                    if (!types[7].IsGenericType ||
+                        !types[7].FullName.StartsWith("System.Tuple`"))
+                        return types;
+                    // ReSharper restore PossibleNullReferenceException
+
                     // Create extended tuple type
                     Type extendedType = typeof(ExtendedTuple<>).MakeGenericType(tupleType);
                     // ReSharper disable once PossibleNullReferenceException

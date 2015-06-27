@@ -76,7 +76,7 @@ namespace WebApplications.Utilities
             Type tupleType = typeof(T);
             if ((!tupleType.IsGenericType) ||
                 // ReSharper disable PossibleNullReferenceException
-                (!tupleType.GetGenericTypeDefinition().FullName.StartsWith("System.Tuple`")))
+                (!tupleType.FullName.StartsWith("System.Tuple`")))
                 // ReSharper restore PossibleNullReferenceException
                 throw new InvalidOperationException(
                     String.Format(
@@ -124,7 +124,7 @@ namespace WebApplications.Utilities
                     if ((tIndex == 7) &&
                         // ReSharper disable PossibleNullReferenceException
                         (types[tIndex].IsGenericType) &&
-                        (types[tIndex].GetGenericTypeDefinition().FullName.StartsWith("System.Tuple`")))
+                        (types[tIndex].FullName.StartsWith("System.Tuple`")))
                         // ReSharper restore PossibleNullReferenceException
                         recurse = true;
 
