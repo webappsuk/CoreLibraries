@@ -177,8 +177,14 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The CLR type converters for this type.
         /// </summary>
         [NotNull]
-        private readonly ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>
-            _clrTypeConverters = new ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>();
+        private readonly ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>> _clrTypeConverters
+            = new ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>();
+
+        /// <summary>
+        /// Whether this SQL type accepts the CLR type.
+        /// </summary>
+        [NotNull]
+        private readonly ConcurrentDictionary<Type, bool> _acceptsType = new ConcurrentDictionary<Type, bool>(); 
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlType"/> class.
@@ -311,19 +317,208 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   Checks to see whether the specified CLR type can be used to represent the current <see cref="SqlType"/>.
         /// </summary>
-        /// <param name="type">The CLR type to check.</param>
+        /// <param name="clrType">The CLR type to check.</param>
         /// <returns>
         ///   Returns <see langword="true"/> if the CLR type is acceptable; otherwise returns <see langword="false"/>.
         /// </returns>
         /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contact</see>
-        ///   that <paramref name="type"/> cannot be <see langword="null"/>.
+        ///   There is a <see cref="clrType"/> cannot be <see langword="null"/>.
         /// </remarks>
-        public bool AcceptsCLRType([NotNull] Type type)
+        public bool AcceptsCLRType([NotNull] Type clrType)
         {
-            if (type == null) throw new ArgumentNullException("type");
+            if (clrType == null) throw new ArgumentNullException("clrType");
 
-            return GetClrToSqlConverter(type) != null;
+            Func<object, TypeConstraintMode, object> temp;
+            if (_clrTypeConverters.TryGetValue(clrType, out temp))
+                return temp != null;
+
+            return _acceptsType.GetOrAdd(
+                clrType,
+                type =>
+                {
+                    Debug.Assert(type != null);
+                    try
+                    {
+                        // Check for standard conversions first
+                        switch (SqlDbType)
+                        {
+                            case SqlDbType.BigInt:
+                                return type.GetNonNullableType().CanConvertTo(typeof(long));
+                            case SqlDbType.Image:
+                            case SqlDbType.Binary:
+                            case SqlDbType.Timestamp:
+                            case SqlDbType.VarBinary:
+                                // If we have a byte[] (or can cast to byte[]) then use that.
+                                if (type.CanConvertTo(typeof(byte[])))
+                                    return true;
+
+                                // Support serializable objects.
+                                return type.IsSerializable;
+
+                            case SqlDbType.Bit:
+                                return type.GetNonNullableType().CanConvertTo(typeof(bool));
+                            case SqlDbType.Text:
+                            case SqlDbType.Char:
+                            case SqlDbType.VarChar:
+                                return type.CanConvertTo(typeof(string));
+                            case SqlDbType.NChar:
+                            case SqlDbType.NText:
+                            case SqlDbType.NVarChar:
+                                return type.CanConvertTo(typeof(string));
+                            case SqlDbType.SmallDateTime:
+                            case SqlDbType.DateTime:
+                            case SqlDbType.Date:
+                            case SqlDbType.DateTime2:
+                            case SqlDbType.DateTimeOffset:
+                                return type.GetNonNullableType().CanConvertTo(typeof(DateTime));
+                            case SqlDbType.Time:
+                                return type.GetNonNullableType().CanConvertTo(typeof(TimeSpan));
+                            case SqlDbType.Decimal:
+                                return type.GetNonNullableType().CanConvertTo(typeof(decimal));
+                            case SqlDbType.Float:
+                                return type.GetNonNullableType().CanConvertTo(typeof(double));
+                            case SqlDbType.Int:
+                                return type.GetNonNullableType().CanConvertTo(typeof(int));
+                            case SqlDbType.Money:
+                            case SqlDbType.SmallMoney:
+                                return type.GetNonNullableType().CanConvertTo(typeof(decimal));
+                            case SqlDbType.Real:
+                                return type.GetNonNullableType().CanConvertTo(typeof(float));
+                            case SqlDbType.UniqueIdentifier:
+                                return type.GetNonNullableType().CanConvertTo(typeof(Guid));
+                            case SqlDbType.SmallInt:
+                                return type.GetNonNullableType().CanConvertTo(typeof(short));
+                            case SqlDbType.TinyInt:
+                                return type.GetNonNullableType().CanConvertTo(typeof(byte));
+                            case SqlDbType.Variant:
+                                // TODO Variant type can't accept everything!
+                                return true;
+                            case SqlDbType.Xml:
+                                return type.CanConvertTo(typeof(XNode)) || type.CanConvertTo(typeof(XmlNode));
+                            case SqlDbType.Udt:
+                                // Add UDT conversions (which depend on the type name).
+                                switch (Name)
+                                {
+                                    case "geography":
+                                        return type.CanConvertTo(typeof(SqlGeography));
+                                    case "geometry":
+                                        return type.CanConvertTo(typeof(SqlGeometry));
+                                    case "hierarchyid":
+                                        return type.CanConvertTo(typeof(SqlHierarchyId));
+                                    default:
+                                        return false;
+                                }
+                            case SqlDbType.Structured:
+                                // This is actually a SqlTableType.
+                                SqlTableType tableType = this as SqlTableType;
+                                if (tableType == null)
+                                    return false;
+
+                                SqlType[] columnSqlTypes =
+                                    tableType.TableDefinition.Columns.Select(c => c.Type).ToArray();
+                                int columns = columnSqlTypes.Length;
+
+                                // Find out last non-nullable column to determine the minimum number of columns that must
+                                // be supplied - as columns are unnamed on the input (we only have the type to go by), the we
+                                // cannot 'skip' columns, and all non-null columns must be supplied.
+                                int minColumns;
+                                for (minColumns = columns; minColumns > 1; minColumns--)
+                                    // ReSharper disable once PossibleNullReferenceException
+                                    if (!columnSqlTypes[minColumns - 1].IsNullable)
+                                        break;
+
+                                // Check if type implements IEnumerable<T>
+                                Type enumerableInterface =
+                                    type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                        ? type
+                                        : type.GetInterfaces().FirstOrDefault(
+                                            // ReSharper disable once PossibleNullReferenceException
+                                            it =>
+                                                it.IsGenericType &&
+                                                it.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+                                if (enumerableInterface != null)
+                                {
+                                    // Get the enumeration type
+                                    Type enumerationType = enumerableInterface.GetGenericArguments().First();
+                                    Debug.Assert(enumerationType != null);
+
+                                    // If the type passed in is assignable from IEnumerable<SqlDataRecord> then we can pass straight through
+                                    // after checking there are rows available.
+                                    if (typeof(SqlDataRecord).IsAssignableFrom(enumerationType))
+                                        // We are the base non-generic table type.
+                                        return true;
+
+                                    // Check if we are IEnumerable<Tuple<...>>
+                                    // ReSharper disable once PossibleNullReferenceException
+                                    if (enumerationType.IsGenericType &&
+                                        enumerationType.FullName.StartsWith("System.Tuple`"))
+                                    {
+                                        // Get converters for tuple elements
+                                        Type[] tupleTypes = enumerationType.GetIndexTypes();
+                                        int items = tupleTypes.Length;
+
+                                        // Check we don't have too many items in the tuple.
+                                        if (items > columns)
+                                            return false;
+
+                                        // Check we don't have too few!
+                                        if (items < minColumns)
+                                            return false;
+
+                                        for (int i = 0; i < tupleTypes.Length; i++)
+                                        {
+                                            Debug.Assert(columnSqlTypes[i] != null);
+                                            Debug.Assert(tupleTypes[i] != null);
+                                            if (!columnSqlTypes[i].AcceptsCLRType(tupleTypes[i]))
+                                                return false;
+                                        }
+
+                                        // Create lambda
+                                        return true;
+                                    }
+
+                                    // If we're single column we support enumeration of column type
+                                    if (minColumns < 2)
+                                    {
+                                        // Get converter for column type
+                                        Debug.Assert(columnSqlTypes[0] != null);
+                                        if (columnSqlTypes[0].AcceptsCLRType(enumerationType))
+                                            return true;
+                                    }
+
+                                    // If we have more than 1 column, but we need less than 3, then a keyvaluepair is fine.
+                                    if ((minColumns < 3) &&
+                                        (columns > 1) &&
+                                        (enumerationType.IsGenericType &&
+                                         enumerationType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>)))
+                                    {
+                                        // Get converter for key and value column types
+                                        Type[] kvpTypes = enumerationType.GetGenericArguments();
+
+                                        Debug.Assert(columnSqlTypes[0] != null);
+                                        Debug.Assert(kvpTypes[0] != null);
+                                        if (!columnSqlTypes[0].AcceptsCLRType(kvpTypes[0]))
+                                            return false;
+
+                                        Debug.Assert(columnSqlTypes[1] != null);
+                                        Debug.Assert(kvpTypes[1] != null);
+                                        return columnSqlTypes[1].AcceptsCLRType(kvpTypes[1]);
+                                    }
+
+                                    return false;
+                                }
+
+                                return false;
+                            default:
+                                return false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                });
         }
 
         /// <summary>
@@ -389,7 +584,7 @@ namespace WebApplications.Utilities.Database.Schema
         {
             if (clrType == null) throw new ArgumentNullException("clrType");
 
-            return _clrTypeConverters.GetOrAdd(
+            Func<object, TypeConstraintMode, object> conv = _clrTypeConverters.GetOrAdd(
                 clrType,
                 t =>
                 {
@@ -404,6 +599,11 @@ namespace WebApplications.Utilities.Database.Schema
                             this);
                         return null;
                     }
+
+                    // Check if we have already determined if this type is not accepted
+                    bool acceptsType;
+                    if (_acceptsType.TryGetValue(t, out acceptsType) && !acceptsType)
+                        return null;
 
                     try
                     {
@@ -770,12 +970,11 @@ namespace WebApplications.Utilities.Database.Schema
                                                     ((IEnumerable<SqlDataRecord>)c).ToList();
                                                 return records.Count < 1 ? null : records;
                                             });
-
-
+                                    
                                     // Check if we are IEnumerable<Tuple<...>>
                                     if (enumerationType.IsGenericType &&
                                         // ReSharper disable once PossibleNullReferenceException
-                                        enumerationType.GetInterfaces().Any(i => i.FullName == "System.ITuple"))
+                                        enumerationType.FullName.StartsWith("System.Tuple`"))
                                     {
                                         // Get converters for tuple elements
                                         Type[] tupleTypes = enumerationType.GetIndexTypes();
@@ -1040,6 +1239,11 @@ namespace WebApplications.Utilities.Database.Schema
                     // Unsupported conversion
                     return null;
                 });
+
+            bool tmp;
+            _acceptsType.TryRemove(clrType, out tmp);
+
+            return conv;
         }
 
         /// <summary>
