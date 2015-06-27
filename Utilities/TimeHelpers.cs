@@ -109,8 +109,6 @@ namespace WebApplications.Utilities
         // ReSharper disable once NotNullMemberIsNotInitialized - _dateTimeZoneProvider is set by SetDateTimeZoneProvider
         static TimeHelpers()
         {
-            UtilityConfiguration.Changed += OnUtilityConfigurationChanged;
-
             SetDateTimeZoneProvider();
 
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -122,7 +120,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="UtilityConfiguration.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
-        private static void OnUtilityConfigurationChanged(
+        internal static void OnUtilityConfigurationChanged(
             [NotNull] object sender,
             [NotNull] ConfigurationSection<UtilityConfiguration>.ConfigurationChangedEventArgs e)
         {

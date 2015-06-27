@@ -27,6 +27,7 @@
 
 using System.Configuration;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Globalization;
 
 namespace WebApplications.Utilities.Configuration
 {
@@ -36,6 +37,13 @@ namespace WebApplications.Utilities.Configuration
     [PublicAPI]
     public class UtilityConfiguration : ConfigurationSection<UtilityConfiguration>
     {
+        static UtilityConfiguration()
+        {
+            // NOTE: Handlers assigned here to ensure they will always be the first ones invoked
+            Changed += CurrencyInfoProvider.OnUtilityConfigurationChanged;
+            Changed += TimeHelpers.OnUtilityConfigurationChanged;
+        }
+        
         /// <summary>
         /// Gets or sets the file path for the TimeZone DB.
         /// </summary>

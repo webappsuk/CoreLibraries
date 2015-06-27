@@ -187,8 +187,6 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="System.IO.FileLoadException">An exception was thrown while loading the currency information from the ISO 4217 file.</exception>
         static CurrencyInfoProvider()
         {
-            UtilityConfiguration.Changed += OnUtilityConfigurationChanged;
-
             _current = Empty = new EmptyCurrencyInfoProvider(DateTime.MinValue);
 
             SetCurrentProvider();
@@ -199,9 +197,9 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="Configuration.UtilityConfiguration.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
-        private static void OnUtilityConfigurationChanged(
+        internal static void OnUtilityConfigurationChanged(
             [NotNull] object sender,
-            [NotNull] ConfigurationSection<UtilityConfiguration>.ConfigurationChangedEventArgs e)
+            [NotNull] UtilityConfiguration.ConfigurationChangedEventArgs e)
         {
             if (_isFromConfig &&
                 !string.Equals(

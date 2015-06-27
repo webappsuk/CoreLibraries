@@ -194,6 +194,7 @@
     <Compile Include="Ranges\ZonedDateTimeRange.cs" />
     <Compile Include="Reflect\InfoHelper.cs" />
     <Compile Include="ResettableLazy.cs" />
+    <Compile Include="SyncList.cs" />
     <Compile Include="Threading\AsyncTimer.cs" />
     <Compile Include="Threading\CancelableTask.cs" />
     <Compile Include="Threading\ICancelableTask.cs" />

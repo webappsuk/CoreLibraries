@@ -4378,6 +4378,30 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Adds the elements of the specified sequence to the end of the <see cref="ICollection{T}" />.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection to add the elements to.</param>
+        /// <param name="sequence">The sequence whose elements should be added to the end of the <see cref="ICollection{T}" />.
+        /// The collection itself cannot be null, but it can contain elements that are null, if type <typeparamref name="T" /> is a reference type.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection" /> or <paramref name="sequence" /> is null.</exception>
+        public static void AddRange<T>([NotNull] this ICollection<T> collection, [NotNull] IEnumerable<T> sequence)
+        {
+            if (collection == null) throw new ArgumentNullException("collection");
+            if (sequence == null) throw new ArgumentNullException("sequence");
+
+            List<T> list = collection as List<T>;
+            if (list != null)
+            {
+                list.AddRange(sequence);
+                return;
+            }
+
+            foreach (T item in sequence)
+                collection.Add(item);
+        }
+
+        /// <summary>
         /// Gets a generic version of the <see cref="IEqualityComparer" />.
         /// </summary>
         /// <typeparam name="T">The type of object to compare.</typeparam>
