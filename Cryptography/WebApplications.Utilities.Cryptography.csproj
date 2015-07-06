@@ -57,8 +57,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities, Version=5.1.5665.19156, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <HintPath>packages\WebApplications.Utilities.5.1.5665.19156\lib\net452\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities, Version=5.1.5665.25920, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <HintPath>packages\WebApplications.Utilities.5.1.5665.25920\lib\net452\WebApplications.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -106,8 +106,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="packages\webapplications.utilities.5.1.5665.19156\tools\webapplicationssignature.targets" Condition="Exists('packages\webapplications.utilities.5.1.5665.19156\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="packages\webapplications.utilities.5.1.5665.19156\tools\utility.targets" Condition="Exists('packages\webapplications.utilities.5.1.5665.19156\tools\utility.targets')" />
+  <Import Project="packages\webapplications.utilities.5.1.5665.25920\tools\webapplicationssignature.targets" Condition="Exists('packages\webapplications.utilities.5.1.5665.25920\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="packages\webapplications.utilities.5.1.5665.25920\tools\utility.targets" Condition="Exists('packages\webapplications.utilities.5.1.5665.25920\tools\utility.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
