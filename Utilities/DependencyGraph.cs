@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T">The type of the object in the graph.</typeparam>
     /// <threadsafety static="true" instance="false" />
     [PublicAPI]
-    public class DependencyGraph<T>
+    public class DependencyGraph<T> : IEnumerable<T>
     {
         /// <summary>
         /// Contains objects and the objects that depend on them.
@@ -63,6 +64,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The comparer to use when comparing objects in the graph.
         /// </summary>
+        [NotNull]
         private readonly IEqualityComparer<T> _comparer;
 
         /// <summary>
@@ -77,6 +79,7 @@ namespace WebApplications.Utilities
         /// Gets all the objects in the graph, unordered.
         /// </summary>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> All
         {
             get { return _all; }
@@ -86,6 +89,7 @@ namespace WebApplications.Utilities
         /// Gets all the objects in the graph, top down.
         /// </summary>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> AllTopDown
         {
             get { return GetAllIterator(_dependencies, TopLeaves); }
@@ -95,6 +99,7 @@ namespace WebApplications.Utilities
         /// Gets all the objects in the graph, bottom up.
         /// </summary>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> AllBottomUp
         {
             get { return GetAllIterator(_dependsOn, BottomLeaves); }
@@ -130,6 +135,7 @@ namespace WebApplications.Utilities
         /// The leaf vertices that do not depend on anything.
         /// </value>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> TopLeaves
         {
             // ReSharper disable once PossibleNullReferenceException
@@ -143,6 +149,7 @@ namespace WebApplications.Utilities
         /// The leaf vertices that do not have any dependencies.
         /// </value>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> BottomLeaves
         {
             // ReSharper disable once PossibleNullReferenceException
@@ -176,11 +183,9 @@ namespace WebApplications.Utilities
         {
             if (ReferenceEquals(a, null)) throw new ArgumentNullException("a");
             if (ReferenceEquals(b, null)) throw new ArgumentNullException("b");
+            if (_comparer.Equals(a, b)) throw new ArgumentException(Resources.DependencyGraph_Add_SelfDepends);
 
-            _all.Add(a);
-            _all.Add(b);
-
-            if (GetAllDependencies(a).Contains(b))
+            if (!_all.Add(a) && !_all.Add(b) && GetAllDependencies(a).Contains(b))
                 throw new InvalidOperationException("Cannot add the dependency as this would cause a cycle");
 
             HashSet<T> depends;
@@ -214,6 +219,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <exception cref="System.ArgumentOutOfRangeException">value;The value given is not in the graph</exception>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> GetDependencies([NotNull] T obj)
         {
             if (ReferenceEquals(obj, null)) throw new ArgumentNullException("obj");
@@ -232,6 +238,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <exception cref="System.ArgumentOutOfRangeException">value;The value given is not in the graph</exception>
         [NotNull]
+        [ItemNotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<T> GetAllDependencies([NotNull] T obj)
         {
@@ -242,6 +249,7 @@ namespace WebApplications.Utilities
         }
 
         [NotNull]
+        [ItemNotNull]
         private IEnumerable<T> GetAllDependenciesIterator([NotNull] T obj)
         {
             HashSet<T> seen = new HashSet<T>(_comparer);
@@ -268,6 +276,7 @@ namespace WebApplications.Utilities
         }
 
         [NotNull]
+        [ItemNotNull]
         private IEnumerable<T> GetAllIterator([NotNull] Dictionary<T, HashSet<T>> dict, [NotNull] IEnumerable<T> objs)
         {
             HashSet<T> seen = new HashSet<T>(_comparer);
@@ -311,6 +320,7 @@ namespace WebApplications.Utilities
         /// <param name="action">The action that is called for each object. The action is passed the current object and all the objects that it depends on.</param>
         /// <returns></returns>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> TraverseTopDown([NotNull] [InstantHandle] Action<T, IEnumerable<T>> action)
         {
             if (action == null) throw new ArgumentNullException("action");
@@ -323,6 +333,7 @@ namespace WebApplications.Utilities
         /// <param name="action">The action that is called for each object. The action is passed the current object and all the objects that depend on it.</param>
         /// <returns></returns>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<T> TraverseBottomUp([NotNull] [InstantHandle] Action<T, IEnumerable<T>> action)
         {
             if (action == null) throw new ArgumentNullException("action");
@@ -339,6 +350,7 @@ namespace WebApplications.Utilities
         /// <param name="down">The next values down the graph (towards <paramref name="bottom"/>) from each value.</param>
         /// <returns><paramref name="bottom"/></returns>
         [NotNull]
+        [ItemNotNull]
         private IEnumerable<T> TraverseInternal(
             [NotNull] [InstantHandle] Action<T, IEnumerable<T>> action,
             [NotNull] [InstantHandle] IEnumerable<T> top,
@@ -348,6 +360,7 @@ namespace WebApplications.Utilities
         {
             Queue<T> queue = new Queue<T>(top);
             HashSet<T> seen = new HashSet<T>(_comparer);
+            HashSet<T> called = new HashSet<T>(_comparer);
 
             while (queue.Count > 0)
             {
@@ -355,11 +368,17 @@ namespace WebApplications.Utilities
                 Debug.Assert(!ReferenceEquals(current, null));
 
                 HashSet<T> depends;
-                action(
-                    current,
-                    up.TryGetValue(current, out depends)
-                        ? depends
-                        : Enumerable.Empty<T>());
+                up.TryGetValue(current, out depends);
+
+                // If the current object depends on an object that has not yet been traversed, add it to the end of the queue and continue
+                if (depends != null && !depends.IsSubsetOf(called))
+                {
+                    queue.Enqueue(current);
+                    continue;
+                }
+                called.Add(current);
+
+                action(current, depends ?? Enumerable.Empty<T>());
 
                 if (down.TryGetValue(current, out depends) &&
                     // ReSharper disable once PossibleNullReferenceException
@@ -373,6 +392,28 @@ namespace WebApplications.Utilities
             }
 
             return bottom;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        /// </returns>
+        public IEnumerator<T> GetEnumerator()
+        {
+            return AllTopDown.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

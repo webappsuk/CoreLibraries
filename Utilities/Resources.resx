@@ -483,4 +483,7 @@
   <data name="ParameterReplacerVisitor_ExpressionCountMismatch" xml:space="preserve">
     <value>The number of parameter replacement expressions '{0}' does not match the number of parameters in the lambda expression '{1}'.</value>
   </data>
+  <data name="DependencyGraph_Add_SelfDepends" xml:space="preserve">
+    <value>An object cannot have a dependency on itself.</value>
+  </data>
 </root>

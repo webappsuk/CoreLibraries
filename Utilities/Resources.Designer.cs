@@ -286,6 +286,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An object cannot have a dependency on itself..
+        /// </summary>
+        internal static string DependencyGraph_Add_SelfDepends {
+            get {
+                return ResourceManager.GetString("DependencyGraph_Add_SelfDepends", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value given is not in the graph.
         /// </summary>
         internal static string DependencyGraph_ValueNotInGraph {
