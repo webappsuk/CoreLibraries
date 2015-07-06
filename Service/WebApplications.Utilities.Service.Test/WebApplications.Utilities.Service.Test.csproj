@@ -70,16 +70,16 @@
       <HintPath>..\packages\WebApplications.Testing.5.1.5654.22732\lib\net452\WebApplications.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=5.1.5656.31044, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebApplications.Utilities.5.1.5656.31044\lib\net452\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities, Version=5.1.5665.19156, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApplications.Utilities.5.1.5665.19156\lib\net452\WebApplications.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5656.31218, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5656.31218\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5665.19992, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5665.19992\lib\net452\WebApplications.Utilities.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5656.31079, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5656.31079\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.1.5665.19381, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.1.5665.19381\lib\net452\WebApplications.Utilities.Performance.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -165,9 +165,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\webapplications.utilities.5.1.5656.31044\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5656.31044\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
-  <Import Project="..\packages\webapplications.utilities.5.1.5656.31044\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5656.31044\tools\utility.targets')" />
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5656.31079\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5656.31079\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5665.19156\tools\webapplicationssignature.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5665.19156\tools\webapplicationssignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="..\packages\webapplications.utilities.5.1.5665.19156\tools\utility.targets" Condition="Exists('..\packages\webapplications.utilities.5.1.5665.19156\tools\utility.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.1.5665.19381\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.1.5665.19381\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
