@@ -185,8 +185,11 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(b, null)) throw new ArgumentNullException("b");
             if (_comparer.Equals(a, b)) throw new ArgumentException(Resources.DependencyGraph_Add_SelfDepends);
 
-            if (!_all.Add(a) && !_all.Add(b) && GetAllDependencies(a).Contains(b))
+            if (_all.Contains(a) && _all.Contains(b) && GetAllDependencies(a).Contains(b))
                 throw new InvalidOperationException("Cannot add the dependency as this would cause a cycle");
+
+            _all.Add(a);
+            _all.Add(b);
 
             HashSet<T> depends;
             if (!_dependsOn.TryGetValue(a, out depends))
