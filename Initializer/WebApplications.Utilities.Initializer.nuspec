@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>Adds a module initializer to a class library.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities Module Initializer Build Task</tags>
+    <references />
+    <dependencies />
+    <developmentDependency>true</developmentDependency>
+  </metadata>
+  <files>
+    <file src="install.ps1" target="tools\install.ps1" />
+    <file src="uninstall.ps1" target="tools\uninstall.ps1" />
+    <file src="InjectModuleInitializer.targets" target="tools\InjectModuleInitializer.targets" />
+    <file src="*.pp" target="content" />
+    <file src="bin\Release\*.dll" target="tools" />
+  </files>
+</package>

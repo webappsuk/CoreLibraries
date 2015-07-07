@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <InjectModuleInitializerTool Condition="!Exists('$(InjectModuleInitializerTool)')">$(MSBuildThisFileDirectory)\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+    <InjectModuleInitializerTypeName>ModuleInitializer</InjectModuleInitializerTypeName>
+    <InjectModuleInitializerMethodName>Initialize</InjectModuleInitializerMethodName>
+    <InjectModuleSnk />
+  </PropertyGroup>
+
+  <!-- Check for the signed assemblies and located strong name key pair file -->
+  <PropertyGroup Condition="'$(SignAssembly)'=='true' AND
+                 Exists('$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)')">
+    <InjectModuleSnk>$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
+  </PropertyGroup>
+
+  <UsingTask TaskName="InjectModuleInitializer"
+             AssemblyFile="$(InjectModuleInitializerTool)" />
+
+  <Target Name="CheckPrerequisites">
+    <!-- Raise an error if we're unable to locate WebApplications.Utilities.Initializer.dll  -->
+    <Error Condition="!Exists('$(InjectModuleInitializerTool)')" Text="Unable to locate '$(InjectModuleInitializerTool)'" />
+  </Target>
+
+  <Target Name="InjectModuleInitializerTarget"
+           Condition="'$(BuildingProject)'=='true' AND
+                 Exists('$(InjectModuleInitializerTool)')"
+      DependsOnTargets="ResolveKeySource">
+    <InjectModuleInitializer
+       AssemblyFile="$(TargetPath)"
+       TypeName="$(InjectModuleInitializerTypeName)"
+       MethodName="$(InjectModuleInitializerMethodName)"
+       StrongNameKeyPair="$(InjectModuleSnk)"/>
+  </Target>
+
+  <!-- Introduces InjectModuleInitializer in the chain of compilation targets -->
+  <PropertyGroup>
+    <CoreBuildDependsOn>
+      $(CoreBuildDependsOn);
+      InjectModuleInitializerTarget
+    </CoreBuildDependsOn>
+  </PropertyGroup>
+</Project>
