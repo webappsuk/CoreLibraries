@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <!--
+    The configuration section declaration needs restartOnExternalChanges="false" when using cryptography in a website.
+    This is to prevent the site from restarting when saving new keys to the configuration.
+    -->
+    <section name="cryptography" type="WebApplications.Utilities.Cryptography.Configuration.CryptographyConfiguration, WebApplications.Utilities.Cryptography" restartOnExternalChanges="false"/>
+  </configSections>
+  <!--
+  Web.config:
+  The cryptography section should be in its own file e.g.  when using cryptography in a website.
+  This is also a step to prevent the site restarting when saving new keys to the configuration.
+  -->
+  <cryptography configSource="cryptography.config"/>
+</configuration>
