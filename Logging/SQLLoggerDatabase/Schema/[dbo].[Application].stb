@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table name="[dbo].[Application]">
+<column>
+<name>[Guid]</name>
+<nullable>NO</nullable>
+<datatype>[uniqueidentifier]</datatype>
+</column><column>
+<name>[Name]</name>
+<nullable>NO</nullable>
+<datatype>[nvarchar]</datatype>
+<charmaxlength>-1</charmaxlength>
+<charoctetlength>-1</charoctetlength>
+<charactersetname>UNICODE</charactersetname>
+<collationname>Latin1_General_CI_AS</collationname>
+</column><constraint>
+<name>[dbo].[PK_Service]</name>
+<type>PRIMARY KEY</type>
+<isdeferrable>NO</isdeferrable>
+<initiallydeferred>NO</initiallydeferred>
+</constraint>
+<index>
+<name>[PK_Service]</name>
+<isclustered />
+<isunique />
+<fillfactor>0</fillfactor>
+<column><position>1</position><name>[Guid]</name></column>
+</index>
+</table>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table name="[dbo].[Argument]">
+<column>
+<name>[Name]</name>
+<nullable>NO</nullable>
+<datatype>[nvarchar]</datatype>
+<charmaxlength>200</charmaxlength>
+<charoctetlength>400</charoctetlength>
+<charactersetname>UNICODE</charactersetname>
+<collationname>Latin1_General_CI_AS</collationname>
+</column><column>
+<name>[OperationGuid]</name>
+<nullable>NO</nullable>
+<datatype>[uniqueidentifier]</datatype>
+</column><column>
+<name>[Value]</name>
+<nullable>YES</nullable>
+<datatype>[nvarchar]</datatype>
+<charmaxlength>-1</charmaxlength>
+<charoctetlength>-1</charoctetlength>
+<charactersetname>UNICODE</charactersetname>
+<collationname>Latin1_General_CI_AS</collationname>
+</column><constraint>
+<name>[dbo].[PK_Argument_1]</name>
+<type>PRIMARY KEY</type>
+<isdeferrable>NO</isdeferrable>
+<initiallydeferred>NO</initiallydeferred>
+</constraint>
+<index>
+<name>[PK_Argument_1]</name>
+<isclustered />
+<isunique />
+<fillfactor>0</fillfactor>
+<column><position>1</position><name>[Name]</name></column>
+<column><position>2</position><name>[OperationGuid]</name></column>
+</index>
+</table>
