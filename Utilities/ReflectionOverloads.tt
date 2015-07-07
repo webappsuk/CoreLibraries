@@ -1,0 +1,126 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="System.Text" #> 
+<#
+int maxParameters = 16;
+#>#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
+using System.Reflection;
+using WebApplications.Utilities.Annotations;
+
+namespace WebApplications.Utilities
+{
+    ///<summary>
+    /// Extensions to the reflection namespace.
+    ///</summary>
+    public static partial class Reflection
+    {<# 
+StringBuilder typeParams = new StringBuilder("<");
+StringBuilder typeOfs = new StringBuilder();
+StringBuilder typeComments = new StringBuilder();
+StringBuilder aTypeParamsBuilder = new StringBuilder();
+string aTypeParams = string.Empty;
+for (int i = 0; i < maxParameters; i++) {
+    
+    #>
+        
+        #region <#= i #> parameters.
+        /// <summary>
+        ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
+        /// </summary><#=typeComments#>
+        /// <typeparam name = "TResult">The type of the result.</typeparam>
+        /// <param name = "methodBase">The method base.</param>
+        /// <param name = "checkParameterAssignability">if set to <see langword="true"/> check's function parameters can be assigned to method safely.</param>
+        /// <returns>
+        ///   A functional equivalent of a method base.
+        /// </returns>
+        [NotNull]
+        public static Func<#= typeParams #>TResult> Func<#= typeParams #>TResult>(
+            [NotNull] this MethodBase methodBase,
+            bool checkParameterAssignability = false)
+        {
+            return (Func<#= typeParams #>TResult>) GetFunc(methodBase, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
+        }
+        
+        /// <summary>
+        ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
+        /// </summary><#=typeComments#>
+        /// <typeparam name = "TResult">The type of the result.</typeparam>
+        /// <param name="type">The type.</param>
+        /// <param name="checkParameterAssignability">if set to <see langword="true"/> check's function parameters can be assigned to method safely.</param>
+        /// <returns>
+        ///   A functional equivalent of a type constructor.
+        /// </returns>
+        [NotNull]
+        public static Func<#= typeParams #>TResult> ConstructorFunc<#= typeParams #>TResult>(
+            [NotNull] this Type type,
+            bool checkParameterAssignability = false)
+        {
+            return (Func<#= typeParams #>TResult>) GetConstructorFunc(type, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
+        }
+        
+        /// <summary>
+        ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
+        /// </summary><#=typeComments#>
+        /// <param name="methodInfo">The method info.</param>
+        /// <param name="checkParameterAssignability">if set to <see langword="true"/> check's function parameters can be assigned to method safely.</param>
+        /// <returns>
+        ///   A functional equivalent of a method info.
+        /// </returns>
+        [NotNull]
+        public static Action<#= aTypeParams #> Action<#= aTypeParams #>(
+            [NotNull] this MethodInfo methodInfo,
+            bool checkParameterAssignability = false)
+        {
+            return (Action<#= aTypeParams #>) GetAction(methodInfo, checkParameterAssignability<#= typeOfs #>);
+        }
+        #endregion
+<# 
+    typeParams.Append(string.Format("T{0}, ", (i+1)));
+    typeOfs.Append(string.Format(", typeof(T{0})", (i+1)));
+    typeComments.Append(string.Format("{0}        /// <typeparam name=\"T{1}\">The type of parameter {1}.</typeparam>",
+        Environment.NewLine,
+        (i+1)));
+    aTypeParamsBuilder.Append(string.Format("{0}T{1}", i < 1 ? "<":", ", (i+1)));
+    aTypeParams = aTypeParamsBuilder.ToString() + ">";
+} #>
+    }
+}
+ 
+<#+
+  // Insert any template procedures here
+#>

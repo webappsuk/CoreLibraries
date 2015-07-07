@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SecuritySchema xmlns="http://www.webapplicationsuk.com/Schemas/SecuritySchema.xsd" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Object name="TestClass">
+    <Description>
+      A test class, for testing security.
+    </Description>
+    <Permissions>
+      <Permission name="Read">
+        <Description>
+          Grants read access to TestClass instances.
+        </Description>
+      </Permission>
+      <Permission name="Write">
+        <Description>
+          Grants write access to TestClass instances.
+        </Description>
+      </Permission>
+    </Permissions>
+    <Objects>
+      <Object name="TestField">
+        <Permissions>
+          <Permission name="Access" />
+        </Permissions>
+      </Object>
+      <Object name="TestProperty">
+        <Description>
+          A test property, in the test class.
+        </Description>
+        <Permissions>
+          <Permission name="Read" />
+          <Permission name="Write" />
+        </Permissions>
+      </Object>
+      <Object name="TestMethod">
+        <Permissions>
+          <Permission name="Run">
+            <DataType>string</DataType>
+          </Permission>
+        </Permissions>
+      </Object>
+      <Object name="A">
+        <Permissions>
+          <Permission name="Read" inherit="true" />
+        </Permissions>
+      </Object>
+    </Objects>
+  </Object>
+</SecuritySchema>

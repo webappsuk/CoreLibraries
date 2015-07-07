@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SignToolPath Condition="!Exists('$(SignToolPath)')">$(MSBuildThisFileDirectory)signtool.exe</SignToolPath>
+    <SignatureFilePath Condition="!Exists('$(SignatureFilePath)')">\\store.webappuk.com\Web Applications UK Certificate\Web Applications UK.pfx</SignatureFilePath>
+    <SignFilePath Condition="!Exists('$(SignFilePath)')">$(TargetPath)</SignFilePath>
+  </PropertyGroup>
+
+  <Target Name="CheckPrerequisites">
+    <Error Condition="!Exists('$(SignToolPath)')" Text="Unable to locate signtool.exe at '$(SignToolPath)'" />
+    <Error Condition="!Exists('$(SignatureFilePath)')" Text="Unable to locate code signature at '$(SignatureFilePath)'" />
+  </Target>
+
+  <Target Name="SignOutput"
+          Condition="'$(BuildingProject)'=='true' AND Exists('$(SignToolPath)') AND Exists('$(SignatureFilePath)')"
+          AfterTargets="AfterBuild">
+    <Error Condition="!Exists('$(SignFilePath)')" Text="Unable to locate output file to sign at '$(SignFilePath)'" />
+    <Message Text="Signing file '$(SignFilePath)' with '$(SignatureFilePath)'" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /v /f &quot;$(SignatureFilePath)&quot; /t &quot;http://timestamp.comodoca.com/authenticode&quot; &quot;$(SignFilePath)&quot;" />
+  </Target>
+</Project>

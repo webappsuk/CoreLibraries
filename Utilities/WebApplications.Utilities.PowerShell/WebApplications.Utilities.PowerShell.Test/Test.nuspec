@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>The core library of .NET utilities that are commonly required in projects.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities</tags>
+    <dependencies>
+      <dependency id="Mono.Cecil" version="0.9.5.2" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
+    <file src="WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
+    <file src="JetBrains.Annotations.dll" target="tools\JetBrains.Annotations.dll" />
+    <file src="Publish.ps1" target="tools\Publish.ps1" />
+    <file src="WebApplications.Utilities.Weavers\bin\Release\WebApplications.Utilities.Weavers.dll" target="tools\WebApplications.Utilities.Weavers.dll" />
+    <file src="WebApplications.Utilities.Weavers\bin\Release\InitializeAssembly.psplugin" target="tools\InitializeAssembly.psplugin" />
+  </files>
+</package>

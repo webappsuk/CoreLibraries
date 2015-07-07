@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>The core library of .NET utilities that are commonly required in projects.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities</tags>
+    <references>
+      <group targetFramework="net452">
+        <reference file="$id$.dll" />
+      </group>
+    </references>
+  </metadata>
+  <files>
+    <file src="install.ps1" target="tools\install.ps1" />
+    <file src="uninstall.ps1" target="tools\uninstall.ps1" />
+    <file src="signtool.exe" target="tools\signtool.exe" />
+    <file src="WebApplicationsSignature.targets" target="tools\WebApplicationsSignature.targets" />
+    <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
+    <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
+    <file src="WebApplications.Utilities.BuildTasks.dll" target="tools\WebApplications.Utilities.BuildTasks.dll" />
+    <file src="Publish.ps1" target="tools\Publish.ps1" />
+    <file src="Commit.ps1" target="tools\Commit.ps1" />
+    <file src="Utility.targets" target="tools\Utility.targets" />
+    <file src="bin\Release\Resources\*.*" target="tools\Resources" />
+    <file src="app.config.transform" target="Content" />
+    <file src="web.config.transform" target="Content" />
+  </files>
+</package>
