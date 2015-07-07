@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>Allows the creation of functions that are run on a configurable schedule.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities Scheduling</tags>
+    <references>
+      <group targetFramework="net452">
+        <reference file="WebApplications.Utilities.Scheduling.dll" />
+      </group>
+    </references>
+  </metadata>
+  <files>
+    <file src="app.config.transform" target="Content" />
+    <file src="web.config.transform" target="Content" />
+  </files>
+</package>
