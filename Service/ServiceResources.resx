@@ -1,0 +1,599 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Cmd_Continue_Description" xml:space="preserve">
+    <value>Continue the service.</value>
+  </data>
+  <data name="Cmd_Continue_Names" xml:space="preserve">
+    <value>Continue,Cont,C</value>
+  </data>
+  <data name="Cmd_CustomCommand_Command_Description" xml:space="preserve">
+    <value>An application-defined command flag that indicates which custom command to execute. The value must be between 128 and 256, inclusive.</value>
+  </data>
+  <data name="Cmd_CustomCommand_Description" xml:space="preserve">
+    <value>Executes the custom command number, e.g. command 135.</value>
+  </data>
+  <data name="Cmd_CustomCommand_Names" xml:space="preserve">
+    <value>Command,Execute,Exec,.</value>
+  </data>
+  <data name="Cmd_Description" xml:space="preserve">
+    <value>No description is available for the command in the current language.</value>
+  </data>
+  <data name="Cmd_Disconnect_Description" xml:space="preserve">
+    <value>Disconnect from the service without shutting it down.  If running in interactive console mode, consider using the Shutdown if you wish the service to cleanly exit.</value>
+  </data>
+  <data name="Cmd_Disconnect_Names" xml:space="preserve">
+    <value>Quit,Exit,X,Disconnect</value>
+  </data>
+  <data name="Cmd_Help_Command_Description" xml:space="preserve">
+    <value>The name of the command to get help for. If omitted, all commands will be listed.</value>
+  </data>
+  <data name="Cmd_Help_Description" xml:space="preserve">
+    <value>Outputs this help.</value>
+  </data>
+  <data name="Cmd_Help_Names" xml:space="preserve">
+    <value>Help,?</value>
+  </data>
+  <data name="Cmd_Help_Parameter_Description" xml:space="preserve">
+    <value>The name of the parameter to get help for. If omitted, all parameters of the command will be listed.</value>
+  </data>
+  <data name="Cmd_Install_Description" xml:space="preserve">
+    <value>Installs the running service as a windows service.</value>
+  </data>
+  <data name="Cmd_Install_Names" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Cmd_Install_Password_Description" xml:space="preserve">
+    <value>The optional password for the account the service is to run under.  An incorrect password will prevent the service from starting.</value>
+  </data>
+  <data name="Cmd_Install_UserName_Description" xml:space="preserve">
+    <value>The optional username for the service to run under (note must have enough permission to interact with local performance counters and filesystem).  Use form "DomainName\UserName", e.g. "NT AUTHORITY\LocalService" for local service account; "NT AUTHORITY\NetworkService" for network service account; "NT Service\ServiceName" to use a virtual account; or ".\UserName" to use a local account.  The default is to use the LocalSystem account, but this doesn't normally have the required permissions and so the service will fail to start.</value>
+  </data>
+  <data name="Cmd_Param_Description" xml:space="preserve">
+    <value>No description is available for the parameter in the current language.</value>
+  </data>
+  <data name="Cmd_Pause_Description" xml:space="preserve">
+    <value>Pauses the service.</value>
+  </data>
+  <data name="Cmd_Pause_Names" xml:space="preserve">
+    <value>Pause,P</value>
+  </data>
+  <data name="Cmd_Performance_Category_Description" xml:space="preserve">
+    <value>The name of the performance counter to get the details of. If omitted, all performance counters will be listed.</value>
+  </data>
+  <data name="Cmd_Performance_Description" xml:space="preserve">
+    <value>Displays the performance counters for this service.</value>
+  </data>
+  <data name="Cmd_Performance_Names" xml:space="preserve">
+    <value>Perf,Performance</value>
+  </data>
+  <data name="Cmd_PowerEvent_Description" xml:space="preserve">
+    <value>Sends the power status to the service, e.g. power Suspend.</value>
+  </data>
+  <data name="Cmd_PowerEvent_Names" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="Cmd_PowerEvent_PowerStatus_Description" xml:space="preserve">
+    <value>The power status to send to the service.  This is only available in interactive mode.</value>
+  </data>
+  <data name="Cmd_SessionChange_ChangeReason_Description" xml:space="preserve">
+    <value>The reason for the change notice.</value>
+  </data>
+  <data name="Cmd_SessionChange_Description" xml:space="preserve">
+    <value>Sends a session changed notice to the service, e.g session SessionLogon 0</value>
+  </data>
+  <data name="Cmd_SessionChange_Names" xml:space="preserve">
+    <value>Session</value>
+  </data>
+  <data name="Cmd_SessionChange_SessionID_Description" xml:space="preserve">
+    <value>The ID of the session.</value>
+  </data>
+  <data name="Cmd_Shutdown_Description" xml:space="preserve">
+    <value>Shuts down the service and quits.  This is only available in interactive mode.</value>
+  </data>
+  <data name="Cmd_Shutdown_Names" xml:space="preserve">
+    <value>Shutdown</value>
+  </data>
+  <data name="Cmd_Start_Args_Description" xml:space="preserve">
+    <value>The service start arguments.</value>
+  </data>
+  <data name="Cmd_Start_Description" xml:space="preserve">
+    <value>Starts the service, passing in the specified arguments, e.g. start arg1 arg2 arg3.</value>
+  </data>
+  <data name="Cmd_Start_Names" xml:space="preserve">
+    <value>Start,Go,G</value>
+  </data>
+  <data name="Cmd_Stop_Description" xml:space="preserve">
+    <value>Stops the service.</value>
+  </data>
+  <data name="Cmd_Stop_Names" xml:space="preserve">
+    <value>Stop,S</value>
+  </data>
+  <data name="Cmd_Uninstall_Description" xml:space="preserve">
+    <value>Uninstalls the running service as a windows service.</value>
+  </data>
+  <data name="Cmd_Uninstall_Names" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="Err_BaseService_CouldNotLocateAssemblyGuid" xml:space="preserve">
+    <value>The '{0}' does not define a GuidAttribute, so creating a random one. Add a GuidAttribute to prevent multiple instances of the service being started.</value>
+  </data>
+  <data name="Err_BaseService_Failed_To_Acquire_WaitHandle" xml:space="preserve">
+    <value>Another instance of the service is running so this instance cannot be started.</value>
+  </data>
+  <data name="Err_BaseService_FatalConstructorError" xml:space="preserve">
+    <value>Fatal error in constructor.</value>
+  </data>
+  <data name="Err_BaseService_OnContinue_FatalError" xml:space="preserve">
+    <value>Fatal error in OnContinue</value>
+  </data>
+  <data name="Err_BaseService_OnCustomCommand_FatalError" xml:space="preserve">
+    <value>Fatal error in OnCustomCommand '{0}'.</value>
+  </data>
+  <data name="Err_BaseService_OnPause_FatalError" xml:space="preserve">
+    <value>Fatal error in OnPause</value>
+  </data>
+  <data name="Err_BaseService_OnPowerEvent_FatalError" xml:space="preserve">
+    <value>Fatal error in OnPowerEvent</value>
+  </data>
+  <data name="Err_BaseService_OnSessionChange_FatalError" xml:space="preserve">
+    <value>Fatal error in OnSessionChange</value>
+  </data>
+  <data name="Err_BaseService_OnShutdown_FatalError" xml:space="preserve">
+    <value>Fatal error in OnShutdown</value>
+  </data>
+  <data name="Err_BaseService_OnStart_FatalError" xml:space="preserve">
+    <value>Fatal error in OnStart</value>
+  </data>
+  <data name="Err_BaseService_OnStop_FatalError" xml:space="preserve">
+    <value>Fatal error in OnStop</value>
+  </data>
+  <data name="Err_Command_Exception" xml:space="preserve">
+    <value>Fatal error executing the '{0}' command.</value>
+  </data>
+  <data name="Err_Command_Failed" xml:space="preserve">
+    <value>The '{0}' command failed.</value>
+  </data>
+  <data name="Err_Install_Requires_Administrator" xml:space="preserve">
+    <value>Service installation requires running as an administrator.</value>
+  </data>
+  <data name="Err_NamedPipeConnection_Failed" xml:space="preserve">
+    <value>A fatal error occurred on the current named pipe connection, closing.</value>
+  </data>
+  <data name="Err_NamedPipeServer_CannotGetCurrentOwner" xml:space="preserve">
+    <value>Cannot get the current security identity for securing a named pipe, so aborting.</value>
+  </data>
+  <data name="Err_NamedPipeServer_Fatal_Error_Securing" xml:space="preserve">
+    <value>A fatal error occurred trying to secure the named pipe server.</value>
+  </data>
+  <data name="Err_NamedPipeServer_PipeAlreadyExists" xml:space="preserve">
+    <value>The '{0}' named pipe already exists on the server, and so cannot be created!</value>
+  </data>
+  <data name="Err_ServerConfig_InvalidPipeName" xml:space="preserve">
+    <value>Invalid pipe name '{0}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_IDParameterWrongType" xml:space="preserve">
+    <value>ID parameter should be of type Guid, but was actually of type '{0}'</value>
+  </data>
+  <data name="Err_ServiceCommand_Invalid_Command_Method" xml:space="preserve">
+    <value>Invalid command method '{0}'. A service runner command with ConsumeLine set must declare exactly one string parameter.</value>
+  </data>
+  <data name="Err_ServiceCommand_Parameter_Conversion_Unsupported" xml:space="preserve">
+    <value>Cannot convert string to '{0}' for parameter '{1}' on method '{2}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_IDParameterMissing" xml:space="preserve">
+    <value>The ID parameter '{0}' expected but not found in method '{1}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_WriterParameterWrongType" xml:space="preserve">
+    <value>Writer parameter should be of type TextWriter, but was actually of type '{0}'</value>
+  </data>
+  <data name="Err_ServiceRunner_Continue_ServiceNotPaused" xml:space="preserve">
+    <value>The '{0}' service is not paused!</value>
+  </data>
+  <data name="Err_ServiceRunner_Pause_ServiceNotRunning" xml:space="preserve">
+    <value>The '{0}' service is not running, so cannot be paused!</value>
+  </data>
+  <data name="Err_ServiceRunner_ServiceAlreadyRunning" xml:space="preserve">
+    <value>The '{0}' service is already running!</value>
+  </data>
+  <data name="Err_ServiceRunner_ServiceNotInteractive" xml:space="preserve">
+    <value>The '{0}' service is not interactive!</value>
+  </data>
+  <data name="Err_ServiceRunner_Stop_ServiceNotRunning" xml:space="preserve">
+    <value>The '{0}' service is not running, so cannot be stopped!</value>
+  </data>
+  <data name="Err_Uninstall_Requires_Administrator" xml:space="preserve">
+    <value>Service removal requires running as an administrator.</value>
+  </data>
+  <data name="Err_Unknown_Command" xml:space="preserve">
+    <value>The '{0}' command is not supported by the service.</value>
+  </data>
+  <data name="Inf_BaseService_RunAsync_NotRunningAsAdmin" xml:space="preserve">
+    <value>The service is not running as an administrator, some functionality will be disabled.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Continue_Continued" xml:space="preserve">
+    <value>Continued service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Continue_Continuing" xml:space="preserve">
+    <value>Continuing service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_CustomCommand_Complete" xml:space="preserve">
+    <value>Running '{0}' custom command on service '{1}' took {2}ms.</value>
+  </data>
+  <data name="Inf_ServiceRunner_CustomCommand_Running" xml:space="preserve">
+    <value>Running '{0}' custom command on service '{1}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Install" xml:space="preserve">
+    <value>Installing the '{0}' service.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Installed" xml:space="preserve">
+    <value>Installed the '{0}' service from the '{1}' path.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Pause_Paused" xml:space="preserve">
+    <value>Paused service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Pause_Pausing" xml:space="preserve">
+    <value>Pausing service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_PowerEvent_Sending" xml:space="preserve">
+    <value>Sending the '{0}' power event to service '{1}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_PowerEvent_Sent" xml:space="preserve">
+    <value>Sending the '{0}' power event to service '{1}' returned '{2}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_SessionChange_Sending" xml:space="preserve">
+    <value>Sending the '{0}' session change event for session '{1}' to service '{2}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_SessionChange_Sent" xml:space="preserve">
+    <value>Sent the '{0}' session change event for session '{1}' to service '{2}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Shutdown_ShutDown" xml:space="preserve">
+    <value>Shut down service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Shutdown_ShuttingDown" xml:space="preserve">
+    <value>Shutting down service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Start_Started" xml:space="preserve">
+    <value>Started service '{0}' in {1}ms.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Start_Starting" xml:space="preserve">
+    <value>Starting service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Stop_Stopped" xml:space="preserve">
+    <value>Stopped service '{0}' in {1}ms.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Stop_Stopping" xml:space="preserve">
+    <value>Stopping service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Uninstall" xml:space="preserve">
+    <value>Uninstalling the '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Uninstalled" xml:space="preserve">
+    <value>Uninstalled the '{0}' service.</value>
+  </data>
+  <data name="Not_NamedPipeConnection_Connection" xml:space="preserve">
+    <value>The service received a connection from '{0}'.</value>
+  </data>
+  <data name="Not_NamedPipeConnection_Disconnected" xml:space="preserve">
+    <value>The service disconnected from '{0}'.</value>
+  </data>
+  <data name="Wrn_BaseService_EventHandlerAlreadyExists" xml:space="preserve">
+    <value>Another instance of the service may be running, so starting or stopping the service may fail.</value>
+  </data>
+  <data name="Wrn_Command_Alias_Already_Used_By_Other_Command" xml:space="preserve">
+    <value>The '{0}' command alias for '{1}' is already used by the '{2}' command.</value>
+  </data>
+  <data name="Wrn_Command_Invalid_Generic" xml:space="preserve">
+    <value>The '{0}' method cannot implement a service runner command as it is generic.</value>
+  </data>
+  <data name="Wrn_No_Description_For_Command" xml:space="preserve">
+    <value>No description was specified for the '{0}' command.</value>
+  </data>
+  <data name="Wrn_No_Description_For_Parameter" xml:space="preserve">
+    <value>No description was specified for the '{0}' parameter in the '{1}' command.</value>
+  </data>
+  <data name="Wrn_No_Names_For_Command" xml:space="preserve">
+    <value>No names were found for the '{0}' command.</value>
+  </data>
+  <data name="Wrn_ServiceCommand_Creation_Failed" xml:space="preserve">
+    <value>Failed to create a service runner command for the '{0}' method</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_WaitInstall" xml:space="preserve">
+    <value>Waiting for service to be detected...</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_WaitUninstall" xml:space="preserve">
+    <value>Waiting for service removal to be detected...</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_AttemptingStop" xml:space="preserve">
+    <value>Attempting to stop service...</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_AttemptingStart" xml:space="preserve">
+    <value>Attempting to start service...</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_AttemptingPause" xml:space="preserve">
+    <value>Attempting to pause service...</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_AttemptingContinue" xml:space="preserve">
+    <value>Attempting to continue service...</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_RunningNonInteractive" xml:space="preserve">
+    <value>Running service in non-interactive mode (use CTRL-C to kill).</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_RunningNonInteractive2" xml:space="preserve">
+    <value>To control, connect using a service client.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_RunningTitle" xml:space="preserve">
+    <value>Running </value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_PressKeyToExit" xml:space="preserve">
+    <value>Press any key to exit...</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_ConfigureTitle" xml:space="preserve">
+    <value>Configure </value>
+  </data>
+  <data name="Err_ServiceCommand_CancellationTokenParameterWrongType" xml:space="preserve">
+    <value>Cancellation token parameter should be of type CancellationToken, but was actually of type '{0}'</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_ServiceInstalledState" xml:space="preserve">
+    <value>The '{0}' service is installed and {1}.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionInstall" xml:space="preserve">
+    <value>Install service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionUninstall" xml:space="preserve">
+    <value>Uninstall service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionStart" xml:space="preserve">
+    <value>Start service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRestart" xml:space="preserve">
+    <value>Restart service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionStop" xml:space="preserve">
+    <value>Stop service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionPause" xml:space="preserve">
+    <value>Pause service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionContinue" xml:space="preserve">
+    <value>Continue service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRunCmd" xml:space="preserve">
+    <value>Run service from command line with interaction.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRunCmdNewCredentials" xml:space="preserve">
+    <value>Change current credentials.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRunNoInteraction" xml:space="preserve">
+    <value>Run service without interaction.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionExit" xml:space="preserve">
+    <value>Exit.</value>
+  </data>
+  <data name="ConsoleConnection_GetUserNamePassword_Username" xml:space="preserve">
+    <value>User name: </value>
+  </data>
+  <data name="ConsoleConnection_GetUserNamePassword_InvalidUserName" xml:space="preserve">
+    <value>Invalid user name!</value>
+  </data>
+  <data name="ConsoleConnection_GetUserNamePassword_Password" xml:space="preserve">
+    <value>Password: </value>
+  </data>
+  <data name="Commands_AllCommandsHelpFormat" xml:space="preserve">
+    <value>{!fgcolor:White}The following commands are available:
+{!fgcolor}
+{commands:{&lt;items&gt;:{&lt;item&gt;:{!fgcolor:Lime}{Name}{AltNames:{!fgcolor:Green} [{&lt;items&gt;:{&lt;item&gt;}}{&lt;join&gt;:|}]}{!fgcolor}
+{!layout:f4;i4}{Parameters:{&lt;items&gt;:{&lt;item&gt;:{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}
+}}}{!layout}{!layout:f8;i8}{Description}{!layout}}}{&lt;join&gt;:
+}}
+
+Type 'help {!fgcolor:Lime}&lt;command&gt;{!fgcolor}' for more information on a specific command.</value>
+  </data>
+  <data name="Commands_CommandHelpFormat" xml:space="preserve">
+    <value>{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}
+{Command:{AltNames:{!layout:f0}Alternate names:
+{!layout}{!fgcolor:White}{&lt;items&gt;:{&lt;item&gt;}}{&lt;join&gt;:, }{!fgcolor}
+}}
+{!layout:f0}Description: 
+{!layout}{Command:{Description}}
+
+{Command:{Parameters:{!layout:f0}Parameters:{!layout}
+{&lt;items&gt;:{&lt;item&gt;:{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}{Description:
+{!layout:f8;i10}{Description}{!layout}}
+}}
+{!layout:f0}Type 'help {!fgcolor:Lime}{Command:{Name}} {!fgcolor:White}&lt;parameter&gt;{!fgcolor}' for more information on a specific parameter of the command.
+
+}}</value>
+  </data>
+  <data name="Commands_ParameterHelpFormat" xml:space="preserve">
+    <value>{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Parameter:{Name}}'{!fgcolor:White} parameter for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}
+{Parameter:{DefaultValue:{!layout:f0}Default value:{!layout}{!fgcolor:White}{DefaultValue}{!fgcolor}
+}}
+{!layout:f0}Description:
+{!layout}{Parameter:{Description}}
+</value>
+  </data>
+  <data name="Command_AllPerformanceCategoriesFormat" xml:space="preserve">
+    <value>{!fgcolor:White}Instance GUID: {!fgcolor:Yellow}{guid}
+
+{!fgcolor:White}The following performance categories are loaded:
+
+{!fgcolor:Yellow}{counters:{&lt;items&gt;:{&lt;item&gt;:{CategoryName}}}{&lt;join&gt;:
+}}
+{!fgcolor}
+Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a specific counter.
+</value>
+  </data>
+  <data name="Command_Help_CommandNotFoundFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}The command '{Name}' does not exist.
+</value>
+  </data>
+  <data name="Command_Help_CommandParameterNotFoundFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}The parameter '{ParamName}' does not exist on the '{CommandName}' command.
+</value>
+  </data>
+  <data name="Command_Performance_CatergoryNotFoundFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}The performance counter '{Name}' does not exist.
+</value>
+  </data>
+  <data name="BaseService_Help_NoCommands" xml:space="preserve">
+    <value>There are no commands registered</value>
+  </data>
+  <data name="BaseService_Install_InvalidUserName" xml:space="preserve">
+    <value>Invalid user name!</value>
+  </data>
+  <data name="BaseService_Install_InvalidPassword" xml:space="preserve">
+    <value>Invalid password!</value>
+  </data>
+  <data name="BaseService_Install_vshostProcess" xml:space="preserve">
+    <value>Process running in vshost, using '{0}' instead.</value>
+  </data>
+  <data name="BaseService_Install_CopyingService" xml:space="preserve">
+    <value>Copying service to {0}...</value>
+  </data>
+  <data name="ConsoleConnection_InstallPromptFormat" xml:space="preserve">
+    <value>{!fgcolor:Yellow}Select one of :
+{!layout:i3;f5}{Options:{&lt;items&gt;:
+{!fgcolor:Cyan}{Key}	{!fgcolor:White}{Value}}}
+{!layout}
+</value>
+  </data>
+  <data name="ConsoleConnection_PromptFormat" xml:space="preserve">
+    <value>{!fgcolor:Cyan}[{Time:hh:mm:ss.ffff}] {!fgcolor:Yellow}{State}{!fgcolor} &gt; </value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_Cancelling" xml:space="preserve">
+    <value>Cancelling command...</value>
+  </data>
+  <data name="ConsoleConnection_ErrorFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}Error: {Message}
+{!fgcolor}</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionStartCmd" xml:space="preserve">
+    <value>Run service from command line with interaction and start the service.</value>
+  </data>
+  <data name="ServiceCommand_NoDeclaringType" xml:space="preserve">
+    <value>Service command method must have a declaring type</value>
+  </data>
+  <data name="ServiceCommand_Generic" xml:space="preserve">
+    <value>Service command method cannot be generic</value>
+  </data>
+</root>

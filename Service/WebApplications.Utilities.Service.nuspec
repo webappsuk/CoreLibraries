@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>Service utilities for .NET.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities Service</tags>
+    <references>
+      <group targetFramework="net452">
+        <reference file="WebApplications.Utilities.Service.dll" />
+      </group>
+    </references>
+  </metadata>
+  <files>
+    <file src="ServiceClient\bin\Release\ServiceClient.exe" target="lib\net452\" />
+    <file src="ServiceClient\bin\Release\ServiceClient.exe.config" target="lib\net452\" />
+    <file src="WebApplications.Utilities.Service.Client\bin\Release\WebApplications.Utilities.Service.Client.dll" target="lib\net452\" />
+    <file src="WebApplications.Utilities.Service.Common\bin\Release\WebApplications.Utilities.Service.Common.dll" target="lib\net452\" />
+  </files>
+</package>
