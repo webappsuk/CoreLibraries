@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BadSqlProc" xml:space="preserve">
+    <value>CREATE PROCEDURE [dbo].[{0}] @ID nvarchar(MAX)
+AS
+BEGIN
+SELECT @ID
+END</value>
+  </data>
+  <data name="CommentTemplate" xml:space="preserve">
+    <value>        /// &lt;param name="p{0}"&gt;Parameter {1} of type &lt;see cref="T{0}"/&gt;.&lt;/param&gt;</value>
+  </data>
+  <data name="CommentTemplate2" xml:space="preserve">
+    <value>        /// &lt;param name="p{0}Name"&gt;Name of parameter {1}.&lt;/param&gt;</value>
+  </data>
+  <data name="DropSqlProc" xml:space="preserve">
+    <value>DROP PROCEDURE [dbo].[{0}]</value>
+  </data>
+  <data name="ExecuteNonQuery" xml:space="preserve">
+    <value>        /// &lt;summary&gt;
+        /// Executes a Transact-SQL statement against the connection and returns the number of rows affected.
+        /// &lt;/summary&gt;
+{0}
+        /// &lt;param name="resultAction"&gt;The result action.&lt;/param&gt;
+        /// &lt;param name="executeAgainstAllConnections"&gt;if set to &lt;c&gt;true&lt;/c&gt; will execute the program against all connections.&lt;/param&gt;
+        /// &lt;exception cref="T:System.Data.SqlClient.SqlException"&gt;An exception occurred while executing the command against a locked row. This exception is not generated when you are using Microsoft .NET Framework version 1.0. &lt;/exception&gt;
+        /// &lt;PermissionSet&gt;&lt;IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence"/&gt;&lt;IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;/PermissionSet&gt;
+        public void ExecuteNonQuery({1}, Action&lt;int&gt; resultAction = null, bool executeAgainstAllConnections = false)
+        {
+            this.ExecuteNonQuery(resultAction, executeAgainstAllConnections, {2});
+        }</value>
+  </data>
+  <data name="ExecuteReader" xml:space="preserve">
+    <value>        /// &lt;summary&gt;
+        /// Executes the program with the specified parameters.
+        /// &lt;/summary&gt;
+{0}
+        /// &lt;param name="resultAction"&gt;The result action.&lt;/param&gt;
+        /// &lt;param name="behavior"&gt;The behaviour.&lt;/param&gt;
+        /// &lt;param name="executeAgainstAllConnections"&gt;if set to &lt;c&gt;true&lt;/c&gt; will execute the program against all connections.&lt;/param&gt;
+        /// &lt;exception cref="T:System.Data.SqlClient.SqlException"&gt;An exception occurred while executing the command against a locked row. This exception is not generated when you are using Microsoft .NET Framework version 1.0. &lt;/exception&gt;
+        /// &lt;PermissionSet&gt;&lt;IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/&gt;&lt;IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/&gt;&lt;IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;/PermissionSet&gt;
+        public void ExecuteReader({1}, Action&lt;SqlDataReader&gt; resultAction, CommandBehavior behavior = CommandBehavior.Default, bool executeAgainstAllConnections = false)
+        {
+            this.ExecuteReader(resultAction, behavior, executeAgainstAllConnections, {2});
+        }</value>
+  </data>
+  <data name="ExecuteScalar" xml:space="preserve">
+    <value>        /// &lt;summary&gt;
+        /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
+        /// &lt;/summary&gt;
+{0}
+        /// &lt;param name="resultAction"&gt;The result action.&lt;/param&gt;
+        /// &lt;param name="executeAgainstAllConnections"&gt;if set to &lt;c&gt;true&lt;/c&gt; will execute the program against all connections.&lt;/param&gt;
+        /// &lt;exception cref="T:System.Data.SqlClient.SqlException"&gt;An exception occurred while executing the command against a locked row. This exception is not generated when you are using Microsoft .NET Framework version 1.0. &lt;/exception&gt;
+        /// &lt;PermissionSet&gt;&lt;IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/&gt;&lt;IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/&gt;&lt;IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;/PermissionSet&gt;
+        public void ExecuteScalar({1}, Action&lt;object&gt; resultAction, bool executeAgainstAllConnections = false)
+        {
+            this.ExecuteScalar(resultAction, executeAgainstAllConnections, {2});
+        }</value>
+  </data>
+  <data name="ExecuteXmlReader" xml:space="preserve">
+    <value>        /// &lt;summary&gt;
+        /// Sends the &lt;see cref="P:System.Data.SqlClient.SqlCommand.CommandText"/&gt; to the &lt;see cref="P:System.Data.SqlClient.SqlCommand.Connection"/&gt; and builds an &lt;see cref="T:System.Xml.XmlReader"/&gt; object.
+        /// &lt;/summary&gt;
+{0}
+        /// &lt;param name="resultAction"&gt;The result action.&lt;/param&gt;
+        /// &lt;param name="executeAgainstAllConnections"&gt;if set to &lt;c&gt;true&lt;/c&gt; will execute the program against all connections.&lt;/param&gt;
+        /// &lt;exception cref="T:System.Data.SqlClient.SqlException"&gt;An exception occurred while executing the command against a locked row. This exception is not generated when you are using Microsoft .NET Framework version 1.0. &lt;/exception&gt;
+        /// &lt;PermissionSet&gt;&lt;IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/&gt;&lt;IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/&gt;&lt;IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/&gt;&lt;/PermissionSet&gt;
+        public void ExecuteXmlReader({1}, Action&lt;XmlReader&gt; resultAction, bool executeAgainstAllConnections = false)
+        {
+            this.ExecuteXmlReader(resultAction, executeAgainstAllConnections, {2});
+        }</value>
+  </data>
+  <data name="GoodSqlSproc" xml:space="preserve">
+    <value>CREATE PROCEDURE [dbo].[{0}] @ID int
+AS
+BEGIN
+SELECT @ID
+END</value>
+  </data>
+  <data name="RootCodeTemplate" xml:space="preserve">
+    <value>    /// &lt;summary&gt;
+    ///   Used to create an object for easy calling of stored procedures or functions in a database.
+    /// &lt;/summary&gt;
+    public partial class SqlProgram&lt;{0}, {1}&gt; : SqlProgram
+    {
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref="SqlProgram&amp;lt;T&amp;gt;"/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name="connectionString"&gt;The connection string.&lt;/param&gt;
+        /// &lt;param name="name"&gt;The name of the stored procedure or function.&lt;/param&gt;
+        public SqlProgram(string connectionString, string name)
+            : this(new LoadBalancedConnection(connectionString), name)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref="SqlProgram&amp;lt;T&amp;gt;"/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;
+        /// &lt;param name="name"&gt;The name.&lt;/param&gt;
+        public SqlProgram(LoadBalancedConnection connection, string name)
+            : base(connection, name)
+        {
+            this.Definition.ValidateParameters({2});
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref="SqlProgram&amp;lt;T&amp;gt;"/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name="sqlProgram"&gt;The SQL program.&lt;/param&gt;
+        public SqlProgram(SqlProgram sqlProgram)
+            : base(sqlProgram)
+        {
+            this.Definition.ValidateParameters({2});
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref="SqlProgram&amp;lt;T&amp;gt;"/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name="connectionString"&gt;The connection string.&lt;/param&gt;
+        /// &lt;param name="name"&gt;The name of the stored procedure or function.&lt;/param&gt;
+{3}
+        public SqlProgram(string connectionString, string name, {4})
+            : this(new LoadBalancedConnection(connectionString), name, {5})
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref="SqlProgram&amp;lt;T&amp;gt;"/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name="connection"&gt;The connection.&lt;/param&gt;
+        /// &lt;param name="name"&gt;The name.&lt;/param&gt;
+{3}
+        public SqlProgram(LoadBalancedConnection connection, string name, {4})
+            : base(connection, name)
+        {
+            this.Definition.ValidateParameters(new List&lt;string&gt;{ {5} }, {2});
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref="SqlProgram&amp;lt;T&amp;gt;"/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name="sqlProgram"&gt;The SQL program.&lt;/param&gt;
+{3}
+        public SqlProgram(SqlProgram sqlProgram, {4})
+            : base(sqlProgram)
+        {
+            this.Definition.ValidateParameters(new List&lt;string&gt; { {5} }, {2});
+        }
+		
+{6}
+
+        /// &lt;summary&gt;
+        /// Returns a &lt;see cref="System.String"/&gt; that represents this instance.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;
+        /// A &lt;see cref="System.String"/&gt; that represents this instance.
+        /// &lt;/returns&gt;
+        public override string ToString()
+        {
+            return this.Name;
+        }
+    }</value>
+    <comment>Used to build the generic overloads for SqlProgram</comment>
+  </data>
+</root>

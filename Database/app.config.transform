@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <section name="databases" type="WebApplications.Utilities.Database.Configuration.DatabasesConfiguration, WebApplications.Utilities.Database" />
+  </configSections>
+  <databases>
+    <!--
+You can configure multiple databases per application, as such each one needs to be identified with an id.
+Optionally you can disable a database to prevent it's use.
+    <database id="example" enabled="false">
+
+The first node is required, as each database has to specify at least one connection (for obvious reasons).
+      <connections>
+
+The first connection does not need an id, id's are only needed when they need to be referred to during program mappings,
+or, in some cases, by the code (though this is not recommended practice).
+        <connection>
+        
+A connection can contain multiple connection string entries, only the connectionString attribute is required.
+The system is fairly intelligent at detecting when the same connection string has been added and will merge the entries (specifically their weights).
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Source.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" />
+          
+The default weight for a connection string is 1.0, connections are chosen at random from a load balanced connection, in this example the following connection string
+is twice as likely to be chosen than any other.  In most production scenarios db server performance can be measured and the weights tuned here to ensure a smooth loading
+across multiple servers.
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Mirror.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" weight="2.0"/>
+          
+If a server is to be taken out of circulation (e.g. for maintenance) then it can be disabled without removing its entry.
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Mirror2.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" enabled="false"/>
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Mirror3.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" />
+        </connection>
+        
+The next connection has an id, which we will use later.  Moreover, it is set to validate that the schemas match.  When the databases are first contacted the
+schemas are read very quickly (this happens regardless, as it forms part of the SqlProgram validity system).  The schemas do not have to be identical by default (e.g. replicated dbs may
+not contain all tables), however in a production environment setting this flag will ensure the system will error if it detects differences in schema on boot up - this
+is a very effective way of ensuring that the databases are being replicated correctly.
+
+Note: even though the connections are the same as above, (except the source db is missing), their settings are unique to this load balanced connection (e.g. Mirror2
+is not twice as likely to be selected).
+        <connection id="mirrors" ensureSchemasIdentical="true">
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Mirror.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" />
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Mirror2.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" />
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Mirror3.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" />
+        </connection>
+        
+This is an example of a disabled source.
+        <connection id="source" enabled="false">
+          <add connectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Mirror.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True" />
+        </connection>
+      </connections>
+      
+The next node is entirely optional.  In the majority of cases the programs will use the default (first enabled) connection specified above and no mapping is necessary.
+However, it can be useful to set various options without needing to recompile the code.
+      <programs>
+      
+The following program ensures that this stored procedure is only run against the mirrors connection.  You must ensure that connection is available and enabled.
+
+This is useful for ensuring heavy usage sprocs don't hit the main database.
+        <program name="heavyuseSproc" connection="mirrors"/>
+        
+It is also possible to map a sproc to entirely new one - though this should not be done in production it useful for testing.
+
+This is done using the mapTo attribute, and optional parameters elements (which also have a mapTo attribute).  Only mappings have to be specified,
+and not every parameter (or indeed the program name itself) need to be mapped.
+        <program name="MappedProgram" mapTo="spMySproc">
+          <parameter name="@P1" mapTo="@FirstParameter" />
+        </program>
+        
+It is possible to prevent the system throwing validation errors on start up for a sproc, which is the default behaviour, however the following attributes
+can be overridden programmatically permanently and hence have no effect.
+        <program name="testingSproc" ignoreValidationErrors="true"/>
+        
+The system normally ignores parameter order, however in a production environment a parameter order mismatch may indicate out of date sprocs.
+        <program name="criticalSproc" checkOrder="true"/>
+        
+By default SQL allows up to 30s for a command.  This should rarely be changes otherwise is can cause a failure cascade - as the system slows down sprocs
+take longer to run, and so more sprocs are pending, which can cause the system to slow down further, etc.  However, occasional sprocs take a long time
+by design to run, a new timeout can be set to override the 30s default - in this example, the sproc is allowed up to 2mins before timing out.
+        <program name="slowSproc" defaultCommandTimeout="00:02:00" />
+      </programs>
+    </database>
+  -->
+  </databases>
+</configuration>
