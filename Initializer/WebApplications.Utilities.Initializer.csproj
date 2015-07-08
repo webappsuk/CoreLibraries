@@ -13,7 +13,7 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">./</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -37,10 +37,8 @@
     <DocumentationFile>bin\release\WebApplications.Utilities.Initializer.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Web Applications UK - Core.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">true</SignAssembly>
+    <AssemblyOriginatorKeyFile Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">$(SolutionDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
@@ -48,19 +46,19 @@
     <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Cecil.Pdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Cecil.Rocks, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -83,15 +81,42 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Web Applications UK - Core.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <PropertyGroup>
+    <ILMergeBuildTask>$(SolutionDir)bin\ILMerge.Build.Task.dll</ILMergeBuildTask>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)ILMerge\ILMerge.targets" />
+  <PropertyGroup>
+    <MergedOutputPath>$(OutputPath)Merged\</MergedOutputPath>
+    <MergedOutputFile>$(MergedOutputPath)WebApplications.Utilities.Initializer.dll</MergedOutputFile>
+    <SignFilePath>$(MergedOutputFile)</SignFilePath>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SolutionDir)..\WebApplicationsSignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <MergeAsm Include="$(OutputPath)WebApplications.Utilities.Initializer.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.Mdb.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.Pdb.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.Rocks.dll" />
+    </ItemGroup>
+    <MakeDir Directories="$(MergedOutputPath)" />
+    <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(MergedOutputFile)" SnkFile="$(AssemblyOriginatorKeyFile)" TargetKind="Dll" ILMergeTool="$(ILMergeTools)" />
+  </Target>
+  <ItemGroup>
+    <RootBinPath Include="$(SolutionDir)bin\$(AssemblyName).dll">
+      <Visible>False</Visible>
+    </RootBinPath>
+  </ItemGroup>
+  <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
+    <Copy SourceFiles="$(MergedOutputFile)" DestinationFiles="@(RootBinPath)"/>
+  </Target>
+
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
   </Target>
   -->
 </Project>

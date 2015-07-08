@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Condition="!Exists('$(ILMergeTools)')">
+    <ILMergePackage Include="$(SolutionDir)packages\ilmerge.*\tools\ILMerge.exe"/>
+  </ItemGroup>
+  <PropertyGroup>
+    <ILMergeBuildTask Condition="!Exists('$(ILMergeBuildTask)')">$(MSBuildThisFileDirectory)WebApplications.Utilities.BuildTasks.dll</ILMergeBuildTask>
+    <ILMergeTools Condition="!Exists('$(ILMergeTools)')">@(ILMergePackage)</ILMergeTools>
+  </PropertyGroup>
+
+  <UsingTask TaskName="ILMerge" AssemblyFile="$(ILMergeBuildTask)" />
+
+  <Target Name="CheckPrerequisites">
+    <!-- Raise an error if we're unable to locate the tools  -->
+    <Error Condition="!Exists('$(ILMergeBuildTask)')" Text="Unable to locate '$(ILMergeBuildTask)'" />
+    <Error Condition="!Exists('$(ILMergeTools)')" Text="Unable to locate '$(ILMergeTools)'" />
+  </Target>
+</Project>

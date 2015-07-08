@@ -26,23 +26,41 @@
 #endregion
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("WebApplications.Testing")]
-[assembly: AssemblyDescription("Standard Web Applications .NET testing utilities.")]
-[assembly: ComVisible(false)]
-[assembly: Guid("d62c1e9f-6857-4be9-b1ce-3ea218c90e7d")]
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+
+[assembly: AssemblyTitle("ILMerge.Build.Tasks")]
+[assembly: AssemblyDescription("ILMerge build task.")]
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("Web Applications UK Ltd")]
-[assembly: AssemblyProduct("Web Applications Testing")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2015")]
+[assembly: AssemblyProduct("ILMerge Build Tasks")]
+[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2015")]
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("5.1.*")]
-[assembly: InternalsVisibleTo("WebApplications.Testing.Test, PublicKey=" +
-                              "002400000480000094000000060200000024000052534131000400000100010009234d0a978c01" +
-                              "fec4232555decda613950e25b0d9d9f0400cb4ee0ae0c21921a96bbc5c82d60e4b928eb392503a" +
-                              "5c24c81495256bf77e0cb80244c7d253a6ab396da91ead9b624ae7e53e03fba409507cc029ae8e" +
-                              "a874da063a8c86c92fcc00055951e6c9c2e5adaad2e1ba02c044683691e2d60e6ee4a43d73f78a" +
-                              "fb026eba")]
+
+
+// Setting ComVisible to false makes the types in this assembly not visible 
+// to COM components.  If you need to access a type in this assembly from 
+// COM, set the ComVisible attribute to true on that type.
+
+[assembly: ComVisible(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+
+[assembly: Guid("28df525e-778c-4aab-a0c8-bb028da7eaff")]
+
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Build and Revision Numbers 
+// by using the '*' as shown below:
+// [assembly: AssemblyVersion("1.0.*")]
+
+[assembly: AssemblyVersion("1.0.*")]
