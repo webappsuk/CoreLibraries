@@ -40,9 +40,13 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("5.1.*")]
+#if SIGNED
 [assembly: InternalsVisibleTo("WebApplications.Testing.Test, PublicKey=" +
                               "002400000480000094000000060200000024000052534131000400000100010009234d0a978c01" +
                               "fec4232555decda613950e25b0d9d9f0400cb4ee0ae0c21921a96bbc5c82d60e4b928eb392503a" +
                               "5c24c81495256bf77e0cb80244c7d253a6ab396da91ead9b624ae7e53e03fba409507cc029ae8e" +
                               "a874da063a8c86c92fcc00055951e6c9c2e5adaad2e1ba02c044683691e2d60e6ee4a43d73f78a" +
                               "fb026eba")]
+#else
+[assembly: InternalsVisibleTo("WebApplications.Testing.Test")]
+#endif

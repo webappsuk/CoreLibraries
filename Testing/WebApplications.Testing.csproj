@@ -28,9 +28,10 @@
     <Prefer32Bit>false</Prefer32Bit>
     <DocumentationFile>bin\WebApplications.Testing.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">true</SignAssembly>
-    <AssemblyOriginatorKeyFile Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">$(SolutionDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
+  <PropertyGroup Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
+    <DefineConstants>SIGNED</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
