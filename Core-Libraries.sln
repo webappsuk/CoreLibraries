@@ -25,9 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Test", "Utilities\WebApplications.Utilities.Test\WebApplications.Utilities.Test.csproj", "{AAC22B8B-D633-4EE5-B1EA-915F0C9BCB46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.PowerShell", "Utilities\WebApplications.Utilities.PowerShell\WebApplications.Utilities.PowerShell.csproj", "{FDF4F262-B182-49DB-9A39-6D487EA058FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.PowerShell", "PowerShell\WebApplications.Utilities.PowerShell.csproj", "{FDF4F262-B182-49DB-9A39-6D487EA058FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.PowerShell.Test", "Utilities\WebApplications.Utilities.PowerShell\WebApplications.Utilities.PowerShell.Test\WebApplications.Utilities.PowerShell.Test.csproj", "{4C7FAC1D-4B3B-4191-9D52-BEA7E91AB39A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.PowerShell.Test", "PowerShell\WebApplications.Utilities.PowerShell.Test\WebApplications.Utilities.PowerShell.Test.csproj", "{4C7FAC1D-4B3B-4191-9D52-BEA7E91AB39A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Cryptography", "Cryptography\WebApplications.Utilities.Cryptography.csproj", "{3740397C-1956-4D6E-80F3-D67DFD4EE4EB}"
 EndProject
@@ -54,6 +54,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.I
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Performance", "Performance\WebApplications.Utilities.Performance.csproj", "{04220E31-53F6-453F-80C5-0E2D49776D36}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6F2B5D7A-E8B7-4820-9C39-30F722B0DB01} = {6F2B5D7A-E8B7-4820-9C39-30F722B0DB01}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Performance.Test", "Performance\WebApplications.Utilities.Performance.Test\WebApplications.Utilities.Performance.Test.csproj", "{2A45DCFA-A60C-4AE6-80E8-18D62D04E438}"
 EndProject
