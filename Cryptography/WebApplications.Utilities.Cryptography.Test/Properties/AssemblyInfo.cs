@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,8 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Cryptography.Test")]
 [assembly: AssemblyDescription("Tests for tools for hashing, encoding/decoding and encrypting/decrypting data.")]
-[assembly: ComVisible(false)]
 [assembly: Guid("5fd34299-6746-42c3-b9c7-fc59e1813e35")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("5.0.*")]
-[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

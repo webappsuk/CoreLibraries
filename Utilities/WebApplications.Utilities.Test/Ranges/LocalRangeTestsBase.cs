@@ -26,12 +26,12 @@
 #endregion
 
 using System;
-using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
 using WebApplications.Testing;
+using WebApplications.Utilities.Annotations;
 
-namespace WebApplications.Utilities.Scheduling.Test.Ranges
+namespace WebApplications.Utilities.Test.Ranges
 {
     public class LocalRangeTestsBase
     {

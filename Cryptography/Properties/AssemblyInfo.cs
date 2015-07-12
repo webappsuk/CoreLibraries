@@ -27,17 +27,8 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Cryptography")]
 [assembly: AssemblyDescription("Tools for hashing, encoding/decoding and encrypting/decrypting data.")]
-[assembly: ComVisible(false)]
 [assembly: Guid("01dfd1b5-9d24-4c4c-849b-4ff93325348a")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("5.1.*")]
-[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

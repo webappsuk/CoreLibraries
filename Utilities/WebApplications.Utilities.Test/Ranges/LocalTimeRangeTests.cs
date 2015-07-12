@@ -26,17 +26,15 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using WebApplications.Utilities.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
-using WebApplications.Testing;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Ranges;
 
-namespace WebApplications.Utilities.Scheduling.Test.Ranges
+namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
     public class LocalTimeRangeTests : LocalRangeTestsBase

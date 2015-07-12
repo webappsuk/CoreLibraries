@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,8 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("TestService")]
 [assembly: AssemblyDescription("A test service.")]
 [assembly: Guid("249e3a84-7faf-4fc2-9462-e4e54a26dd3b")]
-[assembly: ComVisible(false)]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Service Utilities Tests")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2014")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("5.0.*")]
-[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

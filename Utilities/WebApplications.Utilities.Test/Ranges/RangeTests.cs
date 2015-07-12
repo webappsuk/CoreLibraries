@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ namespace WebApplications.Utilities.Test.Ranges
         }
 
         [TestMethod]
-        [ExpectedException(typeof (TypeInitializationException))]
+        [ExpectedException(typeof(TypeInitializationException))]
         public void Range_IncompatibleTypes_ThrowsTypeInitializationException()
         {
             int start = Random.Next(int.MinValue / 2, int.MaxValue / 2);

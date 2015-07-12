@@ -32,7 +32,7 @@ namespace WebApplications.Utilities.Ranges
     /// <summary>
     ///   A range of <see cref="System.DateTime">DateTime</see>s.
     /// </summary>
-    public class DateTimeRange : Range<DateTime, TimeSpan>
+    public class DateTimeRange : Range<DateTime, TimeSpan>, IFormattable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeRange"/> class using the specified start date and end date.
@@ -73,6 +73,23 @@ namespace WebApplications.Utilities.Ranges
         public override string ToString()
         {
             return string.Format("{0} - {1}", Start, End);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            return string.Format(
+                formatProvider,
+                "{0} - {1}",
+                Start.ToString(format, formatProvider),
+                End.ToString(format, formatProvider));
         }
     }
 }

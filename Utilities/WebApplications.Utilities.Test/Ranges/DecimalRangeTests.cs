@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Test.Ranges
                 maximum /= 10;
                 minimum /= 10;
             }
-            return (resized ? 10M : 1M) * (minimum + (decimal) (Random.NextDouble() * (double) (maximum - minimum)));
+            return (resized ? 10M : 1M) * (minimum + (decimal)(Random.NextDouble() * (double)(maximum - minimum)));
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace WebApplications.Utilities.Test.Ranges
         private Tuple<decimal, decimal> RestrictedRandomRange()
         {
             // start by picking an order of magnitude to work on
-            decimal magnitude = 1M / (decimal) Math.Pow(10, Random.Next(0, 24));
+            decimal magnitude = 1M / (decimal)Math.Pow(10, Random.Next(0, 24));
             // pick sizes for the length and starting value which can later be scaled up to the magnitude chosen
             decimal length = RandomDecimal(0, decimal.MaxValue);
             decimal start = RandomDecimal(decimal.MinValue, decimal.MaxValue - length);
@@ -135,7 +135,7 @@ namespace WebApplications.Utilities.Test.Ranges
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentOutOfRangeException))]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DecimalRange_EndBeforeStart_ThrowsArgumentOutOfRangeException()
         {
             decimal start = RandomDecimal(decimal.MinValue / 2, decimal.MaxValue);
@@ -175,7 +175,7 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = rangeParams.Item2;
             decimal end = start + length;
             // pick a power of ten for the number of steps as decimal uses base 10 for the floating point
-            decimal step = length / (decimal) Math.Pow(10, rand.Next(2, 5));
+            decimal step = length / (decimal)Math.Pow(10, rand.Next(2, 5));
 
             //ensure that step size is a factor of the length of the range
             start += length % step;
@@ -206,12 +206,12 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = rangeParams.Item2;
             decimal end = start + length;
             // note that the number of steps is limited to 1000 or fewer
-            decimal step = length / (decimal) (rand.Next(4, 1000) + (rand.NextDouble() * 0.8 + 0.1));
+            decimal step = length / (decimal)(rand.Next(4, 1000) + (rand.NextDouble() * 0.8 + 0.1));
 
             //ensure that step size is not a factor of the length of the range
             if (length % step == 0)
             {
-                decimal offset = (decimal) (rand.NextDouble() * 0.8 + 0.1) * step;
+                decimal offset = (decimal)(rand.NextDouble() * 0.8 + 0.1) * step;
                 start += offset;
                 length += offset;
             }
@@ -233,7 +233,7 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal start = rangeParams.Item1;
             decimal length = rangeParams.Item2;
             decimal end = start + length;
-            decimal step = length * (decimal) (2 - rand.NextDouble());
+            decimal step = length * (decimal)(2 - rand.NextDouble());
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
@@ -265,9 +265,9 @@ namespace WebApplications.Utilities.Test.Ranges
             {
                 if (previous.HasValue)
                     Assert.AreEqual(
-                        (double) (i - previous.Value),
-                        (double) step,
-                        (double) step * 1e-6,
+                        (double)(i - previous.Value),
+                        (double)step,
+                        (double)step * 1e-6,
                         "Difference between iteration values should match the step value supplied to within one millionth");
                 previous = i;
             }

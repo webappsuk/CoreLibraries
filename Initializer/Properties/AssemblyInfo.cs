@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,5 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Initializer")]
 [assembly: AssemblyDescription("Allows calling of a static method during module initialization.")]
-[assembly: ComVisible(false)]
 [assembly: Guid("2cfc4de7-3f32-4b6f-a6be-055de8602479")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("5.1.*")]

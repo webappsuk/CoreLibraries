@@ -28,7 +28,12 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: Guid("d9ba8246-cb63-4393-bf94-5b9baac526b7")]
-[assembly: AssemblyTitle("WebApplications.Utilities.Service")]
-[assembly: AssemblyDescription("Supports communication with a service using named pipes.")]
-[assembly: AssemblyProduct("Web Applications Service Utilities")]
+[assembly: ComVisible(false)]
+[assembly: AssemblyConfiguration("Release")]
+[assembly: AssemblyCompany("Web Applications UK Ltd")]
+[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2015")]
+[assembly: AssemblyTrademark("Web Applications")]
+[assembly: AssemblyVersion("5.2.*")]
+#if Utilities
+[assembly: WebApplications.Utilities.AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]
+#endif

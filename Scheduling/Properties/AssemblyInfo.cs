@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,8 @@
 // associated with an assembly.
 using System.Reflection;
 using System.Runtime.InteropServices;
-using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Scheduling")]
 [assembly: AssemblyDescription("Provides scheduling tools.")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2011")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
 [assembly: Guid("f84b9a91-528e-4f3c-88d3-d824513cb79b")]
-[assembly: AssemblyVersion("5.1.*")]
-[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

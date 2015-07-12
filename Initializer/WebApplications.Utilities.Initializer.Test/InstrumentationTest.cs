@@ -151,6 +151,7 @@ namespace WebApplications.Utilities.Initializer.Test
                     // Go up a directory
                     solutionDirectory = Path.GetDirectoryName(solutionDirectory);
                 }
+                if (!solutionDirectory.EndsWith("\\")) solutionDirectory += "\\";
 
                 Assert.AreNotEqual(root, solutionDirectory,
                                    "Could not find solution directory for '{0}' project - reached root '{1}'",

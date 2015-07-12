@@ -27,17 +27,10 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Database")]
 [assembly: AssemblyDescription("Database tools for interacting between .NET and Databases.")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
 [assembly: Guid("0288162d-5a24-46b9-8500-f352c0e4b182")]
 /*[assembly: ToString(AttributeTargetTypes = "WebApplications.*", AttributePriority = 1)]
 [assembly:
@@ -50,6 +43,3 @@ using WebApplications.Utilities;
         ToString(AttributeTargetTypes = "WebApplications.Utilities.Database.DatabaseObjectAttribute",
                 AttributePriority = 2, AttributeExclude = true)]
  */
-
-[assembly: AssemblyVersion("5.1.*")]
-[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

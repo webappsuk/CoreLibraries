@@ -31,15 +31,8 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("WebApplications.Testing")]
 [assembly: AssemblyDescription("Standard Web Applications .NET testing utilities.")]
-[assembly: ComVisible(false)]
 [assembly: Guid("d62c1e9f-6857-4be9-b1ce-3ea218c90e7d")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Testing")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2015")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("5.1.*")]
 #if SIGNED
 [assembly: InternalsVisibleTo("WebApplications.Testing.Test, PublicKey=" +
                               "002400000480000094000000060200000024000052534131000400000100010009234d0a978c01" +

@@ -34,7 +34,7 @@ namespace WebApplications.Utilities.Ranges
     ///   A range of <see cref="DateTime">date</see> values with the time component ignored.
     /// </summary>
     [PublicAPI]
-    public class DateRange : Range<DateTime, TimeSpan>
+    public class DateRange : Range<DateTime, TimeSpan>, IFormattable
     {
         /// <summary>
         ///   Initializes a new instance of the <see cref="DateRange"/> class using the specified start date and duration.
@@ -106,12 +106,33 @@ namespace WebApplications.Utilities.Ranges
         public override string ToString()
         {
             return string.Format(
-                "{0:dd/MM/yyyy} - {1:dd/MM/yyyy} [{2}]",
+                "{0:d} - {1:d} [{2}]",
                 Start,
                 End,
                 Days == 1
                     ? string.Format("{0} day", Days)
                     : string.Format("{0} days", Days)
+                );
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            return string.Format(
+                formatProvider,
+                "{0} - {1} [{2}]",
+                Start.ToString(format, formatProvider),
+                End.ToString(format, formatProvider),
+                Days == 1
+                    ? string.Format(formatProvider, "{0} day", Days)
+                    : string.Format(formatProvider, "{0} days", Days)
                 );
         }
     }

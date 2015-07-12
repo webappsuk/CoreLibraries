@@ -25,10 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using WebApplications.Utilities.Annotations;
 using NodaTime;
+using WebApplications.Utilities.Annotations;
 
-namespace WebApplications.Utilities.Scheduling.Test.Ranges
+namespace WebApplications.Utilities.Test.Ranges
 {
     public static class LocalHelpers
     {

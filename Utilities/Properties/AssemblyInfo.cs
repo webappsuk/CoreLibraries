@@ -27,17 +27,8 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using WebApplications.Utilities;
 
+[assembly: AssemblyProduct("Web Applications Utilities")]
 [assembly: AssemblyTitle("WebApplications.Utilities")]
 [assembly: AssemblyDescription("Standard Web Applications .NET Utilities")]
-[assembly: ComVisible(false)]
 [assembly: Guid("da7945d9-327e-4783-9e05-853dfc2cf45e")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Web Applications UK Ltd")]
-[assembly: AssemblyProduct("Web Applications Utilities")]
-[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2015")]
-[assembly: AssemblyTrademark("Web Applications")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("5.1.*")]
-[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

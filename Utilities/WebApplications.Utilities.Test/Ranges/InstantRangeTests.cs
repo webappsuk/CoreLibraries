@@ -34,7 +34,7 @@ using NodaTime;
 using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
-namespace WebApplications.Utilities.Scheduling.Test.Ranges
+namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
     public class InstantRangeTests
