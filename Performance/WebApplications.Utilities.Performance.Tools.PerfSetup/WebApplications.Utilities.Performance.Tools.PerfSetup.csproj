@@ -2,67 +2,62 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{6F2B5D7A-E8B7-4820-9C39-30F722B0DB01}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebApplications.Utilities.Performance.Tools.PerfSetup</RootNamespace>
     <AssemblyName>PerfSetup</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
+    <CustomPlatforms>true</CustomPlatforms>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">true</SignAssembly>
-    <AssemblyOriginatorKeyFile Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">$(SolutionDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Debug\</MergedOutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <Prefer32Bit>true</Prefer32Bit>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <MergedOutputFile>$(MergedOutputPath)PerfSetup32.exe</MergedOutputFile>
+    <MergedOutputFileName>PerfSetup32.exe</MergedOutputFileName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Release\</MergedOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
+    <Prefer32Bit>true</Prefer32Bit>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <MergedOutputFile>$(MergedOutputPath)PerfSetup32.exe</MergedOutputFile>
-    <DocumentationFile>bin\x86\Release\PerfSetup.XML</DocumentationFile>
+    <MergedOutputFileName>PerfSetup32.exe</MergedOutputFileName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
-    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Debug\</MergedOutputPath>
+    <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <MergedOutputFile>$(MergedOutputPath)PerfSetup64.exe</MergedOutputFile>
+    <ErrorReport>prompt</ErrorReport>
+    <MergedOutputFileName>PerfSetup64.exe</MergedOutputFileName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Release\</MergedOutputPath>
-    <MergedOutputFile>$(MergedOutputPath)PerfSetup64.exe</MergedOutputFile>
-    <DocumentationFile>bin\x64\Release\PerfSetup.XML</DocumentationFile>
+    <ErrorReport>prompt</ErrorReport>
+    <MergedOutputFileName>PerfSetup64.exe</MergedOutputFileName>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
+    <MergedOutputPath>$(OutputPath)\Merged</MergedOutputPath>
+    <MergedOutputFile>$(MergedOutputPath)$(MergedOutputFileName)</MergedOutputFile>
+    <DocumentationFile>bin\$(Configuration)\$(Platform)\$(MergedOutputFileName).xml</DocumentationFile>
+    <SignFilePath>$(MergedOutputFile)</SignFilePath>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>
     <Reference Include="CmdLine">
       <HintPath>$(SolutionDir)packages\CmdLine.1.0.7.509\lib\net40-Client\CmdLine.dll</HintPath>
@@ -118,16 +113,10 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <Import Project="$(SolutionDir).nuget\nuget.targets" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <ILMergeBuildTask>$(SolutionDir)bin\ILMerge.Build.Task.dll</ILMergeBuildTask>
   </PropertyGroup>
   <Import Project="$(SolutionDir)ILMerge\ILMerge.targets" />
-  <PropertyGroup>
-    <SignFilePath>$(MergedOutputFile)</SignFilePath>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SolutionDir)..\WebApplicationsSignature.targets') AND '$(Configuration)' == 'Release'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -157,12 +146,5 @@
   </ItemGroup>
   <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
     <Copy SourceFiles="$(MergedOutputFile)" DestinationFolder="$(SolutionDir)bin" />
-  </Target>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
 </Project>

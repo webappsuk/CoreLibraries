@@ -12,27 +12,28 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <SolutionDir Condition="!HasTrailingSlash('$(SolutionDir)')">$(SolutionDir)\</SolutionDir>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  
+  <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(CustomPlatforms)' != 'true'">
     <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
     <DocumentationFile>bin\$(Configuration)\$(Platform)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
@@ -44,7 +45,7 @@
   <PropertyGroup Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">
     <SignAssembly Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">true</SignAssembly>
     <AssemblyOriginatorKeyFile Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">$(SolutionDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>TRACE;SIGNED</DefineConstants>
+    <DefineConstants>TRACE;SIGNED;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

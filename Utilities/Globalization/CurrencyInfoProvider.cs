@@ -38,7 +38,6 @@ using WebApplications.Utilities.IO;
 #if !BUILD_TASKS
 using System.Net;
 using WebApplications.Utilities.Configuration;
-
 #endif
 
 namespace WebApplications.Utilities.Globalization
