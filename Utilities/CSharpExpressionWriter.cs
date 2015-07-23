@@ -308,6 +308,31 @@ namespace WebApplications.Utilities
                 if (type != null)
                     AddType(type);
 
+                MethodInfo method = node.Value as MethodInfo;
+                if (method == null)
+                {
+                    Delegate @delegate = node.Value as Delegate;
+                    if (@delegate != null)
+                    {
+                        if (@delegate.Target != null)
+                            AddType(@delegate.Target.GetType());
+
+                        method = @delegate.Method;
+                    }
+                }
+
+                if (method != null)
+                {
+                    if (method.DeclaringType != null) // ReSharper disable once AssignNullToNotNullAttribute
+                        AddType(method.DeclaringType);
+
+                    AddTypes(method.GetGenericArguments());
+                }
+
+                LambdaExpression lambda = node.Value as LambdaExpression;
+                if (lambda != null)
+                    Visit(lambda);
+
                 return base.VisitConstant(node);
             }
 
@@ -1334,7 +1359,38 @@ namespace WebApplications.Utilities
         /// </returns>
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
-            // TODO Allow this to output inline lambdas
+            // If the lambda does not have a name, is not a block, and all the parameters are not byref, output the lambda inline
+            if (node.Name == null &&
+                !(node.Body is BlockExpression) &&
+                // ReSharper disable once PossibleNullReferenceException
+                node.Parameters.All(p => !p.IsByRef))
+            {
+                if (node.Parameters.Count == 1)
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    Out(GetParameterName(node.Parameters.First()));
+                }
+                else
+                {
+                    Out("(");
+                    bool first = true;
+                    foreach (ParameterExpression parameter in node.Parameters)
+                    {
+                        Debug.Assert(parameter != null);
+                        if (first) first = false;
+                        else Out(", ");
+
+                        Out(GetParameterName(parameter));
+                    }
+                    Out(")");
+                }
+
+                Out(" => ");
+
+                Visit(node.Body);
+
+                return node;
+            }
 
             bool isRoot = _lambdaIsRoot;
             StringBuilder builder = _builder;
@@ -1391,6 +1447,8 @@ namespace WebApplications.Utilities
             }
             else if (!isRoot)
                 Out(name);
+
+            _lambdaIsRoot = isRoot;
 
             return node;
         }
@@ -1570,6 +1628,37 @@ namespace WebApplications.Utilities
                         Out("out ");
                     else if (parameter.ParameterType.IsByRef)
                         Out("ref ");
+                    else if (i == args.Count - 1 &&
+                             parameter.ParameterType.IsArray &&
+                             parameter.GetCustomAttribute<ParamArrayAttribute>() != null)
+                    {
+                        NewArrayExpression arrayExp = args[i] as NewArrayExpression;
+                        ConstantExpression constExp;
+                        if (arrayExp != null)
+                        {
+                            if (arrayExp.NodeType == ExpressionType.NewArrayInit)
+                            {
+                                args = arrayExp.Expressions;
+                                parameters = Array<ParameterInfo>.Empty;
+                                first = true;
+                                i = -1;
+                                continue;
+                            }
+                        }
+                        else if ((constExp = args[i] as ConstantExpression) != null && constExp.Value != null)
+                        {
+                            Array array = (Array)constExp.Value;
+                            List<Expression> arrayExps = new List<Expression>();
+                            for (int j = array.GetLowerBound(0); j <= array.GetUpperBound(0); j++)
+                                arrayExps.Add(Expression.Constant(array.GetValue(j)));
+
+                            args = arrayExps;
+                            parameters = Array<ParameterInfo>.Empty;
+                            first = true;
+                            i = -1;
+                            continue;
+                        }
+                    }
                 }
 
                 Visit(args[i]);
@@ -1577,7 +1666,7 @@ namespace WebApplications.Utilities
 
             Out(closeBracket);
         }
-
+        
         /// <summary>
         /// Visits the children of the <see cref="T:System.Linq.Expressions.NewArrayExpression" />.
         /// </summary>
@@ -2241,6 +2330,8 @@ namespace WebApplications.Utilities
                     ? "(" + enumName + ")" + (i < 0 ? "(" + val + ")" : val)
                     : enumName + "." + val.Replace(", ", " | " + enumName + ".");
             }
+            if (type.DescendsFrom<LambdaExpression>()) return ConstantString((LambdaExpression)value, type);
+            if (type.DescendsFrom<Delegate>()) return ConstantString((Delegate)value, type);
 
             string str = value.ToString();
 
@@ -2250,6 +2341,110 @@ namespace WebApplications.Utilities
                 str = "...";
 
             return string.Format("constant<{0}>({1})", GetTypeName(type), str);
+        }
+
+        /// <summary>
+        /// Gets the constant string for a <see cref="LambdaExpression" />.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        [NotNull]
+        private string ConstantString([NotNull] LambdaExpression node, [NotNull] Type type)
+        {
+            // If the lambda does not have a name, is not a block, and all the parameters are not byref, output the lambda inline
+            if (node.Name == null &&
+                !(node.Body is BlockExpression) &&
+                // ReSharper disable once PossibleNullReferenceException
+                node.Parameters.All(p => !p.IsByRef))
+            {
+                bool isRoot = _lambdaIsRoot;
+                StringBuilder builder = _builder;
+                _builder = new StringBuilder();
+                int indent = _indent;
+                _lambdaIsRoot = false;
+
+                if (node.Parameters.Count == 1)
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    Out(GetParameterName(node.Parameters.First()));
+                }
+                else
+                {
+                    Out("(");
+                    bool first = true;
+                    foreach (ParameterExpression parameter in node.Parameters)
+                    {
+                        Debug.Assert(parameter != null);
+                        if (first) first = false;
+                        else Out(", ");
+
+                        Out(GetParameterName(parameter));
+                    }
+                    Out(")");
+                }
+
+                Out(" => ");
+
+                Visit(node.Body);
+
+                string lambda = _builder.ToString();
+
+                _builder = builder;
+                _indent = indent;
+                _newLine = false;
+                _lambdaIsRoot = isRoot;
+
+                return lambda;
+            }
+
+            // TODO Do something different here
+            return string.Format("constant<{0}>(...)", GetTypeName(type));
+        }
+
+        /// <summary>
+        /// Gets the constant string for a <see cref="Delegate" />.
+        /// </summary>
+        /// <param name="delegate">The delegate.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        [NotNull]
+        private string ConstantString([NotNull] Delegate @delegate, [NotNull] Type type)
+        {
+            if (@delegate.Method == null || @delegate.Method.DeclaringType == null)
+                return string.Format("constant<{0}>(...)", GetTypeName(type));
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("new ");
+            sb.Append(GetTypeName(type));
+            sb.Append("(");
+            if (@delegate.Target != null)
+                sb.Append(ConstantString(@delegate.Target));
+            else if (@delegate.Method.IsStatic)
+                sb.Append(GetTypeName(@delegate.Method.DeclaringType));
+            else
+                return string.Format("constant<{0}>(...)", GetTypeName(type));
+
+            sb.Append(".");
+            sb.Append(@delegate.Method.Name);
+
+            if (@delegate.Method.IsGenericMethod)
+            {
+                sb.Append("<");
+                bool first = true;
+                foreach (Type typeArg in @delegate.Method.GetGenericArguments())
+                {
+                    Debug.Assert(typeArg != null);
+                    if (first) first = false;
+                    else sb.Append(", ");
+                    sb.Append(GetTypeName(typeArg));
+                }
+                sb.Append(">");
+            }
+            sb.Append(")");
+
+            return sb.ToString();
         }
 
         /// <summary>
