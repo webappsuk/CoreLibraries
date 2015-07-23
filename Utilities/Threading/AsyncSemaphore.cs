@@ -40,6 +40,7 @@ namespace WebApplications.Utilities.Threading
     /// <remarks>
     /// http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266983.aspx
     /// </remarks>
+    [PublicAPI]
     public class AsyncSemaphore
     {
         [NotNull]
@@ -47,14 +48,56 @@ namespace WebApplications.Utilities.Threading
 
         private int _currentCount;
 
-        // TODO Add property to change this?
-        private readonly int _maxCount;
+        /// <summary>
+        /// Gets the current count.
+        /// </summary>
+        /// <value>
+        /// The current count.
+        /// </value>
+        public int CurrentCount
+        {
+            get { return _currentCount; }
+        }
+
+        private int _maxCount;
+
+        /// <summary>
+        /// Gets or sets the maximum count.
+        /// </summary>
+        /// <value>
+        /// The maximum count.
+        /// </value>
+        /// <exception cref="ArgumentOutOfRangeException">value</exception>
+        public int MaxCount
+        {
+            get { return _maxCount; }
+            set
+            {
+                if (value < 1) throw new ArgumentOutOfRangeException("value");
+                lock (_waiters)
+                {
+                    _maxCount = value;
+
+                    if (_currentCount >= _maxCount) return;
+                    if (_waiters.Count < 1) return;
+
+                    // If the max count was increased and there were waiters, let them continue
+
+                    while (_currentCount < _maxCount && _waiters.Count > 0)
+                    {
+                        // ReSharper disable once PossibleNullReferenceException
+                        while (!_waiters.Dequeue().TrySetResult(true)) { }
+                        _currentCount++;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncSemaphore" /> class.
         /// </summary>
         /// <param name="initialCount">The initial count.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">The count is less than one.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The count is less than one.</exception>
         public AsyncSemaphore(int initialCount = 1)
         {
             if (initialCount < 1) throw new ArgumentOutOfRangeException("initialCount");
