@@ -35,14 +35,8 @@ namespace WebApplications.Utilities.Threading
     /// <summary>
     /// Asynchronous lock making it easy to lock a region of code using the async/await syntax.
     /// </summary>
-    /// <remarks>
-    /// http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266988.aspx
-    /// </remarks>
     public class AsyncLock
     {
-        [NotNull]
-        private readonly Task<IDisposable> _releaser;
-
         [NotNull]
         private readonly AsyncSemaphore _semaphore;
 
@@ -52,8 +46,6 @@ namespace WebApplications.Utilities.Threading
         public AsyncLock()
         {
             _semaphore = new AsyncSemaphore();
-            // ReSharper disable once AssignNullToNotNullAttribute
-            _releaser = Task.FromResult((IDisposable)new Releaser(this));
         }
 
         /// <summary>
@@ -65,39 +57,7 @@ namespace WebApplications.Utilities.Threading
         [NotNull]
         public Task<IDisposable> LockAsync(CancellationToken token = default(CancellationToken))
         {
-            Task wait = _semaphore.WaitAsync(token);
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return wait.IsCompleted
-                ? _releaser
-                : wait.ContinueWith(
-                    (_, state) => (IDisposable)new Releaser((AsyncLock)state),
-                    this,
-                    token,
-                    TaskContinuationOptions.ExecuteSynchronously,
-                    TaskScheduler.Default);
+            return _semaphore.WaitAsync(token);
         }
-
-        #region Nested type: Releaser
-        /// <summary>
-        /// Releaser struct, used as disposable to allow releasing of lock on disposal.
-        /// </summary>
-        private struct Releaser : IDisposable
-        {
-            private readonly AsyncLock _toRelease;
-
-            internal Releaser(AsyncLock toRelease)
-            {
-                _toRelease = toRelease;
-            }
-
-            #region IDisposable Members
-            public void Dispose()
-            {
-                if (_toRelease != null)
-                    _toRelease._semaphore.Release();
-            }
-            #endregion
-        }
-        #endregion
     }
 }

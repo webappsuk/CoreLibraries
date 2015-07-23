@@ -27,6 +27,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
@@ -38,15 +40,20 @@ namespace WebApplications.Utilities.Threading
     /// number can enter a critical region at the same time
     /// </summary>
     /// <remarks>
-    /// http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266983.aspx
+    /// Originally based on http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266983.aspx
     /// </remarks>
     [PublicAPI]
     public class AsyncSemaphore
     {
         [NotNull]
-        private readonly Queue<TaskCompletionSource<bool>> _waiters = new Queue<TaskCompletionSource<bool>>();
+        private readonly Queue<TaskCompletionSource<IDisposable>> _waiters = new Queue<TaskCompletionSource<IDisposable>>();
 
         private int _currentCount;
+
+        private readonly IDisposable _releaser;
+
+        [NotNull]
+        private readonly Task<IDisposable> _releaserTask;
 
         /// <summary>
         /// Gets the current count.
@@ -83,10 +90,11 @@ namespace WebApplications.Utilities.Threading
 
                     // If the max count was increased and there were waiters, let them continue
 
-                    while (_currentCount < _maxCount && _waiters.Count > 0)
+                    while (_currentCount < _maxCount &&
+                           _waiters.Count > 0)
                     {
                         // ReSharper disable once PossibleNullReferenceException
-                        while (!_waiters.Dequeue().TrySetResult(true)) { }
+                        while (!_waiters.Dequeue().TrySetResult(_releaser)) { }
                         _currentCount++;
                     }
                 }
@@ -103,6 +111,9 @@ namespace WebApplications.Utilities.Threading
             if (initialCount < 1) throw new ArgumentOutOfRangeException("initialCount");
             _maxCount = initialCount;
             _currentCount = 0;
+            _releaser = new Releaser(this);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _releaserTask = Task.FromResult(_releaser);
         }
 
         /// <summary>
@@ -112,17 +123,17 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
         [NotNull]
-        public Task WaitAsync(CancellationToken token = default(CancellationToken))
+        public Task<IDisposable> WaitAsync(CancellationToken token = default(CancellationToken))
         {
             lock (_waiters)
             {
                 if (_currentCount < _maxCount)
                 {
                     ++_currentCount;
-                    return TaskResult.Completed;
+                    return _releaserTask;
                 }
 
-                TaskCompletionSource<bool> waiter = new TaskCompletionSource<bool>();
+                TaskCompletionSource<IDisposable> waiter = new TaskCompletionSource<IDisposable>();
                 token.Register(waiter.SetCanceled);
 
                 if (token.IsCancellationRequested) waiter.TrySetCanceled();
@@ -140,7 +151,7 @@ namespace WebApplications.Utilities.Threading
         {
             if (_currentCount == 0) return;
 
-            TaskCompletionSource<bool> toRelease;
+            TaskCompletionSource<IDisposable> toRelease;
             do
             {
                 toRelease = null;
@@ -152,8 +163,178 @@ namespace WebApplications.Utilities.Threading
                     else
                         --_currentCount;
                 }
-            } while (toRelease != null &&
-                     !toRelease.TrySetResult(true));
+            }
+            while (toRelease != null &&
+                   !toRelease.TrySetResult(_releaser));
+        }
+
+        /// <summary>
+        /// Waits on all the given semaphores.
+        /// </summary>
+        /// <param name="semaphores">The semaphores to wait on. Can contain null elements.</param>
+        /// <returns></returns>
+        /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
+        public static Task<IDisposable> WaitAllAsync([NotNull] params AsyncSemaphore[] semaphores)
+        {
+            return WaitAllAsync(default(CancellationToken), semaphores);
+        }
+
+        /// <summary>
+        /// Waits on all the given semaphores.
+        /// </summary>
+        /// <param name="token">The optional cancellation token.</param>
+        /// <param name="semaphores">The semaphores to wait on. Can contain null elements.</param>
+        /// <returns></returns>
+        /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
+        public static Task<IDisposable> WaitAllAsync(
+            CancellationToken token,
+            [NotNull] params AsyncSemaphore[] semaphores)
+        {
+            if (semaphores == null) throw new ArgumentNullException("semaphores");
+            token.ThrowIfCancellationRequested();
+
+            List<AsyncSemaphore> sems = new List<AsyncSemaphore>(semaphores.Length);
+            sems.AddRange(semaphores.Where(semaphore => semaphore != null));
+
+            if (sems.Count < 1) return AllReleaser.DefaultTask;
+            // ReSharper disable once PossibleNullReferenceException
+            if (sems.Count < 2) return sems[0].WaitAsync(token);
+
+            return WaitAllInternal(token, sems);
+        }
+
+        private static async Task<IDisposable> WaitAllInternal(
+            CancellationToken token,
+            [NotNull] List<AsyncSemaphore> semaphores)
+        {
+            AllReleaser releaser = new AllReleaser(semaphores.Count);
+            try
+            {
+                for (int i = 0; i < semaphores.Count; i++)
+                {
+                    AsyncSemaphore sem = semaphores[i];
+                    if (sem == null) continue;
+
+                    await sem.WaitAsync(token).ConfigureAwait(false);
+                    releaser.Semaphores[i] = sem;
+                }
+            }
+            catch
+            {
+                releaser.Dispose();
+                throw;
+            }
+
+            return releaser.IsDefault ? AllReleaser.Default : releaser;
+        }
+
+        /// <summary>
+        /// Used to release a single semaphore.
+        /// </summary>
+        private struct Releaser : IDisposable
+        {
+            private readonly AsyncSemaphore _semaphore;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Releaser"/> struct.
+            /// </summary>
+            /// <param name="semaphore">The semaphore.</param>
+            public Releaser(AsyncSemaphore semaphore)
+            {
+                _semaphore = semaphore;
+            }
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            public void Dispose()
+            {
+                if (_semaphore != null)
+                    _semaphore.Release();
+            }
+        }
+
+        /// <summary>
+        /// Used to release multiple semaphores that have been waited on by WaitAllAsync.
+        /// </summary>
+        private struct AllReleaser : IDisposable
+        {
+            /// <summary>
+            /// A default instance of the releaser that does nothing.
+            /// </summary>
+            public static readonly IDisposable Default = new AllReleaser();
+
+            /// <summary>
+            /// A task with the value <see cref="Default"/>.
+            /// </summary>
+            public static readonly Task<IDisposable> DefaultTask = Task.FromResult(Default);
+
+            private AsyncSemaphore[] _semaphores;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="AllReleaser"/> struct.
+            /// </summary>
+            /// <param name="count">The total possible number of semaphores.</param>
+            public AllReleaser(int count)
+            {
+                _semaphores = new AsyncSemaphore[count];
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether this instance is default.
+            /// </summary>
+            /// <value>
+            /// <see langword="true" /> if this instance is default; otherwise, <see langword="false" />.
+            /// </value>
+            public bool IsDefault
+            {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                get { return _semaphores == null; }
+            }
+
+            /// <summary>
+            /// Gets the semaphores to release.
+            /// </summary>
+            [NotNull]
+            public AsyncSemaphore[] Semaphores
+            {
+                get
+                {
+                    Debug.Assert(_semaphores != null);
+                    return _semaphores;
+                }
+            }
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            public void Dispose()
+            {
+                AsyncSemaphore[] semaphores = Interlocked.Exchange(ref _semaphores, null);
+                if (semaphores == null) return;
+
+                List<Exception> ex = null;
+
+                for (int i = 0; i < semaphores.Length; i++)
+                    try
+                    {
+                        AsyncSemaphore sem = Interlocked.Exchange(ref semaphores[i], null);
+                        if (sem != null)
+                            sem.Release();
+                    }
+                    catch (Exception e)
+                    {
+                        if (ex == null) ex = new List<Exception>();
+                        ex.Add(e);
+                    }
+
+                if (ex == null ||
+                    ex.Count < 1)
+                    return;
+                // ReSharper disable once AssignNullToNotNullAttribute
+                if (ex.Count < 2) ex[0].ReThrow();
+                throw new AggregateException(ex);
+            }
         }
     }
 }
