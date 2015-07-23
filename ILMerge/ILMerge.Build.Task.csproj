@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ILMerge.Build.Task</RootNamespace>
     <AssemblyName>ILMerge.Build.Task</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>
@@ -34,6 +34,6 @@
   </Target>
   -->
   <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)bin"/>
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)bin" />
   </Target>
 </Project>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{A98D210C-0884-4985-BC71-705B44F61CA9}</ProjectGuid>
@@ -6,7 +6,7 @@
     <RootNamespace>WebApplications.Utilities.Scheduling</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Scheduling</AssemblyName>
     <DefineConstants>Utilities</DefineConstants>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>

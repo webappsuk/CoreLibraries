@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Utilities</RootNamespace>
     <AssemblyName>WebApplications.Utilities</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DownloadTZDB>True</DownloadTZDB>

@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>WebApplications.Utilities.Performance.Tools.PerfSetup</RootNamespace>
     <AssemblyName>PerfSetup</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\..\</SolutionDir>
     <CustomPlatforms>true</CustomPlatforms>
   </PropertyGroup>
   <PropertyGroup>
@@ -52,7 +52,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
-    <MergedOutputPath>$(OutputPath)\Merged</MergedOutputPath>
+    <MergedOutputPath>$(OutputPath)\Merged\</MergedOutputPath>
     <MergedOutputFile>$(MergedOutputPath)$(MergedOutputFileName)</MergedOutputFile>
     <DocumentationFile>bin\$(Configuration)\$(Platform)\$(MergedOutputFileName).xml</DocumentationFile>
     <SignFilePath>$(MergedOutputFile)</SignFilePath>

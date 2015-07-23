@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Testing</RootNamespace>
     <AssemblyName>WebApplications.Testing</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\Common.proj" />
   <ItemGroup>

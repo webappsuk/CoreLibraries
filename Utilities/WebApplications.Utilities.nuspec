@@ -20,15 +20,10 @@
   <files>
     <file src="install.ps1" target="tools\install.ps1" />
     <file src="uninstall.ps1" target="tools\uninstall.ps1" />
-    <file src="signtool.exe" target="tools\signtool.exe" />
-    <file src="WebApplicationsSignature.targets" target="tools\WebApplicationsSignature.targets" />
-    <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
-    <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
-    <file src="WebApplications.Utilities.BuildTasks.dll" target="tools\WebApplications.Utilities.BuildTasks.dll" />
-    <file src="Publish.ps1" target="tools\Publish.ps1" />
+    <file src="..\bin\WebApplications.Utilities.BuildTasks.dll" target="tools\WebApplications.Utilities.BuildTasks.dll" />
     <file src="Commit.ps1" target="tools\Commit.ps1" />
     <file src="Utility.targets" target="tools\Utility.targets" />
-    <file src="bin\Release\Resources\*.*" target="tools\Resources" />
+    <file src="Resources\*.*" target="tools\Resources" />
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
   </files>

@@ -6,7 +6,7 @@
     <RootNamespace>WebApplications.Utilities.Database</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Database</AssemblyName>
     <DefineConstants>Utilities</DefineConstants>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>

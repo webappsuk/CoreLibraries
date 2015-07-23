@@ -7,7 +7,7 @@
     <RootNamespace>WebApplications.Utilities.BuildTasks</RootNamespace>
     <AssemblyName>WebApplications.Utilities.BuildTasks</AssemblyName>
     <DefineConstants>BUILD_TASKS</DefineConstants>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>
@@ -47,6 +47,6 @@
     </RootBinPath>
   </ItemGroup>
   <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
-    <Copy SourceFiles="$(TargetPath)" DestinationFiles="@(RootBinPath)"/>
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="@(RootBinPath)" />
   </Target>
 </Project>

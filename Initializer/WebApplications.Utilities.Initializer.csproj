@@ -5,7 +5,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Utilities.Initializer</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Initializer</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>
@@ -76,7 +76,7 @@
     </RootBinPath>
   </ItemGroup>
   <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
-    <Copy SourceFiles="$(MergedOutputFile)" DestinationFiles="@(RootBinPath)"/>
+    <Copy SourceFiles="$(MergedOutputFile)" DestinationFiles="@(RootBinPath)" />
   </Target>
 
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

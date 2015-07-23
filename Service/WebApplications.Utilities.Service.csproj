@@ -7,7 +7,7 @@
     <RootNamespace>WebApplications.Utilities.Service</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Service</AssemblyName>
     <DefineConstants>PerfSetup;Utilities</DefineConstants>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>
