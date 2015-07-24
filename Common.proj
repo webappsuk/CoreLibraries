@@ -32,6 +32,19 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'NuGet'">
+    <BuildPackage>true</BuildPackage>
+    <PackageOutputDir>$(SolutionDir)nugets</PackageOutputDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)' == 'NuGet' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(CustomPlatforms)' != 'true'">
     <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>

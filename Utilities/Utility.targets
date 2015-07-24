@@ -29,7 +29,7 @@
       Condition="'$(DownloadTZDB)'=='true'"/>
 
     <DownloadCurrencies
-      ISO4217Uri="http://www.currency-iso.org/dam/downloads/table_a1.xml"
+      ISO4217Uri="http://www.currency-iso.org/dam/downloads/lists/list_one.xml"
       OutputFilePath="$(ResourcesPath)iso4217.ccy"
       Merge="true"
       Condition="'$(DownloadISO4217)'=='true'"/>

@@ -23,7 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <MergedOutputFileName>PerfSetup32.exe</MergedOutputFileName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86' OR '$(Configuration)' == 'NuGet'">
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <Prefer32Bit>true</Prefer32Bit>
@@ -31,6 +31,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <MergedOutputFileName>PerfSetup32.exe</MergedOutputFileName>
+	<Platform>x86</Platform>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -134,7 +135,7 @@
     </ItemGroup>
     <MakeDir Directories="$(MergedOutputPath)" />
     <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(MergedOutputFile)" SnkFile="$(AssemblyOriginatorKeyFile)" TargetKind="Exe" ILMergeTool="$(ILMergeTools)" />
-    <MSBuild Condition="'$(Platform)' == 'x86'" Projects="$(MSBuildProjectFile)" Properties="Platform=x64;PlatFormTarget=x64" RunEachTargetSeparately="true" />
+    <MSBuild Condition="'$(Platform)' == 'x86'" Projects="$(MSBuildProjectFile)" Properties="Platform=x64;PlatFormTarget=x64;BuildProjectReferences=false" RunEachTargetSeparately="true" />
   </Target>
   <ItemGroup>
     <RootBinPath Include="$(SolutionDir)bin\PerfSetup32.exe">
