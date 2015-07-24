@@ -53,31 +53,45 @@ namespace WebApplications.Utilities.Database
         private readonly IReadOnlyCollection<Connection> _connections;
 
         /// <summary>
+        /// The ID of the database that this connection is in.
+        /// </summary>
+        [CanBeNull]
+        internal readonly string DatabaseId;
+
+        /// <summary>
+        /// The semaphore for controlling the maximum number of concurrent program executions for the databse this connection is in.
+        /// </summary>
+        [CanBeNull]
+        internal readonly AsyncSemaphore DatabaseSemaphore;
+
+        /// <summary>
+        /// The semaphore for controlling the maximum number of concurrent program executions for the connection.
+        /// </summary>
+        [CanBeNull]
+        internal readonly AsyncSemaphore ConnectionSemaphore;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
         /// This creates a load balanced connection with only one connection string.
         /// </summary>
         /// <param name="connectionString"><para>The connection string.</para>
         /// <para>This is given a weighting of 1.0.</para></param>
         /// <param name="weight">The weight.</param>
+        /// <param name="maxConcurrency">The the maximum number of concurrent program executions for the connection.</param>
         /// <exception cref="LoggingException"><paramref name="connectionString" /> is <see langword="null" />.</exception>
-        public LoadBalancedConnection([NotNull] string connectionString, double weight = 1D)
-            : this(new Connection(connectionString, weight).Yield())
+        public LoadBalancedConnection([NotNull] string connectionString, double weight = 1D, int maxConcurrency = -1)
+            : this(new Connection(connectionString, weight, maxConcurrency).Yield())
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="LoadBalancedConnection"/> class.
-        ///   This creates an evenly balanced set of connections.
+        /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
+        /// This creates an evenly balanced set of connections.
         /// </summary>
-        /// <param name="connectionStrings">
-        ///   The connection strings, which all have a weighting of 1.0.
-        /// </param>
-        /// <exception cref="LoggingException">
-        ///   No connection strings specified in <paramref name="connectionStrings"/> or all strings were <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="connectionStrings"/> was <see langword="null"/>.
-        /// </exception>
+        /// <param name="connectionStrings">The connection strings, which all have a weighting of 1.0.</param>
+        /// <exception cref="System.ArgumentNullException">connectionStrings</exception>
+        /// <exception cref="LoggingException">No connection strings specified in <paramref name="connectionStrings" /> or all strings were <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="connectionStrings" /> was <see langword="null" />.</exception>
         public LoadBalancedConnection([NotNull] params string[] connectionStrings)
             : this(connectionStrings
                        .Where(cs => !string.IsNullOrWhiteSpace(cs))
@@ -91,11 +105,15 @@ namespace WebApplications.Utilities.Database
         /// Initializes a new instance of the <see cref="LoadBalancedConnection" /> class.
         /// This creates an evenly balanced set of connections.
         /// </summary>
-        public LoadBalancedConnection([NotNull] IEnumerable<string> connectionStrings)
+        /// <param name="connectionStrings">The connection strings.</param>
+        /// <param name="maxConcurrency">The the maximum number of concurrent program executions for the connection.</param>
+        /// <exception cref="System.ArgumentNullException">connectionStrings</exception>
+        public LoadBalancedConnection([NotNull] IEnumerable<string> connectionStrings, int maxConcurrency = -1)
             : this(connectionStrings
                        .Where(cs => !string.IsNullOrWhiteSpace(cs))
                        // ReSharper disable once AssignNullToNotNullAttribute
-                       .Select(cs => new Connection(cs)))
+                       .Select(cs => new Connection(cs)),
+                   maxConcurrency)
         {
             if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
         }
@@ -107,15 +125,48 @@ namespace WebApplications.Utilities.Database
         /// requesting a new connection.</para>
         /// <para>The connection can be given a unique id for lookup.</para>
         /// </summary>
-        public LoadBalancedConnection([NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings)
+        /// <param name="connectionStrings">The connection strings.</param>
+        /// <param name="maxConcurrency">The the maximum number of concurrent program executions for the connection.</param>
+        /// <exception cref="System.ArgumentNullException">connectionStrings</exception>
+        public LoadBalancedConnection(
+            [NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings,
+            int maxConcurrency = -1)
             // ReSharper disable once AssignNullToNotNullAttribute
             : this(connectionStrings
                        .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
                        // ReSharper disable AssignNullToNotNullAttribute
-                       .Select(kvp => new Connection(kvp.Key, kvp.Value)))
+                       .Select(kvp => new Connection(kvp.Key, kvp.Value)),
+                   maxConcurrency)
             // ReSharper restore AssignNullToNotNullAttribute
         {
             if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadBalancedConnection"/> class.
+        /// </summary>
+        /// <param name="databaseId">The database identifier.</param>
+        /// <param name="connectionId">The connection identifier.</param>
+        /// <param name="connectionStrings">The connection strings.</param>
+        /// <exception cref="System.ArgumentNullException">connectionStrings</exception>
+        internal LoadBalancedConnection(
+            [NotNull] string databaseId,
+            [NotNull] string connectionId,
+            [NotNull] IEnumerable<KeyValuePair<string, double>> connectionStrings)
+            // ReSharper disable once AssignNullToNotNullAttribute
+            : this(connectionStrings
+                       .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
+                       // ReSharper disable AssignNullToNotNullAttribute
+                       .Select(kvp => new Connection(databaseId, connectionId, kvp.Key, kvp.Value)))
+            // ReSharper restore AssignNullToNotNullAttribute
+        {
+            if (databaseId == null) throw new ArgumentNullException("databaseId");
+            if (connectionId == null) throw new ArgumentNullException("connectionId");
+            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
+
+            DatabaseId = databaseId;
+            DatabaseSemaphore = ConcurrencyController.GetDatabaseSemaphore(databaseId);
+            ConnectionSemaphore = ConcurrencyController.GetLoadBalancedConnectionSemaphore(databaseId, connectionId);
         }
 
         /// <summary>
@@ -135,11 +186,15 @@ namespace WebApplications.Utilities.Database
         /// <para>The connection can be given a unique id for lookup.</para>
         /// </summary>
         /// <param name="connections">The connections.</param>
+        /// <param name="maxConcurrency">The the maximum number of concurrent program executions for the connection.</param>
         /// <exception cref="WebApplications.Utilities.Logging.LoggingException">
         /// </exception>
-        public LoadBalancedConnection([NotNull] IEnumerable<Connection> connections)
+        public LoadBalancedConnection([NotNull] IEnumerable<Connection> connections, int maxConcurrency = -1)
         {
             if (connections == null) throw new ArgumentNullException("connections");
+
+            if (maxConcurrency > 0)
+                ConnectionSemaphore = new AsyncSemaphore(maxConcurrency);
 
             Dictionary<string, Connection> dictionary = new Dictionary<string, Connection>();
 

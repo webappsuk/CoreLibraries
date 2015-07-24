@@ -229,6 +229,12 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         private readonly CurrentMapping[] _connectionMappings;
 
+        /// <summary>
+        /// The semaphore for controlling the maximum number of concurrent executions of this program.
+        /// </summary>
+        [CanBeNull]
+        internal readonly AsyncSemaphore Semaphore;
+
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlProgram" /> class.
@@ -253,6 +259,8 @@ namespace WebApplications.Utilities.Database
 
             Name = name;
             Connection = connection;
+            if (connection.DatabaseId != null)
+                Semaphore = ConcurrencyController.GetProgramSemaphore(connection.DatabaseId, name);
 
             DefaultCommandTimeout = (defaultCommandTimeout == null || defaultCommandTimeout < TimeSpan.Zero)
                 ? TimeSpan.FromSeconds(30)
@@ -295,6 +303,7 @@ namespace WebApplications.Utilities.Database
 
             Connection = program.Connection;
             Name = program.Name;
+            Semaphore = program.Semaphore;
 
             // If we have no specific default command timeout set it to the existing one for the program.
             if (defaultCommandTimeout == null)

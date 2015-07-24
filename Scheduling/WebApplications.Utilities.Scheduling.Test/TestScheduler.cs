@@ -40,12 +40,24 @@ namespace WebApplications.Utilities.Scheduling.Test
     [TestClass]
     public class TestScheduler
     {
+        [AssemblyInitialize]
+        public static void AssemblyInit(TestContext context)
+        {
+            Duration tmp = Scheduler.DefaultMaximumDuration;
+        }
+
         [TestMethod]
         public void TestAddActionRuns()
         {
             bool ran = false;
+            
             Instant due = TimeHelpers.Clock.Now + Duration.FromMilliseconds(100);
+
+            Assert.IsTrue(due > TimeHelpers.Clock.Now);
+
             ScheduledAction action = Scheduler.Add(() => { ran = true; }, new OneOffSchedule(due));
+
+            Assert.IsTrue(due > TimeHelpers.Clock.Now);
 
             Assert.IsNotNull(action);
             Assert.IsTrue(action.Enabled);

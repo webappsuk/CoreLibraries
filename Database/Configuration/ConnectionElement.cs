@@ -85,5 +85,22 @@ namespace WebApplications.Utilities.Database.Configuration
             get { return GetProperty<double>("weight"); }
             set { SetProperty("weight", value); }
         }
+
+        /// <summary>
+        /// Gets or sets the maximum number of concurrent program executions that are allowed in the connection.
+        /// </summary>
+        /// <value>
+        /// The maximum concurrency.
+        /// </value>
+        /// <remarks>A negative value indicates no limit.</remarks>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        ///   The property is read-only or locked.
+        /// </exception>
+        [ConfigurationProperty("maxConcurrency", DefaultValue = -1, IsRequired = false)]
+        public int MaximumConcurrency
+        {
+            get { return GetProperty<int>("maxConcurrency"); }
+            set { SetProperty("maxConcurrency", value); }
+        }
     }
 }

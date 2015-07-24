@@ -36,6 +36,7 @@ using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
@@ -200,6 +201,22 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Waits the concurrency control semaphores.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        [NotNull]
+        private Task<IDisposable> WaitSemaphoresAsync(CancellationToken token = default(CancellationToken))
+        {
+            return AsyncSemaphore.WaitAllAsync(
+                token,
+                _program.Semaphore,
+                _mapping.Connection.Semaphore,
+                _program.Connection.ConnectionSemaphore,
+                _program.Connection.DatabaseSemaphore);
+        }
+
+        /// <summary>
         ///   Executes the query and returns the first column of the first row in the result set returned by the query.
         ///   Any additional columns or rows are ignored.
         /// </summary>
@@ -225,6 +242,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
+                using (WaitSemaphoresAsync().Result)
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
@@ -266,6 +284,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
+                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable once PossibleNullReferenceException
@@ -303,6 +322,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
+                using (WaitSemaphoresAsync().Result)
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
@@ -341,6 +361,7 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
+                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable once PossibleNullReferenceException
@@ -389,6 +410,7 @@ namespace WebApplications.Utilities.Database
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             try
             {
+                using (WaitSemaphoresAsync().Result)
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
@@ -436,6 +458,7 @@ namespace WebApplications.Utilities.Database
 
             try
             {
+                using (WaitSemaphoresAsync().Result)
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
@@ -485,6 +508,7 @@ namespace WebApplications.Utilities.Database
 
             try
             {
+                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException
@@ -539,6 +563,7 @@ namespace WebApplications.Utilities.Database
 
             try
             {
+                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException
@@ -588,6 +613,7 @@ namespace WebApplications.Utilities.Database
 
             try
             {
+                using (WaitSemaphoresAsync().Result)
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
@@ -632,6 +658,7 @@ namespace WebApplications.Utilities.Database
 
             try
             {
+                using (WaitSemaphoresAsync().Result)
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     connection.Open();
@@ -678,6 +705,7 @@ namespace WebApplications.Utilities.Database
 
             try
             {
+                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException
@@ -729,6 +757,7 @@ namespace WebApplications.Utilities.Database
 
             try
             {
+                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
                 using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
                 {
                     // ReSharper disable PossibleNullReferenceException

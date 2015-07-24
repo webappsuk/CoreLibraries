@@ -80,6 +80,23 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
+        /// Gets or sets the maximum number of concurrent program executions that are allowed in the database.
+        /// </summary>
+        /// <value>
+        /// The maximum concurrency.
+        /// </value>
+        /// <remarks>A negative value indicates no limit.</remarks>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        ///   The property is read-only or locked.
+        /// </exception>
+        [ConfigurationProperty("maxConcurrency", DefaultValue = -1, IsRequired = false)]
+        public int MaximumConcurrency
+        {
+            get { return GetProperty<int>("maxConcurrency"); }
+            set { SetProperty("maxConcurrency", value); }
+        }
+
+        /// <summary>
         ///   Gets or sets the connections for this database.
         /// </summary>
         /// <value>The connections.</value>
@@ -92,8 +109,13 @@ namespace WebApplications.Utilities.Database.Configuration
         [ItemNotNull]
         public LoadBalancedConnectionCollection Connections
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<LoadBalancedConnectionCollection>("connections"); }
+            get
+            {
+                LoadBalancedConnectionCollection connections = GetProperty<LoadBalancedConnectionCollection>("connections");
+                Debug.Assert(connections != null);
+                connections.Database = this;
+                return connections;
+            }
             set { SetProperty("connections", value); }
         }
 
@@ -127,7 +149,7 @@ namespace WebApplications.Utilities.Database.Configuration
         protected override void InitializeDefault()
         {
             // ReSharper disable ConstantNullCoalescingCondition
-            Connections = Connections ?? new LoadBalancedConnectionCollection();
+            Connections = Connections ?? new LoadBalancedConnectionCollection { Database = this };
             Programs = Programs ?? new ProgramCollection();
             // ReSharper restore ConstantNullCoalescingCondition
 

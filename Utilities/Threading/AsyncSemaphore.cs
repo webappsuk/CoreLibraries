@@ -174,6 +174,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="semaphores">The semaphores to wait on. Can contain null elements.</param>
         /// <returns></returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
+        [NotNull]
         public static Task<IDisposable> WaitAllAsync([NotNull] params AsyncSemaphore[] semaphores)
         {
             return WaitAllAsync(default(CancellationToken), semaphores);
@@ -186,6 +187,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="semaphores">The semaphores to wait on. Can contain null elements.</param>
         /// <returns></returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
+        [NotNull]
         public static Task<IDisposable> WaitAllAsync(
             CancellationToken token,
             [NotNull] params AsyncSemaphore[] semaphores)
@@ -203,6 +205,7 @@ namespace WebApplications.Utilities.Threading
             return WaitAllInternal(token, sems);
         }
 
+        [NotNull]
         private static async Task<IDisposable> WaitAllInternal(
             CancellationToken token,
             [NotNull] List<AsyncSemaphore> semaphores)
@@ -267,6 +270,8 @@ namespace WebApplications.Utilities.Threading
             /// <summary>
             /// A task with the value <see cref="Default"/>.
             /// </summary>
+            [NotNull]
+            // ReSharper disable once AssignNullToNotNullAttribute
             public static readonly Task<IDisposable> DefaultTask = Task.FromResult(Default);
 
             private AsyncSemaphore[] _semaphores;

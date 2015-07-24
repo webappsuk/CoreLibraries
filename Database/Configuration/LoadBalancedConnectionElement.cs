@@ -45,6 +45,8 @@ namespace WebApplications.Utilities.Database.Configuration
     [PublicAPI]
     public class LoadBalancedConnectionElement : ConfigurationElement
     {
+        internal DatabaseElement Database;
+
         /// <summary>
         ///   Gets or sets the identifier for a load balanced connection.
         /// </summary>
@@ -91,6 +93,23 @@ namespace WebApplications.Utilities.Database.Configuration
         {
             get { return GetProperty<bool>("enabled"); }
             set { SetProperty("enabled", value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum number of concurrent program executions that are allowed in the connection.
+        /// </summary>
+        /// <value>
+        /// The maximum concurrency.
+        /// </value>
+        /// <remarks>A negative value indicates no limit.</remarks>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        ///   The property is read-only or locked.
+        /// </exception>
+        [ConfigurationProperty("maxConcurrency", DefaultValue = -1, IsRequired = false)]
+        public int MaximumConcurrency
+        {
+            get { return GetProperty<int>("maxConcurrency"); }
+            set { SetProperty("maxConcurrency", value); }
         }
 
         /// <summary>
@@ -164,8 +183,10 @@ namespace WebApplications.Utilities.Database.Configuration
                 .ToArray();
 
             if (connections.Length < 1) return TaskResult<LoadBalancedConnection>.Default;
-
-            LoadBalancedConnection connection = new LoadBalancedConnection(connections);
+            
+            LoadBalancedConnection connection = Database == null
+                ? new LoadBalancedConnection(connections)
+                : new LoadBalancedConnection(Database.Id, Id, connections);
 
             // ReSharper disable once AssignNullToNotNullAttribute
             if (ensureIdentical == false ||

@@ -44,6 +44,11 @@ namespace WebApplications.Utilities.Database.Configuration
     [PublicAPI]
     public partial class DatabasesConfiguration : ConfigurationSection<DatabasesConfiguration>
     {
+        static DatabasesConfiguration()
+        {
+            Changed += ConcurrencyController.OnConfigChanged;
+        }
+
         /// <summary>
         ///   Gets or sets the databases within the configuration section.
         /// </summary>

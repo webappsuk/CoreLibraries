@@ -175,6 +175,23 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
+        /// Gets or sets the maximum number of concurrent executions that are allowed for this program.
+        /// </summary>
+        /// <value>
+        /// The maximum concurrency.
+        /// </value>
+        /// <remarks>A negative value indicates no limit.</remarks>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        ///   The property is read-only or locked.
+        /// </exception>
+        [ConfigurationProperty("maxConcurrency", DefaultValue = -1, IsRequired = false)]
+        public int MaximumConcurrency
+        {
+            get { return GetProperty<int>("maxConcurrency"); }
+            set { SetProperty("maxConcurrency", value); }
+        }
+
+        /// <summary>
         ///   Used to initialize a default set of values for the <see cref="ProgramElement"/> object.
         /// </summary>
         /// <remarks>

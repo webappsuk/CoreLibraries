@@ -32,6 +32,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConcurrencyController.cs" />
     <Compile Include="Configuration\DatabaseCollection.cs" />
     <Compile Include="Configuration\DatabaseElement.cs" />
     <Compile Include="Configuration\DatabasesConfiguration.cs" />

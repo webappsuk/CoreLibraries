@@ -27,10 +27,12 @@
 
 using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
@@ -41,32 +43,13 @@ namespace WebApplications.Utilities.Database
     public class Connection : IEquatable<Connection>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Connection"/> class.  Used by <see cref="AddWeight"/> to avoid re-evaluating connection string.
-        /// </summary>
-        /// <param name="weight">The weight.</param>
-        /// <param name="connectionString">The connection string.</param>
-        private Connection(double weight, [NotNull] string connectionString)
-        {
-            if (connectionString == null) throw new ArgumentNullException("connectionString");
-
-            Weight = weight;
-            ConnectionString = connectionString;
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="Connection"/> class.
+        /// Normalizes the connection string.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="weight">
-        ///   <para>The weighting of the connection.</para>
-        ///   <para>By default this is set to 1.0.</para>
-        /// </param>
-        public Connection([NotNull] string connectionString, double weight = 1.0D)
+        /// <returns></returns>
+        [NotNull]
+        public static string NormalizeConnectionString(string connectionString)
         {
-            if (connectionString == null) throw new ArgumentNullException("connectionString");
-
-            Weight = weight;
-
             // Load string into builder and coerce to async
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString)
             {
@@ -98,8 +81,81 @@ namespace WebApplications.Utilities.Database
             if (builder.WorkstationID != null)
                 builder.WorkstationID = builder.WorkstationID.ToLowerInvariant();
 
+            Debug.Assert(builder.ConnectionString != null);
+            return builder.ConnectionString;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Connection" /> class.  Used by <see cref="AddWeight" /> to avoid re-evaluating connection string.
+        /// </summary>
+        /// <param name="weight">The weight.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="semaphore">The semaphore.</param>
+        /// <exception cref="System.ArgumentNullException"><paramref name="connectionString"/> was null.</exception>
+        private Connection(double weight, [NotNull] string connectionString, [CanBeNull] AsyncSemaphore semaphore)
+        {
+            if (connectionString == null) throw new ArgumentNullException("connectionString");
+
+            Weight = weight;
+            ConnectionString = connectionString;
+            Semaphore = semaphore;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Connection" /> class.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="weight"><para>The weighting of the connection.</para>
+        /// <para>By default this is set to 1.0.</para></param>
+        /// <param name="maxConcurrency">The the maximum number of concurrent program executions for the connection.</param>
+        /// <exception cref="System.ArgumentNullException">connectionString</exception>
+        public Connection([NotNull] string connectionString, double weight = 1.0D, int maxConcurrency = -1)
+        {
+            if (connectionString == null) throw new ArgumentNullException("connectionString");
+
+            Weight = weight;
             // ReSharper disable once AssignNullToNotNullAttribute
-            ConnectionString = builder.ConnectionString;
+            ConnectionString = NormalizeConnectionString(connectionString);
+            if (maxConcurrency > 0) Semaphore = new AsyncSemaphore(maxConcurrency);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Connection"/> class.
+        /// </summary>
+        /// <param name="databseId">The databse identifier.</param>
+        /// <param name="lbConnectionId">The lb connection identifier.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="weight">The weight.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
+        internal Connection(
+            [NotNull] string databseId,
+            [NotNull] string lbConnectionId,
+            [NotNull] string connectionString,
+            double weight)
+            : this(connectionString, weight)
+        {
+            if (databseId == null) throw new ArgumentNullException(nameof(databseId));
+            if (lbConnectionId == null) throw new ArgumentNullException(nameof(lbConnectionId));
+            Semaphore = ConcurrencyController.GetConnectionSemaphore(databseId, lbConnectionId, this);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Connection" /> class.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="weight"><para>The weighting of the connection.</para>
+        /// <para>By default this is set to 1.0.</para></param>
+        /// <param name="semaphore">The semaphore.</param>
+        /// <exception cref="System.ArgumentNullException">connectionString</exception>
+        public Connection([NotNull] string connectionString, double weight, AsyncSemaphore semaphore)
+        {
+            if (connectionString == null) throw new ArgumentNullException("connectionString");
+
+            Weight = weight;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            ConnectionString = NormalizeConnectionString(connectionString);
+            Semaphore = semaphore;
         }
 
         /// <summary>
@@ -118,6 +174,12 @@ namespace WebApplications.Utilities.Database
         public readonly double Weight;
 
         /// <summary>
+        /// The semaphore for controlling the maximum number of concurrent program executions for the connection.
+        /// </summary>
+        [CanBeNull]
+        internal readonly AsyncSemaphore Semaphore;
+
+        /// <summary>
         /// Returns a new connection with the <see cref="Weight"/> increased by <paramref name="weight"/>.
         /// </summary>
         /// <param name="weight">The weight.</param>
@@ -125,7 +187,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         internal Connection AddWeight(double weight)
         {
-            return weight.Equals(0D) ? this : new Connection(weight + Weight, ConnectionString);
+            return weight.Equals(0D) ? this : new Connection(weight + Weight, ConnectionString, Semaphore);
         }
 
         /// <summary>
@@ -199,9 +261,7 @@ namespace WebApplications.Utilities.Database
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             Connection other = obj as Connection;
-            return !ReferenceEquals(other, null) &&
-                   Weight.Equals(other.Weight) &&
-                   string.Equals(ConnectionString, other.ConnectionString, StringComparison.InvariantCulture);
+            return Equals(other);
         }
 
         /// <summary>
@@ -214,7 +274,8 @@ namespace WebApplications.Utilities.Database
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Weight.Equals(other.Weight) &&
-                   string.Equals(ConnectionString, other.ConnectionString, StringComparison.InvariantCulture);
+                   string.Equals(ConnectionString, other.ConnectionString, StringComparison.InvariantCulture) &&
+                   Equals(Semaphore, other.Semaphore);
         }
 
         /// <summary>
@@ -238,9 +299,7 @@ namespace WebApplications.Utilities.Database
         public static bool operator ==(Connection left, Connection right)
         {
             if (ReferenceEquals(left, null)) return ReferenceEquals(right, null);
-            return !ReferenceEquals(right, null) &&
-                   Equals(left.Weight, right.Weight) &&
-                   string.Equals(left.ConnectionString, right.ConnectionString, StringComparison.InvariantCulture);
+            return left.Equals(right);
         }
 
         /// <summary>
@@ -252,9 +311,7 @@ namespace WebApplications.Utilities.Database
         public static bool operator !=(Connection left, Connection right)
         {
             if (ReferenceEquals(left, null)) return !ReferenceEquals(right, null);
-            return ReferenceEquals(right, null) ||
-                   !Equals(left.Weight, right.Weight) ||
-                   !string.Equals(left.ConnectionString, right.ConnectionString, StringComparison.InvariantCulture);
+            return !left.Equals(right);
         }
         #endregion
     }

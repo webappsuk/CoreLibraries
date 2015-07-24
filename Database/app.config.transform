@@ -79,6 +79,19 @@ by design to run, a new timeout can be set to override the 30s default - in this
         <program name="slowSproc" defaultCommandTimeout="00:02:00" />
       </programs>
     </database>
+    
+A maxConcurrency attribute can be specified on a number of elements (shown below), which limits the maximum number of concurrent database connections that can
+be made for that specific node and everything within it. If ommited, or less than or equal to zero, then there is no limit.
+    <database maxConcurrency="100">
+      <connections>
+        <connection maxConcurrency="100">
+          <add connectionString="the connection string" maxConcurrency="100" />
+        </connection>
+      </connections>
+      <programs>
+        <program name="aSproc" maxConcurrency="100" />
+      </programs>
+    </database>
   -->
   </databases>
 </configuration>
