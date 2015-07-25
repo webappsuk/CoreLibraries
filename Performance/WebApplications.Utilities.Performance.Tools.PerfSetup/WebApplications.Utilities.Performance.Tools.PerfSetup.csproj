@@ -3,7 +3,7 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == ''  OR  '$(Platform)' == 'AnyCPU' ">x86</Platform>
     <ProjectGuid>{6F2B5D7A-E8B7-4820-9C39-30F722B0DB01}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>WebApplications.Utilities.Performance.Tools.PerfSetup</RootNamespace>
@@ -23,7 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <MergedOutputFileName>PerfSetup32.exe</MergedOutputFileName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86' OR '$(Configuration)' == 'NuGet'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86' OR '$(Configuration)|$(Platform)' == 'NuGet|x86'">
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <Prefer32Bit>true</Prefer32Bit>
@@ -42,7 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <MergedOutputFileName>PerfSetup64.exe</MergedOutputFileName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64' OR '$(Configuration)|$(Platform)' == 'NuGet|x64'">
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
@@ -135,7 +135,7 @@
     </ItemGroup>
     <MakeDir Directories="$(MergedOutputPath)" />
     <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(MergedOutputFile)" SnkFile="$(AssemblyOriginatorKeyFile)" TargetKind="Exe" ILMergeTool="$(ILMergeTools)" />
-    <MSBuild Condition="'$(Platform)' == 'x86'" Projects="$(MSBuildProjectFile)" Properties="Platform=x64;PlatFormTarget=x64;BuildProjectReferences=false" RunEachTargetSeparately="true" />
+    <MSBuild Condition="'$(Platform)' == 'x86'" Projects="$(MSBuildProjectFile)" Properties="Configuration=$(Configuration);Platform=x64;PlatFormTarget=x64;BuildProjectReferences=false" RunEachTargetSeparately="true" />
   </Target>
   <ItemGroup>
     <RootBinPath Include="$(SolutionDir)bin\PerfSetup32.exe">

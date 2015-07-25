@@ -20,10 +20,8 @@
   <files>
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
-    <file src="install.ps1" target="tools\install.ps1" />
-    <file src="uninstall.ps1" target="tools\uninstall.ps1" />
-    <file src="PerfSetup.targets" target="tools\PerfSetup.targets" />
-    <file src="..\bin\PerfSetup32.exe" target="tools" />
-    <file src="..\bin\PerfSetup64.exe" target="tools" />
+    <file src="PerfSetup.targets" target="build\$id$.targets" />
+    <file src="..\bin\PerfSetup32.exe" target="build" />
+    <file src="..\bin\PerfSetup64.exe" target="build" />
   </files>
 </package>
