@@ -31,10 +31,12 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+	<IsRelease>true</IsRelease>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'NuGet'">
     <BuildPackage>true</BuildPackage>
     <PackageOutputDir>$(SolutionDir)nugets</PackageOutputDir>
+	<IsRelease>true</IsRelease>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)' == 'NuGet' ">
     <DebugType>pdbonly</DebugType>
@@ -62,7 +64,7 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SolutionDir)..\WebApplicationsSignature.targets') AND '$(Configuration)' == 'Release'" />
+  <Import Project="$(SolutionDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SolutionDir)..\WebApplicationsSignature.targets') AND '$(IsRelease)' == 'true'" />
   <Import Project="$(SolutionDir).nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

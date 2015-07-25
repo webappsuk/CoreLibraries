@@ -266,14 +266,26 @@ namespace ILMerge.Build.Tasks
                         UseShellExecute = false
                     }
                 };
-                proc.OutputDataReceived += (sender, args) => Log.LogMessage(args.Data ?? string.Empty);
-                proc.ErrorDataReceived += (sender, args) => Log.LogError(args.Data ?? string.Empty);
+                proc.OutputDataReceived += (sender, args) =>
+                {
+                    // Null is sent when the stream closes, so skip it
+                    if (!string.IsNullOrEmpty(args.Data))
+                        Log.LogMessage(args.Data);
+                };
+                proc.ErrorDataReceived += (sender, args) =>
+                {
+                    // Null is sent when the stream closes, so skip it
+                    if (!string.IsNullOrEmpty(args.Data))
+                        Log.LogError(args.Data);
+                };
                 proc.Start();
                 proc.BeginOutputReadLine();
                 proc.BeginErrorReadLine();
                 proc.WaitForExit();
                 if (proc.ExitCode != 0)
-                    Log.LogError("ILMerge exited with error code {0}", proc.ExitCode);
+                    Log.LogError("ILMerge exited with error code {0}.", proc.ExitCode);
+                else
+                    Log.LogMessage("ILMerge completed successfully.");
                 return proc.ExitCode == 0;
             }
             catch (Exception ex)
@@ -281,7 +293,6 @@ namespace ILMerge.Build.Tasks
                 Log.LogErrorFromException(ex);
                 return false;
             }
-            return true;
         }
 
         private static string ConvertEmptyToNull(string iti)

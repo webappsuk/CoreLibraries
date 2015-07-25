@@ -20,6 +20,6 @@
     <file src="uninstall.ps1" target="tools\uninstall.ps1" />
     <file src="InjectModuleInitializer.targets" target="tools\InjectModuleInitializer.targets" />
     <file src="*.pp" target="content" />
-    <file src="bin\Release\*.dll" target="tools" />
+    <file src="bin\NuGet\AnyCPU\*.dll" target="tools" />
   </files>
 </package>
