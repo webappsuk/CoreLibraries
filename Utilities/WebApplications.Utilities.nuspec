@@ -18,10 +18,8 @@
     </references>
   </metadata>
   <files>
-    <file src="install.ps1" target="tools\install.ps1" />
-    <file src="uninstall.ps1" target="tools\uninstall.ps1" />
-    <file src="..\bin\WebApplications.Utilities.BuildTasks.dll" target="tools\WebApplications.Utilities.BuildTasks.dll" />
-    <file src="Utility.targets" target="tools\Utility.targets" />
+    <file src="..\bin\WebApplications.Utilities.BuildTasks.dll" target="build\WebApplications.Utilities.BuildTasks.dll" />
+    <file src="Utility.targets" target="build\$id$.targets" />
     <file src="Resources\*.*" target="tools\Resources" />
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />

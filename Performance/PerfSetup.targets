@@ -3,6 +3,7 @@
   <PropertyGroup>
     <PerfSetupTool Condition="!Exists('$(PerfSetupTool)')">$(MSBuildThisFileDirectory)PerfSetup32.exe</PerfSetupTool>
     <PerfSetupPath>$(TargetDir)</PerfSetupPath>
+	<RunPerfSetup Condition="'$(RunPerfSetup)' == ''">true</RunPerfSetup>
   </PropertyGroup>
 
   <UsingTask TaskName="PerfSetupTask"
@@ -14,8 +15,7 @@
   </Target>
 
   <Target Name="PerfSetupTarget"
-           Condition="'$(BuildingProject)'=='true' AND
-                 Exists('$(PerfSetupTool)')">
+           Condition="'$(BuildingProject)'=='true' AND Exists('$(PerfSetupTool)') AND '$(RunPerfSetup)' == 'true'">
     <PerfSetupTask
        Mode="Add"
        Path="$(PerfSetupPath)"/>
