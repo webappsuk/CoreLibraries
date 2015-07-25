@@ -47,6 +47,7 @@ namespace WebApplications.Utilities.Database.Configuration
         static DatabasesConfiguration()
         {
             Changed += ConcurrencyController.OnConfigChanged;
+            ConcurrencyController.UpdateSemaphores(Active);
         }
 
         /// <summary>

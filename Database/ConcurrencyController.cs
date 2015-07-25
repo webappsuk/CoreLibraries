@@ -70,6 +70,15 @@ namespace WebApplications.Utilities.Database
             [NotNull] object sender,
             [NotNull] ConfigurationSection<DatabasesConfiguration>.ConfigurationChangedEventArgs args)
         {
+            UpdateSemaphores(args.NewConfiguration);
+        }
+
+        /// <summary>
+        /// Updates the semaphores.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        public static void UpdateSemaphores(DatabasesConfiguration config)
+        {
             HashSet<string> databases = new HashSet<string>();
             HashSet<Id> loadBalancedConns = new HashSet<Id>();
             HashSet<ConnectionId> connections = new HashSet<ConnectionId>();
@@ -78,7 +87,7 @@ namespace WebApplications.Utilities.Database
             lock (_updatedLock)
             {
                 // Add or update the semaphores for the values in the config
-                foreach (DatabaseElement db in args.NewConfiguration.Databases)
+                foreach (DatabaseElement db in config.Databases)
                 {
                     Debug.Assert(db != null);
 
