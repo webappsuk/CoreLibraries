@@ -88,6 +88,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Database.Test", "Database\WebApplications.Utilities.Database.Test\WebApplications.Utilities.Database.Test.csproj", "{8C6554DF-D0FE-48B5-B487-19882850AC69}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Service", "Service\WebApplications.Utilities.Service.csproj", "{B580A145-6DE0-45D4-B4B6-924A52BF10B7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{839D6111-FFE7-4498-928C-75054DE61CE9} = {839D6111-FFE7-4498-928C-75054DE61CE9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Service.Common", "Service\WebApplications.Utilities.Service.Common\WebApplications.Utilities.Service.Common.csproj", "{B365AD50-598A-4D1B-8656-1F0F8ADCDBC8}"
 EndProject

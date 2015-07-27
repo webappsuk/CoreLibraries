@@ -20,7 +20,7 @@
   <files>
     <file src="..\bin\WebApplications.Utilities.BuildTasks.dll" target="build\WebApplications.Utilities.BuildTasks.dll" />
     <file src="Utility.targets" target="build\$id$.targets" />
-    <file src="Resources\*.*" target="build\Resources" />
+    <file src="Resources\*.*" target="tools\Resources" />
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
   </files>

@@ -14,7 +14,7 @@ int maxParameters = 35;
 #>#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 //     * Redistributions of source code must retain the above copyright
@@ -25,7 +25,7 @@ int maxParameters = 35;
 //     * Neither the name of Web Applications UK Ltd nor the
 //       names of its contributors may be used to endorse or promote products
 //       derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 // ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -49,8 +49,7 @@ namespace WebApplications.Utilities
     /// Extension methods for tuples.
     /// </summary>
     public static partial class ExtendedTuple
-    {
-<# 
+    {<#
             StringBuilder typeParams = new StringBuilder();
             StringBuilder tuple = new StringBuilder();
             StringBuilder tupleEnd = new StringBuilder();
@@ -61,6 +60,9 @@ namespace WebApplications.Utilities
             StringBuilder paramsFuncWithType = new StringBuilder();
             StringBuilder paramsWithoutType = new StringBuilder();
             StringBuilder paramsFuncWithoutType = new StringBuilder();
+            StringBuilder outParamsWithType = new StringBuilder();
+            StringBuilder assignments = new StringBuilder();
+            string afterAssignments = string.Empty;
             for (int i = 1; i <= maxParameters; i++)
             {
                 typeParams.Append(String.Format("{0}T{1}", i > 1 ? ", " : String.Empty, i));
@@ -137,9 +139,24 @@ namespace WebApplications.Utilities
                                                     Environment.NewLine,
                                                     i,
                                                     i > 1 ? "," : ""));
+                outParamsWithType.AppendFormat(",{0}            out T{1} item{1}",
+                    Environment.NewLine,
+                    i);
+
+                if (i == 8)
+                {
+                    assignments.AppendFormat("{0}            // ReSharper disable PossibleNullReferenceException", Environment.NewLine);
+                    afterAssignments = string.Format("{0}            // ReSharper restore PossibleNullReferenceException", Environment.NewLine);
+                }
+
+                assignments.AppendFormat("{0}            item{1} = tuple{2}.Item{3};",
+                    Environment.NewLine,
+                    i,
+                    string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
+                    (i-1)%7+1);
                 String t = tuple.ToString() + tupleEnd.ToString();
     #>
-        
+
         #region <#= i #> items.
         /// <summary>
         /// Used to create a tuple in nested format.
@@ -151,7 +168,7 @@ namespace WebApplications.Utilities
         {
             return new Tuple<<#= t #>>(<#= paramsWithoutType #>);
         }
-        
+
         /// <summary>
         /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
         /// </summary>
@@ -165,13 +182,25 @@ namespace WebApplications.Utilities
         {
             return inputEnumeration.Select(input => new Tuple<<#= t #>>(<#= paramsFuncWithoutType #>));
         }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary><#= typeComments #>
+        /// <param name="tuple">The tuple to decompose.</param><#= paramsComments #>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<<#= t #>> Decompose<<#= typeParams #>>(
+            [NotNull] this Tuple<<#= t #>> tuple<#= outParamsWithType #>)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));<#= assignments + afterAssignments #>
+            return tuple;
+        }
         #endregion
-<# 
+<#
 }
 #>
     }
 }
- 
+
 <#+
   // Insert any template procedures here
 #>

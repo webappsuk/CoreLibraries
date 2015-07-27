@@ -36,8 +36,7 @@ namespace WebApplications.Utilities
     /// Extension methods for tuples.
     /// </summary>
     public static partial class ExtendedTuple
-    {
-        
+    {        
         #region 1 items.
         /// <summary>
         /// Used to create a tuple in nested format.
@@ -68,6 +67,22 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T1> func1)
         {
             return inputEnumeration.Select(input => new Tuple<T1>(func1(input)));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1> Decompose<T1>(
+            [NotNull] this Tuple<T1> tuple,
+            out T1 item1)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            return tuple;
         }
         #endregion
         
@@ -107,6 +122,26 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T2> func2)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2>(func1(input), func2(input)));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2> Decompose<T1, T2>(
+            [NotNull] this Tuple<T1, T2> tuple,
+            out T1 item1,
+            out T2 item2)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            return tuple;
         }
         #endregion
         
@@ -152,6 +187,30 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T3> func3)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3>(func1(input), func2(input), func3(input)));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3> Decompose<T1, T2, T3>(
+            [NotNull] this Tuple<T1, T2, T3> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            return tuple;
         }
         #endregion
         
@@ -203,6 +262,34 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T4> func4)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4>(func1(input), func2(input), func3(input), func4(input)));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4> Decompose<T1, T2, T3, T4>(
+            [NotNull] this Tuple<T1, T2, T3, T4> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            return tuple;
         }
         #endregion
         
@@ -260,6 +347,38 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T5> func5)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5>(func1(input), func2(input), func3(input), func4(input), func5(input)));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5> Decompose<T1, T2, T3, T4, T5>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            return tuple;
         }
         #endregion
         
@@ -323,6 +442,42 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T6> func6)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input)));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6> Decompose<T1, T2, T3, T4, T5, T6>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            return tuple;
         }
         #endregion
         
@@ -392,6 +547,46 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T7> func7)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input)));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7> Decompose<T1, T2, T3, T4, T5, T6, T7>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            return tuple;
         }
         #endregion
         
@@ -467,6 +662,52 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T8> func8)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8>(func8(input))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -548,6 +789,56 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T9> func9)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9>(func8(input), func9(input))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -635,6 +926,60 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T10> func10)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10>(func8(input), func9(input), func10(input))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -728,6 +1073,64 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T11> func11)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11>(func8(input), func9(input), func10(input), func11(input))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -827,6 +1230,68 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T12> func12)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12>(func8(input), func9(input), func10(input), func11(input), func12(input))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -932,6 +1397,72 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T13> func13)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1043,6 +1574,76 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T14> func14)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1160,6 +1761,80 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T15> func15)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15>(func15(input)))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1283,6 +1958,84 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T16> func16)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16>(func15(input), func16(input)))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1412,6 +2165,88 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T17> func17)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17>(func15(input), func16(input), func17(input)))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1547,6 +2382,92 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T18> func18)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18>(func15(input), func16(input), func17(input), func18(input)))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1688,6 +2609,96 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T19> func19)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19>(func15(input), func16(input), func17(input), func18(input), func19(input)))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1835,6 +2846,100 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T20> func20)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input)))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -1988,6 +3093,104 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T21> func21)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input)))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -2147,6 +3350,108 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T22> func22)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22>(func22(input))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -2312,6 +3617,112 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T23> func23)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23>(func22(input), func23(input))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -2483,6 +3894,116 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T24> func24)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24>(func22(input), func23(input), func24(input))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -2660,6 +4181,120 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T25> func25)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25>(func22(input), func23(input), func24(input), func25(input))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -2843,6 +4478,124 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T26> func26)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26>(func22(input), func23(input), func24(input), func25(input), func26(input))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -3032,6 +4785,128 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T27> func27)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -3227,6 +5102,132 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T28> func28)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -3428,6 +5429,136 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T29> func29)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29>(func29(input)))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <typeparam name="T29">The type of item 29.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <param name="item29">Item 29 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28,
+            out T29 item29)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -3635,6 +5766,140 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T30> func30)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30>(func29(input), func30(input)))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <typeparam name="T29">The type of item 29.</typeparam>
+        /// <typeparam name="T30">The type of item 30.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <param name="item29">Item 29 of the tuple.</param>
+        /// <param name="item30">Item 30 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28,
+            out T29 item29,
+            out T30 item30)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -3848,6 +6113,144 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T31> func31)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31>(func29(input), func30(input), func31(input)))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <typeparam name="T29">The type of item 29.</typeparam>
+        /// <typeparam name="T30">The type of item 30.</typeparam>
+        /// <typeparam name="T31">The type of item 31.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <param name="item29">Item 29 of the tuple.</param>
+        /// <param name="item30">Item 30 of the tuple.</param>
+        /// <param name="item31">Item 31 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28,
+            out T29 item29,
+            out T30 item30,
+            out T31 item31)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -4067,6 +6470,148 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T32> func32)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32>(func29(input), func30(input), func31(input), func32(input)))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <typeparam name="T29">The type of item 29.</typeparam>
+        /// <typeparam name="T30">The type of item 30.</typeparam>
+        /// <typeparam name="T31">The type of item 31.</typeparam>
+        /// <typeparam name="T32">The type of item 32.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <param name="item29">Item 29 of the tuple.</param>
+        /// <param name="item30">Item 30 of the tuple.</param>
+        /// <param name="item31">Item 31 of the tuple.</param>
+        /// <param name="item32">Item 32 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28,
+            out T29 item29,
+            out T30 item30,
+            out T31 item31,
+            out T32 item32)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -4292,6 +6837,152 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T33> func33)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32, T33>(func29(input), func30(input), func31(input), func32(input), func33(input)))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <typeparam name="T29">The type of item 29.</typeparam>
+        /// <typeparam name="T30">The type of item 30.</typeparam>
+        /// <typeparam name="T31">The type of item 31.</typeparam>
+        /// <typeparam name="T32">The type of item 32.</typeparam>
+        /// <typeparam name="T33">The type of item 33.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <param name="item29">Item 29 of the tuple.</param>
+        /// <param name="item30">Item 30 of the tuple.</param>
+        /// <param name="item31">Item 31 of the tuple.</param>
+        /// <param name="item32">Item 32 of the tuple.</param>
+        /// <param name="item33">Item 33 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28,
+            out T29 item29,
+            out T30 item30,
+            out T31 item31,
+            out T32 item32,
+            out T33 item33)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            item33 = tuple.Rest.Rest.Rest.Rest.Item5;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -4523,6 +7214,156 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T34> func34)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32, T33, T34>(func29(input), func30(input), func31(input), func32(input), func33(input), func34(input)))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <typeparam name="T29">The type of item 29.</typeparam>
+        /// <typeparam name="T30">The type of item 30.</typeparam>
+        /// <typeparam name="T31">The type of item 31.</typeparam>
+        /// <typeparam name="T32">The type of item 32.</typeparam>
+        /// <typeparam name="T33">The type of item 33.</typeparam>
+        /// <typeparam name="T34">The type of item 34.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <param name="item29">Item 29 of the tuple.</param>
+        /// <param name="item30">Item 30 of the tuple.</param>
+        /// <param name="item31">Item 31 of the tuple.</param>
+        /// <param name="item32">Item 32 of the tuple.</param>
+        /// <param name="item33">Item 33 of the tuple.</param>
+        /// <param name="item34">Item 34 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28,
+            out T29 item29,
+            out T30 item30,
+            out T31 item31,
+            out T32 item32,
+            out T33 item33,
+            out T34 item34)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            item33 = tuple.Rest.Rest.Rest.Rest.Item5;
+            item34 = tuple.Rest.Rest.Rest.Rest.Item6;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
         
@@ -4760,6 +7601,160 @@ namespace WebApplications.Utilities
             [NotNull]Func<TInput, T35> func35)
         {
             return inputEnumeration.Select(input => new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>(func1(input), func2(input), func3(input), func4(input), func5(input), func6(input), func7(input), new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>(func8(input), func9(input), func10(input), func11(input), func12(input), func13(input), func14(input), new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>(func15(input), func16(input), func17(input), func18(input), func19(input), func20(input), func21(input), new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>(func22(input), func23(input), func24(input), func25(input), func26(input), func27(input), func28(input), new Tuple<T29, T30, T31, T32, T33, T34, T35>(func29(input), func30(input), func31(input), func32(input), func33(input), func34(input), func35(input)))))));
+        }
+
+        /// <summary>
+        /// Decomposes the tuple into individual values.
+        /// </summary>
+        /// <typeparam name="T1">The type of item 1.</typeparam>
+        /// <typeparam name="T2">The type of item 2.</typeparam>
+        /// <typeparam name="T3">The type of item 3.</typeparam>
+        /// <typeparam name="T4">The type of item 4.</typeparam>
+        /// <typeparam name="T5">The type of item 5.</typeparam>
+        /// <typeparam name="T6">The type of item 6.</typeparam>
+        /// <typeparam name="T7">The type of item 7.</typeparam>
+        /// <typeparam name="T8">The type of item 8.</typeparam>
+        /// <typeparam name="T9">The type of item 9.</typeparam>
+        /// <typeparam name="T10">The type of item 10.</typeparam>
+        /// <typeparam name="T11">The type of item 11.</typeparam>
+        /// <typeparam name="T12">The type of item 12.</typeparam>
+        /// <typeparam name="T13">The type of item 13.</typeparam>
+        /// <typeparam name="T14">The type of item 14.</typeparam>
+        /// <typeparam name="T15">The type of item 15.</typeparam>
+        /// <typeparam name="T16">The type of item 16.</typeparam>
+        /// <typeparam name="T17">The type of item 17.</typeparam>
+        /// <typeparam name="T18">The type of item 18.</typeparam>
+        /// <typeparam name="T19">The type of item 19.</typeparam>
+        /// <typeparam name="T20">The type of item 20.</typeparam>
+        /// <typeparam name="T21">The type of item 21.</typeparam>
+        /// <typeparam name="T22">The type of item 22.</typeparam>
+        /// <typeparam name="T23">The type of item 23.</typeparam>
+        /// <typeparam name="T24">The type of item 24.</typeparam>
+        /// <typeparam name="T25">The type of item 25.</typeparam>
+        /// <typeparam name="T26">The type of item 26.</typeparam>
+        /// <typeparam name="T27">The type of item 27.</typeparam>
+        /// <typeparam name="T28">The type of item 28.</typeparam>
+        /// <typeparam name="T29">The type of item 29.</typeparam>
+        /// <typeparam name="T30">The type of item 30.</typeparam>
+        /// <typeparam name="T31">The type of item 31.</typeparam>
+        /// <typeparam name="T32">The type of item 32.</typeparam>
+        /// <typeparam name="T33">The type of item 33.</typeparam>
+        /// <typeparam name="T34">The type of item 34.</typeparam>
+        /// <typeparam name="T35">The type of item 35.</typeparam>
+        /// <param name="tuple">The tuple to decompose.</param>
+        /// <param name="item1">Item 1 of the tuple.</param>
+        /// <param name="item2">Item 2 of the tuple.</param>
+        /// <param name="item3">Item 3 of the tuple.</param>
+        /// <param name="item4">Item 4 of the tuple.</param>
+        /// <param name="item5">Item 5 of the tuple.</param>
+        /// <param name="item6">Item 6 of the tuple.</param>
+        /// <param name="item7">Item 7 of the tuple.</param>
+        /// <param name="item8">Item 8 of the tuple.</param>
+        /// <param name="item9">Item 9 of the tuple.</param>
+        /// <param name="item10">Item 10 of the tuple.</param>
+        /// <param name="item11">Item 11 of the tuple.</param>
+        /// <param name="item12">Item 12 of the tuple.</param>
+        /// <param name="item13">Item 13 of the tuple.</param>
+        /// <param name="item14">Item 14 of the tuple.</param>
+        /// <param name="item15">Item 15 of the tuple.</param>
+        /// <param name="item16">Item 16 of the tuple.</param>
+        /// <param name="item17">Item 17 of the tuple.</param>
+        /// <param name="item18">Item 18 of the tuple.</param>
+        /// <param name="item19">Item 19 of the tuple.</param>
+        /// <param name="item20">Item 20 of the tuple.</param>
+        /// <param name="item21">Item 21 of the tuple.</param>
+        /// <param name="item22">Item 22 of the tuple.</param>
+        /// <param name="item23">Item 23 of the tuple.</param>
+        /// <param name="item24">Item 24 of the tuple.</param>
+        /// <param name="item25">Item 25 of the tuple.</param>
+        /// <param name="item26">Item 26 of the tuple.</param>
+        /// <param name="item27">Item 27 of the tuple.</param>
+        /// <param name="item28">Item 28 of the tuple.</param>
+        /// <param name="item29">Item 29 of the tuple.</param>
+        /// <param name="item30">Item 30 of the tuple.</param>
+        /// <param name="item31">Item 31 of the tuple.</param>
+        /// <param name="item32">Item 32 of the tuple.</param>
+        /// <param name="item33">Item 33 of the tuple.</param>
+        /// <param name="item34">Item 34 of the tuple.</param>
+        /// <param name="item35">Item 35 of the tuple.</param>
+        /// <returns>The <paramref name="tuple" />.</returns>
+        public static Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> Decompose<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(
+            [NotNull] this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> tuple,
+            out T1 item1,
+            out T2 item2,
+            out T3 item3,
+            out T4 item4,
+            out T5 item5,
+            out T6 item6,
+            out T7 item7,
+            out T8 item8,
+            out T9 item9,
+            out T10 item10,
+            out T11 item11,
+            out T12 item12,
+            out T13 item13,
+            out T14 item14,
+            out T15 item15,
+            out T16 item16,
+            out T17 item17,
+            out T18 item18,
+            out T19 item19,
+            out T20 item20,
+            out T21 item21,
+            out T22 item22,
+            out T23 item23,
+            out T24 item24,
+            out T25 item25,
+            out T26 item26,
+            out T27 item27,
+            out T28 item28,
+            out T29 item29,
+            out T30 item30,
+            out T31 item31,
+            out T32 item32,
+            out T33 item33,
+            out T34 item34,
+            out T35 item35)
+        {
+            if (tuple == null) throw new ArgumentNullException(nameof(tuple));
+            item1 = tuple.Item1;
+            item2 = tuple.Item2;
+            item3 = tuple.Item3;
+            item4 = tuple.Item4;
+            item5 = tuple.Item5;
+            item6 = tuple.Item6;
+            item7 = tuple.Item7;
+            // ReSharper disable PossibleNullReferenceException
+            item8 = tuple.Rest.Item1;
+            item9 = tuple.Rest.Item2;
+            item10 = tuple.Rest.Item3;
+            item11 = tuple.Rest.Item4;
+            item12 = tuple.Rest.Item5;
+            item13 = tuple.Rest.Item6;
+            item14 = tuple.Rest.Item7;
+            item15 = tuple.Rest.Rest.Item1;
+            item16 = tuple.Rest.Rest.Item2;
+            item17 = tuple.Rest.Rest.Item3;
+            item18 = tuple.Rest.Rest.Item4;
+            item19 = tuple.Rest.Rest.Item5;
+            item20 = tuple.Rest.Rest.Item6;
+            item21 = tuple.Rest.Rest.Item7;
+            item22 = tuple.Rest.Rest.Rest.Item1;
+            item23 = tuple.Rest.Rest.Rest.Item2;
+            item24 = tuple.Rest.Rest.Rest.Item3;
+            item25 = tuple.Rest.Rest.Rest.Item4;
+            item26 = tuple.Rest.Rest.Rest.Item5;
+            item27 = tuple.Rest.Rest.Rest.Item6;
+            item28 = tuple.Rest.Rest.Rest.Item7;
+            item29 = tuple.Rest.Rest.Rest.Rest.Item1;
+            item30 = tuple.Rest.Rest.Rest.Rest.Item2;
+            item31 = tuple.Rest.Rest.Rest.Rest.Item3;
+            item32 = tuple.Rest.Rest.Rest.Rest.Item4;
+            item33 = tuple.Rest.Rest.Rest.Rest.Item5;
+            item34 = tuple.Rest.Rest.Rest.Rest.Item6;
+            item35 = tuple.Rest.Rest.Rest.Rest.Item7;
+            // ReSharper restore PossibleNullReferenceException
+            return tuple;
         }
         #endregion
     }

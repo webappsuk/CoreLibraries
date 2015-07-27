@@ -38,12 +38,14 @@ namespace WebApplications.Utilities.Caching
     public class WeakReference<T>
         where T : class
     {
+        // TODO Use System.WeakReference<T> ?
+
         /// <summary>
         ///   The underlying weak reference.
         /// </summary>
         [NotNull]
         private readonly WeakReference _weakReference;
-
+        
         /// <summary>
         ///   Initializes a new instance of the <see cref="WeakReference&lt;T&gt;"/> class.
         /// </summary>
@@ -55,10 +57,8 @@ namespace WebApplications.Utilities.Caching
         ///   called up until it is collected.</para>
         ///   <para>If the object type doesn't offer a Finalize method then short and long references behave the same.</para>
         /// </remarks>
-        public WeakReference([NotNull] T target, bool trackResurrection = false)
+        public WeakReference(T target, bool trackResurrection = false)
         {
-            if (target == null) throw new ArgumentNullException("target");
-
             _weakReference = new WeakReference(target, trackResurrection);
         }
 
@@ -66,10 +66,7 @@ namespace WebApplications.Utilities.Caching
         ///   Returns a <see cref="bool"/> indicating whether or not we're tracking objects until they're collected
         ///   (<see langword="true"/>) or just until they're finalized (<see langword="false"/>).
         /// </summary>
-        public bool TrackResurrection
-        {
-            get { return _weakReference.TrackResurrection; }
-        }
+        public bool TrackResurrection => _weakReference.TrackResurrection;
 
         /// <summary>
         ///   Gets a <see langword="bool"/> value indicating whether this instance is alive.
@@ -77,10 +74,7 @@ namespace WebApplications.Utilities.Caching
         /// <remarks>
         ///   If this is <see langword="true"/> then the instance has not yet been garbage collected, meaning it's still accessible.
         /// </remarks>
-        public bool IsAlive
-        {
-            get { return _weakReference.IsAlive; }
-        }
+        public bool IsAlive => _weakReference.IsAlive;
 
         /// <summary>
         ///   Gets or sets the target, which is the underlying object being referenced.
