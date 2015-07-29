@@ -332,14 +332,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Actions.tt">
+    <None Include="Actions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Actions.cs</LastGenOutput>
-    </Content>
-    <Content Include="Funcs.tt">
+    </None>
+    <None Include="Funcs.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Funcs.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <UtilityBuildTasks>$(SolutionDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>

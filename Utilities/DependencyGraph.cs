@@ -92,7 +92,7 @@ namespace WebApplications.Utilities
         [ItemNotNull]
         public IEnumerable<T> AllTopDown
         {
-            get { return GetAllIterator(_dependencies, TopLeaves); }
+            get { return GetAllIterator(TopLeaves, _dependsOn, _dependencies); }
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace WebApplications.Utilities
         [ItemNotNull]
         public IEnumerable<T> AllBottomUp
         {
-            get { return GetAllIterator(_dependsOn, BottomLeaves); }
+            get { return GetAllIterator(BottomLeaves, _dependencies, _dependsOn); }
         }
 
         /// <summary>
@@ -277,41 +277,44 @@ namespace WebApplications.Utilities
                 }
             }
         }
-
+        
         [NotNull]
         [ItemNotNull]
-        private IEnumerable<T> GetAllIterator([NotNull] Dictionary<T, HashSet<T>> dict, [NotNull] IEnumerable<T> objs)
+        private IEnumerable<T> GetAllIterator(
+            [NotNull] [InstantHandle] IEnumerable<T> top,
+            [NotNull] Dictionary<T, HashSet<T>> up,
+            [NotNull] Dictionary<T, HashSet<T>> down)
         {
+            Queue<T> queue = new Queue<T>(top);
             HashSet<T> seen = new HashSet<T>(_comparer);
-            Queue<T> queue = new Queue<T>();
-
-            foreach (T current in objs)
-            {
-                Debug.Assert(!ReferenceEquals(current, null));
-                yield return current;
-
-                HashSet<T> depends;
-                if (dict.TryGetValue(current, out depends))
-                {
-                    Debug.Assert(depends != null);
-                    foreach (T val in depends)
-                        queue.Enqueue(val);
-                }
-            }
+            HashSet<T> called = new HashSet<T>(_comparer);
 
             while (queue.Count > 0)
             {
                 T current = queue.Dequeue();
                 Debug.Assert(!ReferenceEquals(current, null));
-                if (seen.Add(current))
-                    yield return current;
 
                 HashSet<T> depends;
-                if (dict.TryGetValue(current, out depends))
+                up.TryGetValue(current, out depends);
+
+                // If the current object depends on an object that has not yet been traversed, add it to the end of the queue and continue
+                if (depends != null && !depends.IsSubsetOf(called))
+                {
+                    queue.Enqueue(current);
+                    continue;
+                }
+                called.Add(current);
+
+                yield return current;
+
+                if (down.TryGetValue(current, out depends) &&
+                    // ReSharper disable once PossibleNullReferenceException
+                    depends.Count > 0)
                 {
                     Debug.Assert(depends != null);
                     foreach (T val in depends)
-                        queue.Enqueue(val);
+                        if (seen.Add(val))
+                            queue.Enqueue(val);
                 }
             }
         }
