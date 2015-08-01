@@ -17,4 +17,7 @@
       </group>
     </references>
   </metadata>
+  <files>
+    <file src="bin\NuGet\AnyCPU\WebApplications.Utilities.Serialization.xml" target="lib\net452" />
+  </files>
 </package>

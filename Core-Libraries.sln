@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{76EB4D52-A38F-44B2-956A-CB49A6B4B435}"
 	ProjectSection(SolutionItems) = preProject
@@ -106,6 +106,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A0713D
 	ProjectSection(SolutionItems) = preProject
 		Common.proj = Common.proj
 		CommonAttributes.cs = CommonAttributes.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpecs", "NuSpecs", "{E0405738-5F57-4FC9-8C4E-9E62ED957E31}"
+	ProjectSection(SolutionItems) = preProject
+		PowerShell\WebApplications.Utilities.PowerShell.Test\Test.nuspec = PowerShell\WebApplications.Utilities.PowerShell.Test\Test.nuspec
+		Testing\WebApplications.Testing.nuspec = Testing\WebApplications.Testing.nuspec
+		Cryptography\WebApplications.Utilities.Cryptography.nuspec = Cryptography\WebApplications.Utilities.Cryptography.nuspec
+		Database\WebApplications.Utilities.Database.nuspec = Database\WebApplications.Utilities.Database.nuspec
+		Initializer\WebApplications.Utilities.Initializer.nuspec = Initializer\WebApplications.Utilities.Initializer.nuspec
+		Logging\WebApplications.Utilities.Logging.nuspec = Logging\WebApplications.Utilities.Logging.nuspec
+		Utilities\WebApplications.Utilities.nuspec = Utilities\WebApplications.Utilities.nuspec
+		Performance\WebApplications.Utilities.Performance.nuspec = Performance\WebApplications.Utilities.Performance.nuspec
+		Scheduling\WebApplications.Utilities.Scheduling.nuspec = Scheduling\WebApplications.Utilities.Scheduling.nuspec
+		Serialization\WebApplications.Utilities.Serialization.nuspec = Serialization\WebApplications.Utilities.Serialization.nuspec
+		Service\WebApplications.Utilities.Service.nuspec = Service\WebApplications.Utilities.Service.nuspec
 	EndProjectSection
 EndProject
 Global
