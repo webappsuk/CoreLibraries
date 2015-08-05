@@ -49,6 +49,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         [NotNull]
         public static readonly DefaultAssemblyResolver AssemblyResolver;
 
+        /// <summary>
+        /// The reader parameters.
+        /// </summary>
         [NotNull]
         public static readonly ReaderParameters ReaderParameters;
 

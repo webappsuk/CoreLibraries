@@ -63,8 +63,26 @@
   <PropertyGroup Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">
     <SignAssembly Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">true</SignAssembly>
     <AssemblyOriginatorKeyFile Condition="Exists('$(SolutionDir)..\Web Applications UK.snk')">$(SolutionDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>TRACE;SIGNED;$(DefineConstants)</DefineConstants>
+    <DefineConstants>SIGNED;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
+  
+  <Target Name="GetSNPath" BeforeTargets="BuildPackage;VerifyStrongName" Condition="'$(SignAssembly)' == 'true'">
+    <GetFrameworkSdkPath>
+      <Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
+    </GetFrameworkSdkPath>
+    <Exec Command="WHERE /r &quot;$(WindowsSdkPath.TrimEnd('\\'))&quot; sn &gt; sn-path.txt"  />
+    <ReadLinesFromFile File="sn-path.txt">
+      <Output TaskParameter="Lines" PropertyName="SNPath"/>
+    </ReadLinesFromFile>
+    <Delete Files="sn-path.txt" />
+    <PropertyGroup>
+      <SNPath>$([System.Text.RegularExpressions.Regex]::Replace('$(SNPath)', ';.*', ''))</SNPath>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="VerifyStrongName" Condition="'$(SignAssembly)' == 'true'" BeforeTargets="BuildPackage" >
+    <Exec Command="&quot;$(SNPath)&quot; /v &quot;$(TargetPath)&quot;" />
+  </Target>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SolutionDir)..\WebApplicationsSignature.targets')" />

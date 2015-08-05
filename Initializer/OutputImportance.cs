@@ -33,10 +33,29 @@ namespace WebApplications.Utilities.Initializer
     /// <remarks></remarks>
     public enum OutputImportance
     {
+        /// <summary>
+        /// Output an error.
+        /// </summary>
         Error,
+
+        /// <summary>
+        /// Output a warning.
+        /// </summary>
         Warning,
+
+        /// <summary>
+        /// Output a high priority message.
+        /// </summary>
         MessageHigh,
+
+        /// <summary>
+        /// Output a low priority message.
+        /// </summary>
         MessageLow,
+
+        /// <summary>
+        /// Output a normal priority message.
+        /// </summary>
         MessageNormal
     }
 }

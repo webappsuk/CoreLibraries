@@ -32,10 +32,29 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
     /// </summary>
     public enum Level
     {
+        /// <summary>
+        /// The low log level.
+        /// </summary>
         Low,
+
+        /// <summary>
+        /// The normal log level.
+        /// </summary>
         Normal,
+
+        /// <summary>
+        /// The high log level.
+        /// </summary>
         High,
+
+        /// <summary>
+        /// The warning log level.
+        /// </summary>
         Warning,
+
+        /// <summary>
+        /// The error log level.
+        /// </summary>
         Error
     }
 }

@@ -91,7 +91,7 @@ namespace WebApplications.Utilities.Database.Schema
             private readonly IReadOnlyDictionary<string, SqlType> _typesByName;
 
             /// <summary>
-            ///   Holds all the types for the schema, which are stored with the <see cref="SqlType.FullName">full
+            ///   Holds all the types for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlType.FullName">full
             ///   name</see> as the key and the <see cref="SqlType"/> as the value.
             /// </summary>
             [PublicAPI]

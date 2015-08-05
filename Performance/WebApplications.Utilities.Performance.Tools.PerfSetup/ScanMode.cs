@@ -27,10 +27,24 @@
 
 namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
+    /// <summary>
+    /// Defines the performance counter scan modes.
+    /// </summary>
     public enum ScanMode
     {
+        /// <summary>
+        /// Adds performance counters.
+        /// </summary>
         Add,
+
+        /// <summary>
+        /// Deletes perfomance counters.
+        /// </summary>
         Delete,
+
+        /// <summary>
+        /// Lists the performance counters.
+        /// </summary>
         List
     }
 }

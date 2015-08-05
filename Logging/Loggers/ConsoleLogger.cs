@@ -47,7 +47,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         /// <remarks>
-        /// <para>Along with the <see cref="Log.ToString(string, IFormatProvider)">standard formats supported by the logger</see>, also supports colouration using colour formats.</para>
+        /// <para>Along with the <see cref="T:WebApplications.Utilities.Logging.Log.ToString(string, IFormatProvider)">standard formats supported by the logger</see>, also supports colouration using colour formats.</para>
         /// <para>To change colour use a '+' or '-' followed by a <see cref="ConsoleColor"/> e.g. <code>{+White}</code>. '+' indicates a foreground colour change, whilst
         /// '-' will change the background colour.</para>
         /// <para>The '?' colour will pick a colour based on the current log level, e.g. <code>{+?}</code> for an <see cref="LoggingLevel.Error">error</see> will

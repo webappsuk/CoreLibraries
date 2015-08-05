@@ -19,7 +19,7 @@ mkdir nugets 2>nul
 
 msbuild Core-Libraries.sln /p:Configuration=NuGet;SolutionDir=%slnDir% /t:rebuild
 
-
 :End
 echo.
-pause >nul
+
+if /I NOT "%1" == "nopause" pause

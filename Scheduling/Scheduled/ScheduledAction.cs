@@ -281,6 +281,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <value>The last execution finished date and time.</value>
         public Instant LastExecutionFinished { get; protected set; }
 
+        /// <summary>
+        /// The execution count.
+        /// </summary>
         protected long ExecutionCountInternal;
 
         /// <summary>

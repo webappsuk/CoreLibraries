@@ -164,7 +164,7 @@ namespace WebApplications.Utilities
         /// Called when the utility configuration changes. If the <see cref="UtilityConfiguration.TimeZoneDB"/> property changes, the database will be reloaded.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="UtilityConfiguration.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
         internal static void OnUtilityConfigurationChanged(
             [NotNull] object sender,
             [NotNull] ConfigurationSection<UtilityConfiguration>.ConfigurationChangedEventArgs e)

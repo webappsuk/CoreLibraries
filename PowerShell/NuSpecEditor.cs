@@ -45,9 +45,15 @@ namespace WebApplications.Utilities.PowerShell
     [UsedImplicitly]
     public class NuSpecEditor
     {
+        /// <summary>
+        /// The dependencies node name.
+        /// </summary>
         [NotNull]
         public readonly XName DependenciesXName;
 
+        /// <summary>
+        /// The dependency node name.
+        /// </summary>
         [NotNull]
         public readonly XName DependencyXName;
 
@@ -57,12 +63,21 @@ namespace WebApplications.Utilities.PowerShell
         [NotNull]
         public readonly XDocument Document;
 
+        /// <summary>
+        /// The file node name.
+        /// </summary>
         [NotNull]
         public readonly XName FileXName;
 
+        /// <summary>
+        /// The files node name.
+        /// </summary>
         [NotNull]
         public readonly XName FilesXName;
 
+        /// <summary>
+        /// The metadata node name.
+        /// </summary>
         [NotNull]
         public readonly XName MetadataXName;
 
@@ -84,9 +99,15 @@ namespace WebApplications.Utilities.PowerShell
         [NotNull]
         public readonly string Path;
 
+        /// <summary>
+        /// The reference node name.
+        /// </summary>
         [NotNull]
         public readonly XName ReferenceXName;
 
+        /// <summary>
+        /// The references node name.
+        /// </summary>
         [NotNull]
         public readonly XName ReferencesXName;
 
@@ -127,6 +148,7 @@ namespace WebApplications.Utilities.PowerShell
             Namespace = PacakgeElement.Name.Namespace;
 
             // Create names and find key nodes if present.
+            // ReSharper disable AssignNullToNotNullAttribute
             MetadataXName = Namespace + "metadata";
             _metadataElement = PacakgeElement.Elements(MetadataXName).SingleOrDefault();
 
@@ -143,6 +165,7 @@ namespace WebApplications.Utilities.PowerShell
             if (_metadataElement != null)
                 _dependenciesElement = _metadataElement.Elements(DependenciesXName).SingleOrDefault();
             DependencyXName = Namespace + "dependency";
+            // ReSharper restore AssignNullToNotNullAttribute
         }
 
         /// <summary>

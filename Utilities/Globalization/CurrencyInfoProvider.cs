@@ -195,7 +195,7 @@ namespace WebApplications.Utilities.Globalization
         /// Called when the utility configuration changes. If the <see cref="Configuration.UtilityConfiguration.ISO4217"/> property changes, the data_stream will be reloaded.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Configuration.UtilityConfiguration.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
         internal static void OnUtilityConfigurationChanged(
             [NotNull] object sender,
             [NotNull] UtilityConfiguration.ConfigurationChangedEventArgs e)

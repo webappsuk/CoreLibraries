@@ -67,10 +67,11 @@ namespace WebApplications.Utilities
         /// </summary>
         Tiff,
 
-        /// <summary>
-        /// The Exchangeable Image File (Exif) format.
-        /// </summary>
-        //Exif,
+        // /// <summary>
+        // /// The Exchangeable Image File (Exif) format.
+        // /// </summary>
+        // Exif,
+
         /// <summary>
         /// The the Windows icon image format.
         /// </summary>

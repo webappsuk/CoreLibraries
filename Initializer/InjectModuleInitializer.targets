@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <!-- Check for the signed assemblies and located strong name key pair file -->
-  <PropertyGroup Condition="'$(SignAssembly)'=='true' AND
-                 Exists('$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)')">
-    <InjectModuleSnk>$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
+  <PropertyGroup Condition="'$(SignAssembly)'=='true' AND Exists('$(AssemblyOriginatorKeyFile)')">
+    <InjectModuleSnk>$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
   </PropertyGroup>
 
   <UsingTask TaskName="InjectModuleInitializer"

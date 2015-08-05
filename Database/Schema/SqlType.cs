@@ -322,7 +322,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Returns <see langword="true"/> if the CLR type is acceptable; otherwise returns <see langword="false"/>.
         /// </returns>
         /// <remarks>
-        ///   There is a <see cref="clrType"/> cannot be <see langword="null"/>.
+        ///   There is a <paramref name="clrType"/> cannot be <see langword="null"/>.
         /// </remarks>
         public bool AcceptsCLRType([NotNull] Type clrType)
         {

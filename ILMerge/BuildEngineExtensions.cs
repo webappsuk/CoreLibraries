@@ -33,8 +33,11 @@ using JetBrains.Annotations;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 
-namespace ILMerge.Build.Tasks
+namespace ILMerge.Build.Task
 {
+    /// <summary>
+    /// Extensions for <see cref="IBuildEngine"/>.
+    /// </summary>
     public static class BuildEngineExtensions
     {
         private const BindingFlags BindingFlags =
@@ -53,6 +56,7 @@ namespace ILMerge.Build.Tasks
         public static IEnumerable<string> GetEnvironmentVariable(
             this IBuildEngine buildEngine,
             string key,
+            // ReSharper disable once UnusedParameter.Global
             bool throwIfNotFound = false)
         {
             ProjectInstance projectInstance = GetProjectInstance(buildEngine);
@@ -69,7 +73,7 @@ namespace ILMerge.Build.Tasks
                 return properties.Select(x => x.EvaluatedValue);
 
             if (throwIfNotFound)
-                throw new Exception(string.Format("Could not extract from '{0}' environmental variables.", key));
+                throw new Exception($"Could not extract from '{key}' environmental variables.");
 
             return Enumerable.Empty<string>();
         }

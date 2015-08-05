@@ -298,7 +298,7 @@ namespace WebApplications.Utilities.Database.Schema
         }
 
         /// <summary>
-        ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="SqlProgramDefinition.FullName">full
+        ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlProgramDefinition.FullName">full
         ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
         /// </summary>
         public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName
@@ -315,7 +315,7 @@ namespace WebApplications.Utilities.Database.Schema
         }
 
         /// <summary>
-        ///   Holds all the types for the schema, which are stored with the <see cref="SqlType.FullName">full
+        ///   Holds all the types for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlType.FullName">full
         ///   name</see> and <see cref="SqlType.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
         /// </summary>
         public IReadOnlyDictionary<string, SqlType> TypesByName

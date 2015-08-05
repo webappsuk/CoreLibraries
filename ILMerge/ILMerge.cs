@@ -28,23 +28,42 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace ILMerge.Build.Tasks
+namespace ILMerge.Build.Task
 {
+    /// <summary>
+    /// The possible assembly kinds.
+    /// </summary>
     public enum Kind
     {
+        /// <summary>
+        /// A library
+        /// </summary>
+        [UsedImplicitly]
         Dll,
+
+        /// <summary>
+        /// A console application.
+        /// </summary>
+        [UsedImplicitly]
         Exe,
+
+        /// <summary>
+        /// A Windows application.
+        /// </summary>
+        [UsedImplicitly]
         WinExe,
     }
 
+    /// <summary>
+    /// ILMerge build task.
+    /// </summary>
     [UsedImplicitly]
-    public class ILMerge : Task
+    public class ILMerge : Microsoft.Build.Utilities.Task
     {
         private string _attributeFile;
         private string _excludeFile;
@@ -52,8 +71,13 @@ namespace ILMerge.Build.Tasks
         private string _outputFile;
         private string _keyFile;
         private string _targetKind;
-        private string _ilMergeTool;
 
+        /// <summary>
+        /// Gets or sets the attribute file.
+        /// </summary>
+        /// <value>
+        /// The attribute file.
+        /// </value>
         [UsedImplicitly]
         public virtual string AttributeFile
         {
@@ -64,18 +88,51 @@ namespace ILMerge.Build.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the the "transitive closure" of the input assemblies is computed and added to the list of input assemblies.
+        /// </summary>
+        /// <remarks>An assembly is considered part of the transitive closure if it is referenced, either directly or indirectly, 
+        /// from one of the originally specified input assemblies and it has an external reference to one of the input assemblies, 
+        /// or one of the assemblies that has such a reference.</remarks>
+        /// <value>
+        ///   <see langword="true" /> if closed; otherwise, <see langword="false" />.
+        /// </value>
         [UsedImplicitly]
         public virtual bool Closed { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the assembly level attributes of each input assembly should be copied over into the target assembly.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if the assembly level attributes of each input assembly should be copied over into the target assembly.; otherwise, <see langword="false" />.
+        /// </value>
         [UsedImplicitly]
         public virtual bool CopyAttributes { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to create a .pdb file for the output assembly and merge into it any .pdb files found for input assemblies.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if a .pdb file should be created for the output assembly and merge into it any .pdb files found for input assemblies; otherwise, <see langword="false" />.
+        /// </value>
         [UsedImplicitly]
         public virtual bool DebugInfo { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether XML documentation files should be merged.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if XML documentation files should be merged; otherwise, <see langword="false" />.
+        /// </value>
         [UsedImplicitly]
         public virtual bool MergeXml { get; set; }
 
+        /// <summary>
+        /// Gets or sets the regex to exclude files from being internalised.
+        /// </summary>
+        /// <value>
+        /// The exclude file.
+        /// </value>
         [UsedImplicitly]
         public virtual string ExcludeFile
         {
@@ -86,15 +143,44 @@ namespace ILMerge.Build.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether types in assemblies other than the primary assembly have their visibility modified.
+        /// </summary>
+        /// <remarks>When it is true, then all non-exempt types that are visible outside of their assembly have their visibility modified 
+        /// so that they are not visible from outside of the merged assembly. A type is exempt if its full name matches a line from the 
+        /// <see cref="ExcludeFile"/> using the .NET regular expression engine.</remarks>
+        /// <value>
+        ///   <see langword="true" /> if types in assemblies other than the primary assembly have their visibility modified; otherwise, <see langword="false" />.
+        /// </value>
         [UsedImplicitly]
         public virtual bool Internalize { get; set; }
 
+        /// <summary>
+        /// Gets or sets the directories to be used to search for input assemblies.
+        /// </summary>
+        /// <value>
+        /// The library path.
+        /// </value>
         [UsedImplicitly]
+        [ItemNotNull]
         public virtual ITaskItem[] LibraryPath { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether log messages are written.
+        /// </summary>
+        /// <remarks>If <see cref="Log"/> is true, but <see cref="LogFile"/> is null, then log messages are written to <see cref="Console.Out"/>.</remarks>
+        /// <value>
+        ///   <see langword="true" /> if log messages are written; otherwise, <see langword="false" />.
+        /// </value>
         [UsedImplicitly]
         public virtual bool ShouldLog { get; set; }
 
+        /// <summary>
+        /// Gets or sets the path and filename that log messages are written to.
+        /// </summary>
+        /// <value>
+        /// The log file.
+        /// </value>
         [UsedImplicitly]
         public virtual string LogFile
         {
@@ -105,6 +191,12 @@ namespace ILMerge.Build.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets or sets the path and filename that the target assembly will be written to.
+        /// </summary>
+        /// <value>
+        /// The output file.
+        /// </value>
         [Required]
         [UsedImplicitly]
         public virtual string OutputFile
@@ -116,6 +208,15 @@ namespace ILMerge.Build.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets or sets the path and filename to a .snk file.
+        /// </summary>
+        /// <remakrs>The target assembly will be signed with its contents and will then have a strong name.
+        ///  It can be used with the DelaySign property (Section 2.9) to have the target assembly delay signed.
+        ///  This can be done even if the primary assembly was fully signed.</remakrs>
+        /// <value>
+        /// The SNK file.
+        /// </value>
         [UsedImplicitly]
         public virtual string SnkFile
         {
@@ -126,20 +227,35 @@ namespace ILMerge.Build.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets or sets the input assemblies.
+        /// </summary>
+        /// <value>
+        /// The input assemblies.
+        /// </value>
         [Required]
         [UsedImplicitly]
+        [NotNull]
         public virtual ITaskItem[] InputAssemblies { get; set; }
 
+        /// <summary>
+        /// Gets or sets the whether the target assembly is created as a library, a console application or as a Windows application.
+        /// </summary>
+        /// <value>
+        /// The kind of the target assembly.
+        /// </value>
         [UsedImplicitly]
         public string TargetKind
         {
             get { return _targetKind; }
             set
             {
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 if (Enum.IsDefined(typeof(Kind), value))
                     _targetKind = value;
                 else
                 {
+                    // ReSharper disable once PossibleNullReferenceException
                     Log.LogWarning(
                         "TargetKind should be one of [Exe|Dll|WinExe] or null; set to null");
                     _targetKind = null;
@@ -147,17 +263,19 @@ namespace ILMerge.Build.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets or sets the ILMerge tool path.
+        /// </summary>
+        /// <value>
+        /// The il merge tool.
+        /// </value>
         [Required]
         [UsedImplicitly]
-        public string ILMergeTool
-        {
-            get { return _ilMergeTool; }
-            set
-            {
-                _ilMergeTool = value;
-            }
-        }
+        public string ILMergeTool { get; set; }
 
+        /// <summary>
+        /// Executes the task.
+        /// </summary>
         public override bool Execute()
         {
             CommandLineBuilder commandLine = new CommandLineBuilder();
@@ -198,10 +316,12 @@ namespace ILMerge.Build.Tasks
                     frameworkVersion = TargetDotNetFrameworkVersion.Version40;
                     framework = "v4";
                     break;
+                // ReSharper disable RedundantCaseLabel
                 case "v4.5":
                 case "v4.5.1":
                 case "v4.5.2":
                 case "v4.6":
+                // ReSharper restore RedundantCaseLabel
                 default:
                     frameworkVersion = TargetDotNetFrameworkVersion.Version45;
                     framework = "v4";
@@ -227,6 +347,8 @@ namespace ILMerge.Build.Tasks
                 frameworkVersion,
                 platformArchitecture);
 
+            Debug.Assert(Log != null);
+
             Log.LogMessage(
                 MessageImportance.Normal,
                 "Merge Framework: {0}, {1}",
@@ -251,9 +373,9 @@ namespace ILMerge.Build.Tasks
                 Log.LogMessage(
                     MessageImportance.Normal,
                     "Merging {0} assembl{1} to '{2}'.",
-                    (object)InputAssemblies.Length,
-                    InputAssemblies.Length != 1 ? (object)"ies" : (object)"y",
-                    (object)_outputFile);
+                    InputAssemblies.Length,
+                    InputAssemblies.Length != 1 ? "ies" : "y",
+                    _outputFile);
 
                 Log.LogMessage(MessageImportance.Low, ILMergeTool + " " + commandLine);
 
@@ -268,12 +390,16 @@ namespace ILMerge.Build.Tasks
                 };
                 proc.OutputDataReceived += (sender, args) =>
                 {
+                    Debug.Assert(args != null);
+
                     // Null is sent when the stream closes, so skip it
                     if (!string.IsNullOrEmpty(args.Data))
                         Log.LogMessage(args.Data);
                 };
                 proc.ErrorDataReceived += (sender, args) =>
                 {
+                    Debug.Assert(args != null);
+
                     // Null is sent when the stream closes, so skip it
                     if (!string.IsNullOrEmpty(args.Data))
                         Log.LogError(args.Data);

@@ -78,7 +78,7 @@ namespace WebApplications.Utilities.Caching
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WeakSingleton{T}"/> to <see cref="T"/>.
+        /// Performs an implicit conversion from <see cref="WeakSingleton{T}"/> to <typeparamref name="T"/>.
         /// </summary>
         /// <param name="weak">The weak.</param>
         /// <returns>
