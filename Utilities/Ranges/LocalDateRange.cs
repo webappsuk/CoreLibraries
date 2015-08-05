@@ -180,10 +180,10 @@ namespace WebApplications.Utilities.Ranges
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             if (Period.Between(start, end, PeriodUnits.Months).Months < 1)
-                return Period.FromDays(1);
+                return TimeHelpers.OneDayPeriod;
             if (Period.Between(start, end, PeriodUnits.Years).Years < 1)
-                return Period.FromMonths(1);
-            return Period.FromYears(1);
+                return TimeHelpers.OneMonthPeriod;
+            return TimeHelpers.OneYearPeriod;
             // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
 

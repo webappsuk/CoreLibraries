@@ -115,16 +115,16 @@ namespace WebApplications.Utilities.Ranges
                 delta.Years > 0 ||
                 delta.Weeks > 0 ||
                 delta.Days > 0)
-                return Period.FromDays(1);
+                return TimeHelpers.OneDayPeriod;
             if (delta.Hours > 0)
-                return Period.FromHours(1);
+                return TimeHelpers.OneHourPeriod;
             if (delta.Minutes > 0)
-                return Period.FromMinutes(1);
+                return TimeHelpers.OneMinutePeriod;
             if (delta.Seconds > 0)
-                return Period.FromSeconds(1);
+                return TimeHelpers.OneSecondPeriod;
             if (delta.Milliseconds > 0)
-                return Period.FromMilliseconds(1);
-            return Period.FromTicks(1);
+                return TimeHelpers.OneMillisecondPeriod;
+            return TimeHelpers.OneTickPeriod;
             // ReSharper restore AssignNullToNotNullAttribute
         }
 
@@ -179,7 +179,7 @@ namespace WebApplications.Utilities.Ranges
             Debug.Assert(!rounded.HasTimeComponent);
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            return rounded.IsZero() ? Period.FromDays(1) : rounded;
+            return rounded.IsZero() ? TimeHelpers.OneDayPeriod : rounded;
         }
 
         /// <summary>
