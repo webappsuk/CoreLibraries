@@ -56,7 +56,7 @@ namespace WebApplications.Utilities.Ranges
         public LocalDateTimeRange(LocalDateTime start, [NotNull] Period duration)
             : base(start, start + duration, AutoStep(start, start + duration))
         {
-            if (duration == null) throw new ArgumentNullException("duration");
+            if (duration == null) throw new ArgumentNullException(nameof(duration));
             if (!duration.IsPositive(start))
                 throw new ArgumentOutOfRangeException(Resources.LocalRange_DurationMustBePositive);
         }
@@ -71,7 +71,7 @@ namespace WebApplications.Utilities.Ranges
             // ReSharper disable once AssignNullToNotNullAttribute
             : base(start, end, step.Normalize())
         {
-            if (step == null) throw new ArgumentNullException("step");
+            if (step == null) throw new ArgumentNullException(nameof(step));
             if (!step.IsPositive(start)) throw new ArgumentOutOfRangeException(Resources.LocalRange_StepMustBePositive);
         }
 
@@ -85,8 +85,8 @@ namespace WebApplications.Utilities.Ranges
             // ReSharper disable once AssignNullToNotNullAttribute
             : base(start, start + duration, step.Normalize())
         {
-            if (step == null) throw new ArgumentNullException("step");
-            if (duration == null) throw new ArgumentNullException("duration");
+            if (step == null) throw new ArgumentNullException(nameof(step));
+            if (duration == null) throw new ArgumentNullException(nameof(duration));
             if (!step.IsPositive(start)) throw new ArgumentOutOfRangeException(Resources.LocalRange_StepMustBePositive);
             if (!duration.IsPositive(start))
                 throw new ArgumentOutOfRangeException(Resources.LocalRange_DurationMustBePositive);
@@ -190,7 +190,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return String.Format("{0} - {1}", Start, End);
+            return $"{Start} - {End}";
         }
 
         /// <summary>
@@ -203,10 +203,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider = null)
         {
-            return String.Format(
-                "{0} - {1}",
-                Start.ToString(format, formatProvider),
-                End.ToString(format, formatProvider));
+            return $"{Start.ToString(format, formatProvider)} - {End.ToString(format, formatProvider)}";
         }
     }
 }

@@ -138,13 +138,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             ZonedDateTimeRange zonedDateTimeRange = new ZonedDateTimeRange(start, end, step);
 
-            Regex formatTest =
-                new Regex(
-                    @"^-?\d{4,5}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2} \w+ \(\+\d{2}\) - -?\d{4,5}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2} \w+ \(\+\d{2}\)$");
-
-            Assert.IsTrue(
-                formatTest.IsMatch(zonedDateTimeRange.ToString()),
-                "String representation of range should be of format yyyy-mm-ddThh:mm:ss zone - yyyy-mm-ddThh:mm:ss zone");
+            Assert.AreEqual($"{start} - {end}", zonedDateTimeRange.ToString());
         }
 
         [NotNull]

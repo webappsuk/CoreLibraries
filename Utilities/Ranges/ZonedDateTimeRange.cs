@@ -69,7 +69,7 @@ namespace WebApplications.Utilities.Ranges
                 new ZonedDateTime(instantRange.End, dateTimeZone),
                 instantRange.Step)
         {
-            if (dateTimeZone == null) throw new ArgumentNullException("dateTimeZone");
+            if (dateTimeZone == null) throw new ArgumentNullException(nameof(dateTimeZone));
         }
 
         /// <summary>
@@ -86,8 +86,8 @@ namespace WebApplications.Utilities.Ranges
                 new ZonedDateTime(instantRange.Start, startDateTimeZone),
                 new ZonedDateTime(instantRange.End, endDateTimeZone))
         {
-            if (startDateTimeZone == null) throw new ArgumentNullException("startDateTimeZone");
-            if (endDateTimeZone == null) throw new ArgumentNullException("endDateTimeZone");
+            if (startDateTimeZone == null) throw new ArgumentNullException(nameof(startDateTimeZone));
+            if (endDateTimeZone == null) throw new ArgumentNullException(nameof(endDateTimeZone));
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace WebApplications.Utilities.Ranges
         public ZonedDateTimeRange(Instant start, Instant end, [NotNull] DateTimeZone dateTimeZone)
             : base(new ZonedDateTime(start, dateTimeZone), new ZonedDateTime(end, dateTimeZone))
         {
-            if (dateTimeZone == null) throw new ArgumentNullException("dateTimeZone");
+            if (dateTimeZone == null) throw new ArgumentNullException(nameof(dateTimeZone));
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace WebApplications.Utilities.Ranges
         public ZonedDateTimeRange(Instant start, Instant end, [NotNull] DateTimeZone dateTimeZone, Duration step)
             : base(new ZonedDateTime(start, dateTimeZone), new ZonedDateTime(end, dateTimeZone), step)
         {
-            if (dateTimeZone == null) throw new ArgumentNullException("dateTimeZone");
+            if (dateTimeZone == null) throw new ArgumentNullException(nameof(dateTimeZone));
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace WebApplications.Utilities.Ranges
             [NotNull] DateTimeZone endDateTimeZone)
             : base(new ZonedDateTime(start, startDateTimeZone), new ZonedDateTime(end, endDateTimeZone))
         {
-            if (startDateTimeZone == null) throw new ArgumentNullException("startDateTimeZone");
-            if (endDateTimeZone == null) throw new ArgumentNullException("endDateTimeZone");
+            if (startDateTimeZone == null) throw new ArgumentNullException(nameof(startDateTimeZone));
+            if (endDateTimeZone == null) throw new ArgumentNullException(nameof(endDateTimeZone));
         }
 
         /// <summary>
@@ -149,8 +149,8 @@ namespace WebApplications.Utilities.Ranges
             Duration step)
             : base(new ZonedDateTime(start, startDateTimeZone), new ZonedDateTime(end, endDateTimeZone), step)
         {
-            if (startDateTimeZone == null) throw new ArgumentNullException("startDateTimeZone");
-            if (endDateTimeZone == null) throw new ArgumentNullException("endDateTimeZone");
+            if (startDateTimeZone == null) throw new ArgumentNullException(nameof(startDateTimeZone));
+            if (endDateTimeZone == null) throw new ArgumentNullException(nameof(endDateTimeZone));
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public static implicit operator InstantRange([NotNull] ZonedDateTimeRange zonedDateTimeRange)
         {
-            if (zonedDateTimeRange == null) throw new ArgumentNullException("zonedDateTimeRange");
+            if (zonedDateTimeRange == null) throw new ArgumentNullException(nameof(zonedDateTimeRange));
             return new InstantRange(zonedDateTimeRange);
         }
 
@@ -175,7 +175,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return String.Format("{0} - {1}", Start, End);
+            return $"{Start} - {End}";
         }
 
         /// <summary>
@@ -189,10 +189,7 @@ namespace WebApplications.Utilities.Ranges
         [StringFormatMethod("format")]
         public string ToString(string format, IFormatProvider formatProvider = null)
         {
-            return String.Format(
-                "{0} - {1}",
-                Start.ToString(format, formatProvider),
-                End.ToString(format, formatProvider));
+            return $"{Start.ToString(format, formatProvider)} - {End.ToString(format, formatProvider)}";
         }
     }
 }

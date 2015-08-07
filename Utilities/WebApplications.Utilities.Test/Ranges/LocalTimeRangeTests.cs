@@ -79,14 +79,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             LocalTimeRange localRange = new LocalTimeRange(start, end, step);
 
-            Regex formatTest =
-                new Regex(@"^\d{2}:\d{2}:\d{2} - \d{2}:\d{2}:\d{2}$");
-
-            Trace.WriteLine(localRange.ToString());
-
-            Assert.IsTrue(
-                formatTest.IsMatch(localRange.ToString()),
-                "String representation of range should be of format HH:mm:ss - HH:mm:ss");
+            Assert.AreEqual($"{start} - {end}", localRange.ToString());
         }
 
         [NotNull]

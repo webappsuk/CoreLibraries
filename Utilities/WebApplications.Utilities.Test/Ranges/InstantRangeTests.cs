@@ -124,12 +124,8 @@ namespace WebApplications.Utilities.Test.Ranges
             Duration step = RandomDuration(MinDuration, length - MinDuration);
 
             InstantRange instantRange = new InstantRange(start, end, step);
-
-            Regex formatTest = new Regex(@"^-?\d{4,5}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z - -?\d{4,5}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$");
-
-            Assert.IsTrue(
-                formatTest.IsMatch(instantRange.ToString()),
-                "String representation of range should be of format yyyy-mm-ddThh:mm:ssZ - yyyy-mm-ddThh:mm:ssZ");
+            
+            Assert.AreEqual($"{start} - {end}", instantRange.ToString());
         }
 
         private static InstantRange GenerateInstantRangeWithStepSmallerThanRange(

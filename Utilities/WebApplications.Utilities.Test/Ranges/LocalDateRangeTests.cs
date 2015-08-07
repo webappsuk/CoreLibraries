@@ -55,14 +55,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             LocalDateRange localRange = new LocalDateRange(start, end, step);
 
-            Regex formatTest =
-                new Regex(@"^\d{2} \w+ -?\d{4,5} - \d{2} \w+ -?\d{4,5}$");
-
-            Trace.WriteLine(localRange.ToString());
-
-            Assert.IsTrue(
-                formatTest.IsMatch(localRange.ToString()),
-                "String representation of range should be of format dd MMMM yyyy - dd MMMM yyyy");
+            Assert.AreEqual($"{start} - {end}", localRange.ToString());
         }
 
         [NotNull]

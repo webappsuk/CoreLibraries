@@ -63,7 +63,7 @@ namespace WebApplications.Utilities.Ranges
         public InstantRange(Instant start, Duration duration)
             : base(start, start + duration, DurationRange.AutoStep(duration))
         {
-            if (duration < Duration.Zero) throw new ArgumentOutOfRangeException("duration");
+            if (duration < Duration.Zero) throw new ArgumentOutOfRangeException(nameof(duration));
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace WebApplications.Utilities.Ranges
         public InstantRange(Instant start, Duration duration, Duration step)
             : base(start, start + duration, step)
         {
-            if (duration < Duration.Zero) throw new ArgumentOutOfRangeException("duration");
+            if (duration < Duration.Zero) throw new ArgumentOutOfRangeException(nameof(duration));
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return String.Format("{0} - {1}", Start, End);
+            return $"{Start} - {End}";
         }
 
         /// <summary>
@@ -126,10 +126,7 @@ namespace WebApplications.Utilities.Ranges
         [StringFormatMethod("format")]
         public string ToString(string format, IFormatProvider formatProvider = null)
         {
-            return String.Format(
-                "{0} - {1}",
-                Start.ToString(format, formatProvider),
-                End.ToString(format, formatProvider));
+            return $"{Start.ToString(format, formatProvider)} - {End.ToString(format, formatProvider)}";
         }
     }
 }

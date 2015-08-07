@@ -44,6 +44,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         public static void AssemblyInit(TestContext context)
         {
             Duration tmp = Scheduler.DefaultMaximumDuration;
+            Trace.WriteLine(tmp);
         }
 
         [TestMethod]
@@ -116,7 +117,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             bool ran = false;
             Instant due = TimeHelpers.Clock.Now + Duration.FromMilliseconds(100);
-            Duration duration = Duration.FromMilliseconds(10);
+            Duration duration = Duration.FromMilliseconds(20);
             ScheduledAction action = Scheduler.Add(
                 () =>
                 {

@@ -105,14 +105,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return string.Format(
-                "{0:d} - {1:d} [{2}]",
-                Start,
-                End,
-                Days == 1
-                    ? string.Format("{0} day", Days)
-                    : string.Format("{0} days", Days)
-                );
+            return $"{Start:d} - {End:d} [{(Days == 1 ? $"{Days} day" : $"{Days} days")}]";
         }
 
         /// <summary>

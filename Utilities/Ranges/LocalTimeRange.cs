@@ -58,7 +58,7 @@ namespace WebApplications.Utilities.Ranges
             // ReSharper disable once AssignNullToNotNullAttribute
             : base(start, start + duration, AutoStep(start, start + duration))
         {
-            if (duration == null) throw new ArgumentNullException("duration");
+            if (duration == null) throw new ArgumentNullException(nameof(duration));
             // ReSharper disable once PossibleNullReferenceException
             if (duration.Normalize().HasDateComponent)
                 throw new ArgumentException(Resources.LocalTimeRange_DurationCannotHaveDate);
@@ -75,7 +75,7 @@ namespace WebApplications.Utilities.Ranges
         public LocalTimeRange(LocalTime start, LocalTime end, [NotNull] Period step)
             : base(start, end, step)
         {
-            if (step == null) throw new ArgumentNullException("step");
+            if (step == null) throw new ArgumentNullException(nameof(step));
             // ReSharper disable once PossibleNullReferenceException
             if (step.Normalize().HasDateComponent)
                 throw new ArgumentOutOfRangeException(Resources.LocalTimeRange_StepCannotHaveDate);
@@ -92,8 +92,8 @@ namespace WebApplications.Utilities.Ranges
         public LocalTimeRange(LocalTime start, [NotNull] Period duration, [NotNull] Period step)
             : base(start, start + duration, step)
         {
-            if (step == null) throw new ArgumentNullException("step");
-            if (duration == null) throw new ArgumentNullException("duration");
+            if (step == null) throw new ArgumentNullException(nameof(step));
+            if (duration == null) throw new ArgumentNullException(nameof(duration));
             // ReSharper disable PossibleNullReferenceException
             if (step.Normalize().HasDateComponent)
                 throw new ArgumentOutOfRangeException(Resources.LocalTimeRange_StepCannotHaveDate);
@@ -193,7 +193,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return String.Format("{0} - {1}", Start, End);
+            return $"{Start} - {End}";
         }
 
         /// <summary>
@@ -206,10 +206,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider = null)
         {
-            return String.Format(
-                "{0} - {1}",
-                Start.ToString(format, formatProvider),
-                End.ToString(format, formatProvider));
+            return $"{Start.ToString(format, formatProvider)} - {End.ToString(format, formatProvider)}";
         }
     }
 }

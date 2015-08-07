@@ -57,12 +57,12 @@ namespace WebApplications.Utilities.Ranges
             // ReSharper disable once AssignNullToNotNullAttribute
             : base(start, start + duration, AutoStep(start, start + duration))
         {
-            if (duration == null) throw new ArgumentNullException("duration");
+            if (duration == null) throw new ArgumentNullException(nameof(duration));
             // ReSharper disable once PossibleNullReferenceException
             if (duration.Normalize().HasTimeComponent)
-                throw new ArgumentOutOfRangeException("duration", Resources.LocalDateRange_DurationCannotHaveTime);
+                throw new ArgumentOutOfRangeException(nameof(duration), Resources.LocalDateRange_DurationCannotHaveTime);
             if (!duration.IsPositive(start))
-                throw new ArgumentOutOfRangeException("duration", Resources.LocalRange_DurationMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(duration), Resources.LocalRange_DurationMustBePositive);
         }
 
         /// <summary>
@@ -85,12 +85,12 @@ namespace WebApplications.Utilities.Ranges
         public LocalDateRange(LocalDate start, LocalDate end, [NotNull] Period step)
             : base(start, end, step)
         {
-            if (step == null) throw new ArgumentNullException("step");
+            if (step == null) throw new ArgumentNullException(nameof(step));
             // ReSharper disable once PossibleNullReferenceException
             if (step.Normalize().HasTimeComponent)
-                throw new ArgumentOutOfRangeException("step", Resources.LocalDateRange_StepCannotHaveTime);
+                throw new ArgumentOutOfRangeException(nameof(step), Resources.LocalDateRange_StepCannotHaveTime);
             if (!step.IsPositive(start))
-                throw new ArgumentOutOfRangeException("step", Resources.LocalRange_StepMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(step), Resources.LocalRange_StepMustBePositive);
         }
 
         /// <summary>
@@ -102,12 +102,12 @@ namespace WebApplications.Utilities.Ranges
         public LocalDateRange(LocalDate start, uint days, [NotNull] Period step)
             : base(start, start + Period.FromDays(days), step)
         {
-            if (step == null) throw new ArgumentNullException("step");
+            if (step == null) throw new ArgumentNullException(nameof(step));
             // ReSharper disable once PossibleNullReferenceException
             if (step.Normalize().HasTimeComponent)
-                throw new ArgumentOutOfRangeException("step", Resources.LocalDateRange_StepCannotHaveTime);
+                throw new ArgumentOutOfRangeException(nameof(step), Resources.LocalDateRange_StepCannotHaveTime);
             if (!step.IsPositive(start))
-                throw new ArgumentOutOfRangeException("step", Resources.LocalRange_StepMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(step), Resources.LocalRange_StepMustBePositive);
         }
 
         /// <summary>
@@ -119,18 +119,18 @@ namespace WebApplications.Utilities.Ranges
         public LocalDateRange(LocalDate start, [NotNull] Period duration, [NotNull] Period step)
             : base(start, start + duration, step)
         {
-            if (duration == null) throw new ArgumentNullException("duration");
-            if (step == null) throw new ArgumentNullException("step");
+            if (duration == null) throw new ArgumentNullException(nameof(duration));
+            if (step == null) throw new ArgumentNullException(nameof(step));
             // ReSharper disable PossibleNullReferenceException
             if (step.Normalize().HasTimeComponent)
-                throw new ArgumentOutOfRangeException("step", Resources.LocalDateRange_StepCannotHaveTime);
+                throw new ArgumentOutOfRangeException(nameof(step), Resources.LocalDateRange_StepCannotHaveTime);
             if (duration.Normalize().HasTimeComponent)
-                throw new ArgumentOutOfRangeException("duration", Resources.LocalDateRange_DurationCannotHaveTime);
+                throw new ArgumentOutOfRangeException(nameof(duration), Resources.LocalDateRange_DurationCannotHaveTime);
             // ReSharper restore PossibleNullReferenceException
             if (!step.IsPositive(start))
-                throw new ArgumentOutOfRangeException("step", Resources.LocalRange_StepMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(step), Resources.LocalRange_StepMustBePositive);
             if (!duration.IsPositive(start))
-                throw new ArgumentOutOfRangeException("duration", Resources.LocalRange_DurationMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(duration), Resources.LocalRange_DurationMustBePositive);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return String.Format("{0} - {1}", Start, End);
+            return $"{Start} - {End}";
         }
 
         /// <summary>
@@ -254,10 +254,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider = null)
         {
-            return String.Format(
-                "{0} - {1}",
-                Start.ToString(format, formatProvider),
-                End.ToString(format, formatProvider));
+            return $"{Start.ToString(format, formatProvider)} - {End.ToString(format, formatProvider)}";
         }
     }
 }

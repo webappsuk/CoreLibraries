@@ -108,19 +108,13 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void ToString_HasCorrectFormat()
         {
-            TimeSpan length = RandomDuration(1, MaxDays);
+            TimeSpan length = RandomDuration(2, MaxDays);
             DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
             DateTime end = start + length;
             int step = Random.Next(1, length.Days / 2);
 
             DateRange dateRange = new DateRange(start, end, step);
-
-            Regex formatTest = new Regex(@"^\d{2}/\d{2}/\d{4} - \d{2}/\d{2}/\d{4} \[\d+ days\]$");
-
-            Assert.IsTrue(
-                formatTest.IsMatch(dateRange.ToString()),
-                "String representation of range should be of format dd/mm/yyyy - dd/mm/yyyy. Found {0}.",
-                dateRange);
+            Assert.AreEqual($"{start:d} - {end:d} [{length.TotalDays + 1} days]", dateRange.ToString());
         }
 
         private static DateRange GenerateDateRangeWithStepSmallerThanRange(

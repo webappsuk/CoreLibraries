@@ -120,11 +120,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             DateTimeRange dateRange = new DateTimeRange(start, end, step);
 
-            Regex formatTest = new Regex(@"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2} - \d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}$");
-
-            Assert.IsTrue(
-                formatTest.IsMatch(dateRange.ToString()),
-                "String representation of range should be of format dd/mm/yyyy - dd/mm/yyyy");
+            Assert.AreEqual($"{start} - {end}", dateRange.ToString());
         }
 
         private static DateTimeRange GenerateDateTimeRangeWithStepSmallerThanRange(
