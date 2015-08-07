@@ -30,6 +30,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Loggers;
@@ -164,9 +165,9 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets or sets the tick period.
         /// </summary>
         [ConfigurationProperty("period", DefaultValue = "-00:00:00.001", IsRequired = false)]
-        public TimeSpan Period
+        public Duration Period
         {
-            get { return GetProperty<TimeSpan>("period"); }
+            get { return GetProperty<Duration>("period"); }
             set { SetProperty("period", value); }
         }
 

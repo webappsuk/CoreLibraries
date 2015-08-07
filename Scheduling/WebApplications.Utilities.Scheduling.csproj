@@ -25,9 +25,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\DurationConverter.cs" />
-    <Compile Include="Configuration\DurationValidator.cs" />
-    <Compile Include="Configuration\DurationValidatorAttribute.cs" />
     <Compile Include="Configuration\SchedulerConfiguration.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -47,6 +47,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using NodaTime.Text;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Enumerations;
 using WebApplications.Utilities.Threading;
@@ -1948,6 +1949,60 @@ namespace WebApplications.Utilities
             if (!dict.TryGetValue(key, out val))
                 dict.Add(key, val = valueFactory(key));
             return val;
+        }
+
+        /// <summary>
+        /// Attempts to parse the given <paramref name="text"/> according to the rules of the <paramref name="pattern"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to parse.</typeparam>
+        /// <param name="pattern">The pattern to attempt parse with.</param>
+        /// <param name="text">The text to parse.</param>
+        /// <param name="value">The parsed value if successful, otherwise <see langword="default{T}"/>.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="pattern"/> was <see langword="null"/>.</exception>
+        public static bool TryParse<T>([NotNull] this IPattern<T> pattern, string text, out T value)
+        {
+            if (pattern == null) throw new ArgumentNullException(nameof(pattern));
+
+            ParseResult<T> result = pattern.Parse(text);
+            Debug.Assert(result != null);
+            if (result.Success)
+            {
+                value = result.Value;
+                return true;
+            }
+            value = default(T);
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to parse the given <paramref name="text"/> according to the rules of any of the <paramref name="patterns"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to parse.</typeparam>
+        /// <param name="patterns">The pattern to attempt to parse with.</param>
+        /// <param name="text">The text to parse.</param>
+        /// <param name="value">The parsed value if successful, otherwise <see langword="default{T}"/>.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="patterns"/> or one of its elements was <see langword="null"/>.</exception>
+        public static bool TryParseAny<T>([NotNull] this IEnumerable<IPattern<T>> patterns, string text, out T value)
+        {
+            if (patterns == null) throw new ArgumentNullException(nameof(patterns));
+
+            foreach (IPattern<T> pattern in patterns)
+            {
+                if (pattern == null) throw new ArgumentNullException(nameof(pattern));
+
+                ParseResult<T> result = pattern.Parse(text);
+                Debug.Assert(result != null);
+                if (result.Success)
+                {
+                    value = result.Value;
+                    return true;
+                }
+            }
+
+            value = default(T);
+            return false;
         }
 
         #region StdDev

@@ -26,11 +26,11 @@
 #endregion
 
 using System;
-using System.ComponentModel;
 using System.Configuration;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Configuration.Validators;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
 {
@@ -45,7 +45,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
             // NOTE: Handler assigned here to ensure it will always be the first one invoked
             Changed += (s, e) => Scheduler.LoadConfiguration();
         }
-        
+
         /// <summary>
         ///   Gets a value indicating whether the scheduler is enabled is enabled.
         /// </summary>
@@ -71,7 +71,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         ///   Gets the default maximum duration of a scheduled action/function.
         /// </summary>
         [ConfigurationProperty("defaultMaximumDuration", DefaultValue = "00:10:00", IsRequired = false)]
-        [TypeConverter(typeof(DurationConverter))]
         [DurationValidator(MinValueString = "00:00:00.01", MaxValueString = "1.00:00:00")]
         public Duration DefaultMaximumDuration
         {

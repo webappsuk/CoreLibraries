@@ -304,6 +304,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot parse the string &apos;{0}&apos; to a Duration..
+        /// </summary>
+        internal static string DurationConverter_ConvertFrom_CannotParse {
+            get {
+                return ResourceManager.GetString("DurationConverter_ConvertFrom_CannotParse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot safely flush the default enhanced memory cache..
         /// </summary>
         internal static string EnhancedMemoryCache_Clear_CannotSafelyFlush {
@@ -628,6 +637,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot parse the string &apos;{0}&apos; to an Instant..
+        /// </summary>
+        internal static string InstantConverter_ConvertFrom_CannotParse {
+            get {
+                return ResourceManager.GetString("InstantConverter_ConvertFrom_CannotParse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maximum capacity is {0}..
         /// </summary>
         internal static string LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity {
@@ -682,6 +700,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot parse the string &apos;{0}&apos; to a LocalDateTime..
+        /// </summary>
+        internal static string LocalDateTimeConverter_ConvertFrom_CannotParse {
+            get {
+                return ResourceManager.GetString("LocalDateTimeConverter_ConvertFrom_CannotParse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duration must be positive.
         /// </summary>
         internal static string LocalRange_DurationMustBePositive {
@@ -723,6 +750,15 @@ namespace WebApplications.Utilities {
         internal static string ParameterReplacerVisitor_ExpressionCountMismatch {
             get {
                 return ResourceManager.GetString("ParameterReplacerVisitor_ExpressionCountMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot parse the string &apos;{0}&apos; to a Period..
+        /// </summary>
+        internal static string PeriodConverter_ConvertFrom_CannotParse {
+            get {
+                return ResourceManager.GetString("PeriodConverter_ConvertFrom_CannotParse", resourceCulture);
             }
         }
         
@@ -1123,6 +1159,42 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The minimum value is greater than the maximum value..
+        /// </summary>
+        internal static string Validator_MinGreaterThanMax {
+            get {
+                return ResourceManager.GetString("Validator_MinGreaterThanMax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is not in the range &apos;{1} to {2}&apos;..
+        /// </summary>
+        internal static string Validator_Validate_ValueNotInRange {
+            get {
+                return ResourceManager.GetString("Validator_Validate_ValueNotInRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is not outside the range &apos;{1} to {2}&apos;..
+        /// </summary>
+        internal static string Validator_Validate_ValueNotOutsideRange {
+            get {
+                return ResourceManager.GetString("Validator_Validate_ValueNotOutsideRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value is not of the correct type..
+        /// </summary>
+        internal static string Validator_Validate_WrongType {
+            get {
+                return ResourceManager.GetString("Validator_Validate_WrongType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Key already exists..
         /// </summary>
         internal static string WeakConcurrentDictionary_Add_KeyAlreadyExists {
@@ -1164,6 +1236,15 @@ namespace WebApplications.Utilities {
         internal static string WeakConcurrentDictionary_KeyIsNull {
             get {
                 return ResourceManager.GetString("WeakConcurrentDictionary_KeyIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot parse the string &apos;{0}&apos; to a ZonedDateTime..
+        /// </summary>
+        internal static string ZonedDateTimeConverter_ConvertFrom_CannotParse {
+            get {
+                return ResourceManager.GetString("ZonedDateTimeConverter_ConvertFrom_CannotParse", resourceCulture);
             }
         }
     }

@@ -486,4 +486,31 @@
   <data name="DependencyGraph_Add_SelfDepends" xml:space="preserve">
     <value>An object cannot have a dependency on itself.</value>
   </data>
+  <data name="Validator_MinGreaterThanMax" xml:space="preserve">
+    <value>The minimum value is greater than the maximum value.</value>
+  </data>
+  <data name="Validator_Validate_WrongType" xml:space="preserve">
+    <value>The value is not of the correct type.</value>
+  </data>
+  <data name="Validator_Validate_ValueNotOutsideRange" xml:space="preserve">
+    <value>The value '{0}' is not outside the range '{1} to {2}'.</value>
+  </data>
+  <data name="Validator_Validate_ValueNotInRange" xml:space="preserve">
+    <value>The value '{0}' is not in the range '{1} to {2}'.</value>
+  </data>
+  <data name="DurationConverter_ConvertFrom_CannotParse" xml:space="preserve">
+    <value>Cannot parse the string '{0}' to a Duration.</value>
+  </data>
+  <data name="InstantConverter_ConvertFrom_CannotParse" xml:space="preserve">
+    <value>Cannot parse the string '{0}' to an Instant.</value>
+  </data>
+  <data name="LocalDateTimeConverter_ConvertFrom_CannotParse" xml:space="preserve">
+    <value>Cannot parse the string '{0}' to a LocalDateTime.</value>
+  </data>
+  <data name="PeriodConverter_ConvertFrom_CannotParse" xml:space="preserve">
+    <value>Cannot parse the string '{0}' to a Period.</value>
+  </data>
+  <data name="ZonedDateTimeConverter_ConvertFrom_CannotParse" xml:space="preserve">
+    <value>Cannot parse the string '{0}' to a ZonedDateTime.</value>
+  </data>
 </root>

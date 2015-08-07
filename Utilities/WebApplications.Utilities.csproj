@@ -41,12 +41,19 @@
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
     <Compile Include="Caching\WeakSingleton.cs" />
+    <Compile Include="Converters\DurationConverter.cs" />
+    <Compile Include="Converters\InstantConverter.cs" />
+    <Compile Include="Converters\LocalDateTimeConverter.cs" />
+    <Compile Include="Converters\PeriodConverter.cs" />
+    <Compile Include="Converters\ZonedDateTimeConverter.cs" />
     <Compile Include="Configuration\ConfigurationFileWatcher.cs" />
     <Compile Include="Actions.cs">
       <DependentUpon>Actions.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Configuration\Validators\DurationValidator.cs" />
+    <Compile Include="Configuration\Validators\DurationValidatorAttribute.cs" />
     <Compile Include="Funcs.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -132,6 +139,7 @@
     <Compile Include="IReadOnlyLookup.cs" />
     <Compile Include="Array.cs" />
     <Compile Include="KeyValuePair.cs" />
+    <Compile Include="ModuleInitializer.cs" />
     <Compile Include="ParameterUsageVisitor.cs" />
     <Compile Include="Ranges\DurationRange.cs" />
     <Compile Include="Ranges\InstantRange.cs" />
@@ -341,6 +349,10 @@
       <LastGenOutput>Funcs.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <PropertyGroup>
+    <InjectModuleInitializerTool>$(SolutionDir)bin\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)Initializer\InjectModuleInitializer.targets" />
   <PropertyGroup>
     <UtilityBuildTasks>$(SolutionDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
     <ResourcesPath>$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
