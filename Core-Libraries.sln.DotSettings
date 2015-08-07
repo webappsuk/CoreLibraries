@@ -14,7 +14,9 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=EBFD5ED9_002D0BC5_002D4B18_002DAC35_002D44B63419A275_002Fd_003ATokenization_002Fd_003AStemmers/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/AnalysisEnabled/@EntryValue">SOLUTION</s:String>
 	<s:Boolean x:Key="/Default/CodeInspection/Highlighting/ColorUsageHighlightingEnabled/@EntryValue">False</s:Boolean>
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=ForCanBeConvertedToForeach/@EntryIndexedValue">HINT</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=InvocationIsSkipped/@EntryIndexedValue">HINT</s:String>
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=LoopCanBeConvertedToQuery/@EntryIndexedValue">HINT</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RedundantThisQualifier/@EntryIndexedValue">DO_NOT_SHOW</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestUseVarKeywordEverywhere/@EntryIndexedValue">DO_NOT_SHOW</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestUseVarKeywordEvident/@EntryIndexedValue">DO_NOT_SHOW</s:String>
@@ -1309,6 +1311,36 @@ $END$&#xD;
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58D56DC528DF504784E89716D462CDB7/SearchPattern/@EntryValue"></s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58D56DC528DF504784E89716D462CDB7/Severity/@EntryValue">DO_NOT_SHOW</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=58D56DC528DF504784E89716D462CDB7/ShortenReferences/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/Comment/@EntryValue">The Contract class should not be used.</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=contract/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=contract/Properties/=ExactType/@EntryIndexedValue">False</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=contract/Properties/=ExpressionType/@EntryIndexedValue">System.Diagnostics.Contracts.Contract</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=contract/Type/@EntryValue">ExpressionPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=member/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=member/Properties/=CaseSensitive/@EntryIndexedValue">True</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=member/Properties/=ExactType/@EntryIndexedValue">False</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=member/Properties/=RegEx/@EntryIndexedValue">^(?!Assert$).*$</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/CustomPatternPlaceholder/=member/Type/@EntryValue">IdentifierPlaceholder</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/SearchPattern/@EntryValue">$contract$.$member$</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=7671639EC1872F459E81D60844EA69D3/Severity/@EntryValue">ERROR</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/Comment/@EntryValue">The Contract class should not be used.</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=args/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=args/Properties/=Maximal/@EntryIndexedValue">-1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=args/Properties/=Minimal/@EntryIndexedValue">-1</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=args/Type/@EntryValue">ArgumentPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/Properties/=ExactType/@EntryIndexedValue">False</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/Properties/=ExpressionType/@EntryIndexedValue"></s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/Type/@EntryValue">ExpressionPlaceholder</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/IsReplacePattern/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/ReplaceComment/@EntryValue">Use 'Debug.Assert(...)'</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/ReplacePattern/@EntryValue">System.Diagnostics.Debug.Assert($args$)</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/SearchPattern/@EntryValue">$contract$.Assert($args$)</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/Severity/@EntryValue">ERROR</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/CustomPatternPlaceholder/=task/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/CustomPatternPlaceholder/=task/Properties/=ExactType/@EntryIndexedValue">False</s:String>
@@ -1322,6 +1354,32 @@ $END$&#xD;
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/SearchPattern/@EntryValue">await $task$</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/Severity/@EntryValue">WARNING</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/ShortenReferences/@EntryValue">False</s:Boolean>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/RecentSearch/=201202240752271673/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/RecentSearch/=201202240752271673/LanguageName/@EntryValue">CSHARP</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/RecentSearch/=201202240752271673/SearchPattern/@EntryValue">Contract.Assert</s:String>

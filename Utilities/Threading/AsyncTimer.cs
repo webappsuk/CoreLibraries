@@ -34,7 +34,7 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Threading
 {
     /// <summary>
-    /// Delegate for a
+    /// Represents the method that handles calls from an <see cref="AsyncTimer"/>.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
@@ -117,26 +117,17 @@ namespace WebApplications.Utilities.Threading
             /// <summary>
             /// The due time between the last time the timeouts were changed (see <see cref="TimeStamp"/>) and the start of the task invocation.
             /// </summary>
-            public Duration DueTime
-            {
-                get { return Duration.FromMilliseconds(DueTimeMs); }
-            }
+            public Duration DueTime => Duration.FromMilliseconds(DueTimeMs);
 
             /// <summary>
             /// The minimum gap  between the start of the task invocation and the end of the previous task invocation.
             /// </summary>
-            public Duration MinimumGap
-            {
-                get { return Duration.FromMilliseconds(MinimumGapMs); }
-            }
+            public Duration MinimumGap => Duration.FromMilliseconds(MinimumGapMs);
 
             /// <summary>
             /// The minimum gap between the start of the task invocation and the start of the previous task invocation.
             /// </summary>
-            public Duration Period
-            {
-                get { return Duration.FromMilliseconds(PeriodMs); }
-            }
+            public Duration Period => Duration.FromMilliseconds(PeriodMs);
         }
 
         [NotNull]
@@ -318,7 +309,7 @@ namespace WebApplications.Utilities.Threading
             PauseToken pauseToken = default(PauseToken),
             Action<Exception> errorHandler = null)
         {
-            if (callback == null) throw new ArgumentNullException("callback");
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
 
             long timeStamp = HighPrecisionClock.Instance.NowTicks;
             _callback = callback;
@@ -394,7 +385,7 @@ namespace WebApplications.Utilities.Threading
                                 if (ReferenceEquals(timeOuts, null)) return;
 
                                 if (timeOuts.DueTimeMs < 0 ||
-                                    (startTicks > long.MinValue && (timeOuts.MinimumGapMs < 0 || timeOuts.PeriodMs < 0)))
+                                    (startTicks > timeOuts.DueTimeStamp && (timeOuts.MinimumGapMs < 0 || timeOuts.PeriodMs < 0)))
                                 {
                                     // If we have infinite waits then we are effectively awaiting cancellation
                                     // ReSharper disable once PossibleNullReferenceException
@@ -426,7 +417,7 @@ namespace WebApplications.Utilities.Threading
                                     wait = Math.Max(a, Math.Max(b, c));
                                 }
                                 else
-                                // Wait the initial due time
+                                    // Wait the initial due time
                                     wait =
                                         (int)
                                             ((timeOuts.DueTimeStamp - HighPrecisionClock.Instance.NowTicks) /
@@ -488,7 +479,7 @@ namespace WebApplications.Utilities.Threading
 
                         return;
                     }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                    // ReSharper disable once EmptyGeneralCatchClause
                     catch (Exception exception)
                     {
                         // Supress errors thrown by callback, unless someone is awaiting it.
