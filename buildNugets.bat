@@ -17,7 +17,14 @@ SET slnDir=%~dp0
 del /S /Q "nugets\*.*" 2>nul
 mkdir nugets 2>nul
 
-msbuild Core-Libraries.sln /p:Configuration=NuGet;SolutionDir=%slnDir% /t:rebuild
+msbuild Core-Libraries.sln /p:Configuration=NuGet;SolutionDir=%slnDir% /t:rebuild /m
+if NOT %errorLevel% == 0 (
+	echo.
+	
+	if /I NOT "%1" == "nopause" pause
+	
+	exit /B 1
+)
 
 :End
 echo.

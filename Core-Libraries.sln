@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{76EB4D52-A38F-44B2-956A-CB49A6B4B435}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,6 +18,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities", "Utilities\WebApplications.Utilities.csproj", "{2931C698-6123-49BC-81FD-F72A4C1415EA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553} = {CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553}
+		{3626816D-EB33-4ED0-AF95-FD7CA6C6D99A} = {3626816D-EB33-4ED0-AF95-FD7CA6C6D99A}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.BuildTasks", "Utilities\WebApplications.Utilities.BuildTasks\WebApplications.Utilities.BuildTasks.csproj", "{CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553}"

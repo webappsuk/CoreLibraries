@@ -1333,7 +1333,7 @@ $END$&#xD;
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=args/Type/@EntryValue">ArgumentPlaceholder</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/Properties/=ExactType/@EntryIndexedValue">False</s:String>
-	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/Properties/=ExpressionType/@EntryIndexedValue"></s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/Properties/=ExpressionType/@EntryIndexedValue">System.Diagnostics.Contracts.Contract</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/CustomPatternPlaceholder/=contract/Type/@EntryValue">ExpressionPlaceholder</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/IsReplacePattern/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=8A995A5A01C92F4D9D89552E5E078F5B/LanguageName/@EntryValue">CSHARP</s:String>
