@@ -153,6 +153,7 @@
     <Compile Include="Threading\AsyncTimer.cs" />
     <Compile Include="Threading\CancelableTask.cs" />
     <Compile Include="Threading\ICancelableTask.cs" />
+    <Compile Include="Threading\ThreadLocalCollection.cs" />
     <Compile Include="ThreadLocal.cs" />
     <Compile Include="TimeHelpers.cs" />
     <Compile Include="TupleEnumerable.cs">
