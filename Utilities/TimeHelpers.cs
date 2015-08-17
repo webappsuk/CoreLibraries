@@ -107,41 +107,50 @@ namespace WebApplications.Utilities
         /// The one millisecond <see cref="Duration"/>.
         /// </summary>
         public static readonly Period OneMillisecondPeriod = Period.FromMilliseconds(1);
-
+        
+        // ReSharper disable AssignNullToNotNullAttribute
         /// <summary>
         /// The one second <see cref="Period"/>.
         /// </summary>
+        [NotNull]
         public static readonly Period OneSecondPeriod = Period.FromSeconds(1);
 
         /// <summary>
         /// The one minute <see cref="Period"/>.
         /// </summary>
+        [NotNull]
         public static readonly Period OneMinutePeriod = Period.FromMinutes(1);
 
         /// <summary>
         /// The one hour <see cref="Period"/>.
         /// </summary>
+        [NotNull]
         public static readonly Period OneHourPeriod = Period.FromHours(1);
 
         /// <summary>
         /// The one day <see cref="Period"/>.
         /// </summary>
+        [NotNull]
         public static readonly Period OneDayPeriod = Period.FromDays(1);
 
         /// <summary>
         /// The one week <see cref="Period"/>.
         /// </summary>
+        [NotNull]
         public static readonly Period OneWeekPeriod = Period.FromWeeks(1);
 
         /// <summary>
         /// The one month <see cref="Period"/>.
         /// </summary>
+        [NotNull]
         public static readonly Period OneMonthPeriod = Period.FromMonths(1);
 
         /// <summary>
         /// The one year <see cref="Period"/>.
         /// </summary>
+        [NotNull]
         public static readonly Period OneYearPeriod = Period.FromYears(1);
+        // ReSharper restore AssignNullToNotNullAttribute
 
         /// <summary>
         /// The file time epoch, 12:00 A.M. January 1, 1601.

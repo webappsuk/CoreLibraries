@@ -381,8 +381,11 @@ namespace WebApplications.Utilities.Logging
             if (hasMessage &&
                 (parameters != null) &&
                 (parameters.Length >= 1))
-                // ReSharper disable once PossibleNullReferenceException
-                _parameters = parameters.Select(p => p.ToString()).ToArray();
+            {
+                _parameters = new string[parameters.Length];
+                for (int k = 0; k < parameters.Length; k++)
+                    _parameters[k] = parameters[k]?.ToString() ?? string.Empty;
+            }
 
             Exception[] innerExceptions = null;
             if (exception != null)
@@ -411,9 +414,7 @@ namespace WebApplications.Utilities.Logging
                     // Check for aggregate exception
                     AggregateException aggregateException = exception as AggregateException;
                     if (aggregateException != null)
-                        innerExceptions = aggregateException.InnerExceptions != null
-                            ? aggregateException.InnerExceptions.ToArray()
-                            : null;
+                        innerExceptions = aggregateException.InnerExceptions?.ToArray();
                     else
                     {
                         if (exception.InnerException != null)
@@ -1702,7 +1703,8 @@ namespace WebApplications.Utilities.Logging
             if (messageFormat == null)
                 _latestMessage = null;
             else if (_parameters != null)
-                _latestMessage = messageFormat.SafeFormat(_parameters.Cast<object>().ToArray());
+                // ReSharper disable once CoVariantArrayConversion
+                _latestMessage = messageFormat.SafeFormat(_parameters);
             else
                 _latestMessage = messageFormat;
         }

@@ -80,6 +80,7 @@ namespace WebApplications.Utilities.Logging
         public LoggingException(
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(this, LoggingLevel.Error, format, parameters).Add();
@@ -100,6 +101,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(context, this, LoggingLevel.Error, format, parameters).Add();
@@ -120,6 +122,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(this, level, format, parameters).Add();
@@ -142,6 +145,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(context, this, level, format, parameters).Add();
@@ -157,7 +161,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="exception">The exception.</param>
         /// <param name="level">The log level.</param>
         public LoggingException([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(this, level).Add();
@@ -178,7 +182,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Exception exception,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(this, LoggingLevel.Error, format, parameters).Add();
@@ -201,7 +205,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(this, level, format, parameters).Add();
@@ -226,7 +230,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(context, this, level, format, parameters).Add();
@@ -242,6 +246,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
         public LoggingException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(this, LoggingLevel.Error, resource, parameters).Add();
@@ -261,6 +266,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(context, this, LoggingLevel.Error, resource, parameters).Add();
@@ -280,6 +286,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(this, level, resource, parameters).Add();
@@ -301,6 +308,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(context, this, level, resource, parameters).Add();
@@ -320,7 +328,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(this, LoggingLevel.Error, resource, parameters).Add();
@@ -342,7 +350,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(this, level, resource, parameters).Add();
@@ -366,7 +374,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(context, this, level, resource, parameters).Add();
@@ -387,6 +395,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, this, LoggingLevel.Error, format, parameters).Add();
@@ -409,6 +418,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, context, this, LoggingLevel.Error, format, parameters).Add();
@@ -431,6 +441,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, this, level, format, parameters).Add();
@@ -455,6 +466,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, context, this, level, format, parameters).Add();
@@ -474,7 +486,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, this, level).Add();
@@ -497,7 +509,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Exception exception,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, this, LoggingLevel.Error, format, parameters).Add();
@@ -522,7 +534,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, this, level, format, parameters).Add();
@@ -549,7 +561,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, context, this, level, format, parameters).Add();
@@ -569,6 +581,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, this, LoggingLevel.Error, resource, parameters).Add();
@@ -590,6 +603,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, context, this, LoggingLevel.Error, resource, parameters).Add();
@@ -611,6 +625,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, this, level, resource, parameters).Add();
@@ -634,6 +649,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, context, this, level, resource, parameters).Add();
@@ -655,7 +671,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, this, LoggingLevel.Error, resource, parameters).Add();
@@ -679,7 +695,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, this, level, resource, parameters).Add();
@@ -705,7 +721,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, context, this, level, resource, parameters).Add();
@@ -725,6 +741,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -746,6 +763,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(context, this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -767,6 +785,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(this, level, resourceType, resourceProperty, parameters).Add();
@@ -790,6 +809,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(context, this, level, resourceType, resourceProperty, parameters).Add();
@@ -811,7 +831,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -835,7 +855,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(this, level, resourceType, resourceProperty, parameters).Add();
@@ -861,7 +881,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(context, this, level, resourceType, resourceProperty, parameters).Add();
@@ -883,6 +903,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -906,6 +927,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, context, this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -929,6 +951,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, this, level, resourceType, resourceProperty, parameters).Add();
@@ -954,6 +977,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
+            : base(string.Empty)
         {
             // Log the exception
             Log = new Log(culture, context, this, level, resourceType, resourceProperty, parameters).Add();
@@ -977,7 +1001,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -1003,7 +1027,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, this, level, resourceType, resourceProperty, parameters).Add();
@@ -1031,7 +1055,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, context, this, level, resourceType, resourceProperty, parameters).Add();
@@ -1053,7 +1077,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(context, this, LoggingLevel.Error, resource, parameters).Add();
@@ -1078,7 +1102,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Exception exception,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, context, this, LoggingLevel.Error, format, parameters).Add();
@@ -1102,7 +1126,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, context, this, LoggingLevel.Error, resource, parameters).Add();
@@ -1126,7 +1150,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(context, this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -1152,7 +1176,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : base(exception == null ? string.Empty : exception.Message, exception)
+            : base(exception?.Message ?? string.Empty, exception)
         {
             // Log the exception
             Log = new Log(culture, context, this, LoggingLevel.Error, resourceType, resourceProperty, parameters).Add();
@@ -1167,97 +1191,67 @@ namespace WebApplications.Utilities.Logging
         /// Gets the GUID.
         /// </summary>
         /// <value>The GUID.</value>
-        public CombGuid Guid
-        {
-            get { return Log.Guid; }
-        }
+        public CombGuid Guid => Log.Guid;
 
         /// <summary>
         /// Gets the log group.
         /// </summary>
         /// <value>The log group.</value>
-        public LoggingLevel Level
-        {
-            get { return Log.Level; }
-        }
+        public LoggingLevel Level => Log.Level;
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
         [NotNull]
-        public IEnumerable<string> Parameters
-        {
-            get { return Log.Parameters; }
-        }
+        public IEnumerable<string> Parameters => Log.Parameters;
 
         /// <summary>
         /// Gets the time stamp.
         /// </summary>
         /// <value>The time stamp.</value>
-        public DateTime TimeStamp
-        {
-            get { return Log.TimeStamp; }
-        }
+        public DateTime TimeStamp => Log.TimeStamp;
 
         /// <summary>
         /// Gets the format format.
         /// </summary>
         /// <value>The format format.</value>
         [CanBeNull]
-        public string MessageFormat
-        {
-            get { return Log.MessageFormat; }
-        }
+        public string MessageFormat => Log.MessageFormat;
 
         /// <summary>
         /// Gets the thread ID.
         /// </summary>
         /// <value>The thread ID.</value>
-        public int ThreadID
-        {
-            get { return Log.ThreadID; }
-        }
+        public int ThreadID => Log.ThreadID;
 
         /// <summary>
         /// Gets the name of the thread.
         /// </summary>
         /// <value>The name of the thread.</value>
         [CanBeNull]
-        public string ThreadName
-        {
-            get { return Log.ThreadName; }
-        }
+        public string ThreadName => Log.ThreadName;
 
         /// <summary>
         /// Gets the full name of the type of the exception.
         /// </summary>
         /// <value>The full name of the type of the exception.</value>
         [NotNull]
-        public string ExceptionTypeFullName
-        {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return Log.ExceptionType ?? GetType().FullName; }
-        }
+        public string ExceptionTypeFullName => Log.ExceptionType ?? GetType().FullName;
 
         /// <summary>
         /// Gets the stored procedure name (if a SQL exception - otherwise null).
         /// </summary>
         /// <value>The stored procedure.</value>
         [CanBeNull]
-        public string StoredProcedure
-        {
-            get { return Log.StoredProcedure; }
-        }
+        public string StoredProcedure => Log.StoredProcedure;
 
         /// <summary>
         /// Gets the stored procedure line number (if a SQL exception - otherwise -1).
         /// </summary>
         /// <value>The stored procedure line.</value>
-        public int StoredProcedureLine
-        {
-            get { return Log.StoredProcedureLine; }
-        }
+        public int StoredProcedureLine => Log.StoredProcedureLine;
 
         /// <summary>
         /// Gets the value associated with the specified key.
@@ -1267,20 +1261,14 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
         /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
         [CanBeNull]
-        public string this[[NotNull] string key]
-        {
-            get { return Log[key]; }
-        }
+        public string this[[NotNull] string key] => Log[key];
 
         /// <summary>
         /// Gets a format that describes the current exception.
         /// </summary>
         /// <value>The format.</value>
         /// <returns>The error format that explains the reason for the exception, or an empty string("").</returns>
-        public override string Message
-        {
-            get { return Log.Message ?? string.Empty; }
-        }
+        public override string Message => Log.Message ?? string.Empty;
 
         /// <summary>
         ///   Gets the stack trace as a <see cref="string"/>.
@@ -1288,41 +1276,29 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The safe stack trace.</value>
         [NotNull]
-        public new string StackTrace
-        {
-            get { return Log.StackTrace ?? base.StackTrace ?? string.Empty; }
-        }
+        public new string StackTrace => Log.StackTrace ?? base.StackTrace ?? string.Empty;
 
         /// <summary>
         /// Gets all the properties of the logging exception.
         /// </summary>
         [NotNull]
-        public IEnumerable<KeyValuePair<string, string>> AllProperties
-        {
-            get { return Log.AllProperties; }
-        }
+        public IEnumerable<KeyValuePair<string, string>> AllProperties => Log.AllProperties;
 
         /// <summary>
         /// Gets the value of the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>System.String.</returns>
+        /// <returns>string.</returns>
         [CanBeNull]
-        public string Get([NotNull] string key)
-        {
-            return Log.Get(key);
-        }
+        public string Get([NotNull] string key) => Log.Get(key);
 
         /// <summary>
         /// Gets all keys and their values that match the prefix.
         /// </summary>
         /// <param name="prefix">The prefix.</param>
-        /// <returns>IEnumerable{KeyValuePair{System.StringSystem.String}}.</returns>
+        /// <returns>IEnumerable{KeyValuePair{stringstring}}.</returns>
         [NotNull]
-        public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix)
-        {
-            return Log.GetPrefixed(prefix);
-        }
+        public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix) => Log.GetPrefixed(prefix);
 
         #region ToString overloads
         /// <summary>
@@ -1332,52 +1308,40 @@ namespace WebApplications.Utilities.Logging
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" PathDiscovery="*AllFiles*"/>
         /// </PermissionSet>
-        public override string ToString()
-        {
-            return ToString(Log.VerboseFormat);
-        }
+        public override string ToString() => ToString(Log.VerboseFormat);
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <returns>A <see cref="string" /> that represents this instance.</returns>
         [NotNull]
-        public string ToString([CanBeNull] IFormatProvider formatProvider)
-        {
-            return ToString(Log.VerboseFormat, formatProvider);
-        }
+        public string ToString([CanBeNull] IFormatProvider formatProvider) => ToString(Log.VerboseFormat, formatProvider);
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            return ToString((FormatBuilder)format, formatProvider);
-        }
+        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null) => ToString((FormatBuilder)format, formatProvider);
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <returns>A <see cref="string" /> that represents this instance.</returns>
         [NotNull]
         public string ToString([CanBeNull] FormatBuilder format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (format == null)
                 format = Log.VerboseFormat;
 
-            if (formatProvider != null)
-            {
-                ICustomFormatter formatter = formatProvider.GetFormat(GetType()) as ICustomFormatter;
+            ICustomFormatter formatter = formatProvider?.GetFormat(GetType()) as ICustomFormatter;
 
-                if (formatter != null)
-                    return formatter.Format(format.ToString(formatProvider), this, formatProvider) ?? string.Empty;
-            }
+            if (formatter != null)
+                return formatter.Format(format.ToString(formatProvider), this, formatProvider) ?? string.Empty;
 
             return Log.ToString(format, formatProvider);
         }
