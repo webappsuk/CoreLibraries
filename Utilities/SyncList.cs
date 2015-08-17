@@ -35,7 +35,7 @@ namespace WebApplications.Utilities
     /// <summary>
     /// Provides synchronised access to a <see cref="IList{T}"/>.
     /// </summary>
-    /// <typeparam name="T">THe type of the elements of the list.</typeparam>
+    /// <typeparam name="T">The type of the elements of the list.</typeparam>
     [PublicAPI]
     public class SyncList<T> : IList<T>, IList, IReadOnlyList<T>
     {
