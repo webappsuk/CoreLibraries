@@ -30,12 +30,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Globalization
 {
     /// <summary>
-    /// Provides <see cref="CultureInfo"/>.
+    /// Provides <see cref="CultureInfo" />.
     /// </summary>
     [PublicAPI]
     public class CultureInfoProvider : ICultureInfoProvider
@@ -45,32 +46,24 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         private class EmptyCultureInfoProvider : ICultureInfoProvider
         {
-            private readonly DateTime _published;
-
             /// <summary>
             /// Initializes a new instance of the <see cref="EmptyCultureInfoProvider"/> class.
             /// </summary>
             /// <param name="published">The published.</param>
             public EmptyCultureInfoProvider(DateTime published)
             {
-                _published = published;
+                Published = published;
             }
 
             /// <summary>
             /// The date this provider was published.
             /// </summary>
-            public DateTime Published
-            {
-                get { return _published; }
-            }
+            public DateTime Published { get; }
 
             /// <summary>
             /// The cultures in the provider.
             /// </summary>
-            public IEnumerable<ExtendedCultureInfo> All
-            {
-                get { return Enumerable.Empty<ExtendedCultureInfo>(); }
-            }
+            public IEnumerable<ExtendedCultureInfo> All => Enumerable.Empty<ExtendedCultureInfo>();
 
             /// <summary>
             /// Gets the number of cultures specified in the provider.
@@ -78,10 +71,7 @@ namespace WebApplications.Utilities.Globalization
             /// <value>
             /// The count.
             /// </value>
-            public int Count
-            {
-                get { return 0; }
-            }
+            public int Count => 0;
 
             /// <summary>
             /// Retrieves an <see cref="ExtendedCultureInfo" /> with the ISO Code specified.
@@ -124,6 +114,16 @@ namespace WebApplications.Utilities.Globalization
             {
                 return Enumerable.Empty<ExtendedCultureInfo>();
             }
+
+            /// <summary>
+            /// Gets the child cultures of the specified culture.
+            /// </summary>
+            /// <param name="cultureInfo">The culture to get the children of.</param>
+            /// <returns>The child cultures of the specified culture.</returns>
+            public IEnumerable<ExtendedCultureInfo> GetChildren(CultureInfo cultureInfo)
+            {
+                return Enumerable.Empty<ExtendedCultureInfo>();
+            }
         }
 
         /// <summary>
@@ -137,6 +137,11 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         [NotNull]
         public static readonly BclCultureInfoProvider Bcl;
+
+        [CanBeNull]
+        private static readonly FieldInfo _cultureParentField = typeof(CultureInfo).GetField(
+            "m_parent",
+            BindingFlags.Instance | BindingFlags.NonPublic);
 
         /// <summary>
         /// The current provider.
@@ -156,7 +161,7 @@ namespace WebApplications.Utilities.Globalization
             get { return _current; }
             set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 _current = value;
             }
         }
@@ -173,8 +178,6 @@ namespace WebApplications.Utilities.Globalization
             _current = Bcl = new BclCultureInfoProvider();
         }
 
-        private readonly DateTime _published;
-
         /// <summary>
         ///   Stores currency info (by code).
         /// </summary>
@@ -188,6 +191,12 @@ namespace WebApplications.Utilities.Globalization
         private readonly IReadOnlyDictionary<string, IEnumerable<ExtendedCultureInfo>> _currencyCultureInfos;
 
         /// <summary>
+        /// The child cultures of each culture.
+        /// </summary>
+        [NotNull]
+        private readonly IReadOnlyDictionary<ExtendedCultureInfo, IEnumerable<ExtendedCultureInfo>> _childCultures;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CultureInfoProvider" /> class.
         /// </summary>
         /// <param name="published">The published date time.</param>
@@ -196,28 +205,44 @@ namespace WebApplications.Utilities.Globalization
             DateTime published,
             [ItemNotNull] [NotNull] IEnumerable<ExtendedCultureInfo> cultures)
         {
-            if (cultures == null) throw new ArgumentNullException("cultures");
+            if (cultures == null) throw new ArgumentNullException(nameof(cultures));
 
-            _published = published;
+            Published = published;
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             _cultureInfos = cultures.Distinct().ToDictionary(c => c.Name, StringComparer.InvariantCultureIgnoreCase);
             _currencyCultureInfos = _cultureInfos.Values
+                .OrderBy(c => c.Name)
                 .GroupBy(c => c.ISOCurrencySymbol, StringComparer.InvariantCultureIgnoreCase)
                 .Where(g => g.Key != null)
                 .ToDictionary(
                     g => g.Key,
                     g => (IEnumerable<ExtendedCultureInfo>)g.ToArray(),
                     StringComparer.InvariantCultureIgnoreCase);
+
+            if (_cultureParentField != null)
+                foreach (ExtendedCultureInfo culture in _cultureInfos.Values)
+                {
+                    ExtendedCultureInfo parent;
+                    if (_cultureInfos.TryGetValue(culture.Parent.Name, out parent))
+                        _cultureParentField.SetValue(culture, parent);
+                    else if (culture.IsInvariant)
+                        _cultureParentField.SetValue(culture, culture);
+                }
+
+            _childCultures = _cultureInfos.Values
+                .Where(c => !c.IsInvariant)
+                .OrderBy(c => c.Name)
+                .GroupBy(c => c.Parent)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (IEnumerable<ExtendedCultureInfo>)g.ToArray());
             // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
         }
 
         /// <summary>
         /// The date this provider was published.
         /// </summary>
-        public DateTime Published
-        {
-            get { return _published; }
-        }
+        public DateTime Published { get; }
 
         /// <summary>
         /// The cultures in the provider.
@@ -237,10 +262,7 @@ namespace WebApplications.Utilities.Globalization
         /// <value>
         /// The count.
         /// </value>
-        public int Count
-        {
-            get { return _cultureInfos.Count; }
-        }
+        public int Count => _cultureInfos.Count;
 
         /// <summary>
         /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified (see <see cref="CultureInfo.Name"/>).
@@ -257,7 +279,7 @@ namespace WebApplications.Utilities.Globalization
         /// </exception>
         public ExtendedCultureInfo Get(string cultureName)
         {
-            if (cultureName == null) throw new ArgumentNullException("cultureName");
+            if (cultureName == null) throw new ArgumentNullException(nameof(cultureName));
             ExtendedCultureInfo cultureInfo;
             _cultureInfos.TryGetValue(cultureName, out cultureInfo);
             return cultureInfo;
@@ -278,7 +300,7 @@ namespace WebApplications.Utilities.Globalization
         /// </exception>
         public ExtendedCultureInfo Get(CultureInfo cultureInfo)
         {
-            if (cultureInfo == null) throw new ArgumentNullException("cultureInfo");
+            if (cultureInfo == null) throw new ArgumentNullException(nameof(cultureInfo));
             ExtendedCultureInfo eci;
             _cultureInfos.TryGetValue(cultureInfo.Name, out eci);
             return eci;
@@ -293,11 +315,25 @@ namespace WebApplications.Utilities.Globalization
         /// </returns>
         public IEnumerable<ExtendedCultureInfo> FindByCurrency(CurrencyInfo currencyInfo)
         {
-            if (currencyInfo == null) throw new ArgumentNullException("currencyInfo");
+            if (currencyInfo == null) throw new ArgumentNullException(nameof(currencyInfo));
             IEnumerable<ExtendedCultureInfo> cultures;
             // ReSharper disable once AssignNullToNotNullAttribute
             return _currencyCultureInfos.TryGetValue(currencyInfo.Code, out cultures)
                 ? cultures
+                : Enumerable.Empty<ExtendedCultureInfo>();
+        }
+
+        /// <summary>
+        /// Gets the child cultures of the specified culture.
+        /// </summary>
+        /// <param name="cultureInfo">The culture to get the children of.</param>
+        /// <returns>The child cultures of the specified culture.</returns>
+        public IEnumerable<ExtendedCultureInfo> GetChildren(CultureInfo cultureInfo)
+        {
+            if (cultureInfo == null) throw new ArgumentNullException(nameof(cultureInfo));
+            IEnumerable<ExtendedCultureInfo> children;
+            return _childCultures.TryGetValue(Get(cultureInfo), out children)
+                ? children
                 : Enumerable.Empty<ExtendedCultureInfo>();
         }
     }

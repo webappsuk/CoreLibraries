@@ -128,10 +128,7 @@ namespace WebApplications.Utilities.Globalization
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
         [NotNull]
-        public static IEnumerable<string> CultureNames
-        {
-            get { return _cultureNames.Keys; }
-        }
+        public static IEnumerable<string> CultureNames => _cultureNames.Keys;
 
         /// <summary>
         ///   Gets the region names.
@@ -140,10 +137,7 @@ namespace WebApplications.Utilities.Globalization
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
         [NotNull]
-        public static IEnumerable<string> RegionNames
-        {
-            get { return _regionNames.Keys; }
-        }
+        public static IEnumerable<string> RegionNames => _regionNames.Keys;
 
         /// <summary>
         ///   Gets the region names.
@@ -152,10 +146,7 @@ namespace WebApplications.Utilities.Globalization
         ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
         /// </remarks>
         [NotNull]
-        public static IEnumerable<string> CurrencyNames
-        {
-            get { return _currencyCultureInfo.Keys; }
-        }
+        public static IEnumerable<string> CurrencyNames => _currencyCultureInfo.Keys;
 
         /// <summary>
         /// Tries to get the culture info with the specified name.
@@ -164,7 +155,7 @@ namespace WebApplications.Utilities.Globalization
         /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
         public static CultureInfo GetCultureInfo([NotNull] string name)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
             CultureInfo cultureInfo;
             return _cultureNames.TryGetValue(name, out cultureInfo) ? cultureInfo : null;
         }
@@ -176,7 +167,7 @@ namespace WebApplications.Utilities.Globalization
         /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
         public static RegionInfo GetRegionInfo([NotNull] string name)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
             RegionInfo regionInfo;
             return _regionNames.TryGetValue(name, out regionInfo) ? regionInfo : null;
         }
@@ -197,7 +188,7 @@ namespace WebApplications.Utilities.Globalization
         public static RegionInfo RegionInfo([NotNull] this CultureInfo cultureInfo)
         {
             if (cultureInfo == null)
-                throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
+                throw new ArgumentNullException(nameof(cultureInfo), Resources.CultureHelper_CultureInfoCannotBeNull);
 
             return new RegionInfo(cultureInfo.LCID);
         }
@@ -217,7 +208,7 @@ namespace WebApplications.Utilities.Globalization
         public static CurrencyInfo CurrencyInfo([NotNull] this RegionInfo regionInfo)
         {
             if (regionInfo == null)
-                throw new ArgumentNullException("regionInfo", Resources.CultureHelper_RegionInfoCannotBeNull);
+                throw new ArgumentNullException(nameof(regionInfo), Resources.CultureHelper_RegionInfoCannotBeNull);
 
             return CurrencyInfoProvider.Current.Get(regionInfo.ISOCurrencySymbol);
         }
@@ -237,7 +228,7 @@ namespace WebApplications.Utilities.Globalization
         public static CurrencyInfo CurrencyInfo([NotNull] this CultureInfo cultureInfo)
         {
             if (cultureInfo == null)
-                throw new ArgumentNullException("cultureInfo", Resources.CultureHelper_CultureInfoCannotBeNull);
+                throw new ArgumentNullException(nameof(cultureInfo), Resources.CultureHelper_CultureInfoCannotBeNull);
 
             return CurrencyInfoProvider.Current.Get(cultureInfo);
         }
@@ -256,7 +247,7 @@ namespace WebApplications.Utilities.Globalization
         public static IEnumerable<CultureInfo> CultureInfoFromCurrencyISO([NotNull] string isoCode)
         {
             if (isoCode == null)
-                throw new ArgumentNullException("isoCode", Resources.CultureHelper_RegionInfoCannotBeNull);
+                throw new ArgumentNullException(nameof(isoCode), Resources.CultureHelper_RegionInfoCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<CultureInfo>(0);
@@ -281,7 +272,7 @@ namespace WebApplications.Utilities.Globalization
         public static IEnumerable<RegionInfo> RegionInfoFromCurrencyISO([NotNull] string isoCode)
         {
             if (isoCode == null)
-                throw new ArgumentNullException("isoCode", Resources.CultureHelper_IsoCodeCannotBeNull);
+                throw new ArgumentNullException(nameof(isoCode), Resources.CultureHelper_IsoCodeCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
                 return new List<RegionInfo>(0);
@@ -315,7 +306,7 @@ namespace WebApplications.Utilities.Globalization
             [CanBeNull] string countryISO = null)
         {
             if (currencyISO == null)
-                throw new ArgumentNullException("currencyISO", Resources.CultureHelper_CurrencyIsoCannotBeNull);
+                throw new ArgumentNullException(nameof(currencyISO), Resources.CultureHelper_CurrencyIsoCannotBeNull);
 
             CultureInfo[] c = null;
 
@@ -349,7 +340,7 @@ namespace WebApplications.Utilities.Globalization
             culture.NumberFormat.CurrencyDecimalSeparator = ".";
             culture.NumberFormat.CurrencyGroupSeparator = ",";
 
-            return String.Format("{0} {1}", currencyISO, amount.ToString("C", culture.NumberFormat));
+            return currencyISO + " " + amount.ToString("C", culture.NumberFormat);
         }
 
         /// <summary>
@@ -387,7 +378,7 @@ namespace WebApplications.Utilities.Globalization
         [CanBeNull]
         public static RegionInfo FindRegionFromName([NotNull] string name)
         {
-            if (name == null) throw new ArgumentNullException("name", Resources.CultureHelper_NameCannotBeNull);
+            if (name == null) throw new ArgumentNullException(nameof(name), Resources.CultureHelper_NameCannotBeNull);
 
             if (name.Length < 1)
                 return null;
@@ -420,7 +411,7 @@ namespace WebApplications.Utilities.Globalization
         [CanBeNull]
         public static RegionInfo FindRegion([NotNull] string name)
         {
-            if (name == null) throw new ArgumentNullException("name", Resources.CultureHelper_NameCannotBeNull);
+            if (name == null) throw new ArgumentNullException(nameof(name), Resources.CultureHelper_NameCannotBeNull);
 
             if (name.Length < 1)
                 return null;
@@ -449,9 +440,96 @@ namespace WebApplications.Utilities.Globalization
         ///   The invariant culture is culture-insensitive, it is useful for when culture-specific presentation isn't required/needed.
         /// </remarks>
         /// <seealso cref="System.Globalization.CultureInfo.InvariantCulture"/>
-        public static bool IsInvariant(this CultureInfo cultureInfo)
+        public static bool IsInvariant(this CultureInfo cultureInfo) => cultureInfo?.LCID == InvariantLCID;
+
+        /// <summary>
+        /// Gets the child cultures of the specified culture.
+        /// </summary>
+        /// <param name="culture">The culture to get the children of.</param>
+        /// <returns>The child cultures of the specified culture.</returns>
+        [NotNull]
+        public static IEnumerable<ExtendedCultureInfo> GetChildren([NotNull] this CultureInfo culture)
         {
-            return cultureInfo != null && cultureInfo.LCID == InvariantLCID;
+            if (culture == null) throw new ArgumentNullException(nameof(culture));
+            return CultureInfoProvider.Current.GetChildren(culture);
+        }
+
+        /// <summary>
+        /// Gets the fall back cultures for the specified culture, in order of preference, from the <see cref="CurrencyInfoProvider.Current"/> provider.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <returns>
+        /// The fall back cultures for the specified culture, in order of preference. The first element will always be the given culture.
+        /// If the invariant culture is given, all cultures will be returned.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="culture"/> was null.</exception>
+        /// <exception cref="ArgumentException">$The <see cref="CultureInfoProvider.Current"/> provider does not contain the <paramref name="culture"/> given.</exception>
+        [NotNull]
+        public static IEnumerable<ExtendedCultureInfo> GetFallBack([NotNull] this CultureInfo culture)
+            => GetFallBack(CultureInfoProvider.Current, culture);
+
+        /// <summary>
+        /// Gets the fall back cultures for the specified culture, in order of preference, from the specified <see cref="ICultureInfoProvider"/>.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns>
+        /// The fall back cultures for the specified culture, in order of preference. The first element will always be the given culture.
+        /// If the invariant culture is given, all cultures will be returned.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="provider"/> was null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="culture"/> was null.</exception>
+        /// <exception cref="ArgumentException">$The <paramref name="provider"/> does not contain the <paramref name="culture"/> given.</exception>
+        [NotNull]
+        public static IEnumerable<ExtendedCultureInfo> GetFallBack(
+            [NotNull] this ICultureInfoProvider provider,
+            [NotNull] CultureInfo culture)
+        {
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
+            if (culture == null) throw new ArgumentNullException(nameof(culture));
+
+            ExtendedCultureInfo extendedCultureInfo = provider.Get(culture);
+            if (extendedCultureInfo == null)
+                throw new ArgumentException(
+                    $"The provider does not contain the culture '{culture}'.",
+                    nameof(culture));
+
+            HashSet<ExtendedCultureInfo> yielded = new HashSet<ExtendedCultureInfo>();
+
+            // First return the culture passed in
+            yield return extendedCultureInfo;
+            yielded.Add(extendedCultureInfo);
+
+            // Next return any descendants in a breadth first order 
+            Queue<ExtendedCultureInfo> queue = new Queue<ExtendedCultureInfo>(provider.GetChildren(extendedCultureInfo));
+            ExtendedCultureInfo c;
+            while (queue.TryDequeue(out c))
+            {
+                yield return c;
+
+                foreach (ExtendedCultureInfo child in provider.GetChildren(c))
+                    queue.Enqueue(child);
+            }
+
+            // Lastly return the ancestors and each ones children, excluding invariant
+            extendedCultureInfo = extendedCultureInfo.Parent;
+
+            while (!extendedCultureInfo.IsInvariant)
+            {
+                yield return extendedCultureInfo;
+                yielded.Add(extendedCultureInfo);
+
+                foreach (ExtendedCultureInfo child in provider.GetChildren(extendedCultureInfo))
+                {
+                    if (!yielded.Contains(child))
+                        yield return child;
+                }
+
+                extendedCultureInfo = extendedCultureInfo.Parent;
+            }
+
+            if (!yielded.Contains(extendedCultureInfo))
+                yield return extendedCultureInfo;
         }
     }
 }

@@ -93,5 +93,13 @@ namespace WebApplications.Utilities.Globalization
         /// <returns>The cultures that us the specified currency.</returns>
         [NotNull]
         IEnumerable<ExtendedCultureInfo> FindByCurrency([NotNull] CurrencyInfo currencyInfo);
+
+        /// <summary>
+        /// Gets the child cultures of the specified culture.
+        /// </summary>
+        /// <param name="cultureInfo">The culture to get the children of.</param>
+        /// <returns>The child cultures of the specified culture.</returns>
+        [NotNull]
+        IEnumerable<ExtendedCultureInfo> GetChildren([NotNull] CultureInfo cultureInfo);
     }
 }

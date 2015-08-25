@@ -47,6 +47,27 @@ namespace WebApplications.Utilities.Globalization
         public readonly RegionInfo RegionInfo;
 
         /// <summary>
+        /// Gets a value indicating whether this culture is invariant.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if this culture is invariant; otherwise, <see langword="false" />.
+        /// </value>
+#if BUILD_TASKS
+        public bool IsInvariant => string.IsNullOrEmpty(Name);
+#else
+        public bool IsInvariant => LCID == CultureHelper.InvariantLCID;
+#endif
+
+        /// <summary>
+        /// Gets the <see cref="ExtendedCultureInfo"/> that represents the parent culture of the current <see cref="ExtendedCultureInfo"/>.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="ExtendedCultureInfo"/> that represents the parent culture of the current <see cref="ExtendedCultureInfo"/>.
+        /// </returns>
+        [NotNull]
+        public new ExtendedCultureInfo Parent => base.Parent as ExtendedCultureInfo ?? new ExtendedCultureInfo(base.Parent);
+
+        /// <summary>
         /// Gets the three-character ISO 4217 currency symbol associated with the cultures region, 
         /// or <see langword="null"/> if the culture does not have a region.
         /// </summary>
@@ -55,10 +76,7 @@ namespace WebApplications.Utilities.Globalization
         /// or <see langword="null"/> if the culture does not have a region.
         /// </value>
         [CanBeNull]
-        public string ISOCurrencySymbol
-        {
-            get { return RegionInfo == null ? null : RegionInfo.ISOCurrencySymbol; }
-        }
+        public string ISOCurrencySymbol => RegionInfo?.ISOCurrencySymbol;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtendedCultureInfo" /> class.
