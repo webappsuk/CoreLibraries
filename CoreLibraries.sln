@@ -66,6 +66,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.P
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILMerge.Build.Task", "ILMerge\ILMerge.Build.Task.csproj", "{D45DFBAF-5019-4435-80FB-1FA2EC48F23A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553} = {CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Serialization", "Serialization\WebApplications.Utilities.Serialization.csproj", "{686798D4-CC9C-460F-937F-28933CC53E09}"
 EndProject
