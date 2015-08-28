@@ -6,8 +6,8 @@
     <title>Web Applications UK Ltd Database</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
-    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <licenseUrl>https://raw.githubusercontent.com/webappsuk/CoreLibraries/master/license.md</licenseUrl>
+    <iconUrl>https://github.com/webappsuk/CoreLibraries/blob/master/nuget.png?raw=true</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <summary>Provides a set of utilities for easy communication with a SQL Server Database.</summary>
     <description>$description$</description>

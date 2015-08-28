@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{76EB4D52-A38F-44B2-956A-CB49A6B4B435}"
 	ProjectSection(SolutionItems) = preProject
@@ -122,6 +122,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpecs", "NuSpecs", "{E040
 		Scheduling\WebApplications.Utilities.Scheduling.nuspec = Scheduling\WebApplications.Utilities.Scheduling.nuspec
 		Serialization\WebApplications.Utilities.Serialization.nuspec = Serialization\WebApplications.Utilities.Serialization.nuspec
 		Service\WebApplications.Utilities.Service.nuspec = Service\WebApplications.Utilities.Service.nuspec
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{0FB945E9-C475-42B7-8B85-8F9666DF60B4}"
+	ProjectSection(SolutionItems) = preProject
+		license.md = license.md
+		nuget.png = nuget.png
+		readme.md = readme.md
 	EndProjectSection
 EndProject
 Global
