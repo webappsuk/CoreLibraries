@@ -3,6 +3,7 @@
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
+    <title>Web Applications UK Ltd Database</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
@@ -10,6 +11,9 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <summary>Provides a set of utilities for easy communication with a SQL Server Database.</summary>
     <description>$description$</description>
+    <releaseNotes></releaseNotes>
+    <projectUrl>https://github.com/webappsuk/CoreLibraries</projectUrl>
+    <copyright>Copyright (c) 2015, Web Applications UK Ltd</copyright>
     <tags>Utility Utilities SqlProgram Database</tags>
     <references>
       <group targetFramework="net452">

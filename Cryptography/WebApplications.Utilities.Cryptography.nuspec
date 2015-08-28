@@ -3,6 +3,7 @@
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
+    <title>Web Applications UK Ltd Cryptography</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
@@ -10,7 +11,10 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <summary>Provides utility functions for encryption/decrypting, hashing and encoding.</summary>
     <description>$description$</description>
-    <tags>Utility Utilities Cryptography Encrypt Decrypt Base32</tags>
+    <releaseNotes></releaseNotes>
+    <projectUrl>https://github.com/webappsuk/CoreLibraries</projectUrl>
+    <copyright>Copyright (c) 2015, Web Applications UK Ltd</copyright>
+    <tags>Utility Utilities Cryptography Encrypt Decrypt Base32 AES RSA PBKDF2</tags>
     <references>
       <group targetFramework="net452">
         <reference file="WebApplications.Utilities.Cryptography.dll" />
