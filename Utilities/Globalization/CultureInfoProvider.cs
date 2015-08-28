@@ -89,6 +89,19 @@ namespace WebApplications.Utilities.Globalization
             }
 
             /// <summary>
+            /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified <see cref="CultureInfo.LCID" />.
+            /// </summary>
+            /// <param name="lcid">The lcid.</param>
+            /// <returns>
+            /// The <see cref="ExtendedCultureInfo" /> that corresponds to the <paramref name="lcid" /> specified (if any);
+            /// otherwise <see langword="null" />.
+            /// </returns>
+            public ExtendedCultureInfo Get(int lcid)
+            {
+                return null;
+            }
+
+            /// <summary>
             /// Retrieves an <see cref="ExtendedCultureInfo" /> equivalent to the specified (see <see cref="CultureInfo" />).
             /// </summary>
             /// <param name="cultureInfo">The culture info.</param>
@@ -179,10 +192,16 @@ namespace WebApplications.Utilities.Globalization
         }
 
         /// <summary>
-        ///   Stores currency info (by code).
+        /// Stores culture info (by name).
         /// </summary>
         [NotNull]
         private readonly IReadOnlyDictionary<string, ExtendedCultureInfo> _cultureInfos;
+
+        /// <summary>
+        /// Stores culture info (by LCID).
+        /// </summary>
+        [NotNull]
+        private readonly IReadOnlyDictionary<int, ExtendedCultureInfo> _cultureInfosByLCID;
 
         /// <summary>
         /// The cultures by currency code.
@@ -210,6 +229,16 @@ namespace WebApplications.Utilities.Globalization
             Published = published;
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             _cultureInfos = cultures.Distinct().ToDictionary(c => c.Name, StringComparer.InvariantCultureIgnoreCase);
+            _cultureInfosByLCID = _cultureInfos.Values
+                .Where(c => c.LCID != 4096) // Filter out custom cultures
+                .GroupBy(c => c.LCID)
+                .Select(
+                    g =>
+                    {
+                        ExtendedCultureInfo[] v = g.ToArray();
+                        return v.Length == 1 ? v[0] : v.OrderBy(GetDepth).ThenBy(c => c.Name).First();
+                    })
+                .ToDictionary(c => c.LCID);
             _currencyCultureInfos = _cultureInfos.Values
                 .OrderBy(c => c.Name)
                 .GroupBy(c => c.ISOCurrencySymbol, StringComparer.InvariantCultureIgnoreCase)
@@ -240,6 +269,22 @@ namespace WebApplications.Utilities.Globalization
         }
 
         /// <summary>
+        /// Gets the depth of the given culture info.
+        /// </summary>
+        /// <param name="info">The information.</param>
+        /// <returns></returns>
+        private static int GetDepth([NotNull] ExtendedCultureInfo info)
+        {
+            int i = 0;
+            while (!info.IsInvariant)
+            {
+                i++;
+                info = info.Parent;
+            }
+            return i;
+        }
+
+        /// <summary>
         /// The date this provider was published.
         /// </summary>
         public DateTime Published { get; }
@@ -265,18 +310,14 @@ namespace WebApplications.Utilities.Globalization
         public int Count => _cultureInfos.Count;
 
         /// <summary>
-        /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified (see <see cref="CultureInfo.Name"/>).
+        /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified <see cref="CultureInfo.Name" />.
         /// </summary>
         /// <param name="cultureName">The ISO Code.</param>
         /// <returns>
-        /// The 
-        /// <see cref="CultureInfo" /> that corresponds to the 
-        /// <paramref name="cultureName" /> specified (if any);
-        ///   otherwise the default value for the type is returned.
+        /// The <see cref="ExtendedCultureInfo" /> that corresponds to the <paramref name="cultureName" /> specified (if any);
+        /// otherwise <see langword="null" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="cultureName"/> is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="cultureName" /> is <see langword="null" />.</exception>
         public ExtendedCultureInfo Get(string cultureName)
         {
             if (cultureName == null) throw new ArgumentNullException(nameof(cultureName));
@@ -286,18 +327,29 @@ namespace WebApplications.Utilities.Globalization
         }
 
         /// <summary>
-        /// Retrieves an <see cref="ExtendedCultureInfo" /> equivalent to the specified (see <see cref="CultureInfo" />).
+        /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified <see cref="CultureInfo.LCID" />.
+        /// </summary>
+        /// <param name="lcid">The lcid.</param>
+        /// <returns>
+        /// The <see cref="ExtendedCultureInfo" /> that corresponds to the <paramref name="lcid" /> specified (if any);
+        /// otherwise <see langword="null" />.
+        /// </returns>
+        public ExtendedCultureInfo Get(int lcid)
+        {
+            ExtendedCultureInfo cultureInfo;
+            _cultureInfosByLCID.TryGetValue(lcid, out cultureInfo);
+            return cultureInfo;
+        }
+
+        /// <summary>
+        /// Retrieves an <see cref="ExtendedCultureInfo" /> equivalent to the <see cref="CultureInfo" />.
         /// </summary>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>
-        /// The 
-        /// <see cref="CultureInfo" /> that corresponds to the 
-        /// <paramref name="cultureInfo" /> specified (if any);
-        ///   otherwise the default value for the type is returned.
+        /// The <see cref="CultureInfo" /> that corresponds to the <paramref name="cultureInfo" /> specified (if any);
+        /// otherwise <see langword="null" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="cultureInfo" /> is <see langword="null" />.</exception>
         public ExtendedCultureInfo Get(CultureInfo cultureInfo)
         {
             if (cultureInfo == null) throw new ArgumentNullException(nameof(cultureInfo));
@@ -332,6 +384,7 @@ namespace WebApplications.Utilities.Globalization
         {
             if (cultureInfo == null) throw new ArgumentNullException(nameof(cultureInfo));
             IEnumerable<ExtendedCultureInfo> children;
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _childCultures.TryGetValue(Get(cultureInfo), out children)
                 ? children
                 : Enumerable.Empty<ExtendedCultureInfo>();

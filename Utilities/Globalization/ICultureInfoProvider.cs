@@ -59,30 +59,37 @@ namespace WebApplications.Utilities.Globalization
         int Count { get; }
 
         /// <summary>
-        /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified (see <see cref="CultureInfo.Name"/>).
+        /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified <see cref="CultureInfo.Name" />.
         /// </summary>
         /// <param name="cultureName">The ISO Code.</param>
         /// <returns>
-        ///   The <see cref="CultureInfo"/> that corresponds to the <paramref name="cultureName"/> specified (if any);
-        ///   otherwise the default value for the type is returned.
+        /// The <see cref="ExtendedCultureInfo" /> that corresponds to the <paramref name="cultureName" /> specified (if any);
+        /// otherwise <see langword="null" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="cultureName"/> is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="cultureName" /> is <see langword="null" />.</exception>
         [CanBeNull]
         ExtendedCultureInfo Get([NotNull] string cultureName);
 
         /// <summary>
-        /// Retrieves an <see cref="ExtendedCultureInfo" /> equivalent to the specified (see <see cref="CultureInfo"/>).
+        /// Retrieves an <see cref="ExtendedCultureInfo" /> with the name specified <see cref="CultureInfo.LCID" />.
+        /// </summary>
+        /// <param name="lcid">The lcid.</param>
+        /// <returns>
+        /// The <see cref="ExtendedCultureInfo" /> that corresponds to the <paramref name="lcid" /> specified (if any);
+        /// otherwise <see langword="null" />.
+        /// </returns>
+        [CanBeNull]
+        ExtendedCultureInfo Get(int lcid);
+
+        /// <summary>
+        /// Retrieves an <see cref="ExtendedCultureInfo" /> equivalent to the <see cref="CultureInfo" />.
         /// </summary>
         /// <param name="cultureInfo">The culture info.</param>
         /// <returns>
-        ///   The <see cref="CultureInfo"/> that corresponds to the <paramref name="cultureInfo"/> specified (if any);
-        ///   otherwise the default value for the type is returned.
+        /// The <see cref="CultureInfo" /> that corresponds to the <paramref name="cultureInfo" /> specified (if any);
+        /// otherwise <see langword="null" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="cultureInfo"/> is <see langword="null"/>.
-        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="cultureInfo" /> is <see langword="null" />.</exception>
         [CanBeNull]
         ExtendedCultureInfo Get([NotNull] CultureInfo cultureInfo);
 
@@ -92,6 +99,7 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="currencyInfo">The currency information.</param>
         /// <returns>The cultures that us the specified currency.</returns>
         [NotNull]
+        [ItemNotNull]
         IEnumerable<ExtendedCultureInfo> FindByCurrency([NotNull] CurrencyInfo currencyInfo);
 
         /// <summary>
@@ -100,6 +108,7 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="cultureInfo">The culture to get the children of.</param>
         /// <returns>The child cultures of the specified culture.</returns>
         [NotNull]
+        [ItemNotNull]
         IEnumerable<ExtendedCultureInfo> GetChildren([NotNull] CultureInfo cultureInfo);
     }
 }

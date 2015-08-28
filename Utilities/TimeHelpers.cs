@@ -64,6 +64,46 @@ namespace WebApplications.Utilities
         public static readonly Duration InfiniteDuration = Duration.FromMilliseconds(Timeout.Infinite);
 
         /// <summary>
+        /// A constant used to specify the maximum duration, for methods that accept a <see cref="Duration"/> parameter.
+        /// </summary>
+        public static readonly Duration MaxDuration = Duration.FromTicks(long.MaxValue);
+
+        /// <summary>
+        /// A constant used to specify the minimum duration, for methods that accept a <see cref="Duration"/> parameter.
+        /// </summary>
+        public static readonly Duration MinDuration = Duration.FromTicks(long.MinValue);
+
+        /// <summary>
+        /// A constant used to specify the maximum local date time, for methods that accept a <see cref="LocalDateTime"/> parameter.
+        /// </summary>
+        public static readonly LocalDateTime MaxLocalDateTime = new LocalDateTime(31195, 12, 31, 23, 59, 59, 999, 9999);
+
+        /// <summary>
+        /// A constant used to specify the minimum local date time, for methods that accept a <see cref="LocalDateTime"/> parameter.
+        /// </summary>
+        public static readonly LocalDateTime MinLocalDateTime = new LocalDateTime(-27255, 1, 1, 0, 0);
+
+        /// <summary>
+        /// A constant used to specify the maximum local date, for methods that accept a <see cref="LocalDate"/> parameter.
+        /// </summary>
+        public static readonly LocalDate MaxLocalDate = MaxLocalDateTime.Date;
+
+        /// <summary>
+        /// A constant used to specify the minimum local date, for methods that accept a <see cref="LocalDate"/> parameter.
+        /// </summary>
+        public static readonly LocalDate MinLocalDate = MinLocalDateTime.Date;
+
+        /// <summary>
+        /// A constant used to specify the maximum local time, for methods that accept a <see cref="LocalTime"/> parameter.
+        /// </summary>
+        public static readonly LocalTime MaxLocalTime = new LocalTime(23, 59, 59, 999, 9999);
+
+        /// <summary>
+        /// A constant used to specify the minimum local time, for methods that accept a <see cref="LocalTime"/> parameter.
+        /// </summary>
+        public static readonly LocalTime MinLocalTime = new LocalTime(0, 0);
+
+        /// <summary>
         /// The one tick <see cref="Duration"/>.
         /// </summary>
         public static readonly Duration OneTick = Duration.FromTicks(1);
