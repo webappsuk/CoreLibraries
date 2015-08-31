@@ -64,6 +64,11 @@
       <Project>{2931c698-6123-49bc-81fd-f72a4c1415ea}</Project>
       <Name>WebApplications.Utilities</Name>
     </ProjectReference>
+    <ProjectReference Include="WebApplications.Utilities.Performance.Tools.PerfSetup\WebApplications.Utilities.Performance.Tools.PerfSetup.csproj">
+      <Project>{6f2b5d7a-e8b7-4820-9c39-30f722b0db01}</Project>
+      <Name>WebApplications.Utilities.Performance.Tools.PerfSetup</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

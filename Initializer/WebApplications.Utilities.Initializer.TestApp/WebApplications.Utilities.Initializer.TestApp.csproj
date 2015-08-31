@@ -21,6 +21,13 @@
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebApplications.Utilities.Initializer.csproj">
+      <Project>{3626816d-eb33-4ed0-af95-fd7ca6c6d99a}</Project>
+      <Name>WebApplications.Utilities.Initializer</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <InjectModuleInitializerTool>$(SolutionDir)bin\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
   </PropertyGroup>

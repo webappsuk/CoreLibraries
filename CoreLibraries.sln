@@ -16,10 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Testing.Test", "Testing\WebApplications.Testing.Test\WebApplications.Testing.Test.csproj", "{CBE3CF94-6406-4EED-AADA-3E6B441B1DE3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities", "Utilities\WebApplications.Utilities.csproj", "{2931C698-6123-49BC-81FD-F72A4C1415EA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553} = {CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553}
-		{3626816D-EB33-4ED0-AF95-FD7CA6C6D99A} = {3626816D-EB33-4ED0-AF95-FD7CA6C6D99A}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.BuildTasks", "Utilities\WebApplications.Utilities.BuildTasks\WebApplications.Utilities.BuildTasks.csproj", "{CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553}"
 EndProject
@@ -34,9 +30,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Cryptography.Test", "Cryptography\WebApplications.Utilities.Cryptography.Test\WebApplications.Utilities.Cryptography.Test.csproj", "{0A67DBB5-780E-4BC6-841E-E1B50309895D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Initializer", "Initializer\WebApplications.Utilities.Initializer.csproj", "{3626816D-EB33-4ED0-AF95-FD7CA6C6D99A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D45DFBAF-5019-4435-80FB-1FA2EC48F23A} = {D45DFBAF-5019-4435-80FB-1FA2EC48F23A}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Initializer.Test", "Initializer\WebApplications.Utilities.Initializer.Test\WebApplications.Utilities.Initializer.Test.csproj", "{1F4CFF76-3151-460B-B1A4-2E77EEF20029}"
 EndProject
@@ -49,35 +42,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Targets", "Targets", "{E3E4
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Initializer.TestApp", "Initializer\WebApplications.Utilities.Initializer.TestApp\WebApplications.Utilities.Initializer.TestApp.csproj", "{B32CE846-8FAF-4B89-9A17-22B4427133C9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3626816D-EB33-4ED0-AF95-FD7CA6C6D99A} = {3626816D-EB33-4ED0-AF95-FD7CA6C6D99A}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Performance", "Performance\WebApplications.Utilities.Performance.csproj", "{04220E31-53F6-453F-80C5-0E2D49776D36}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6F2B5D7A-E8B7-4820-9C39-30F722B0DB01} = {6F2B5D7A-E8B7-4820-9C39-30F722B0DB01}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Performance.Test", "Performance\WebApplications.Utilities.Performance.Test\WebApplications.Utilities.Performance.Test.csproj", "{2A45DCFA-A60C-4AE6-80E8-18D62D04E438}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Performance.Tools.PerfSetup", "Performance\WebApplications.Utilities.Performance.Tools.PerfSetup\WebApplications.Utilities.Performance.Tools.PerfSetup.csproj", "{6F2B5D7A-E8B7-4820-9C39-30F722B0DB01}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D45DFBAF-5019-4435-80FB-1FA2EC48F23A} = {D45DFBAF-5019-4435-80FB-1FA2EC48F23A}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILMerge.Build.Task", "ILMerge\ILMerge.Build.Task.csproj", "{D45DFBAF-5019-4435-80FB-1FA2EC48F23A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553} = {CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Serialization", "Serialization\WebApplications.Utilities.Serialization.csproj", "{686798D4-CC9C-460F-937F-28933CC53E09}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Serialization.Test", "Serialization\Utilities.Serialization.Test\WebApplications.Utilities.Serialization.Test.csproj", "{D118B240-3DCE-46E3-A721-751B60E003B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Logging", "Logging\WebApplications.Utilities.Logging.csproj", "{0EBA7604-0BDB-438E-967F-7DFE93E6ABD5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3626816D-EB33-4ED0-AF95-FD7CA6C6D99A} = {3626816D-EB33-4ED0-AF95-FD7CA6C6D99A}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Logging.Test", "Logging\WebApplications.Utilities.Logging.Test\WebApplications.Utilities.Logging.Test.csproj", "{4B05B106-0F92-46D0-B129-107D0D05F48A}"
 EndProject
@@ -92,9 +70,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Database.Test", "Database\WebApplications.Utilities.Database.Test\WebApplications.Utilities.Database.Test.csproj", "{8C6554DF-D0FE-48B5-B487-19882850AC69}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Service", "Service\WebApplications.Utilities.Service.csproj", "{B580A145-6DE0-45D4-B4B6-924A52BF10B7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{839D6111-FFE7-4498-928C-75054DE61CE9} = {839D6111-FFE7-4498-928C-75054DE61CE9}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Service.Common", "Service\WebApplications.Utilities.Service.Common\WebApplications.Utilities.Service.Common.csproj", "{B365AD50-598A-4D1B-8656-1F0F8ADCDBC8}"
 EndProject

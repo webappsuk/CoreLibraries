@@ -31,7 +31,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <MergedOutputFileName>PerfSetup32.exe</MergedOutputFileName>
-	<Platform>x86</Platform>
+    <Platform>x86</Platform>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -144,6 +144,13 @@
     <RootBinPath Include="$(SolutionDir)bin\PerfSetup64.exe">
       <Visible>False</Visible>
     </RootBinPath>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ILMerge\ILMerge.Build.Task.csproj">
+      <Project>{d45dfbaf-5019-4435-80fb-1fa2ec48f23a}</Project>
+      <Name>ILMerge.Build.Task</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+    </ProjectReference>
   </ItemGroup>
   <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
     <Copy SourceFiles="$(MergedOutputFile)" DestinationFolder="$(SolutionDir)bin" />

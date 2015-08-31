@@ -75,10 +75,16 @@
       <Visible>False</Visible>
     </RootBinPath>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ILMerge\ILMerge.Build.Task.csproj">
+      <Project>{d45dfbaf-5019-4435-80fb-1fa2ec48f23a}</Project>
+      <Name>ILMerge.Build.Task</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+    </ProjectReference>
+  </ItemGroup>
   <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
     <Copy SourceFiles="$(MergedOutputFile)" DestinationFiles="@(RootBinPath)" />
   </Target>
-
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

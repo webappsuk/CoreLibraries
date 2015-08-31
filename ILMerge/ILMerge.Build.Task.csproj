@@ -26,6 +26,13 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utilities\WebApplications.Utilities.BuildTasks\WebApplications.Utilities.BuildTasks.csproj">
+      <Project>{ca6c3c0e-96db-4b74-a8e4-33aba73d0553}</Project>
+      <Name>WebApplications.Utilities.BuildTasks</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+    </ProjectReference>
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

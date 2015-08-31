@@ -86,6 +86,16 @@
       <Project>{2931c698-6123-49bc-81fd-f72a4c1415ea}</Project>
       <Name>WebApplications.Utilities</Name>
     </ProjectReference>
+    <ProjectReference Include="ServiceClient\ServiceClient.csproj">
+      <Project>{12fe7e65-e744-4f7f-a7eb-608249c75235}</Project>
+      <Name>ServiceClient</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+    </ProjectReference>
+    <ProjectReference Include="WebApplications.Utilities.Service.Client\WebApplications.Utilities.Service.Client.csproj">
+      <Project>{839d6111-ffe7-4498-928c-75054de61ce9}</Project>
+      <Name>WebApplications.Utilities.Service.Client</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+    </ProjectReference>
     <ProjectReference Include="WebApplications.Utilities.Service.Common\WebApplications.Utilities.Service.Common.csproj">
       <Project>{b365ad50-598a-4d1b-8656-1f0f8adcdbc8}</Project>
       <Name>WebApplications.Utilities.Service.Common</Name>
