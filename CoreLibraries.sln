@@ -104,6 +104,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpecs", "NuSpecs", "{E040
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{0FB945E9-C475-42B7-8B85-8F9666DF60B4}"
 	ProjectSection(SolutionItems) = preProject
+		CONTRIBUTING.md = CONTRIBUTING.md
 		license.md = license.md
 		nuget.png = nuget.png
 		readme.md = readme.md
