@@ -1,8 +1,14 @@
 # How to contribute
 
-I like to encourage you to contribute to the repository.
+We would like to encourage you to contribute to the repository.
 This should be as easy as possible for you but there are a few things to consider when contributing.
 The following guidelines for contribution should be followed if you want to submit a pull request.
+
+## General rules
+
+* We will mostly only accept bug fixes, and feature expansions rather than completely new features.  However, if you do have a completely new feature that you would like us to consider for inclusion, please submit an issue first.
+* We will almost never accept completely new projects, setting up a new project is complex due to the build processes involved in interlinked NuGets.  Again please submit an issue for discussion first!
+* We will generally aim to support the latest version of .NET and it's associated tooling.
 
 ## How to prepare
 
