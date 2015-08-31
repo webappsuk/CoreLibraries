@@ -23,7 +23,6 @@
   </metadata>
   <files>
     <file src="..\bin\WebApplications.Utilities.BuildTasks.dll" target="build\WebApplications.Utilities.BuildTasks.dll" />
-    <file src="bin\NuGet\AnyCPU\WebApplications.Utilities.xml" target="lib\net452" />
     <file src="Utility.targets" target="build\$id$.targets" />
     <file src="Resources\*.*" target="tools\Resources" />
     <file src="app.config.transform" target="Content" />

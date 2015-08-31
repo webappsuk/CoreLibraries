@@ -22,7 +22,6 @@
     </references>
   </metadata>
   <files>
-    <file src="bin\NuGet\AnyCPU\WebApplications.Utilities.Cryptography.xml" target="lib\net452" />
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
     <file src="cryptography.config" target="Content" />
