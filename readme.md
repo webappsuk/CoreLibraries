@@ -30,7 +30,11 @@ We are continually migrating the code to the latest versions of .NET and C#, but
 Documentation
 -------------
 
-The libraries are self-documenting and provide useful intellisense, this should also be accessible using [nudoq.org] (http://www.nudoq.org/#!/Projects/WebApplications).  There are some useful blogs on [thargy.com] (http://thargy.com/category/dev/csharp/), and we hope to provide more tutorials and examples if the NuGets prove popular.
+The libraries are well documented with inline XML comments and provide useful intellisense.
+
+*We had planned to make use of [nudoq.org] (http://www.nudoq.org/#!/Projects/WebApplications) after uploading the NuGets publicly, but this does not appear to have worked (yet?).  As such we are urgently evaluating alternatives, including [sharpDox] (https://github.com/Geaz/sharpDox).  Suggestions are welcome, particularly solutions that will allow us to deploy custom content alongside API documents to GitHub pages directly!*
+
+In the meantime, there are some useful blogs on [thargy.com] (http://thargy.com/category/dev/csharp/), and we hope to provide more tutorials and examples soon, particularly if the NuGets prove popular.
 
 License
 -------
