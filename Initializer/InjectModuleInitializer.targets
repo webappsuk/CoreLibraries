@@ -8,22 +8,27 @@
   </PropertyGroup>
 
   <!-- Check for the signed assemblies and located strong name key pair file -->
-  <PropertyGroup Condition="'$(SignAssembly)'=='true' AND Exists('$(AssemblyOriginatorKeyFile)')">
-    <InjectModuleSnk>$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
+  <PropertyGroup Condition="'$(SignAssembly)'=='true'">
+    <!-- Look for key file at current path -->
+    <InjectModuleSnk Condition="Exists('$(AssemblyOriginatorKeyFile)')">$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
+    <!-- Look for key file from ProjectDir -->
+    <InjectModuleSnk Condition="'$(InjectModuleSnk)'=='' AND Exists('$(ProjectDir)$(AssemblyOriginatorKeyFile)')">$(ProjectDir)$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
   </PropertyGroup>
 
   <UsingTask TaskName="InjectModuleInitializer"
              AssemblyFile="$(InjectModuleInitializerTool)" />
 
-  <Target Name="CheckPrerequisites">
+  <Target Name="CheckInitializerPrerequisits">
     <!-- Raise an error if we're unable to locate WebApplications.Utilities.Initializer.dll  -->
     <Error Condition="!Exists('$(InjectModuleInitializerTool)')" Text="Unable to locate '$(InjectModuleInitializerTool)'" />
+    <!-- Raise an error if we need to resign and can't find the key -->
+    <Error Condition="'$(SignAssembly)'=='true' AND !Exists('$(AssemblyOriginatorKeyFile)')" Text="Could not find the signature file for resigning, module initialisation cannot be performed." />
   </Target>
 
   <Target Name="InjectModuleInitializerTarget"
            Condition="'$(BuildingProject)'=='true' AND
                  Exists('$(InjectModuleInitializerTool)')"
-      DependsOnTargets="ResolveKeySource">
+      DependsOnTargets="CheckInitializerPrerequisits">
     <InjectModuleInitializer
        AssemblyFile="$(TargetPath)"
        TypeName="$(InjectModuleInitializerTypeName)"

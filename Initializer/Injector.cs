@@ -25,6 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Mono.Cecil;
+using Mono.Cecil.Cil;
+using Mono.Cecil.Pdb;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,9 +36,6 @@ using System.Linq;
 using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using Mono.Cecil.Pdb;
 using WebApplications.Utilities.Annotations;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 
@@ -384,7 +384,7 @@ namespace WebApplications.Utilities.Initializer
                     writeParams.StrongNameKeyPair = snkpair;
                     outputCollection.Add(
                         OutputImportance.MessageHigh,
-                        "Assembly '{0}' is being resigned by '{1}.",
+                        "Assembly '{0}' is being resigned by '{1}'.",
                         assemblyFile,
                         strongNameKeyPair);
                 }
