@@ -135,6 +135,7 @@
     <Compile Include="Globalization\ICultureInfoProvider.cs" />
     <Compile Include="Globalization\ICurrencyInfoProvider.cs" />
     <Compile Include="HighPrecisionClock.cs" />
+    <Compile Include="IO\CloseableStream.cs" />
     <Compile Include="IO\PeekableStream.cs" />
     <Compile Include="IReadOnlyLookup.cs" />
     <Compile Include="Array.cs" />
@@ -354,7 +355,7 @@
     <ProjectReference Include="..\Initializer\WebApplications.Utilities.Initializer.csproj">
       <Project>{3626816d-eb33-4ed0-af95-fd7ca6c6d99a}</Project>
       <Name>WebApplications.Utilities.Initializer</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
