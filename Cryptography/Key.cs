@@ -33,7 +33,7 @@ namespace WebApplications.Utilities.Cryptography
     /// <summary>
     /// An encryption key.
     /// </summary>
-    internal class Key
+    public class Key
     {
         /// <summary>
         /// Gets or sets the value of the key.

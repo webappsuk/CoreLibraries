@@ -25,30 +25,29 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Cryptography.Test
 {
     [TestClass]
-    public class AESCryptographerTests : SerializationTestBase
+    public class AESCryptographerTests : CryptographyTestBase
     {
         private const string InputString = "Password01";
-        private readonly CryptoProviderWrapper _providerWrapper = new CryptoProviderWrapper("2");
 
         [TestMethod]
         public void Encrypt_NullInput()
         {
-            Assert.IsNull(_providerWrapper.Encrypt(null));
+            Assert.IsNull(AES.Encrypt(null));
         }
 
         [TestMethod]
         public void Encrypt_WhiteSpace_SuccessfulEncryption()
         {
-            string encrypted = _providerWrapper.Encrypt(" ");
+            string encrypted = AES.Encrypt(" ");
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -57,10 +56,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_SameTwoInputStrings_DifferentEcryptionResult()
         {
-            string encryptedResult1 = _providerWrapper.Encrypt(InputString);
+            string encryptedResult1 = AES.Encrypt(InputString);
             Trace.WriteLine(encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(InputString);
+            string encryptedResult2 = AES.Encrypt(InputString);
             Trace.WriteLine(encryptedResult2);
 
             Assert.IsFalse(encryptedResult1 == encryptedResult2,
@@ -72,10 +71,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         {
             string input = Random.RandomString(10);
 
-            string encryptedResult1 = _providerWrapper.Encrypt(input);
+            string encryptedResult1 = AES.Encrypt(input);
             Trace.WriteLine(encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(input);
+            string encryptedResult2 = AES.Encrypt(input);
             Trace.WriteLine(encryptedResult2);
 
             Assert.IsFalse(encryptedResult1 == encryptedResult2,
@@ -85,13 +84,13 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_EmptyString()
         {
-            Assert.AreEqual(_providerWrapper.Encrypt(string.Empty), string.Empty);
+            Assert.AreEqual(AES.Encrypt(string.Empty), string.Empty);
         }
 
         [TestMethod]
         public void Encrypt_OneCharacterString_SuccessfulEncryption()
         {
-            string encrypted = _providerWrapper.Encrypt("!");
+            string encrypted = AES.Encrypt("!");
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -101,7 +100,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Encrypt_LongString_SuccessfulEncryption()
         {
             string input = Random.RandomString(5000, false);
-            string encrypted = _providerWrapper.Encrypt(input);
+            string encrypted = AES.Encrypt(input);
 
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
         }
@@ -110,7 +109,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Encrypt_UnicodeString_SuccessfulEncryption()
         {
             string input = Random.RandomString(10);
-            string encrypted = _providerWrapper.Encrypt(input);
+            string encrypted = AES.Encrypt(input);
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -120,10 +119,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Decrypt_LongString_SuccessfulDecryption()
         {
             string input = Random.RandomString(5000, false);
-            string encrypted = _providerWrapper.Encrypt(input);
+            string encrypted = AES.Encrypt(input);
 
             bool isLatestKey;
-            string decrypted = _providerWrapper.Decrypt(encrypted, out isLatestKey);
+            string decrypted = AES.Decrypt(encrypted, out isLatestKey);
 
             Trace.WriteLine(string.Format("Input: {0}{1}{0}", Environment.NewLine, input));
             Trace.WriteLine(string.Format("Decrypted String: {0}{1}", Environment.NewLine, decrypted));
@@ -134,10 +133,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Decrypt_UnicodeString_SuccessfulDecryption()
         {
             string input = Random.RandomString(10);
-            string encrypted = _providerWrapper.Encrypt(input);
+            string encrypted = AES.Encrypt(input);
 
             bool isLatestKey;
-            string decrypted = _providerWrapper.Decrypt(encrypted, out isLatestKey);
+            string decrypted = AES.Decrypt(encrypted, out isLatestKey);
 
             Trace.WriteLine(input);
             Trace.WriteLine(decrypted);
@@ -147,10 +146,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Decrypt_DecryptedResult_MatchesInputString()
         {
-            string encrypted = _providerWrapper.Encrypt(InputString);
+            string encrypted = AES.Encrypt(InputString);
 
             bool isLatestKey;
-            string decrypted = _providerWrapper.Decrypt(encrypted, out isLatestKey);
+            string decrypted = AES.Decrypt(encrypted, out isLatestKey);
 
             Trace.WriteLine(decrypted);
             Assert.AreEqual(InputString, decrypted, "decrypted text did not match the provided input");
@@ -161,18 +160,18 @@ namespace WebApplications.Utilities.Cryptography.Test
         {
             string input = Random.RandomString(10, false);
 
-            string encryptedResult1 = _providerWrapper.Encrypt(input);
+            string encryptedResult1 = AES.Encrypt(input);
             Trace.WriteLine("Encrypted A: " + encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(input);
+            string encryptedResult2 = AES.Encrypt(input);
             Trace.WriteLine("Encrypted B: " + encryptedResult2 + Environment.NewLine);
 
             bool isLatestKey;
 
-            string decryptedResult1 = _providerWrapper.Decrypt(encryptedResult1, out isLatestKey);
+            string decryptedResult1 = AES.Decrypt(encryptedResult1, out isLatestKey);
             Trace.WriteLine("Decrypted A: " + decryptedResult1);
 
-            string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
+            string decryptedResult2 = AES.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
             Assert.AreEqual(decryptedResult1, decryptedResult2,
@@ -184,18 +183,18 @@ namespace WebApplications.Utilities.Cryptography.Test
         {
             string input = Random.RandomString(10);
 
-            string encryptedResult1 = _providerWrapper.Encrypt(input);
+            string encryptedResult1 = AES.Encrypt(input);
             Trace.WriteLine("Encrypted A: " + encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(input);
+            string encryptedResult2 = AES.Encrypt(input);
             Trace.WriteLine("Encrypted B: " + encryptedResult2 + Environment.NewLine);
 
             bool isLatestKey;
 
-            string decryptedResult1 = _providerWrapper.Decrypt(encryptedResult1, out isLatestKey);
+            string decryptedResult1 = AES.Decrypt(encryptedResult1, out isLatestKey);
             Trace.WriteLine("Decrypted A: " + decryptedResult1);
 
-            string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
+            string decryptedResult2 = AES.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
             Assert.AreEqual(decryptedResult1, decryptedResult2,
@@ -206,14 +205,14 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Decrypt_NullInput()
         {
             bool isLatestKey;
-            Assert.IsNull(_providerWrapper.Decrypt(null, out isLatestKey));
+            Assert.IsNull(AES.Decrypt(null, out isLatestKey));
         }
 
         [TestMethod]
         public void Decrypt_EmptyString()
         {
             bool isLatestKey;
-            Assert.AreEqual(_providerWrapper.Decrypt(string.Empty, out isLatestKey), string.Empty);
+            Assert.AreEqual(AES.Decrypt(string.Empty, out isLatestKey), string.Empty);
         }
 
         [TestMethod]
@@ -221,7 +220,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Decrypt_NonBase32EncodedString_CryptographicException()
         {
             bool isLatestKey;
-            _providerWrapper.Decrypt("hello world", out isLatestKey);
+            AES.Decrypt("hello world", out isLatestKey);
 
             Assert.Fail("CryptographicException was expected when using a non base32 encoded string");
         }
@@ -231,7 +230,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Decrypt_StringInputNotUsingKeysInConfiguration_CryptographicException()
         {
             bool isLatestKey;
-            _providerWrapper.Decrypt("FK5WAQDPSRYDRS2UB4S86FZ747M5JT7CF6CTDAHJMTXJSMP8PK52", out isLatestKey);
+            AES.Decrypt("FK5WAQDPSRYDRS2UB4S86FZ747M5JT7CF6CTDAHJMTXJSMP8PK52", out isLatestKey);
 
             Assert.Fail(
                 "CryptographicException was expected when the input was encrypted using a key not found within the configuration");
@@ -243,8 +242,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string decryptedString;
             bool? isLatestKey;
 
-            _providerWrapper.Encrypt("a new key will be made now");
-            bool decrypted = _providerWrapper.TryDecrypt("FJN58QU5ZX66NCRGT6UKQ9DDZYB4DA5WBEFEWUBX9PKHS587QNZ1",
+            AES.Encrypt("a new key will be made now");
+            bool decrypted = AES.TryDecrypt("FJN58QU5ZX66NCRGT6UKQ9DDZYB4DA5WBEFEWUBX9PKHS587QNZ1",
                                                          out decryptedString, out isLatestKey);
 
             Assert.IsFalse(isLatestKey.Value, "IsLatestKey should return false");
@@ -256,7 +255,7 @@ namespace WebApplications.Utilities.Cryptography.Test
             string decryptedString;
             bool? isLatestKey;
 
-            Assert.IsTrue(_providerWrapper.TryDecrypt(null, out decryptedString, out isLatestKey));
+            Assert.IsTrue(AES.TryDecrypt(null, out decryptedString, out isLatestKey));
             Assert.IsNull(decryptedString);
         }
     }

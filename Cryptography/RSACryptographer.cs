@@ -42,11 +42,12 @@ namespace WebApplications.Utilities.Cryptography
     /// <summary>
     /// Allows encryption and decryption using RSA.
     /// </summary>
-    internal class RSACryptographer : IEncryptorDecryptor
+    public class RSACryptographer : ICryptoProvider
     {
         /// <summary>
         /// The corresponding <see cref="ProviderElement"/> (if any) to access configuration data.
         /// </summary>
+        [CanBeNull]
         private readonly ProviderElement _provider;
 
         /// <summary>
@@ -57,10 +58,11 @@ namespace WebApplications.Utilities.Cryptography
         private List<Key> _rsaEncryptionKeys = new List<Key>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RSACryptographer"/> class.
+        /// Initializes a new instance of the <see cref="RSACryptographer" /> class.
         /// </summary>
         /// <param name="keys">The keys to add to this provider.</param>
-        internal RSACryptographer(IEnumerable<Key> keys = null)
+        [UsedImplicitly]
+        public RSACryptographer(IEnumerable<Key> keys = null)
         {
             if (keys == null)
                 return;
@@ -71,13 +73,14 @@ namespace WebApplications.Utilities.Cryptography
             // ReSharper restore PossibleNullReferenceException
         }
 
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="RSACryptographer"/> class.
+        /// Initializes a new instance of the <see cref="RSACryptographer" /> class.
         /// </summary>
         /// <param name="provider">The provider element.</param>
         /// <param name="keys">The keys to add to this provider.</param>
         [UsedImplicitly]
-        internal RSACryptographer(ProviderElement provider, IEnumerable<Key> keys = null)
+        private RSACryptographer([NotNull] ProviderElement provider, IEnumerable<Key> keys = null)
         {
             _provider = provider;
 
@@ -193,14 +196,10 @@ namespace WebApplications.Utilities.Cryptography
             throw new CryptographicException(Resources.RSACryptographer_Decrypt_DecryptionFailed);
         }
 
-        /// <summary>
-        /// Encrypts the specified input <see cref="string"/>.
-        /// </summary>
-        /// <param name="input">The string to encrypt.</param>
-        /// <returns>The encrypted <paramref name="input"/>.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="input"/> was <see langword="null"/>.
-        /// </exception>
+        /// <inheritdoc />
+        public string Id => _provider?.Id;
+
+        /// <inheritdoc />
         public string Encrypt(string input)
         {
             if (string.IsNullOrEmpty(input))

@@ -7,8 +7,8 @@
     <AssemblyName>WebApplications.Utilities.Cryptography.Test</AssemblyName>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <DefineConstants>Utilities</DefineConstants>
-     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\..\</SolutionDir>
- </PropertyGroup>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\..\</SolutionDir>
+  </PropertyGroup>
   <Import Project="$(SolutionDir)Common.proj" />
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -35,14 +35,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AESCryptographerTests.cs" />
-    <Compile Include="CryptoProviderWrapperTests.cs" />
+    <Compile Include="CryptoProviderTests.cs" />
     <Compile Include="KeyElementTests.cs" />
     <Compile Include="PBKDF2Tests.cs" />
     <Compile Include="ProviderElementTests.cs" />
     <Compile Include="RSACryptographerTests.cs" />
     <Compile Include="CryptographyConfigurationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializationTestBase.cs" />
+    <Compile Include="CryptographyTestBase.cs" />
     <Compile Include="TestXmlEncryption.cs" />
   </ItemGroup>
   <ItemGroup>

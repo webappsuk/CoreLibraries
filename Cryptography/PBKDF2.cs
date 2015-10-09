@@ -91,11 +91,11 @@ namespace WebApplications.Utilities.Cryptography
             [NotNull] byte[] salt,
             int iterations = 1000)
         {
-            if (password == null) throw new ArgumentNullException("password");
-            if (salt == null) throw new ArgumentNullException("salt");
-            if (password.Length < 1) throw new ArgumentException(Resources.PBKDF2_PasswordEmpty, "password");
-            if (salt.Length < 1) throw new ArgumentException(Resources.PBKDF2_SaltEmpty, "salt");
-            if (iterations < 1) throw new ArgumentOutOfRangeException("iterations");
+            if (password == null) throw new ArgumentNullException(nameof(password));
+            if (salt == null) throw new ArgumentNullException(nameof(salt));
+            if (password.Length < 1) throw new ArgumentException(Resources.PBKDF2_PasswordEmpty, nameof(password));
+            if (salt.Length < 1) throw new ArgumentException(Resources.PBKDF2_SaltEmpty, nameof(salt));
+            if (iterations < 1) throw new ArgumentOutOfRangeException(nameof(iterations));
 
             _hmac = new T { Key = password };
             _salt = (byte[])salt.Clone();

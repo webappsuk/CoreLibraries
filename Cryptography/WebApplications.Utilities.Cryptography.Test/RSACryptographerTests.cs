@@ -25,24 +25,23 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Cryptography.Test
 {
     [TestClass]
-    public class RSACryptographerTests : SerializationTestBase
+    public class RSACryptographerTests : CryptographyTestBase
     {
         private const string InputString = "I do not like them sam-I-am I do not like green eggs and ham.";
-        private readonly CryptoProviderWrapper _providerWrapper = new CryptoProviderWrapper("1");
 
         [TestMethod]
         public void Encrypt_InputString_SuccessfulEncryption()
         {
-            string encrypted = _providerWrapper.Encrypt(InputString);
+            string encrypted = RSA.Encrypt(InputString);
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -51,7 +50,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_WhiteSpace_SuccessfulEncryption()
         {
-            string encrypted = _providerWrapper.Encrypt(" ");
+            string encrypted = RSA.Encrypt(" ");
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -61,7 +60,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Encrypt_LongString_SuccessfulEncryption()
         {
             string input = Random.RandomString(5000, false);
-            string encrypted = _providerWrapper.Encrypt(input);
+            string encrypted = RSA.Encrypt(input);
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -71,7 +70,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Encrypt_UnicodeString_SuccessfulEncryption()
         {
             string input = Random.RandomString(10);
-            string encrypted = _providerWrapper.Encrypt(input);
+            string encrypted = RSA.Encrypt(input);
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -80,7 +79,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_OneCharacterString_SuccessfulEncryption()
         {
-            string encrypted = _providerWrapper.Encrypt("!");
+            string encrypted = RSA.Encrypt("!");
 
             Trace.WriteLine(encrypted);
             Assert.IsTrue(encrypted != null, "Encrypt method did not return a valid non-null string");
@@ -89,22 +88,22 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_NullInput_EmptyStringResult()
         {
-            Assert.IsNull(_providerWrapper.Encrypt(null));
+            Assert.IsNull(RSA.Encrypt(null));
         }
 
         [TestMethod]
         public void Encrypt_EmptyString()
         {
-            Assert.AreEqual(_providerWrapper.Encrypt(string.Empty), string.Empty);
+            Assert.AreEqual(RSA.Encrypt(string.Empty), string.Empty);
         }
 
         [TestMethod]
         public void Encrypt_SameTwoInputStrings_DifferentEcryptionResult()
         {
-            string encryptedResult1 = _providerWrapper.Encrypt(InputString);
+            string encryptedResult1 = RSA.Encrypt(InputString);
             Trace.WriteLine(encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(InputString);
+            string encryptedResult2 = RSA.Encrypt(InputString);
             Trace.WriteLine(encryptedResult2);
 
             Assert.IsFalse(encryptedResult1 == encryptedResult2,
@@ -116,10 +115,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         {
             string input = Random.RandomString(10);
 
-            string encryptedResult1 = _providerWrapper.Encrypt(input);
+            string encryptedResult1 = RSA.Encrypt(input);
             Trace.WriteLine(encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(input);
+            string encryptedResult2 = RSA.Encrypt(input);
             Trace.WriteLine(encryptedResult2);
 
             Assert.IsFalse(encryptedResult1 == encryptedResult2,
@@ -131,18 +130,18 @@ namespace WebApplications.Utilities.Cryptography.Test
         {
             string input = Random.RandomString(10, false);
 
-            string encryptedResult1 = _providerWrapper.Encrypt(input);
+            string encryptedResult1 = RSA.Encrypt(input);
             Trace.WriteLine("Encrypted A: " + encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(input);
+            string encryptedResult2 = RSA.Encrypt(input);
             Trace.WriteLine("Encrypted B: " + encryptedResult2 + Environment.NewLine);
 
             bool isLatestKey;
 
-            string decryptedResult1 = _providerWrapper.Decrypt(encryptedResult1, out isLatestKey);
+            string decryptedResult1 = RSA.Decrypt(encryptedResult1, out isLatestKey);
             Trace.WriteLine("Decrypted A: " + decryptedResult1);
 
-            string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
+            string decryptedResult2 = RSA.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
             Assert.AreEqual(decryptedResult1, decryptedResult2,
@@ -154,18 +153,18 @@ namespace WebApplications.Utilities.Cryptography.Test
         {
             string input = Random.RandomString(10);
 
-            string encryptedResult1 = _providerWrapper.Encrypt(input);
+            string encryptedResult1 = RSA.Encrypt(input);
             Trace.WriteLine("Encrypted A: " + encryptedResult1);
 
-            string encryptedResult2 = _providerWrapper.Encrypt(input);
+            string encryptedResult2 = RSA.Encrypt(input);
             Trace.WriteLine("Encrypted B: " + encryptedResult2 + Environment.NewLine);
 
             bool isLatestKey;
 
-            string decryptedResult1 = _providerWrapper.Decrypt(encryptedResult1, out isLatestKey);
+            string decryptedResult1 = RSA.Decrypt(encryptedResult1, out isLatestKey);
             Trace.WriteLine("Decrypted A: " + decryptedResult1);
 
-            string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
+            string decryptedResult2 = RSA.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
             Assert.AreEqual(decryptedResult1, decryptedResult2,
@@ -175,10 +174,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Decrypt_DecryptedResult_MatchesInputString()
         {
-            string encrypted = _providerWrapper.Encrypt(InputString);
+            string encrypted = RSA.Encrypt(InputString);
 
             bool isLatestKey;
-            string decrypted = _providerWrapper.Decrypt(encrypted, out isLatestKey);
+            string decrypted = RSA.Decrypt(encrypted, out isLatestKey);
 
             Trace.WriteLine(decrypted);
             Assert.AreEqual(InputString, decrypted, "decrypted text did not match the provided input");
@@ -188,10 +187,10 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Decrypt_UnicodeString_SuccessfulDecryption()
         {
             string input = Random.RandomString(10);
-            string encrypted = _providerWrapper.Encrypt(input);
+            string encrypted = RSA.Encrypt(input);
 
             bool isLatestKey;
-            string decrypted = _providerWrapper.Decrypt(encrypted, out isLatestKey);
+            string decrypted = RSA.Decrypt(encrypted, out isLatestKey);
 
             Trace.WriteLine(input);
             Trace.WriteLine(decrypted);
@@ -202,14 +201,14 @@ namespace WebApplications.Utilities.Cryptography.Test
         public void Decrypt_NullInput_ArgumentNullException()
         {
             bool isLatestKey;
-            Assert.IsNull(_providerWrapper.Decrypt(null, out isLatestKey));
+            Assert.IsNull(RSA.Decrypt(null, out isLatestKey));
         }
 
         [TestMethod]
         public void Decrypt_EmptyString()
         {
             bool isLatestKey;
-            Assert.AreEqual(_providerWrapper.Decrypt(string.Empty, out isLatestKey), string.Empty);
+            Assert.AreEqual(RSA.Decrypt(string.Empty, out isLatestKey), string.Empty);
         }
         
         [TestMethod]
@@ -220,7 +219,7 @@ namespace WebApplications.Utilities.Cryptography.Test
                 "I0Qu6rZYA2OB1FXhhGB8J6+VyeEVVAvZkaYBKi8j4XY23ecgN1Zpprhzcrql7U6eUKZWtPaxfDwoEa9g6Bq0f1uE1pVMhrlxQDw3n6KFI5chvFLFpMA85APth08F2yzEh1yjXj6iynV9ZZlGyUQ/+lMJY0fjg45fNnv23C4aFbM=";
 
             bool isLatestKey;
-            string decrypted = _providerWrapper.Decrypt(encryptedStringNotUsingKeyInConfiguration, out isLatestKey);
+            string decrypted = RSA.Decrypt(encryptedStringNotUsingKeyInConfiguration, out isLatestKey);
 
             Trace.WriteLine("Result: " + decrypted);
 
@@ -239,8 +238,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string decryptedString;
             bool? isLatestKey;
 
-            _providerWrapper.Encrypt("a new key will be made now");
-            bool decrypted = _providerWrapper.TryDecrypt(encryptedStringUsingExpiredKeyInConfiguration,
+            RSA.Encrypt("a new key will be made now");
+            bool decrypted = RSA.TryDecrypt(encryptedStringUsingExpiredKeyInConfiguration,
                                                          out decryptedString, out isLatestKey);
 
             Assert.IsTrue(decrypted, "'decrypted' should return true");

@@ -34,7 +34,7 @@ using WebApplications.Utilities.Cryptography.Configuration;
 namespace WebApplications.Utilities.Cryptography.Test
 {
     [TestClass]
-    public class KeyElementTests : SerializationTestBase
+    public class KeyElementTests : CryptographyTestBase
     {
         private ProviderElement _providerElement;
 
