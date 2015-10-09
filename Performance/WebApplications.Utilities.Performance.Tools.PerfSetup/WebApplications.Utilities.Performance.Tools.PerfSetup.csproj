@@ -145,13 +145,6 @@
       <Visible>False</Visible>
     </RootBinPath>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ILMerge\ILMerge.Build.Task.csproj">
-      <Project>{d45dfbaf-5019-4435-80fb-1fa2ec48f23a}</Project>
-      <Name>ILMerge.Build.Task</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
-    </ProjectReference>
-  </ItemGroup>
   <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
     <Copy SourceFiles="$(MergedOutputFile)" DestinationFolder="$(SolutionDir)bin" />
   </Target>

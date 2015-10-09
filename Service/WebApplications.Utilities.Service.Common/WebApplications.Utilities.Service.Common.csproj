@@ -75,10 +75,6 @@
       <Project>{0eba7604-0bdb-438e-967f-7dfe93e6abd5}</Project>
       <Name>WebApplications.Utilities.Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Performance\WebApplications.Utilities.Performance.csproj">
-      <Project>{04220e31-53f6-453f-80c5-0e2d49776d36}</Project>
-      <Name>WebApplications.Utilities.Performance</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WebApplications.Utilities.csproj">
       <Project>{2931c698-6123-49bc-81fd-f72a4c1415ea}</Project>
       <Name>WebApplications.Utilities</Name>

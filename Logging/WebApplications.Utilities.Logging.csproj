@@ -85,11 +85,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Initializer\WebApplications.Utilities.Initializer.csproj">
-      <Project>{3626816d-eb33-4ed0-af95-fd7ca6c6d99a}</Project>
-      <Name>WebApplications.Utilities.Initializer</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
-    </ProjectReference>
     <ProjectReference Include="..\Performance\WebApplications.Utilities.Performance.csproj">
       <Project>{04220e31-53f6-453f-80c5-0e2d49776d36}</Project>
       <Name>WebApplications.Utilities.Performance</Name>

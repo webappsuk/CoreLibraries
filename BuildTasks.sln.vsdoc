@@ -1,0 +1,568 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <!--   VSdocman config file for current project/solution.-->
+  <activeProfile>default</activeProfile>
+  <appSettings>
+    <SettingsGroup name="CommonProjectProfile">
+      <add key="VBdocman_generateVbSyntax"><![CDATA[-1]]></add>
+      <add key="VBdocman_generateJscriptSyntax"><![CDATA[0]]></add>
+      <add key="VBdocman_comConstant"><![CDATA[-1]]></add>
+      <add key="VBdocman_comStdModule"><![CDATA[-1]]></add>
+      <add key="VBdocman_templatePath"><![CDATA[html_msdn10_lightweight.vbdt]]></add>
+      <add key="VBdocman_supportedNetFrameworkClientProfile"><![CDATA[]]></add>
+      <add key="VBdocman_generateCppSyntax"><![CDATA[0]]></add>
+      <add key="VBdocman_comEnumeration"><![CDATA[-1]]></add>
+      <add key="VBdocman_supportedNetFramework"><![CDATA[4.5.2]]></add>
+      <add key="VBdocman_supportedNetCompactFramework"><![CDATA[]]></add>
+      <add key="VBdocman_removeAttributes"><![CDATA[0]]></add>
+      <add key="VBdocman_comProtected"><![CDATA[-1]]></add>
+      <add key="VBdocman_helpTitle"><![CDATA[Web Applications UK Core Libraries Reference]]></add>
+      <add key="VBdocman_allowMacrosInComments"><![CDATA[0]]></add>
+      <add key="VBdocman_customVar2"><![CDATA[]]></add>
+      <add key="VBdocman_comModulesSaveExcluded"><![CDATA[-1]]></add>
+      <add key="VBdocman_comDelegate"><![CDATA[-1]]></add>
+      <add key="VBdocman_comStructure"><![CDATA[-1]]></add>
+      <add key="VBdocman_comEventDecl"><![CDATA[-1]]></add>
+      <add key="VBdocman_pageFooterText"><![CDATA[&copy; Copyright 2015 <see href="http://www.webappuk.com">Web Applications UK Ltd</see>, ALL RIGHTS RESERVED]]></add>
+      <add key="VBdocman_comProtectedFriend"><![CDATA[-1]]></add>
+      <add key="VBdocman_dontSortSeeAlsoList"><![CDATA[0]]></add>
+      <add key="VBdocman_regexFilters"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<filters />]]></add>
+      <add key="VBdocman_linkForExternalNotInFramework"><![CDATA[0]]></add>
+      <add key="VBdocman_rootNamespaceText"><![CDATA[]]></add>
+      <add key="VBdocman_comPrivate"><![CDATA[0]]></add>
+      <add key="VBdocman_SelectedProperties"><![CDATA[
+<ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <string>showFormsSeparate</string>
+  <string>showInherited</string>
+  <string>pageFooterText</string>
+  <string>outputPath</string>
+  <string>templatePath</string>
+  <string>templateFolder</string>
+  <string>externalFilesFolder</string>
+  <string>templateLocale</string>
+  <string>fileNamingConvention</string>
+  <string>generateVbSyntax</string>
+  <string>generateCsharpSyntax</string>
+  <string>generateCppSyntax</string>
+  <string>generateJscriptSyntax</string>
+  <string>helpTitle</string>
+  <string>customTopics</string>
+  <string>emptyOutputFolder</string>
+  <string>supportedPlatforms</string>
+  <string>supportedNetFramework</string>
+  <string>supportedNetFrameworkClientProfile</string>
+  <string>supportedPortableClassLibrary</string>
+  <string>supportedNetForWindowsStoreApps</string>
+  <string>supportedNetCompactFramework</string>
+  <string>supportedXnaFramework</string>
+  <string>supportedOthers</string>
+  <string>enumSorting</string>
+  <string>removeAttributes</string>
+  <string>useConditionalCompilation</string>
+  <string>allowMacrosInComments</string>
+  <string>comNonCommented</string>
+  <string>comPublic</string>
+  <string>comPrivate</string>
+  <string>comFriend</string>
+  <string>comProtected</string>
+  <string>comProtectedFriend</string>
+  <string>comConstant</string>
+  <string>comEvent</string>
+  <string>comMethod</string>
+  <string>comStdModule</string>
+  <string>comObject</string>
+  <string>comForm</string>
+  <string>comProperty</string>
+  <string>comVariable</string>
+  <string>comEnumeration</string>
+  <string>comStructure</string>
+  <string>comDelegate</string>
+  <string>comInterface</string>
+  <string>comEventDecl</string>
+  <string>comDeclare</string>
+  <string>regexFilters</string>
+  <string>conditionalConstants</string>
+  <string>insertSourceGlobal</string>
+  <string>unbreakSourceLines</string>
+  <string>comWriteDescription</string>
+  <string>rootNamespaceText</string>
+  <string>customVar1</string>
+  <string>customVar2</string>
+  <string>customVar3</string>
+  <string>linkForExternalNotInFramework</string>
+  <string>dontSortSeeAlsoList</string>
+</ArrayOfString>]]></add>
+      <add key="VBdocman_comNonCommented"><![CDATA[-1]]></add>
+      <add key="VBdocman_comDeclare"><![CDATA[-1]]></add>
+      <add key="VBdocman_supportedXnaFramework"><![CDATA[]]></add>
+      <add key="VBdocman_enumSorting"><![CDATA[2]]></add>
+      <add key="VBdocman_supportedPortableClassLibrary"><![CDATA[]]></add>
+      <add key="VBdocman_useConditionalCompilation"><![CDATA[0]]></add>
+      <add key="VBdocman_supportedNetForWindowsStoreApps"><![CDATA[]]></add>
+      <add key="VBdocman_showInherited"><![CDATA[-1]]></add>
+      <add key="VBdocman_fileNamingConvention"><![CDATA[0]]></add>
+      <add key="VBdocman_conditionalConstants"><![CDATA[]]></add>
+      <add key="VBdocman_comWriteDescription"><![CDATA[0]]></add>
+      <add key="VBdocman_comFriend"><![CDATA[-1]]></add>
+      <add key="VBdocman_comVariable"><![CDATA[-1]]></add>
+      <add key="VBdocman_showFormsSeparate"><![CDATA[0]]></add>
+      <add key="VBdocman_comObject"><![CDATA[-1]]></add>
+      <add key="VBdocman_emptyOutputFolder"><![CDATA[0]]></add>
+      <add key="VBdocman_customVar1"><![CDATA[]]></add>
+      <add key="VBdocman_indentMode"><![CDATA[0]]></add>
+      <add key="VBdocman_comEvent"><![CDATA[-1]]></add>
+      <add key="VBdocman_rootNamespaceCommentStyle"><![CDATA[2]]></add>
+      <add key="VBdocman_customTopics"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<topics>
+  <topic>
+    <type>normal</type>
+    <is-default>yes</is-default>
+    <name>Web Applications UK Core Libraries Reference</name>
+    <id>solutionwide_properties_reference</id>
+    <comment><![CDATA[<summary>
+<para>This library contains a treasure trove of utilities built up over a decade
+by <see href="http://www.webappuk.com/">Web Applications UK</see> for
+simplifying the building and deployment of enterprise scale .NET solutions. The
+code has been successfully used, in various forms, for a number of years in
+production environments driving millions of transactions.</para>
+<para>As part of our ethos to have a positive impact on our wider community we
+are <see href="https://github.com/webappsuk/CoreLibraries/tree/master">open
+sourcing</see> them for everyone&apos;s benefit. We&apos;ve also included the
+last three years of development history, showing how the utilities have evolved.
+Please let us know if you find the code useful in your own projects!</para>
+<para>We have carefully sanitised the code to protect our commercial customers
+interests, but if you do manage to spot any sensitive data please notify us
+directly using <see
+href="https://github.com/webappsuk/CoreLibraries/blob/master/support@webappuk.com">our
+support email</see>.</para>
+<para><b>Using the libraries</b></para>
+<para>All the code documented here is <see
+href="https://github.com/webappsuk/CoreLibraries/tree/master">available on
+GitHub</see>, and is also available, in compiled form, on <see
+href="https://github.com/webappsuk/CoreLibraries/tree/master">nuget.org</see>,
+as a collection of 10 inter-connected NuGets and can be installed into your .NET
+projects using NuGet. Alternatively, you can look for the individual NuGet
+files, or the compiled binaries in the releases.</para>
+<para>The official NuGets are strongly named and digitally signed by <see
+href="http://www.webappuk.com/"><u><font color="#0066cc">Web Applications
+UK</font></u></see>, using a separate, secure process, that guarantees the
+NuGets authenticity. Although you can build your own NuGets from the source
+included here, the ability to upload them to nuget.org is not provided to
+protect casual users. If you wish to use a customised version of a library prior
+to a formal release, we recommend building and including the dll directly (but
+remember to include the <see cref="Y:licensing">License</see>!).</para>
+<para>We will accept relevant <see
+href="https://github.com/webappsuk/CoreLibraries/pulls">pull requests</see>, and
+<see href="https://github.com/webappsuk/CoreLibraries/issues">issues</see>, so
+please consider <see cref="Y:contributing">contributing</see>.</para>
+</summary>vsdocman_escaped_]_]_></comment>
+    <namespaces />
+    <topics>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Core Utilities</name>
+        <id>core_utilities</id>
+        <comment><![CDATA[<summary>
+<para>The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities/">WebApplications.Utilities
+NuGet</see> contains the core utilities and is used by all the other
+specialized libraries.</para>
+</summary>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities/">WebApplications.Utilities
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities(?!\.(Performance|Logging|Database|Scheduling|Service|Cryptography|Serialization|Initializer)).*</namespaces>
+            <topics />
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Performance</name>
+        <id>performance</id>
+        <comment><![CDATA[<summary>
+The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities.Performance/">WebApplications.Utilities.Performance
+NuGet</see> makes it easy to access to instance based performance counters and
+timers, includes the ability to <see
+cref="Y:setting_up_performance_counters">set up performance counters
+automatically as part of deployments</see> (using the included <see
+cref="Y:setting_up_performance_counters">PerfSetup</see> tool), or allows
+performance data to be collected in the absence of performance counters.
+</summary>
+<seealso cref="Y:setting_up_performance_counters">Setting up performance
+counters</seealso>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities.Performance/">WebApplications.Utilities.Performance
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_3</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Performance(?!\.Tools).*</namespaces>
+            <topics />
+          </topic>
+          <topic>
+            <type>normal</type>
+            <is-default>no</is-default>
+            <name>Setting up performance counters</name>
+            <id>setting_up_performance_counters</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces />
+            <topics>
+              <topic>
+                <type>placeholder</type>
+                <is-default>no</is-default>
+                <name>New Topic</name>
+                <id>new_topic_4</id>
+                <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+                <namespaces>WebApplications\.Utilities\.Performance\.Tools.*</namespaces>
+                <topics />
+              </topic>
+            </topics>
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Logging</name>
+        <id>logging</id>
+        <comment><![CDATA[<summary>
+The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities.Logging/">WebApplications.Utilities.Logging
+NuGet</see> provides powerful and exstinsible logging functionality, with
+effective translation and resource services.
+</summary>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities.Logging/">WebApplications.Utilities.Logging
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_5</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Logging.*</namespaces>
+            <topics />
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Database</name>
+        <id>database</id>
+        <comment><![CDATA[<summary>
+The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities.Database/">WebApplications.Utilities.Database
+NuGet</see> is used for connecting enterprise level .Net applications to SQL
+Server databases, and allows for easy interaction with stored procedures, load
+balancing and concurrency control.  It also ensures that deployed schemas are
+valid based on the required usage.
+</summary>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities.Database/">WebApplications.Utilities.Database
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_6</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Database.*</namespaces>
+            <topics />
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Scheduling</name>
+        <id>scheduling</id>
+        <comment><![CDATA[<summary>
+The <see
+cref="https://www.nuget.org/packages/WebApplications.Utilities.Scheduling/">WebApplications.Utilities.Scheduling
+NuGet</see> provides powerful routines for scheduling <see
+cref="N:System.Threading.Tasks"/> to run.
+</summary>
+<seealso
+cref="https://www.nuget.org/packages/WebApplications.Utilities.Scheduling/">WebApplications.Utilities.Scheduling
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_7</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Scheduling.*</namespaces>
+            <topics />
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Service</name>
+        <id>service</id>
+        <comment><![CDATA[<summary>
+The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities.Service/">WebApplications.Utilities.Service
+NuGet</see> allows for the rapid creation of Windows Services.  Deployed
+services support the ability to install/uninstall themselves and can communicate
+with <see cref="Y:service_client">custom clients</see> whilst running.
+</summary>
+<seealso cref="Y:service_client">Service Client</seealso>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities.Service/">WebApplications.Utilities.Service
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_8</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Service(?!\.Client).*</namespaces>
+            <topics />
+          </topic>
+          <topic>
+            <type>normal</type>
+            <is-default>no</is-default>
+            <name>Service Client</name>
+            <id>service_client</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces />
+            <topics>
+              <topic>
+                <type>placeholder</type>
+                <is-default>no</is-default>
+                <name>New Topic</name>
+                <id>new_topic_11</id>
+                <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+                <namespaces>WebApplications\.Utilities\.Service\.Client.*</namespaces>
+                <topics />
+              </topic>
+            </topics>
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Cryptography</name>
+        <id>cryptography</id>
+        <comment><![CDATA[<summary>
+The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities.Cryptography/">WebApplications.Utilities.Cryptography
+NuGet</see> provides utilities for easier use and configuration of cryptographic
+services in enterprise solutions.
+</summary>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities.Cryptography/">WebApplications.Utilities.Cryptography
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_2</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Cryptography.*</namespaces>
+            <topics />
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Serialization</name>
+        <id>serialization</id>
+        <comment><![CDATA[<summary>
+The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities.Serialization/">WebApplications.Utilities.Serialization
+NuGet</see> provides serialization tools for .NET.
+</summary>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities.Serialization/">WebApplications.Utilities.Serialization
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_9</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Serialization.*</namespaces>
+            <topics />
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Initializer</name>
+        <id>initializer</id>
+        <comment><![CDATA[<summary>
+The <see
+href="https://www.nuget.org/packages/WebApplications.Utilities.Initializer/">WebApplications.Utilities.Initializer
+NuGet</see> makes it easy to use Module Initialization logic in none-VB
+.NET libraries.  It works using IL rewriting.
+</summary>
+<seealso
+href="https://www.nuget.org/packages/WebApplications.Utilities.Initializer/">WebApplications.Utilities.Initializer
+NuGet</seealso>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics>
+          <topic>
+            <type>placeholder</type>
+            <is-default>no</is-default>
+            <name>New Topic</name>
+            <id>new_topic_10</id>
+            <comment><![CDATA[vsdocman_escaped_]_]_></comment>
+            <namespaces>WebApplications\.Utilities\.Initializer.*</namespaces>
+            <topics />
+          </topic>
+        </topics>
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Contributing</name>
+        <id>contributing</id>
+        <comment><![CDATA[<summary>
+<para>We would like to encourage you to contribute to the repository. This
+should be as easy as possible for you but there are a few things to consider
+when contributing.</para>
+<para>For a full guide on contributing please see the <see
+href="https://github.com/webappsuk/CoreLibraries/blob/master/CONTRIBUTING.md">information
+on GitHub</see>.</para>
+</summary>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics />
+      </topic>
+      <topic>
+        <type>normal</type>
+        <is-default>no</is-default>
+        <name>Licensing</name>
+        <id>licensing</id>
+        <comment><![CDATA[<summary>
+
+<para><b>Copyright © 2015, Web Applications UK Ltd</b>, <i>All rights
+reserved.</i></para>
+
+<para>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:</para>
+
+<list type="bullet">
+
+ <item>
+  <description>Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+</description>
+ </item>
+ <item>
+  <description>Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the
+distribution.
+</description>
+ </item>
+ <item>
+  <description>Neither the name of Web Applications UK Ltd nor the names of its
+contributors may be used to endorse or promote products derived from this
+software without specific prior written permission.</description>
+ </item>
+</list>
+
+<para>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+&quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE. </para>
+</summary>vsdocman_escaped_]_]_></comment>
+        <namespaces />
+        <topics />
+      </topic>
+    </topics>
+  </topic>
+</topics>]]></add>
+      <add key="VBdocman_comMethod"><![CDATA[-1]]></add>
+      <add key="VBdocman_externalFilesFolder"><![CDATA[$(SolutionDir)..\Documentation]]></add>
+      <add key="VBdocman_templateLocale"><![CDATA[en-US]]></add>
+      <add key="VBdocman_supportedPlatforms"><![CDATA[Windows Phone 8.1, Windows Phone 8, Windows 8.1, Windows Server 2012 R2, Windows 8, Windows Server 2012, Windows 7, Windows Vista SP2, Windows Server 2008 (Server Core Role not supported), Windows Server 2008 R2 (Server Core Role supported with SP1 or later; Itanium not supported)]]></add>
+      <add key="VBdocman_comForm"><![CDATA[-1]]></add>
+      <add key="VBdocman_unbreakSourceLines"><![CDATA[0]]></add>
+      <add key="VBdocman_comPublic"><![CDATA[-1]]></add>
+      <add key="VBdocman_templateFolder"><![CDATA[$(VSdocmanDir)Templates]]></add>
+      <add key="VBdocman_customVar3"><![CDATA[]]></add>
+      <add key="VBdocman_outputPath"><![CDATA[$(SolutionDir)..\GitHubPages]]></add>
+      <add key="VBdocman_insertSourceGlobal"><![CDATA[2]]></add>
+      <add key="VBdocman_comProperty"><![CDATA[-1]]></add>
+      <add key="VBdocman_supportedOthers"><![CDATA[]]></add>
+      <add key="VBdocman_generateCsharpSyntax"><![CDATA[-1]]></add>
+      <add key="VBdocman_comInterface"><![CDATA[-1]]></add>
+    </SettingsGroup>
+    <add key="VBdocman_ILMerge.Build.Task"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_ServiceClient"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Testing"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Testing.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.BuildTasks"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Cryptography"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Cryptography.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Database"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Database.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Initializer"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Initializer.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Initializer.TestApp"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Logging"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Logging.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Logging.TestConsole"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Performance"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Performance.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Performance.Tools.PerfSetup"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.PowerShell"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.PowerShell.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Scheduling"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Scheduling.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Serialization"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Serialization.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Service"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Service.Client"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Service.Common"><![CDATA[default]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Service.Test"><![CDATA[default<notincluded>]]></add>
+    <add key="VBdocman_WebApplications.Utilities.Test"><![CDATA[default<notincluded>]]></add>
+  </appSettings>
+</configuration>
