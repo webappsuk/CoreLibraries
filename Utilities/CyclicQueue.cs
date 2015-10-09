@@ -224,7 +224,7 @@ namespace WebApplications.Utilities
             }
 
             [CanBeNull]
-            Object IEnumerator.Current
+            object IEnumerator.Current
             {
                 get
                 {

@@ -469,7 +469,7 @@ namespace WebApplications.Utilities
                 if (pcount != parameters.Length)
                     throw new ArgumentOutOfRangeException(
                         "parameters",
-                        String.Format(
+                        string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.ParameterReplacerVisitor_ExpressionCountMismatch,
                             parameters.Length,

@@ -175,7 +175,7 @@ namespace WebApplications.Utilities.Location
         /// </returns>
         public override string ToString()
         {
-            return String.Format("Lat: {0}, Long: {1}", Latitude, Longitude);
+            return string.Format("Lat: {0}, Long: {1}", Latitude, Longitude);
         }
     }
 }

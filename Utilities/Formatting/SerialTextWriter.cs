@@ -122,7 +122,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The new line.</value>
         /// <returns>The line terminator string for the current TextWriter.</returns>
-        public override String NewLine
+        public override string NewLine
         {
             get { return _writer.NewLine; }
             set { Context.Invoke(() => _writer.NewLine = value); }
@@ -254,7 +254,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the text representation of a decimal value to the text string or stream.
         /// </summary>
         /// <param name="value">The decimal value to write.</param>
-        public override void Write(Decimal value)
+        public override void Write(decimal value)
         {
             Context.Invoke(() => _writer.Write(value));
         }
@@ -263,7 +263,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes a string to the text string or stream.
         /// </summary>
         /// <param name="value">The string to write.</param>
-        public override void Write(String value)
+        public override void Write(string value)
         {
             Context.Invoke(() => _writer.Write(value));
         }
@@ -272,7 +272,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the text representation of an object to the text string or stream by calling the ToString method on that object.
         /// </summary>
         /// <param name="value">The object to write.</param>
-        public override void Write(Object value)
+        public override void Write(object value)
         {
             Context.Invoke(() => _writer.Write(value));
         }
@@ -282,7 +282,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The object to format and write.</param>
-        public override void Write(String format, Object arg0)
+        public override void Write(string format, object arg0)
         {
             Context.Invoke(() => _writer.Write(format, arg0));
         }
@@ -293,7 +293,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
-        public override void Write(String format, Object arg0, Object arg1)
+        public override void Write(string format, object arg0, object arg1)
         {
             Context.Invoke(() => _writer.Write(format, arg0, arg1));
         }
@@ -305,7 +305,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
         /// <param name="arg2">The third object to format and write.</param>
-        public override void Write(String format, Object arg0, Object arg1, Object arg2)
+        public override void Write(string format, object arg0, object arg1, object arg2)
         {
             Context.Invoke(() => _writer.Write(format, arg0, arg1, arg2));
         }
@@ -315,7 +315,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
-        public override void Write(String format, params Object[] arg)
+        public override void Write(string format, params object[] arg)
         {
             Context.Invoke(() => _writer.Write(format, arg));
         }
@@ -433,7 +433,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes a string followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        public override void WriteLine(String value)
+        public override void WriteLine(string value)
         {
             Context.Invoke(() => _writer.WriteLine(value));
         }
@@ -442,7 +442,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the text representation of an object by calling the ToString method on that object, followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The object to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        public override void WriteLine(Object value)
+        public override void WriteLine(object value)
         {
             Context.Invoke(() => _writer.WriteLine(value));
         }
@@ -452,7 +452,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The object to format and write.</param>
-        public override void WriteLine(String format, Object arg0)
+        public override void WriteLine(string format, object arg0)
         {
             Context.Invoke(() => _writer.WriteLine(format, arg0));
         }
@@ -463,7 +463,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
-        public override void WriteLine(String format, Object arg0, Object arg1)
+        public override void WriteLine(string format, object arg0, object arg1)
         {
             Context.Invoke(() => _writer.WriteLine(format, arg0, arg1));
         }
@@ -475,7 +475,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
         /// <param name="arg2">The third object to format and write.</param>
-        public override void WriteLine(String format, Object arg0, Object arg1, Object arg2)
+        public override void WriteLine(string format, object arg0, object arg1, object arg2)
         {
             Context.Invoke(() => _writer.WriteLine(format, arg0, arg1, arg2));
         }
@@ -485,7 +485,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
-        public override void WriteLine(String format, params Object[] arg)
+        public override void WriteLine(string format, params object[] arg)
         {
             Context.Invoke(() => _writer.WriteLine(format, arg));
         }
@@ -517,7 +517,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The string to write. If <paramref name="value" /> is null, nothing is written to the text stream.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [ComVisible(false)]
-        public override Task WriteAsync(String value)
+        public override Task WriteAsync(string value)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(
@@ -570,7 +570,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The string to write. If the value is null, only a line terminator is written.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [ComVisible(false)]
-        public override Task WriteLineAsync(String value)
+        public override Task WriteLineAsync(string value)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return Context.Invoke(

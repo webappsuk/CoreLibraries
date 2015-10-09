@@ -193,7 +193,7 @@ namespace WebApplications.Utilities
                 (!tupleType.FullName.StartsWith("System.Tuple`")))
                 throw new ArgumentException(
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    String.Format(Resources.ExtendedTuple_TypeIsNotValidTuple, tupleType),
+                    string.Format(Resources.ExtendedTuple_TypeIsNotValidTuple, tupleType),
                     "tupleType");
 
             // ReSharper disable AssignNullToNotNullAttribute

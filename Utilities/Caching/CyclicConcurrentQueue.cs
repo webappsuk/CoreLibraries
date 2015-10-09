@@ -223,7 +223,7 @@ namespace WebApplications.Utilities.Caching
                 }
                 if (count > int.MaxValue)
                     throw new InvalidOperationException(
-                        String.Format("Count '{0}' is too big to be expressed as an interger.", count));
+                        string.Format("Count '{0}' is too big to be expressed as an interger.", count));
                 return (int)count;
             }
         }

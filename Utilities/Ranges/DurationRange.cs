@@ -88,7 +88,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return String.Format("{0} - {1}", Start, End);
+            return string.Format("{0} - {1}", Start, End);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace WebApplications.Utilities.Ranges
         [StringFormatMethod("format")]
         public string ToString(string format, IFormatProvider formatProvider = null)
         {
-            return String.Format(
+            return string.Format(
                 "{0} - {1}",
                 Start.ToString(format, formatProvider),
                 End.ToString(format, formatProvider));

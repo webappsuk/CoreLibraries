@@ -155,14 +155,14 @@ namespace WebApplications.Utilities.Threading
             /// </summary>
             /// <value>The Callback.</value>
             [NotNull]
-            public SendOrPostCallback Callback { get; private set; }
+            public SendOrPostCallback Callback { get; }
 
             /// <summary>
             /// Gets or sets the state.
             /// </summary>
             /// <value>The state.</value>
             [CanBeNull]
-            public object State { get; private set; }
+            public object State { get; }
         }
     }
 }
