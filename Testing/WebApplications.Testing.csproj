@@ -5,9 +5,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Testing</RootNamespace>
     <AssemblyName>WebApplications.Testing</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\Common.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Moq, Version=4.2.1506.2016, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">

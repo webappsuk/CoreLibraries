@@ -5,10 +5,9 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Utilities.Logging</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Logging</AssemblyName>
-    <DefineConstants>PerfSetup;Utilities</DefineConstants>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
+    <DefineConstants>PerfSetup;ModuleInitializer</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)Common.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
   <ItemGroup>
     <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -95,13 +94,7 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
-    <InjectModuleInitializerTool>$(SolutionDir)bin\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)Initializer\InjectModuleInitializer.targets" />
-  <PropertyGroup>
-    <PerfSetupTool>$(SolutionDir)bin\PerfSetup32.exe</PerfSetupTool>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)Performance\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup'))" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

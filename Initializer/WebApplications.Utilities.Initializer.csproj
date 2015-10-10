@@ -5,9 +5,9 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Utilities.Initializer</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Initializer</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
+    <DefineConstants>ILMerge</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)Common.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
@@ -50,44 +50,19 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <PropertyGroup>
-    <ILMergeBuildTask>$(SolutionDir)bin\ILMerge.Build.Task.dll</ILMergeBuildTask>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)ILMerge\ILMerge.targets" />
-  <PropertyGroup>
-    <MergedOutputPath>$(OutputPath)Merged\</MergedOutputPath>
-    <MergedOutputFile>$(MergedOutputPath)WebApplications.Utilities.Initializer.dll</MergedOutputFile>
-    <SignFilePath>$(MergedOutputFile)</SignFilePath>
-  </PropertyGroup>
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <MergeAsm Include="$(OutputPath)WebApplications.Utilities.Initializer.dll" />
-      <MergeAsm Include="$(OutputPath)Mono.Cecil.dll" />
-      <MergeAsm Include="$(OutputPath)Mono.Cecil.Mdb.dll" />
-      <MergeAsm Include="$(OutputPath)Mono.Cecil.Pdb.dll" />
-      <MergeAsm Include="$(OutputPath)Mono.Cecil.Rocks.dll" />
-    </ItemGroup>
-    <MakeDir Directories="$(MergedOutputPath)" />
-    <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(MergedOutputFile)" SnkFile="$(AssemblyOriginatorKeyFile)" TargetKind="Dll" ILMergeTool="$(ILMergeTools)" />
-  </Target>
+  <!-- Set up merge -->
   <ItemGroup>
-    <RootBinPath Include="$(SolutionDir)bin\$(AssemblyName).dll">
-      <Visible>False</Visible>
-    </RootBinPath>
+    <MergeInputs Include="$(OutputPath)WebApplications.Utilities.Initializer.dll" />
+    <MergeInputs Include="$(OutputPath)Mono.Cecil.dll" />
+    <MergeInputs Include="$(OutputPath)Mono.Cecil.Mdb.dll" />
+    <MergeInputs Include="$(OutputPath)Mono.Cecil.Pdb.dll" />
+    <MergeInputs Include="$(OutputPath)Mono.Cecil.Rocks.dll" />
+    <MergeAsm Include="$(OutputPath)Merged\WebApplications.Utilities.Initializer.dll">
+	  <Inputs>@(MergeInputs)</Inputs>
+	  <Snk>$(AssemblyOriginatorKeyFile)</Snk>
+    </MergeAsm>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ILMerge\ILMerge.Build.Task.csproj">
-      <Project>{d45dfbaf-5019-4435-80fb-1fa2ec48f23a}</Project>
-      <Name>ILMerge.Build.Task</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly> 
-    </ProjectReference>
-  </ItemGroup>
-  <Target Name="CopyToRoot" AfterTargets="AfterBuild;SignOutput">
-    <Copy SourceFiles="$(MergedOutputFile)" DestinationFiles="@(RootBinPath)" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  -->
+  <PropertyGroup>
+    <SignFilePath>$(OutputPath)Merged\WebApplications.Utilities.Initializer.dll</SignFilePath>
+  </PropertyGroup>
 </Project>

@@ -5,13 +5,13 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Utilities</RootNamespace>
     <AssemblyName>WebApplications.Utilities</AssemblyName>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
+    <DefineConstants>ModuleInitializer;Utilities</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DownloadTZDB>True</DownloadTZDB>
     <DownloadISO4217>True</DownloadISO4217>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\Common.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
   <ItemGroup>
     <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -351,15 +351,6 @@
       <LastGenOutput>Funcs.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <PropertyGroup>
-    <InjectModuleInitializerTool>$(SolutionDir)bin\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)Initializer\InjectModuleInitializer.targets" />
-  <PropertyGroup>
-    <UtilityBuildTasks>$(SolutionDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
-    <ResourcesPath>$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)Utilities\Utility.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

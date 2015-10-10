@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="InjectModuleInitializerTarget" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <InjectModuleInitializerTool Condition="!Exists('$(InjectModuleInitializerTool)')">$(MSBuildThisFileDirectory)\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
-    <InjectModuleInitializerTypeName>ModuleInitializer</InjectModuleInitializerTypeName>
-    <InjectModuleInitializerMethodName>Initialize</InjectModuleInitializerMethodName>
-    <InjectModuleSnk />
+    <InjectModuleInitializerTool Condition="!Exists('$(InjectModuleInitializerTool)')">$(MSBuildThisFileDirectory)WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+    <InjectModuleInitializerTypeName Condition="'$(InjectModuleInitializerTypeName)' == ''">ModuleInitializer</InjectModuleInitializerTypeName>
+    <InjectModuleInitializerMethodName Condition="'$(InjectModuleInitializerMethodName)' == ''">Initialize</InjectModuleInitializerMethodName>
   </PropertyGroup>
 
   <!-- Check for the signed assemblies and located strong name key pair file -->
@@ -15,6 +14,7 @@
     <InjectModuleSnk Condition="'$(InjectModuleSnk)'=='' AND Exists('$(ProjectDir)$(AssemblyOriginatorKeyFile)')">$(ProjectDir)$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
   </PropertyGroup>
 
+  <!-- Create task -->
   <UsingTask TaskName="InjectModuleInitializer"
              AssemblyFile="$(InjectModuleInitializerTool)" />
 
@@ -22,25 +22,18 @@
     <!-- Raise an error if we're unable to locate WebApplications.Utilities.Initializer.dll  -->
     <Error Condition="!Exists('$(InjectModuleInitializerTool)')" Text="Unable to locate '$(InjectModuleInitializerTool)'" />
     <!-- Raise an error if we need to resign and can't find the key -->
-    <Error Condition="'$(SignAssembly)'=='true' AND !Exists('$(AssemblyOriginatorKeyFile)')" Text="Could not find the signature file for resigning, module initialisation cannot be performed." />
+    <Error Condition="'$(SignAssembly)'=='true' AND !Exists('$(InjectModuleSnk)')" Text="Could not find the signature file for resigning, module initialisation cannot be performed." />
   </Target>
 
+  <!-- Inject module initializer -->
   <Target Name="InjectModuleInitializerTarget"
-           Condition="'$(BuildingProject)'=='true' AND
-                 Exists('$(InjectModuleInitializerTool)')"
-      DependsOnTargets="CheckInitializerPrerequisits">
+	      BeforeTargets="AfterBuild"
+        AfterTargets="Build"
+        DependsOnTargets="CheckInitializerPrerequisits">
     <InjectModuleInitializer
        AssemblyFile="$(TargetPath)"
        TypeName="$(InjectModuleInitializerTypeName)"
        MethodName="$(InjectModuleInitializerMethodName)"
        StrongNameKeyPair="$(InjectModuleSnk)"/>
   </Target>
-
-  <!-- Introduces InjectModuleInitializer in the chain of compilation targets -->
-  <PropertyGroup>
-    <CoreBuildDependsOn>
-      $(CoreBuildDependsOn);
-      InjectModuleInitializerTarget
-    </CoreBuildDependsOn>
-  </PropertyGroup>
 </Project>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTarget="Test" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Check for the signed assemblies and located strong name key pair file -->
+  <PropertyGroup>
+    <OutputPath>C:\SourceControl\CoreLibraries\Initializer\bin\Debug\AnyCPU</OutputPath>
+    <TargetPath>$(OutputPath)WebApplications.Utilities.Initializer.dll</TargetPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <MergeInputs Include='$(OutputPath)A.dll' />
+    <MergeInputs Include='$(OutputPath)B.dll' />
+    <MergeInputs Include='$(OutputPath)C.dll' />
+    <MergeAsm Include="$(OutputPath)Merged\test.dll">
+      <Inputs>@(MergeInputs)</Inputs>
+    </MergeAsm>
+
+    <MergeInputs2 Include='$(OutputPath)D.exe' />
+    <MergeInputs2 Include='$(OutputPath)E.dll' />
+    <MergeInputs2 Include='$(OutputPath)F.dll' />
+    <MergeAsm Include="$(OutputPath)Merged\test2.exe">
+      <Inputs>@(MergeInputs2)</Inputs>
+      <Snk>Test.snk</Snk>
+    </MergeAsm>
+  </ItemGroup>
+
+  <Target Name="Test" Condition="'@(MergeAsm)'!=''">
+    <ItemGroup>
+      <MergeAsmDirs Include="@(MergeAsm->DirectoryName()->Distinct())" />
+    </ItemGroup>
+    
+    
+    <Message Text="Output Dirs: '%(MergeAsmDirs.Identity)'" />
+    <Message Text="Output: '%(MergeAsm.Identity)' Input: '%(MergeAsm.Inputs)' Snk: '%(MergeAsm.Snk)' TargetKind: '%(MergeAsm.TargetKind)'" />
+
+    <PropertyGroup>
+      <TestSplit>@(MergeAsm)</TestSplit>
+    </PropertyGroup>
+    <Message Condition="$(TestSplit.Contains(';'))" Text ="First: $(TestSplit.Substring(0, $(TestSplit.IndexOf(';'))))" />
+  </Target>
+</Project>

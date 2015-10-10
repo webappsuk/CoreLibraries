@@ -2,28 +2,36 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <ProjectGuid>{D45DFBAF-5019-4435-80FB-1FA2EC48F23A}</ProjectGuid>
+    <ProjectGuid>{CA6C3C0E-96DB-4B74-A8E4-33ABA73D0553}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ILMerge.Build.Task</RootNamespace>
-    <AssemblyName>ILMerge.Build.Task</AssemblyName>
+    <RootNamespace>WebApplications.Utilities.BuildTasks</RootNamespace>
+    <AssemblyName>WebApplications.Utilities.BuildTasks</AssemblyName>
+	<DefineConstants>BUILD_TASKS</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\Common.proj" />
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Annotations.cs" />
-    <Compile Include="BuildEngineExtensions.cs" />
-    <Compile Include="ILMerge.cs" />
+    <Compile Include="..\IO\PeekableStream.cs">
+      <Link>PeekableStream.cs</Link>
+    </Compile>
+    <Compile Include="DownloadCurrencies.cs" />
+    <Compile Include="DownloadTZDB.cs" />
+    <Compile Include="DownloadFile.cs" />
+    <Compile Include="..\Globalization\*.cs" Exclude="..\Globalization\CultureHelper.cs" />
+    <Compile Include="..\Annotations\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

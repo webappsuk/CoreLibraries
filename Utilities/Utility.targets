@@ -35,10 +35,10 @@
       Condition="'$(DownloadISO4217)'=='true'"/>
     
     <ItemGroup>
-      <ResourceFiles Include="$(ResourcesPath)\*.*"/>
+      <ResourceFiles Include="$(ResourcesPath)\**\*"/>
     </ItemGroup>
     
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)\Resources"/>
+    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)\Resources\%(RecursiveDir)" />
   </Target>
 
   <!-- Introduces after Build -->

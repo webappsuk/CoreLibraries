@@ -2,20 +2,26 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <ProjectGuid>{04220E31-53F6-453F-80C5-0E2D49776D36}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>WebApplications.Utilities.Performance</RootNamespace>
-    <AssemblyName>WebApplications.Utilities.Performance</AssemblyName>
+    <ProjectGuid>{CA520F77-36EC-4849-8F04-FB6E24DA6D76}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>WebApplications.Utilities.Logging.TestConsole</RootNamespace>
+    <AssemblyName>WebApplications.Utilities.Logging.TestConsole</AssemblyName>
     <DefineConstants>CopyResources</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\Common.proj" />
   <ItemGroup>
+    <Reference Include="Moq, Version=4.2.1506.2016, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Moq.4.2.1506.2016\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(SolutionDir)packages\NodaTime.1.3.1\lib\net35-Client\NodaTime.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>$(SolutionDir)packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -25,43 +31,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\PerformanceConfiguration.cs" />
-    <Compile Include="Timers.cs" />
-    <Compile Include="Counter.cs" />
-    <Compile Include="PerfCounter.cs" />
-    <Compile Include="PerfCategory.cs" />
-    <Compile Include="PerfCounterInfo.cs" />
-    <Compile Include="PerformanceCounterExtensions.cs" />
-    <Compile Include="CriticalPerfTimer.cs" />
-    <Compile Include="PerfTimer.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="RegionTimer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
+    <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="web.config.transform" />
-    <None Include="app.config.transform" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Utilities\WebApplications.Utilities.csproj">
+    <ProjectReference Include="..\..\Performance\WebApplications.Utilities.Performance.csproj">
+      <Project>{04220e31-53f6-453f-80c5-0e2d49776d36}</Project>
+      <Name>WebApplications.Utilities.Performance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Testing\WebApplications.Testing.csproj">
+      <Project>{e41cd12c-805c-4493-a45a-9bc917d7b240}</Project>
+      <Name>WebApplications.Testing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\WebApplications.Utilities.csproj">
       <Project>{2931c698-6123-49bc-81fd-f72a4c1415ea}</Project>
       <Name>WebApplications.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebApplications.Utilities.Logging.csproj">
+      <Project>{0eba7604-0bdb-438e-967f-7dfe93e6abd5}</Project>
+      <Name>WebApplications.Utilities.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

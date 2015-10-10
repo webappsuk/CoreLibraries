@@ -5,10 +5,9 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Utilities.Database</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Database</AssemblyName>
-    <DefineConstants>Utilities</DefineConstants>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
+    <DefineConstants>PerfSetup;CopyResources</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)Common.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -251,10 +250,6 @@
       <Name>WebApplications.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
-  <PropertyGroup>
-    <PerfSetupTool>$(SolutionDir)bin\PerfSetup32.exe</PerfSetupTool>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)Performance\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup'))" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
