@@ -6,11 +6,6 @@
     <SignFilePath Condition="!Exists('$(SignFilePath)')">$(TargetPath)</SignFilePath>
   </PropertyGroup>
 
-  <Target Name="CheckPrerequisites">
-    <Error Condition="!Exists('$(SignToolPath)')" Text="Unable to locate signtool.exe at '$(SignToolPath)'" />
-    <Error Condition="!Exists('$(SignatureFilePath)')" Text="Unable to locate code signature at '$(SignatureFilePath)'" />
-  </Target>
-
   <Target Name="SignOutput"
           Condition="'$(BuildingProject)'=='true' AND Exists('$(SignToolPath)') AND Exists('$(SignatureFilePath)')"
           AfterTargets="AfterBuild">

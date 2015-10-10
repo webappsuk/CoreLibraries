@@ -25,13 +25,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.Build.Execution;
+using Microsoft.Build.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
-using Microsoft.Build.Execution;
-using Microsoft.Build.Framework;
+using WebApplications.Utilities.Annotations;
 
 namespace ILMerge.Build.Task
 {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="ILMergeTarget" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!--
+  <Project DefaultTargets="ILMergeTarget" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
   Creating merges
   ===============
   
@@ -50,70 +50,63 @@
     </MergeAsm>
   </ItemGroup>
   -->
-  
-  <PropertyGroup Condition="'@(MergeAsm)'!=''">
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
-  </PropertyGroup>
 
-  <!-- Find the ILMerge tools -->
-  <ItemGroup Condition="'@(MergeAsm)'!='' AND !Exists('$(ILMergeTools)')">
-    <ILMergePackage Include="$(SolutionDir)packages\ilmerge.*\tools\ILMerge.exe"/>
-  </ItemGroup>
-  <PropertyGroup Condition="'@(MergeAsm)'!='' AND !Exists('$(ILMergeTools)')">
-    <ILMergeTools>@(ILMergePackage)</ILMergeTools>
-    <ILMergeTools Condition="$(ILMergeTools.Contains(';'))">$(ILMergeTools.Substring(0, $(ILMergeTools.IndexOf(';'))))</ILMergeTools>
-  </PropertyGroup>
+    <!-- Locate build task -->
+    <PropertyGroup Condition="'$(ILMergeBuildTask)'==''">
+      <ILMergeBuildTask>$(MSBuildThisFileDirectory)ILMerge.Build.Task.dll</ILMergeBuildTask>
+    </PropertyGroup>
+    
+    <!-- Create task -->
+    <UsingTask TaskName="ILMerge" AssemblyFile="$(ILMergeBuildTask)" />
 
-  <!-- Locate build task -->
-  <PropertyGroup Condition="'@(MergeAsm)'!='' AND !Exists('$(ILMergeBuildTask)')">
-    <ILMergeBuildTask>$(MSBuildThisFileDirectory)ILMerge.Build.Task.dll</ILMergeBuildTask>
-  </PropertyGroup>
+    <!-- Check pre-requisits -->
+    <Target Name="CheckILMergePrerequisits" Condition="'@(MergeAsm)'!=''">
+      <PropertyGroup>
+        <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
+      </PropertyGroup>
 
-  <!-- Create task -->
-  <UsingTask TaskName="ILMerge" AssemblyFile="$(ILMergeBuildTask)" />
+      <!-- Find the ILMerge tools -->
+      <ItemGroup Condition="!Exists('$(ILMergeTools)')">
+        <ILMergePackage Include="$(SolutionDir)packages\ilmerge.*\tools\ILMerge.exe" />
+      </ItemGroup>
+      <PropertyGroup Condition="!Exists('$(ILMergeTools)')">
+        <ILMergeTools>@(ILMergePackage)</ILMergeTools>
+        <ILMergeTools Condition="$(ILMergeTools.Contains(';'))">$(ILMergeTools.Substring(0, $(ILMergeTools.IndexOf(';'))))</ILMergeTools>
+      </PropertyGroup>
+      
+      <!-- Raise an error if we're unable to locate ILMerge build task -->
+      <Error Condition="!Exists('$(ILMergeBuildTask)')" Text="Unable to locate ILMerge Build Task '$(ILMergeBuildTask)'" />
+      <!-- Raise an error if ILMerge is not found -->
+      <Error Condition="!Exists('$(ILMergeTools)')" Text="Unable to locate ILMerge tool '$(ILMergeTools)'" />
 
-  <!-- Check pre-requisits -->
-  <Target Name="CheckILMergePrerequisits" Condition="'@(MergeAsm)'!=''" >
-    <!-- Raise an error if we're unable to locate ILMerge build task (Note the UsingTask above will probably fail first)  -->
-    <Error Condition="!Exists('$(ILMergeBuildTask)')" Text="Unable to locate '$(ILMergeBuildTask)'" />
-    <!-- Raise an error if ILMerge is not found -->
-    <Error Condition="!Exists('$(ILMergeTools)')" Text="Unable to locate '$(ILMergeTools)'" />
+      <!-- Update target kind where not explicitly set. -->
+      <ItemGroup>
+        <MergeAsm Condition="'%(MergeAsm.TargetKind)'=='' AND $([System.Text.RegularExpressions.Regex]::IsMatch('%(MergeAsm.Identity)', '\.[dD]ll$'))">
+          <TargetKind>Dll</TargetKind>
+        </MergeAsm>
+        <MergeAsm Condition="'%(MergeAsm.TargetKind)'=='' AND $([System.Text.RegularExpressions.Regex]::IsMatch('%(MergeAsm.Identity)', '\.[eE]xe$'))">
+          <TargetKind>Exe</TargetKind>
+        </MergeAsm>
+      </ItemGroup>
 
-    <!-- Update target kind where not explicitly set. -->
-    <ItemGroup>
-      <MergeAsm Condition="'%(MergeAsm.TargetKind)'=='' AND $([System.Text.RegularExpressions.Regex]::IsMatch('%(MergeAsm.Identity)', '\.[dD]ll$'))">
-        <TargetKind>Dll</TargetKind>
-      </MergeAsm>
-      <MergeAsm Condition="'%(MergeAsm.TargetKind)'=='' AND $([System.Text.RegularExpressions.Regex]::IsMatch('%(MergeAsm.Identity)', '\.[eE]xe$'))">
-        <TargetKind>Exe</TargetKind>
-      </MergeAsm>
-    </ItemGroup>
+      <!-- Validate the TargetKind -->
+      <Error Condition="'%(MergeAsm.TargetKind)'==''" Text="The merge output '%(MergeAsm.Identity)' must end in either '.exe' or '.dll', or a specific TargetKind of on of 'Exe', 'Dll' or 'WinExe' must be specified." />
+      <Error Condition="'%(MergeAsm.TargetKind)'!='Exe' AND '%(MergeAsm.TargetKind)'!='Dll' AND '%(MergeAsm.TargetKind)'!='WinExe'" Text="The target kind '%(MergeAsm.TargetKind)' for '%(MergeAsm.Identity)' must be set to either 'Exe', 'Dll' or 'WinExe'." />
 
-    <!-- Validate the TargetKind -->
-    <Error Condition="'%(MergeAsm.TargetKind)'==''" Text="The merge output '%(MergeAsm.Identity)' must end in either '.exe' or '.dll'." />
-    <Error Condition="'%(MergeAsm.TargetKind)'!='Exe' AND '%(MergeAsm.TargetKind)'!='Dll'" Text="The target kind '%(MergeAsm.TargetKind)' for '%(MergeAsm.Identity)' must be set to either 'Exe' or 'Dll'." />
+      <!-- Raise an error if we can't find a specified signature key -->
+      <Error Condition="'%(MergeAsm.Snk)'!='' AND !Exists('%(MergeAsm.Snk)')" Text="Could not find the '%(MergeAsm.Snk)' signature file for resigning '%(MergeAsm.Identity)', ILMerge cannot be performed." />
+    </Target>
 
-    <!-- Raise an error if we can't find a specified signature key -->
-    <Error Condition="'%(MergeAsm.Snk)'!='' AND !Exists('%(MergeAsm.Snk)')" Text="Could not find the '%(MergeAsm.Snk)' signature file for resigning '%(MergeAsm.Identity)', ILMerge cannot be performed." />
-  </Target>
+    <!-- Perform the merges -->
+    <Target Name="ILMergeTarget" AfterTargets="AfterBuild" DependsOnTargets="CheckILMergePrerequisits" Condition="'@(MergeAsm)'!=''">
 
-  <!-- Perform the merges -->
-  <Target Name="ILMergeTarget"
-    AfterTargets="AfterBuild"
-  	DependsOnTargets="CheckInitializerPrerequisits"
-  	Condition="'@(MergeAsm)'!=''" >
+      <!-- Create output directories -->
+      <ItemGroup>
+        <MergeAsmDirs Include="@(MergeAsm->DirectoryName()->Distinct())" />
+      </ItemGroup>
+      <MakeDir Directories="%(MergeAsmDirs.Identity)" />
 
-    <!-- Create output directories -->
-    <ItemGroup>
-      <MergeAsmDirs Include="@(MergeAsm->DirectoryName()->Distinct())" />
-    </ItemGroup>
-    <MakeDir Directories="%(MergeAsm.MergeAsmDirs)" />
-
-    <!-- Perform merges -->
-    <ILMerge InputAssemblies="%(MergeAsm.Inputs)"
-	    OutputFile="%(MergeAsm.Identity)"
-	    SnkFile="%(MergeAsm.Snk)"
-	    TargetKind="%(MergeAsm.Identity)"
-	    ILMergeTool="$(ILMergeTools)" />
-  </Target>
-</Project>
+      <!-- Perform merges -->
+      <ILMerge InputAssemblies="%(MergeAsm.Inputs)" OutputFile="%(MergeAsm.Identity)" SnkFile="%(MergeAsm.Snk)" TargetKind="%(MergeAsm.TargetKind)" ILMergeTool="$(ILMergeTools)" />
+    </Target>
+  </Project>

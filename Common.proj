@@ -1,177 +1,188 @@
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Standard common properties -->
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <FileAlignment>512</FileAlignment>
-    <OldToolsVersion>4.0</OldToolsVersion>
-    <RestorePackages>true</RestorePackages>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-	
-	<!-- Force the solution directory to the same as the file -->
-    <SlnDir>$(MSBuildThisFileDirectory)</SlnDir>
-    <SlnDir Condition="!HasTrailingSlash('$(SlnDir)')">$(SlnDir)\</SlnDir>
-	<SolutionDir>$(SlnDir)</SolutionDir>
-  </PropertyGroup>
-
-  <!-- Configuration specific properties -->
-  <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <RunSignTool>false</RunSignTool>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <IsRelease>true</IsRelease>
-    <RunSignTool>true</RunSignTool>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'NuGet'">
-    <BuildPackage>true</BuildPackage>
-    <PackageOutputDir>$(SlnDir)nugets</PackageOutputDir>
-    <IsRelease>true</IsRelease>
-    <RunSignTool>true</RunSignTool>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)' == 'NuGet' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(CustomPlatforms)' != 'true'">
-    <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
-    <DocumentationFile>bin\$(Configuration)\$(Platform)\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
-
-  <!-- Include common attributes -->
-  <ItemGroup>
-    <Compile Include="$(SlnDir)CommonAttributes.cs" />
-  </ItemGroup>
-
-  <!-- Gets the key file if present, otherwise builds projects unsigned -->
-  <PropertyGroup Condition="Exists('$(SlnDir)..\Web Applications UK.snk')">
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile Condition="Exists('$(SlnDir)..\Web Applications UK.snk')">$(SlnDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>SIGNED;$(DefineConstants)</DefineConstants>
-  </PropertyGroup>
-
-  <!-- Gets the path to sn.exe -->
-  <Target Name="GetSNPath" BeforeTargets="BuildPackage;VerifyStrongName" Condition="'$(SignAssembly)' == 'true'">
-    <GetFrameworkSdkPath>
-      <Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
-    </GetFrameworkSdkPath>
-    <Exec Command="WHERE /r &quot;$(WindowsSdkPath.TrimEnd('\\'))&quot; sn &gt; sn-path.txt"  />
-    <ReadLinesFromFile File="sn-path.txt">
-      <Output TaskParameter="Lines" PropertyName="SNPath"/>
-    </ReadLinesFromFile>
-    <Delete Files="sn-path.txt" />
+<?xml version="1.0" encoding="utf-8"?>
+  <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Standard common properties -->
     <PropertyGroup>
-      <SNPath>$([System.Text.RegularExpressions.Regex]::Replace('$(SNPath)', ';.*', ''))</SNPath>
+      <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+      <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+      <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+      <AppDesignerFolder>Properties</AppDesignerFolder>
+      <FileAlignment>512</FileAlignment>
+      <OldToolsVersion>4.0</OldToolsVersion>
+      <RestorePackages>true</RestorePackages>
+      <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+      <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+
+      <!-- Force the solution directory to the same as the file -->
+      <SlnDir>$(MSBuildThisFileDirectory)</SlnDir>
+      <SlnDir Condition="!HasTrailingSlash('$(SlnDir)')">$(SlnDir)\</SlnDir>
+      <SolutionDir>$(SlnDir)</SolutionDir>
     </PropertyGroup>
-  </Target>
 
-  <!-- Ensures that packages have a strong name -->
-  <Target Name="VerifyStrongName" Condition="'$(SignAssembly)' == 'true'" BeforeTargets="BuildPackage" >
-    <Exec Command="&quot;$(SNPath)&quot; /v &quot;$(TargetPath)&quot;" />
-  </Target>
-
-  <!-- Standard includes -->
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
-  <!-- When running from internal build server, this will digitally sign dlls -->
-  <Import Project="$(SlnDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SlnDir)..\WebApplicationsSignature.targets')" />
-
-  <!-- NuGet package restore -->
-  <Import Project="$(SlnDir).nuget\NuGet.targets" Condition="Exists('$(SlnDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    <!-- Configuration specific properties -->
+    <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <DebugSymbols>true</DebugSymbols>
+      <DebugType>full</DebugType>
+      <Optimize>false</Optimize>
+      <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
+      <ErrorReport>prompt</ErrorReport>
+      <WarningLevel>4</WarningLevel>
+      <PlatformTarget>AnyCPU</PlatformTarget>
+      <Prefer32Bit>false</Prefer32Bit>
+      <RunSignTool>false</RunSignTool>
     </PropertyGroup>
-    <Error Condition="!Exists('$(SlnDir).nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SlnDir).nuget\NuGet.targets'))" />
-  </Target>
 
-  <!-- Import utilities if Utilities is defined -->
-  <PropertyGroup Condition="$(DefineConstants.Contains('Utilities'))" >
-    <UtilityBuildTasks>$(SlnDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
-    <ResourcesPath>$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
-  </PropertyGroup>
-  <ItemGroup Condition="$(UtilityBuildTasks)!='' AND !Exists('$(UtilityBuildTasks)')" >
-    <ProjectsToBuild Include="$(SlnDir)Utilities\BuildTasks\WebApplications.Utilities.BuildTasks.csproj">
-      <Properties>Configuration=$(Configuration)</Properties>
-    </ProjectsToBuild>
-  </ItemGroup>
-  <Import Project="$(SlnDir)Utilities\Utility.targets" Condition="$(DefineConstants.Contains('Utilities'))" />
+    <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <DebugType>pdbonly</DebugType>
+      <Optimize>true</Optimize>
+      <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
+      <ErrorReport>prompt</ErrorReport>
+      <WarningLevel>4</WarningLevel>
+      <PlatformTarget>AnyCPU</PlatformTarget>
+      <Prefer32Bit>false</Prefer32Bit>
+      <IsRelease>true</IsRelease>
+      <RunSignTool>true</RunSignTool>
+    </PropertyGroup>
 
-  <!-- Import ILMerge if ILMerge is defined -->
-  <PropertyGroup Condition="$(DefineConstants.Contains('ILMerge'))" >
-    <ILMergeBuildTask>$(SlnDir)ILMerge\bin\$(Configuration)\$(Platform)\ILMerge.Build.Task.dll</ILMergeBuildTask>
-  </PropertyGroup>
-  <ItemGroup Condition="$(ILMergeBuildTask)!='' AND !Exists('$(ILMergeBuildTask)')" >
-    <ProjectsToBuild Include="$(SlnDir)ILMerge\ILMerge.Build.Task.csproj">
-      <Properties>Configuration=$(Configuration)</Properties>
-    </ProjectsToBuild>
-  </ItemGroup>
-  <!-- We only import the project if the build task already exists, otherwise we run in seperate MSBuild step -->
-  <Import Project="$(SlnDir)ILMerge\ILMerge.targets" Condition="$(DefineConstants.Contains('ILMerge')) AND Exists('$(ILMergeBuildTask)')" />
-  <!-- TODO Run project in seperate MSBuild -->
+    <PropertyGroup Condition="'$(Configuration)' == 'NuGet'">
+      <BuildPackage>true</BuildPackage>
+      <PackageOutputDir>$(SlnDir)nugets</PackageOutputDir>
+      <IsRelease>true</IsRelease>
+      <RunSignTool>true</RunSignTool>
+    </PropertyGroup>
 
-  <!-- Import module initializer if ModuleInitializer is defined -->
-  <PropertyGroup Condition="$(DefineConstants.Contains('ModuleInitializer'))" >
-    <InjectModuleInitializerTool>$(SlnDir)Initializer\bin\$(Configuration)\$(Platform)\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
-  </PropertyGroup>
-  <ItemGroup Condition="$(InjectModuleInitializerTool)!='' AND !Exists('$(InjectModuleInitializerTool)')" >
-    <ProjectsToBuild Include="$(SlnDir)Initializer\WebApplications.Utilities.Initializer.csproj">
-      <Properties>Configuration=$(Configuration)</Properties>
-    </ProjectsToBuild>
-  </ItemGroup>
-  <!-- We only import the project if the build task already exists, otherwise we run in seperate MSBuild step -->
-  <Import Project="$(SlnDir)Initializer\InjectModuleInitializer.targets" Condition="$(DefineConstants.Contains('ModuleInitializer')) AND Exists('$(InjectModuleInitializerTool)')" />
-  <!-- TODO Run project in seperate MSBuild -->
+    <PropertyGroup Condition=" '$(CustomPlatforms)' != 'true' AND '$(Configuration)' == 'NuGet' ">
+      <DebugType>pdbonly</DebugType>
+      <Optimize>true</Optimize>
+      <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
+      <ErrorReport>prompt</ErrorReport>
+      <WarningLevel>4</WarningLevel>
+      <PlatformTarget>AnyCPU</PlatformTarget>
+      <Prefer32Bit>false</Prefer32Bit>
+    </PropertyGroup>
 
-  <!-- Import PerfSetup if the PerfSetup constant is defined -->
-  <PropertyGroup Condition="$(DefineConstants.Contains('PerfSetup'))" >
-    <PerfSetupTool>$(SlnDir)Performance\PerfSetup\bin\$(Configuration)\$(Platform)\Merged\PerfSetup32.exe</PerfSetupTool>
-  </PropertyGroup>
-  <ItemGroup Condition="$(PerfSetupTool)!='' AND !Exists('$(PerfSetupTool)')" >
-    <ProjectsToBuild Include="$(SlnDir)Performance\PerfSetup\WebApplications.Utilities.Performance.Tools.PerfSetup.csproj">
-      <Properties>Configuration=$(Configuration)</Properties>
-    </ProjectsToBuild>
-  </ItemGroup>
-  <!-- We only import the project if the build task already exists, otherwise we run in seperate MSBuild step -->
-  <Import Project="$(SlnDir)Performance\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('$(PerfSetupTool)')" />
-  <!-- TODO Run project in seperate MSBuild -->
+    <PropertyGroup Condition="'$(CustomPlatforms)' != 'true'">
+      <OutputPath>bin\$(Configuration)\$(Platform)\</OutputPath>
+      <DocumentationFile>bin\$(Configuration)\$(Platform)\$(AssemblyName).xml</DocumentationFile>
+    </PropertyGroup>
 
-  <!-- Copy resources if CopyResources is defined -->
-  <ItemGroup Condition="$(DefineConstants.Contains('CopyResources'))">
-    <ResourceFiles Include="$(SlnDir)Utilities\Resources\**\*"/>
-  </ItemGroup>
-  <Target Name="CopyResources" AfterTargets="AfterBuild" Condition="$(DefineConstants.Contains('CopyResources'))">
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)Resources\%(RecursiveDir)" />
-  </Target>
+    <!-- Include common attributes -->
+    <ItemGroup>
+      <Compile Include="$(SlnDir)CommonAttributes.cs" />
+    </ItemGroup>
 
-  <!-- Build any dependencies-->
-  <Target Name="BuildDependencies" AfterTargets="EnsureNuGetPackageBuildImports" Condition="@(ProjectsToBuild) != ''" >
-    <MSBuild Projects="@(ProjectToBuild)" Condition="@(ProjectsToBuild) != ''" />
-  </Target>
-</Project>
+    <!-- Gets the key file if present, otherwise builds projects unsigned -->
+    <PropertyGroup Condition="Exists('$(SlnDir)..\Web Applications UK.snk')">
+      <SignAssembly>true</SignAssembly>
+      <AssemblyOriginatorKeyFile Condition="Exists('$(SlnDir)..\Web Applications UK.snk')">$(SlnDir)..\Web Applications UK.snk</AssemblyOriginatorKeyFile>
+      <DefineConstants>SIGNED;$(DefineConstants)</DefineConstants>
+    </PropertyGroup>
+
+    <!-- Gets the path to sn.exe -->
+    <Target Name="GetSNPath" BeforeTargets="BuildPackage;VerifyStrongName" Condition="'$(SignAssembly)' == 'true'">
+      <GetFrameworkSdkPath>
+        <Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
+      </GetFrameworkSdkPath>
+      <Exec Command="WHERE /r &quot;$(WindowsSdkPath.TrimEnd('\\'))&quot; sn &gt; sn-path.txt" />
+      <ReadLinesFromFile File="sn-path.txt">
+        <Output TaskParameter="Lines" PropertyName="SNPath" />
+      </ReadLinesFromFile>
+      <Delete Files="sn-path.txt" />
+      <PropertyGroup>
+        <SNPath>$([System.Text.RegularExpressions.Regex]::Replace('$(SNPath)', ';.*', ''))</SNPath>
+      </PropertyGroup>
+    </Target>
+
+    <!-- Ensures that packages have a strong name -->
+    <Target Name="VerifyStrongName" Condition="'$(SignAssembly)' == 'true'" BeforeTargets="BuildPackage">
+      <Exec Command="&quot;$(SNPath)&quot; /v &quot;$(TargetPath)&quot;" />
+    </Target>
+
+    <!-- Standard includes -->
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+    <!-- When running from internal build server, this will digitally sign dlls -->
+    <Import Project="$(SlnDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SlnDir)..\WebApplicationsSignature.targets')" />
+
+    <!-- NuGet package restore -->
+    <Import Project="$(SlnDir).nuget\NuGet.targets" Condition="Exists('$(SlnDir)\.nuget\NuGet.targets')" />
+    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+      <PropertyGroup>
+        <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      </PropertyGroup>
+      <Error Condition="!Exists('$(SlnDir).nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SlnDir).nuget\NuGet.targets'))" />
+    </Target>
+
+    <!-- Import utilities if Utilities is defined -->
+    <PropertyGroup Condition="$(DefineConstants.Contains('Utilities'))">
+      <UtilityBuildTasks>$(SlnDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
+      <ResourcesPath>$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(UtilityBuildTasks)'!='' AND !Exists('$(UtilityBuildTasks)')">
+      <ProjectsToBuild Include="$(SlnDir)Utilities\BuildTasks\WebApplications.Utilities.BuildTasks.csproj">
+        <Properties>Configuration=$(Configuration)</Properties>
+      </ProjectsToBuild>
+    </ItemGroup>
+    <Import Project="$(SlnDir)Utilities\Utility.targets" Condition="$(DefineConstants.Contains('Utilities'))" />
+
+    <!-- Import ILMerge if ILMerge is defined -->
+    <PropertyGroup Condition="$(DefineConstants.Contains('ILMerge'))">
+      <ILMergeBuildTask>$(SlnDir)ILMerge\bin\$(Configuration)\$(Platform)\ILMerge.Build.Task.dll</ILMergeBuildTask>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(ILMergeBuildTask)'!='' AND !Exists('$(ILMergeBuildTask)')">
+      <ProjectsToBuild Include="$(SlnDir)ILMerge\ILMerge.Build.Task.csproj">
+        <Properties>Configuration=$(Configuration)</Properties>
+      </ProjectsToBuild>
+    </ItemGroup>
+    <Import Project="$(SlnDir)ILMerge\ILMerge.targets" Condition="$(DefineConstants.Contains('ILMerge'))" />
+
+    <!-- Import module initializer if ModuleInitializer is defined -->
+    <PropertyGroup Condition="$(DefineConstants.Contains('ModuleInitializer'))">
+      <InjectModuleInitializerTool>$(SlnDir)Initializer\bin\$(Configuration)\$(Platform)\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(InjectModuleInitializerTool)'!='' AND !Exists('$(InjectModuleInitializerTool)')">
+      <ProjectsToBuild Include="$(SlnDir)Initializer\WebApplications.Utilities.Initializer.csproj">
+        <Properties>Configuration=$(Configuration)</Properties>
+      </ProjectsToBuild>
+    </ItemGroup>
+    <Import Project="$(SlnDir)Initializer\InjectModuleInitializer.targets" Condition="$(DefineConstants.Contains('ModuleInitializer'))" />
+
+    <!-- Import PerfSetup if the PerfSetup constant is defined -->
+    <PropertyGroup Condition="$(DefineConstants.Contains('PerfSetup'))">
+      <PerfSetupTool>$(SlnDir)Performance\PerfSetup\bin\$(Configuration)\$(Platform)\Merged\PerfSetup32.exe</PerfSetupTool>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(PerfSetupTool)'!='' AND !Exists('$(PerfSetupTool)')">
+      <ProjectsToBuild Include="$(SlnDir)Performance\PerfSetup\WebApplications.Utilities.Performance.Tools.PerfSetup.csproj">
+        <Properties>Configuration=$(Configuration)</Properties>
+      </ProjectsToBuild>
+    </ItemGroup>
+    <Import Project="$(SlnDir)Performance\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup'))" />
+
+    <!-- Copy resources if CopyResources is defined -->
+    <ItemGroup Condition="$(DefineConstants.Contains('CopyResources'))">
+      <ResourceFiles Include="$(SlnDir)Utilities\Resources\**\*" />
+    </ItemGroup>
+    <Target Name="CopyResources" AfterTargets="AfterBuild" Condition="$(DefineConstants.Contains('CopyResources'))">
+      <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)Resources\%(RecursiveDir)" />
+    </Target>
+
+    <!-- Build any dependencies-->
+    <Target Name="BuildDependencies" Condition="'@(ProjectsToBuild)' != ''" AfterTargets="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+      <Message Text="Building dependencies." />
+      <MSBuild Projects="@(ProjectsToBuild)" />
+
+      <!-- Reset tool locations -->
+      <PropertyGroup>
+        <UtilityBuildTasks Condition="$(DefineConstants.Contains('Utilities'))">$(SlnDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
+        <ResourcesPath Condition="$(DefineConstants.Contains('Utilities'))">$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
+        <ILMergeBuildTask Condition="$(DefineConstants.Contains('ILMerge'))">$(SlnDir)ILMerge\bin\$(Configuration)\$(Platform)\ILMerge.Build.Task.dll</ILMergeBuildTask>
+        <InjectModuleInitializerTool Condition="$(DefineConstants.Contains('ModuleInitializer'))">$(SlnDir)Initializer\bin\$(Configuration)\$(Platform)\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+        <PerfSetupTool Condition="$(DefineConstants.Contains('PerfSetup'))">$(SlnDir)Performance\PerfSetup\bin\$(Configuration)\$(Platform)\Merged\PerfSetup32.exe</PerfSetupTool>
+      </PropertyGroup>
+
+      <!-- Verify pre-requisits -->
+      <Error Text="Failed to find or build the Utilities Build Tasks ('$(UtilityBuildTasks)')." Condition="'$(UtilityBuildTasks)'!='' AND !Exists('$(UtilityBuildTasks)')" />
+      <Error Text="Failed to find or build the ILMerge Build Task ('$(ILMergeBuildTask)')." Condition="'$(ILMergeBuildTask)'!='' AND !Exists('$(ILMergeBuildTask)')" />
+      <Error Text="Failed to find or build the Module initializer tool ('$(InjectModuleInitializerTool)')." Condition="'$(InjectModuleInitializerTool)'!='' AND !Exists('$(InjectModuleInitializerTool)')" />
+      <Error Text="Failed to find or build the PerfSetup tool ('$(PerfSetupTool)'!='')." Condition="'$(PerfSetupTool)'!='' AND !Exists('$(PerfSetupTool)')" />
+    </Target>
+  </Project>

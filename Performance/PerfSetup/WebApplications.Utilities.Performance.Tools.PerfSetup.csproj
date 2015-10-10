@@ -95,6 +95,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../../Utilities/Annotations/Annotations.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Options.cs" />
@@ -115,16 +116,10 @@
   </ItemGroup>
   <!-- Set up merge -->
   <ItemGroup>
-    <MergeInputs Include="$(OutputPath)PerfSetup.exe" />
-    <MergeInputs Include="$(OutputPath)CmdLine.dll" />
-    <MergeInputs Include="$(OutputPath)JetBrains.Annotations.dll" />
-    <MergeInputs Include="$(OutputPath)Mono.Cecil.dll" />
-    <MergeInputs Include="$(OutputPath)Mono.Cecil.Mdb.dll" />
-    <MergeInputs Include="$(OutputPath)Mono.Cecil.Pdb.dll" />
-    <MergeInputs Include="$(OutputPath)Mono.Cecil.Rocks.dll" />
     <MergeAsm Include="$(MergedOutputFile)">
-	  <Inputs>@(MergeInputs)</Inputs>
-	  <Snk>$(AssemblyOriginatorKeyFile)</Snk>
+      <Inputs>$(OutputPath)PerfSetup.exe;$(OutputPath)CmdLine.dll;$(OutputPath)JetBrains.Annotations.dll;$(OutputPath)Mono.Cecil.dll;$(OutputPath)Mono.Cecil.Mdb.dll;$(OutputPath)Mono.Cecil.Pdb.dll;$(OutputPath)Mono.Cecil.Rocks.dll</Inputs>
+      <Snk>$(AssemblyOriginatorKeyFile)</Snk>
+      <InProject>false</InProject>
     </MergeAsm>
   </ItemGroup>
   <Target Name="AfterBuild">
