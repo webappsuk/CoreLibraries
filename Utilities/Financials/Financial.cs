@@ -102,11 +102,11 @@ namespace WebApplications.Utilities.Financials
         /// <exception cref="FormatException">The format string is not supported.</exception>
         public string ToString(string format, IFormatProvider provider)
         {
-            if (String.IsNullOrEmpty(format)) format = "I";
+            if (string.IsNullOrEmpty(format)) format = "I";
             switch (format.ToUpperInvariant())
             {
                 case "I":
-                    return String.Format(provider, "{0} {1}", _amount, _currency.Code);
+                    return string.Format(provider, "{0} {1}", _amount, _currency.Code);
                 case "C":
                     CultureInfo culture;
                     try
@@ -123,7 +123,7 @@ namespace WebApplications.Utilities.Financials
 
                     return FormatCurrency(culture);
                 default:
-                    throw new FormatException(String.Format("The {0} format string is not supported.", format));
+                    throw new FormatException(string.Format("The {0} format string is not supported.", format));
             }
         }
         #endregion
@@ -444,7 +444,7 @@ namespace WebApplications.Utilities.Financials
                 cultures.Length > 0)
                 culture = cultures[0];
 
-            return String.Format(culture, "{0:C}", _amount);
+            return string.Format(culture, "{0:C}", _amount);
         }
 
         /// <summary>

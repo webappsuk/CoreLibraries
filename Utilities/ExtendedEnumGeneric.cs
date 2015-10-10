@@ -1410,7 +1410,7 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para>The requested name (<paramref name="value"/>) was invalid.</para>
         /// </exception>
-        public static TEnum Parse([NotNull] String value)
+        public static TEnum Parse([NotNull] string value)
         {
             if (!IsEnum)
                 throw new ArgumentException(
@@ -1455,7 +1455,7 @@ namespace WebApplications.Utilities
         /// <para>-or-</para>
         /// <para>The requested name (<paramref name="value"/>) was invalid.</para>
         /// </exception>
-        public static TEnum Parse([NotNull] String value, bool ignoreCase)
+        public static TEnum Parse([NotNull] string value, bool ignoreCase)
         {
             if (!IsEnum)
                 throw new ArgumentException(
@@ -1483,7 +1483,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The string representation.</param>
         /// <param name="result">The result.</param>
         /// <returns>Returns <see langword="true"/> if parsed successfully; otherwise returns <see langword="false"/>.</returns>
-        public static bool TryParse([NotNull] String value, out TEnum result)
+        public static bool TryParse([NotNull] string value, out TEnum result)
         {
             if (!IsEnum)
                 throw new ArgumentException(
@@ -1511,7 +1511,7 @@ namespace WebApplications.Utilities
         /// <param name="ignoreCase">If set to <see langword="true"/> case sensitivity is ignored.</param>
         /// <param name="result">The result.</param>
         /// <returns>Returns <see langword="true"/> if parsed successfully; otherwise returns <see langword="false"/>.</returns>
-        public static bool TryParse([NotNull] String value, bool ignoreCase, out TEnum result)
+        public static bool TryParse([NotNull] string value, bool ignoreCase, out TEnum result)
         {
             if (!IsEnum)
                 throw new ArgumentException(

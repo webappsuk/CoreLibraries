@@ -149,7 +149,7 @@ namespace WebApplications.Utilities.Enumerations
         /// <filterpriority>2</filterpriority>
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (String.IsNullOrEmpty(format)) format = "G";
+            if (string.IsNullOrEmpty(format)) format = "G";
 
             switch (format.ToUpperInvariant())
             {
@@ -164,7 +164,7 @@ namespace WebApplications.Utilities.Enumerations
                     Style style;
                     if (!Enum.TryParse(format, true, out style))
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        throw new FormatException(String.Format(Resources.TriState_ToString_FormatException, format));
+                        throw new FormatException(string.Format(Resources.TriState_ToString_FormatException, format));
                     return ToString(style);
             }
         }
@@ -216,7 +216,7 @@ namespace WebApplications.Utilities.Enumerations
         /// <exception cref="InvalidCastException">
         ///   Cannot cast the <paramref name="state"/> if it's TriState.Unknown.
         /// </exception>
-        public static explicit operator Boolean(TriState state)
+        public static explicit operator bool(TriState state)
         {
             if (state == Unknown)
                 throw new InvalidCastException(Resources.TriState_ExplicitBoolConversion_CannotCastUnknownState);
@@ -228,7 +228,7 @@ namespace WebApplications.Utilities.Enumerations
         /// </summary>
         /// <param name="boolean">The bool to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator TriState(Boolean boolean)
+        public static implicit operator TriState(bool boolean)
         {
             return boolean ? Yes : No;
         }

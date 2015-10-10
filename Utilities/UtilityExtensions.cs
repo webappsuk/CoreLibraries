@@ -884,7 +884,7 @@ namespace WebApplications.Utilities
                     s =>
                     {
                         int id;
-                        return Int32.TryParse(s, out id) ? (int?)id : null;
+                        return int.TryParse(s, out id) ? (int?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
                     // ReSharper disable once PossibleInvalidOperationException
@@ -932,8 +932,8 @@ namespace WebApplications.Utilities
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
                     {
-                        Int16 id;
-                        return Int16.TryParse(s, out id) ? (Int16?)id : null;
+                        short id;
+                        return short.TryParse(s, out id) ? (short?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
                     // ReSharper disable once PossibleInvalidOperationException
@@ -980,8 +980,8 @@ namespace WebApplications.Utilities
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
                     {
-                        Int64 id;
-                        return Int64.TryParse(s, out id) ? (Int64?)id : null;
+                        long id;
+                        return long.TryParse(s, out id) ? (long?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
                     // ReSharper disable once PossibleInvalidOperationException
@@ -1008,7 +1008,7 @@ namespace WebApplications.Utilities
         [ContractAnnotation("raw:null => null; raw:notnull => notnull")]
         public static string XmlEscape([CanBeNull] this string raw)
         {
-            string stripped = String.IsNullOrEmpty(raw)
+            string stripped = string.IsNullOrEmpty(raw)
                 ? raw
                 : new string(raw.Where(c => c.IsValidXmlChar()).ToArray());
             return SecurityElement.Escape(stripped);
@@ -1098,14 +1098,14 @@ namespace WebApplications.Utilities
                     throw new ArgumentNullException("assembly");
                 // ReSharper restore HeuristicUnreachableCode
 
-                if (String.IsNullOrWhiteSpace(filename))
+                if (string.IsNullOrWhiteSpace(filename))
                     throw new ArgumentNullException("filename");
 
                 using (Stream stream = assembly.GetManifestResourceStream(filename))
                 {
                     if (stream == null)
                         throw new InvalidOperationException(
-                            String.Format(
+                            string.Format(
                                 // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.Extensions_EmbeddedXml_CouldntLoadEmbeddedResource,
                                 filename,
@@ -1116,7 +1116,7 @@ namespace WebApplications.Utilities
             catch (Exception e)
             {
                 throw new InvalidOperationException(
-                    String.Format(
+                    string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Extensions_EmbeddedXml_Exception,
                         filename,
@@ -1157,14 +1157,14 @@ namespace WebApplications.Utilities
                     throw new ArgumentNullException("assembly");
                 // ReSharper restore HeuristicUnreachableCode
 
-                if (String.IsNullOrWhiteSpace(filename))
+                if (string.IsNullOrWhiteSpace(filename))
                     throw new ArgumentNullException("filename");
 
                 using (Stream stream = assembly.GetManifestResourceStream(filename))
                 {
                     if (stream == null)
                         throw new InvalidOperationException(
-                            String.Format(
+                            string.Format(
                                 // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.Extensions_EmbeddedXml_CouldntLoadEmbeddedResource,
                                 filename,
@@ -1181,7 +1181,7 @@ namespace WebApplications.Utilities
             catch (Exception e)
             {
                 throw new InvalidOperationException(
-                    String.Format(
+                    string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Extensions_EmbeddedXml_Exception,
                         filename,
@@ -1201,9 +1201,9 @@ namespace WebApplications.Utilities
         ///   This is the best way to pass a date time to JavaScript because it ensures that the time will parse successfully
         ///   regardless of the <see cref="DateTime">date</see>'s localisation/format.
         /// </remarks>
-        public static Int64 GetEpochTime(this DateTime dateTime)
+        public static long GetEpochTime(this DateTime dateTime)
         {
-            return (Int64)(dateTime - EpochStart).TotalMilliseconds;
+            return (long)(dateTime - EpochStart).TotalMilliseconds;
         }
 
         /// <summary>
@@ -1218,7 +1218,7 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The result was either less than <see cref="DateTime.MinValue"/> or greater than <see cref="DateTime.MaxValue"/>.
         /// </exception>
-        public static DateTime GetDateTime(Int64 epochTime)
+        public static DateTime GetDateTime(long epochTime)
         {
             return EpochStart.AddMilliseconds(epochTime);
         }
@@ -1286,9 +1286,9 @@ namespace WebApplications.Utilities
             if (ellipsisLength < 0 &&
                 ellipsisString == null) throw new ArgumentNullException("ellipsisString");
 
-            if (String.IsNullOrEmpty(valueToTruncate) ||
+            if (string.IsNullOrEmpty(valueToTruncate) ||
                 valueToTruncate.Length <= maxLength)
-                return valueToTruncate ?? String.Empty;
+                return valueToTruncate ?? string.Empty;
 
             if (ellipsisLength < 0)
                 // ReSharper disable once PossibleNullReferenceException
@@ -1320,12 +1320,12 @@ namespace WebApplications.Utilities
             else
                 retValue = "";
 
-            return String.Format(
+            return string.Format(
                 "{0}{1}",
                 retValue,
                 includeEllipsis && retValue.Length < valueToTruncate.Length
                     ? ellipsisString
-                    : String.Empty);
+                    : string.Empty);
         }
 
         /// <summary>
@@ -1362,7 +1362,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static string Unescape([CanBeNull] this string str)
         {
-            if (String.IsNullOrEmpty(str)) return str ?? String.Empty;
+            if (string.IsNullOrEmpty(str)) return str ?? string.Empty;
             StringBuilder builder = new StringBuilder(str.Length);
             builder.AddUnescaped(str);
             return builder.ToString();
@@ -1376,7 +1376,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static string Escape([CanBeNull] this string str)
         {
-            if (String.IsNullOrEmpty(str)) return str ?? String.Empty;
+            if (string.IsNullOrEmpty(str)) return str ?? string.Empty;
             StringBuilder builder = new StringBuilder(str.Length + 10);
             builder.AddEscaped(str);
             return builder.ToString();
@@ -1390,7 +1390,7 @@ namespace WebApplications.Utilities
         public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             if (builder == null) throw new ArgumentNullException("builder");
-            if (String.IsNullOrEmpty(str)) return;
+            if (string.IsNullOrEmpty(str)) return;
             int i = 0;
             bool escaped = false;
             while (i < str.Length)
@@ -1442,12 +1442,12 @@ namespace WebApplications.Utilities
                         }
                         string d4 = str.Substring(i, i + 4);
                         int n4;
-                        if (!Int32.TryParse(d4, NumberStyles.HexNumber, null, out n4))
+                        if (!int.TryParse(d4, NumberStyles.HexNumber, null, out n4))
                         {
                             builder.Append(c);
                             continue;
                         }
-                        builder.Append((Char)n4);
+                        builder.Append((char)n4);
                         i += 4;
                         break;
                     case 'U':
@@ -1458,12 +1458,12 @@ namespace WebApplications.Utilities
                         }
                         string d8 = str.Substring(i, i + 8);
                         int n8;
-                        if (!Int32.TryParse(d8, NumberStyles.HexNumber, null, out n8))
+                        if (!int.TryParse(d8, NumberStyles.HexNumber, null, out n8))
                         {
                             builder.Append(c);
                             continue;
                         }
-                        builder.Append(Char.ConvertFromUtf32(n8));
+                        builder.Append(char.ConvertFromUtf32(n8));
                         i += 8;
                         break;
                     case 'x':
@@ -1483,12 +1483,12 @@ namespace WebApplications.Utilities
                         }
                         int nx;
                         if ((dx.Length < 1) ||
-                            !Int32.TryParse(dx.ToString(), NumberStyles.HexNumber, null, out nx))
+                            !int.TryParse(dx.ToString(), NumberStyles.HexNumber, null, out nx))
                         {
                             builder.Append(c);
                             continue;
                         }
-                        builder.Append((Char)nx);
+                        builder.Append((char)nx);
                         i += j;
                         break;
                     default:
@@ -1508,7 +1508,7 @@ namespace WebApplications.Utilities
         public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             if (builder == null) throw new ArgumentNullException("builder");
-            if (String.IsNullOrEmpty(str)) return;
+            if (string.IsNullOrEmpty(str)) return;
             int i = 0;
             while (i < str.Length)
             {
@@ -1549,7 +1549,7 @@ namespace WebApplications.Utilities
                         builder.Append(@"\v");
                         break;
                     default:
-                        if (Char.GetUnicodeCategory(c) != UnicodeCategory.Control)
+                        if (char.GetUnicodeCategory(c) != UnicodeCategory.Control)
                             builder.Append(c);
                         else
                             builder.Append(@"\u")
@@ -1701,7 +1701,7 @@ namespace WebApplications.Utilities
             if (elements == null) throw new ArgumentNullException("elements");
             if (separator == null) throw new ArgumentNullException("separator");
 
-            return String.Join(separator, elements);
+            return string.Join(separator, elements);
         }
 
         /// <summary>
@@ -1750,7 +1750,7 @@ namespace WebApplications.Utilities
             bool any = false;
             foreach (string element in elements)
             {
-                if (String.IsNullOrEmpty(element)) continue;
+                if (string.IsNullOrEmpty(element)) continue;
                 if (any)
                     builder.Append(separator);
                 else
@@ -1778,7 +1778,7 @@ namespace WebApplications.Utilities
             bool any = false;
             foreach (string element in elements)
             {
-                if (String.IsNullOrWhiteSpace(element)) continue;
+                if (string.IsNullOrWhiteSpace(element)) continue;
                 if (any)
                     builder.Append(separator);
                 else
@@ -1811,7 +1811,7 @@ namespace WebApplications.Utilities
             if (input == null) throw new ArgumentNullException("input");
             if (input.Length < 1 ||
                 char.IsLower(input[0])) return input;
-            return Char.ToLower(input[0]) + input.Substring(1);
+            return char.ToLower(input[0]) + input.Substring(1);
         }
 
         /// <summary>
@@ -3067,7 +3067,7 @@ namespace WebApplications.Utilities
             }
 
             string format = "{0:N" + maxDecimalPlaces + "}{1}";
-            return String.Format(
+            return string.Format(
                 format,
                 amount,
                 longUnits

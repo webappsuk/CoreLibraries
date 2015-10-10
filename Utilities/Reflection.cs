@@ -204,7 +204,7 @@ namespace WebApplications.Utilities
                 if (isStatic)
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
-                        String.Format(
+                        string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Reflection_GetFunc_MethodIsStaticConstructor,
                             methodBase));
@@ -221,7 +221,7 @@ namespace WebApplications.Utilities
                     (methodInfo.ReturnType == typeof(void)))
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
-                        String.Format(
+                        string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Reflection_GetFunc_MethodHasNoReturnType,
                             methodBase));
@@ -231,7 +231,7 @@ namespace WebApplications.Utilities
             if (count < 1)
                 throw new ArgumentOutOfRangeException(
                     "funcTypes",
-                    String.Format(
+                    string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Reflection_GetFunc_NoFuncTypesSpecified,
                         methodBase));
@@ -254,7 +254,7 @@ namespace WebApplications.Utilities
             if (methodTypes.Count() != count)
                 throw new ArgumentOutOfRangeException(
                     "methodBase",
-                    String.Format(
+                    string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Reflection_GetFunc_IncorrectParameterCount,
                         methodBase));
@@ -278,7 +278,7 @@ namespace WebApplications.Utilities
                     if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
                         throw new ArgumentOutOfRangeException(
                             "methodBase",
-                            String.Format(
+                            string.Format(
                                 // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.Reflection_GetFunc_ParameterNotAssignable,
                                 methodBase,
@@ -300,7 +300,7 @@ namespace WebApplications.Utilities
                 if (checkParameterAssignability && !funcType.IsAssignableFrom(methodType))
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
-                        String.Format(
+                        string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Reflection_GetFunc_ReturnTypeNotAssignable,
                             methodBase,
@@ -328,7 +328,7 @@ namespace WebApplications.Utilities
             }
             // Sanity check, shouldn't be able to get here anyway.
             throw new InvalidOperationException(
-                String.Format(
+                string.Format(
                     // ReSharper disable once AssignNullToNotNullAttribute
                     Resources.Reflection_GetFunc_NoFuncTypesSpecified,
                     methodBase));
@@ -379,7 +379,7 @@ namespace WebApplications.Utilities
             if (methodTypes.Count() != count)
                 throw new ArgumentOutOfRangeException(
                     "methodInfo",
-                    String.Format(
+                    string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Reflection_GetAction_IncorrectParameterCount,
                         methodInfo));
@@ -401,7 +401,7 @@ namespace WebApplications.Utilities
                 if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
                     throw new ArgumentOutOfRangeException(
                         "methodInfo",
-                        String.Format(
+                        string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Reflection_GetAction_ParameterNotAssignable,
                             methodInfo,
@@ -559,7 +559,7 @@ namespace WebApplications.Utilities
                 outputType = typeof(TOut);
 
             return (Func<TIn, TOut>)_converters.GetOrAdd(
-                String.Format(
+                string.Format(
                     "{0}|{1}|{2}|{3}",
                     typeof(TIn).FullName,
                     inputType.FullName,
@@ -596,7 +596,7 @@ namespace WebApplications.Utilities
             Expression outputExpression;
             if (!TryConvert(expression, outputType, out outputExpression))
                 throw new InvalidOperationException(
-                    String.Format(
+                    string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.Reflection_Convert_ConversionFailed,
                         expression.Type,
@@ -1466,9 +1466,9 @@ namespace WebApplications.Utilities
             Type[] emptyTypes = Array<Type>.Empty;
             Type[] typeClosures = emptyTypes;
             Type[] signatureClosures = emptyTypes;
-            int castsCount = Int32.MaxValue;
-            int typeClosureCount = Int32.MaxValue;
-            int signatureClosureCount = Int32.MaxValue;
+            int castsCount = int.MaxValue;
+            int typeClosureCount = int.MaxValue;
+            int signatureClosureCount = int.MaxValue;
 
             if (signatures != null)
                 foreach (ISignature signature in signatures)

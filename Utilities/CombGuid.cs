@@ -159,7 +159,7 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="g"/> is a <see langword="null"/>.</exception>
         /// <exception cref="FormatException">The format of <paramref name="g"/> is invalid.</exception>
         /// <exception cref="OverflowException">The format of <paramref name="g"/> is invalid.</exception>
-        public CombGuid([NotNull] String g)
+        public CombGuid([NotNull] string g)
         {
             Guid = new Guid(g);
             Created = GetDateTime(Guid);
@@ -189,7 +189,7 @@ namespace WebApplications.Utilities
         /// <exception cref="FormatException">
         ///   <paramref name="input"/> is not in a recognised format.
         /// </exception>
-        public static CombGuid Parse([NotNull] String input)
+        public static CombGuid Parse([NotNull] string input)
         {
             return new CombGuid(Guid.Parse(input));
         }
@@ -205,7 +205,7 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns <see langword="true"/> if the parse was successful; otherwise returns <see langword="false"/>.
         /// </returns>
-        public static bool TryParse(String input, out CombGuid result)
+        public static bool TryParse(string input, out CombGuid result)
         {
             Guid g;
             if (Guid.TryParse(input, out g))
@@ -247,7 +247,7 @@ namespace WebApplications.Utilities
         ///     <item><description>"X"</description></item>
         ///   </list>
         /// </exception>
-        public static CombGuid ParseExact([NotNull] String input, [NotNull] String format)
+        public static CombGuid ParseExact([NotNull] string input, [NotNull] string format)
         {
             return new CombGuid(Guid.ParseExact(input, format));
         }
@@ -275,7 +275,7 @@ namespace WebApplications.Utilities
         ///     ({0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}</description></item>
         ///   </list>
         /// </remarks>
-        public static bool TryParseExact(String input, String format, out CombGuid result)
+        public static bool TryParseExact(string input, string format, out CombGuid result)
         {
             Guid g;
             if (Guid.TryParseExact(input, format, out g))
@@ -305,7 +305,7 @@ namespace WebApplications.Utilities
         ///   <para>A <see cref="string"/> representation of this instance.</para>
         ///   <para><b>Output Format:</b> dddddddd-dddd-dddd-dddd-dddddddddddd (d represents a hex digit).</para>
         /// </returns>
-        public override String ToString()
+        public override string ToString()
         {
             return Guid.ToString();
         }
@@ -328,7 +328,7 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the specified <see cref="System.Object"/> is equal to this instance;
         ///   otherwise returns <see langword="false"/>.
         /// </returns>
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             if (o == null)
                 return false;
@@ -383,7 +383,7 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentException">
         ///   <paramref name="value"/> was not a <see cref="System.Guid"/>/<see cref="CombGuid"/>.
         /// </exception>
-        public int CompareTo(Object value)
+        public int CompareTo(object value)
         {
             if (value == null)
                 return 1;
@@ -696,7 +696,7 @@ namespace WebApplications.Utilities
         /// </exception>
         /// <seealso cref="System.Guid.ToString()">Guid.ToString</seealso>
         /// <seealso cref="System.IFormatProvider"/>
-        public String ToString(String format)
+        public string ToString(string format)
         {
             return Guid.ToString(format, null);
         }
@@ -733,7 +733,7 @@ namespace WebApplications.Utilities
         /// </exception>
         /// <seealso cref="System.Guid.ToString()">Guid.ToString</seealso>
         /// <seealso cref="System.IFormatProvider"/>
-        public String ToString(String format, IFormatProvider provider)
+        public string ToString(string format, IFormatProvider provider)
         {
             return Guid.ToString(format, provider);
         }

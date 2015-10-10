@@ -1438,7 +1438,7 @@ namespace WebApplications.Utilities.Reflect
             // not exposed - this could be done using Type.GenericParameterAttributes
             // followed by Type.GetGenericParameterConstraints.
             // ReSharper disable once PossibleNullReferenceException
-            string key = String.Join("|", gta.Select(t => t.FullName));
+            string key = string.Join("|", gta.Select(t => t.FullName));
 
             Debug.Assert(_closedTypes.Value != null);
             return _closedTypes.Value.GetOrAdd(

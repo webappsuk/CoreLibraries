@@ -245,7 +245,7 @@ namespace WebApplications.Utilities
                 {
                     // ReSharper disable once ConditionIsAlwaysTrueOrFalse 
                     // - If we arent a console, CursorLeft will throw, otherwise we want IsConsole to be set to true.
-                    IsConsole = Console.CursorLeft >= Int32.MinValue;
+                    IsConsole = Console.CursorLeft >= int.MinValue;
                 }
                 catch (IOException)
                 {

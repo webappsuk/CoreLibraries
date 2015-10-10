@@ -54,6 +54,19 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         }
 
         /// <summary>
+        /// Gets or sets the <see cref="SecureIdentifier"/> key.
+        /// </summary>
+        /// <value>The secure identifier key.</value>
+        [ConfigurationProperty("secureIdentifierKey", DefaultValue = null, IsRequired = false)]
+        [CanBeNull]
+        public string SecureIdentifierKey
+        {
+            get { return GetProperty<string>("secureIdentifierKey"); }
+            set { SetProperty("secureIdentifierKey", value); }
+
+        }
+
+        /// <summary>
         /// Gets the raw XML representation of this section.
         /// </summary>
         internal string RawXml
@@ -103,6 +116,22 @@ namespace WebApplications.Utilities.Cryptography.Configuration
                 return xml.ToString();
             }
         }
+
+        /// <summary>
+        /// Get the <see cref="ICryptoProvider"/> with the <see paramref="index">specified index</see>.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>A <see cref="ICryptoProvider"/> if found; otherwise <see langword="null"/>.</returns>
+        [CanBeNull]
+        public ICryptoProvider Provider(int index) => Providers[index]?.Provider;
+
+        /// <summary>
+        /// Get the <see cref="ICryptoProvider"/> with the <see paramref="id">specified identifier</see>.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>A <see cref="ICryptoProvider"/> if found; otherwise <see langword="null"/>.</returns>
+        [CanBeNull]
+        public ICryptoProvider Provider(string id) => !string.IsNullOrEmpty(id) ? Providers[id]?.Provider : null;
 
         /// <summary>
         /// Used to initialize a default set of values for the <see cref="CryptographyConfiguration"/> object.

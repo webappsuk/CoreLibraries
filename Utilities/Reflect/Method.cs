@@ -229,7 +229,7 @@ namespace WebApplications.Utilities.Reflect
 
             // Create closed method, cache it and return.
             // ReSharper disable once AssignNullToNotNullAttribute
-            string key = String.Join("|", gta.Select(t => ExtendedType.Get(t).Signature));
+            string key = string.Join("|", gta.Select(t => ExtendedType.Get(t).Signature));
 
             Debug.Assert(_closedMethods.Value != null);
             return _closedMethods.Value.GetOrAdd(

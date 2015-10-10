@@ -449,7 +449,7 @@ namespace WebApplications.Utilities.Caching
             /// </returns>
             public override string ToString()
             {
-                return String.Format("{0} {1}", Value, IsExpired ? " (EXPIRED)" : String.Empty);
+                return string.Format("{0} {1}", Value, IsExpired ? " (EXPIRED)" : string.Empty);
             }
         }
         #endregion

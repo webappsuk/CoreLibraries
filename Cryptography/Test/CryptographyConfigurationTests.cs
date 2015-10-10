@@ -31,7 +31,7 @@ using WebApplications.Utilities.Cryptography.Configuration;
 namespace WebApplications.Utilities.Cryptography.Test
 {
     [TestClass]
-    public class CryptographyConfigurationTests : SerializationTestBase
+    public class CryptographyConfigurationTests : CryptographyTestBase
     {
         [TestMethod]
         public void Active_ReturnsActiveInstance()

@@ -29,6 +29,7 @@
 using System;
 using System.Runtime.Serialization;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Cryptography.Configuration;
 
 #endregion
 
@@ -57,7 +58,7 @@ namespace WebApplications.Utilities.Cryptography
         private const string TagValue = "Value";
 
         [NotNull]
-        private readonly CryptoProviderWrapper _cryptoProviderWrapper;
+        private readonly ICryptoProvider _provider;
 
         /// <summary>
         /// Flag indicating which value (if either) is out of date
@@ -77,19 +78,20 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// Initializes a new instance of the <see cref="EncryptedString"/> class.
         /// </summary>
-        /// <param name="cryptoProviderWrapper">The crypto provider wrapper.</param>
+        /// <param name="provider">The cryptography provider.</param>
         /// <param name="value">The value.</param>
         /// <param name="isEncrypted">if set to <see langword="true"/> is encrypted.</param>
         /// <param name="isHidden">if set to <see langword="true"/> is hidden.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="provider"/> is <see langword="null" />.</exception>
         public EncryptedString(
-            [NotNull] CryptoProviderWrapper cryptoProviderWrapper,
+            [NotNull] ICryptoProvider provider,
             string value = null,
             bool isEncrypted = false,
             bool isHidden = false)
         {
-            if (cryptoProviderWrapper == null) throw new ArgumentNullException("cryptoProviderWrapper");
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
 
-            _cryptoProviderWrapper = cryptoProviderWrapper;
+            _provider = provider;
             if (isEncrypted)
                 Encrypted = value;
             else
@@ -104,7 +106,13 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="context">The context.</param>
         private EncryptedString([NotNull] SerializationInfo info, StreamingContext context)
         {
-            _cryptoProviderWrapper = new CryptoProviderWrapper(info.GetString(TagID));
+            string providerId = info.GetString(TagID);
+            ICryptoProvider provider = CryptographyConfiguration.Active.Provider(providerId);
+
+            if (provider == null)
+                throw new SerializationException(string.Format(Resources.EncryptedString_EncryptedString_InvalidProviderId, providerId));
+
+            _provider = provider;
             Encrypted = info.GetString(TagValue);
             Hidden = info.GetBoolean(TagHidden);
         }
@@ -130,7 +138,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (_dirty == Dirty.Encrypted)
                 {
                     _encrypted = !string.IsNullOrEmpty(_unencrypted)
-                        ? _cryptoProviderWrapper.Encrypt(_unencrypted)
+                        ? _provider.Encrypt(_unencrypted)
                         : _unencrypted;
                     _dirty = Dirty.Neither;
                 }
@@ -164,7 +172,7 @@ namespace WebApplications.Utilities.Cryptography
                 {
                     bool latestKey;
                     _unencrypted = !string.IsNullOrEmpty(_encrypted)
-                        ? _cryptoProviderWrapper.Decrypt(_encrypted, out latestKey)
+                        ? _provider.Decrypt(_encrypted, out latestKey)
                         : _encrypted;
                     _dirty = Dirty.Neither;
                 }
@@ -222,22 +230,14 @@ namespace WebApplications.Utilities.Cryptography
         }
         #endregion
 
-        #region ISerializable Members
-        /// <summary>
-        ///                     Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize the target object.
-        /// </summary>
-        /// <param name="info">
-        ///                     The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data. 
-        ///                 </param>
-        /// <param name="context">
-        ///                     The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext" />) for this serialization. 
-        ///                 </param>
-        /// <exception cref="T:System.Security.SecurityException">
-        ///                     The caller does not have the required permission. 
-        ///                 </exception>
+        #region ISerializable Members        
+        /// <inheritdoc />
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(TagID, _cryptoProviderWrapper.ID);
+            if (string.IsNullOrEmpty(_provider.Id))
+                throw new SerializationException(Resources.EncryptedString_GetObjectData_No_Provider_Id);
+
+            info.AddValue(TagID, _provider.Id);
             info.AddValue(TagValue, Encrypted);
             info.AddValue(TagHidden, Hidden);
         }

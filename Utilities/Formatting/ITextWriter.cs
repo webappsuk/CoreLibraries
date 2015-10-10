@@ -63,7 +63,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The new line.</value>
         /// <returns>The line terminator string for the current TextWriter.</returns>
-        String NewLine { get; set; }
+        string NewLine { get; set; }
 
         /// <summary>
         /// Closes the current writer and releases any system resources associated with the writer.
@@ -141,26 +141,26 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the text representation of a decimal value to the text string or stream.
         /// </summary>
         /// <param name="value">The decimal value to write.</param>
-        void Write(Decimal value);
+        void Write(decimal value);
 
         /// <summary>
         /// Writes a string to the text string or stream.
         /// </summary>
         /// <param name="value">The string to write.</param>
-        void Write(String value);
+        void Write(string value);
 
         /// <summary>
         /// Writes the text representation of an object to the text string or stream by calling the ToString method on that object.
         /// </summary>
         /// <param name="value">The object to write.</param>
-        void Write(Object value);
+        void Write(object value);
 
         /// <summary>
         /// Writes a formatted string to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object)" /> method.
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The object to format and write.</param>
-        void Write(String format, Object arg0);
+        void Write(string format, object arg0);
 
         /// <summary>
         /// Writes a formatted string to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object,System.Object)" /> method.
@@ -168,7 +168,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
-        void Write(String format, Object arg0, Object arg1);
+        void Write(string format, object arg0, object arg1);
 
         /// <summary>
         /// Writes a formatted string to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object,System.Object,System.Object)" /> method.
@@ -177,14 +177,14 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
         /// <param name="arg2">The third object to format and write.</param>
-        void Write(String format, Object arg0, Object arg1, Object arg2);
+        void Write(string format, object arg0, object arg1, object arg2);
 
         /// <summary>
         /// Writes a formatted string to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object[])" /> method.
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
-        void Write(String format, params Object[] arg);
+        void Write(string format, params object[] arg);
 
         /// <summary>
         /// Writes a line terminator to the text string or stream.
@@ -263,20 +263,20 @@ namespace WebApplications.Utilities.Formatting
         /// Writes a string followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        void WriteLine([NotNull] String value);
+        void WriteLine([NotNull] string value);
 
         /// <summary>
         /// Writes the text representation of an object by calling the ToString method on that object, followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The object to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        void WriteLine([NotNull] Object value);
+        void WriteLine([NotNull] object value);
 
         /// <summary>
         /// Writes a formatted string and a new line to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object)" /> method.
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The object to format and write.</param>
-        void WriteLine([NotNull] String format, [NotNull] Object arg0);
+        void WriteLine([NotNull] string format, [NotNull] object arg0);
 
         /// <summary>
         /// Writes a formatted string and a new line to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object,System.Object)" /> method.
@@ -284,7 +284,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
-        void WriteLine([NotNull] String format, [NotNull] Object arg0, [NotNull] Object arg1);
+        void WriteLine([NotNull] string format, [NotNull] object arg0, [NotNull] object arg1);
 
         /// <summary>
         /// Writes out a formatted string and a new line, using the same semantics as <see cref="M:System.String.Format(System.String,System.Object)" />.
@@ -293,14 +293,14 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
         /// <param name="arg2">The third object to format and write.</param>
-        void WriteLine([NotNull] String format, [NotNull] Object arg0, [NotNull] Object arg1, [NotNull] Object arg2);
+        void WriteLine([NotNull] string format, [NotNull] object arg0, [NotNull] object arg1, [NotNull] object arg2);
 
         /// <summary>
         /// Writes out a formatted string and a new line, using the same semantics as <see cref="M:System.String.Format(System.String,System.Object)" />.
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
-        void WriteLine([NotNull] String format, [NotNull] params Object[] arg);
+        void WriteLine([NotNull] string format, [NotNull] params object[] arg);
 
         /// <summary>
         /// Writes a character to the text string or stream asynchronously.
@@ -318,7 +318,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        Task WriteAsync([NotNull] String value);
+        Task WriteAsync([NotNull] string value);
 
         /// <summary>
         /// Writes a subarray of characters to the text string or stream asynchronously.
@@ -347,7 +347,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A task that represents the asynchronous write operation.</returns>
         [NotNull]
         [ComVisible(false)]
-        Task WriteLineAsync([NotNull] String value);
+        Task WriteLineAsync([NotNull] string value);
 
         /// <summary>
         /// Writes a subarray of characters followed by a line terminator asynchronously to the text string or stream.

@@ -194,7 +194,7 @@ namespace WebApplications.Utilities
             {
                 if (_length > int.MaxValue)
                     throw new InvalidOperationException(
-                        String.Format("Count '{0}' is too big to be expressed as an interger.", _length));
+                        string.Format("Count '{0}' is too big to be expressed as an interger.", _length));
                 return (int)_length;
             }
         }
@@ -246,7 +246,7 @@ namespace WebApplications.Utilities
                 return -1;
             if (index > int.MaxValue)
                 throw new InvalidOperationException(
-                    String.Format("Index '{0}' is too big to be expressed as an interger.", index));
+                    string.Format("Index '{0}' is too big to be expressed as an interger.", index));
             return (int)index;
         }
 
@@ -306,7 +306,7 @@ namespace WebApplications.Utilities
             if (o == null ||
                 _length != o._length)
                 throw new ArgumentException(
-                    String.Format("The other must be a BigArray of type '{0}'.", typeof(T)),
+                    string.Format("The other must be a BigArray of type '{0}'.", typeof(T)),
                     "other");
 
             ulong i = 0;

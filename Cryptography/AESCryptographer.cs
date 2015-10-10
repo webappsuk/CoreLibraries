@@ -27,14 +27,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Web;
-using System.Web.Configuration;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Cryptography.Configuration;
 
@@ -44,11 +41,12 @@ namespace WebApplications.Utilities.Cryptography
     /// Allows encryption and decryption using the Advanced Encryption Standard (AES).
     /// </summary>
     [PublicAPI]
-    public class AESCryptographer : IEncryptorDecryptor
+    public class AESCryptographer : ICryptoProvider
     {
         /// <summary>
         /// The corresponding <see cref="ProviderElement"/> (if any) to access configuration data.
         /// </summary>
+        [CanBeNull]
         private readonly ProviderElement _provider;
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace WebApplications.Utilities.Cryptography
         /// Initializes a new instance of the <see cref="AESCryptographer"/> class.
         /// </summary>
         /// <param name="keys">The keys to add to this provider.</param>
-        internal AESCryptographer(IEnumerable<Key> keys = null)
+        public AESCryptographer(IEnumerable<Key> keys = null)
         {
             if (keys == null)
                 return;
@@ -74,12 +72,12 @@ namespace WebApplications.Utilities.Cryptography
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RSACryptographer"/> class.
+        /// Initializes a new instance of the <see cref="RSACryptographer" /> class.
         /// </summary>
         /// <param name="provider">The provider element.</param>
         /// <param name="keys">The keys to add to this provider.</param>
         [UsedImplicitly]
-        internal AESCryptographer(ProviderElement provider, IEnumerable<Key> keys = null)
+        private AESCryptographer([NotNull] ProviderElement provider, IEnumerable<Key> keys = null)
         {
             _provider = provider;
 
@@ -92,16 +90,10 @@ namespace WebApplications.Utilities.Cryptography
             // ReSharper restore PossibleNullReferenceException
         }
 
-        #region IEncryptorDecryptor Members
-        /// <summary>
-        /// Encrypts the specified input into a Base32 <see cref="string"/>.
-        /// </summary>
-        /// <param name="input">The string to encrypt.</param>
-        /// <returns>The result of the encryption.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="input"/> is <see langword="null"/>.
-        /// </exception>
-        /// <seealso cref="Base32EncoderDecoder"/>
+        /// <inheritdoc />
+        public string Id => _provider?.Id;
+
+        /// <inheritdoc />
         public string Encrypt(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -138,7 +130,10 @@ namespace WebApplications.Utilities.Cryptography
 
                     encryptionKey = new Key(value, expiry);
 
-                    WriteEncryptionKeyToConfiguration(encryptionKey);
+                    _aesEncryptionKeys.Add(encryptionKey);
+                    _aesEncryptionKeys = _aesEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
+
+                    _provider?.AddKey(encryptionKey);
                 }
 
                 Debug.Assert(encryptionKey != null);
@@ -148,21 +143,7 @@ namespace WebApplications.Utilities.Cryptography
             }
         }
 
-        /// <summary>
-        /// Decrypts the specified base32 <see cref="string"/>.
-        /// </summary>
-        /// <param name="input">The base32 encoded string to decrypt.</param>
-        /// <param name="isLatestKey">
-        /// <see langword="true"/> if the encryption was with the latest key; otherwise <see langword="false"/>.
-        /// </param>
-        /// <returns>The result of the decryption.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="input"/> was <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="NotImplementedException">
-        /// The code was unable to decrypt the provided <paramref name="input"/>.
-        /// </exception>
-        /// <seealso cref="Base32EncoderDecoder"/>
+        /// <inheritdoc />
         public string Decrypt(string input, out bool isLatestKey)
         {
             isLatestKey = false;
@@ -251,7 +232,6 @@ namespace WebApplications.Utilities.Cryptography
                 return false;
             }
         }
-        #endregion
 
         /// <summary>
         /// Encrypts the provided input <see cref="string"/> to an array of <see cref="byte"/>s.
@@ -401,51 +381,6 @@ namespace WebApplications.Utilities.Cryptography
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Writes the encryption keys to the configuration file.
-        /// </summary>
-        /// <param name="newKey">The new key to add to the configuration file.</param>
-        private void WriteEncryptionKeyToConfiguration([NotNull] Key newKey)
-        {
-            if (newKey == null) throw new ArgumentNullException("newKey");
-
-            _aesEncryptionKeys.Add(newKey);
-            _aesEncryptionKeys = _aesEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
-
-            // If the ProviderElement is null we cannot save to the configuration.
-            if (_provider == null)
-                return;
-
-            // Create a key element to add to the provider element.
-            KeyElement newKeyElement = new KeyElement
-            {
-                Value = newKey.Value,
-                Expiry = newKey.Expiry
-            };
-
-            _provider.Keys.Add(newKeyElement);
-
-            SaveConfiguration();
-        }
-
-        /// <summary>
-        /// Saves the current configuration to the configuration file.
-        /// </summary>
-        private static void SaveConfiguration()
-        {
-            // Get the configuration object with the purpose of saving the new XML to the configuration file.
-            System.Configuration.Configuration configurationObject = HttpContext.Current == null
-                ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-                : WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
-
-            // Get the <cryptography> section and set the raw XML.
-            ConfigurationSection cryptographySection = configurationObject.GetSection("cryptography");
-            Debug.Assert(cryptographySection != null);
-            cryptographySection.SectionInformation.SetRawXml(CryptographyConfiguration.Active.RawXml);
-
-            configurationObject.Save(ConfigurationSaveMode.Minimal);
         }
 
         /// <summary>

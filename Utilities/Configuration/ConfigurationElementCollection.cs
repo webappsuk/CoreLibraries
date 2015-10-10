@@ -64,7 +64,7 @@ namespace WebApplications.Utilities.Configuration
                     TKey elementKey = GetElementKey(value);
                     if (!key.Equals(elementKey))
                         throw new InvalidOperationException(
-                            String.Format(
+                            string.Format(
                                 // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.ConfigurationElementCollection_SetElement_KeyMismatch,
                                 key,

@@ -34,14 +34,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AESCryptographerTests.cs" />
-    <Compile Include="CryptoProviderWrapperTests.cs" />
+    <Compile Include="CryptoProviderTests.cs" />
     <Compile Include="KeyElementTests.cs" />
     <Compile Include="PBKDF2Tests.cs" />
     <Compile Include="ProviderElementTests.cs" />
     <Compile Include="RSACryptographerTests.cs" />
     <Compile Include="CryptographyConfigurationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializationTestBase.cs" />
+    <Compile Include="CryptographyTestBase.cs" />
     <Compile Include="TestXmlEncryption.cs" />
   </ItemGroup>
   <ItemGroup>

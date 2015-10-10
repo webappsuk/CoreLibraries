@@ -93,8 +93,7 @@ namespace WebApplications.Utilities.Configuration
             await Task.Delay(100).ConfigureAwait(false);
 
             EventHandler handler = Changed;
-            if (handler != null)
-                handler(_configWatcher, EventArgs.Empty);
+            handler?.Invoke(_configWatcher, EventArgs.Empty);
         }
     }
 }

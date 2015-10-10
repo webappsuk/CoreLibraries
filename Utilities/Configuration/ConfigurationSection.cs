@@ -79,7 +79,7 @@ namespace WebApplications.Utilities.Configuration
 
                     string sectionName = attribute != null ? attribute.Name : null;
 
-                    if (!String.IsNullOrEmpty(sectionName))
+                    if (!string.IsNullOrEmpty(sectionName))
                         return sectionName;
 
                     // Get type name (after last '.')

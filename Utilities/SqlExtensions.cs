@@ -300,7 +300,7 @@ namespace WebApplications.Utilities
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
-            [NotNull] IEnumerable<Int64> enumerable,
+            [NotNull] IEnumerable<long> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -470,7 +470,7 @@ namespace WebApplications.Utilities
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
-            [NotNull] IEnumerable<Decimal> enumerable,
+            [NotNull] IEnumerable<decimal> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -502,7 +502,7 @@ namespace WebApplications.Utilities
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
-            [NotNull] IEnumerable<Double> enumerable,
+            [NotNull] IEnumerable<double> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -566,7 +566,7 @@ namespace WebApplications.Utilities
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
-            [NotNull] IEnumerable<Single> enumerable,
+            [NotNull] IEnumerable<float> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -630,7 +630,7 @@ namespace WebApplications.Utilities
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
-            [NotNull] IEnumerable<Int16> enumerable,
+            [NotNull] IEnumerable<short> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -662,7 +662,7 @@ namespace WebApplications.Utilities
         public static SqlParameter AddWithValue(
             [NotNull] this SqlParameterCollection sqlParameterCollection,
             [NotNull] string parameterName,
-            [NotNull] IEnumerable<Byte> enumerable,
+            [NotNull] IEnumerable<byte> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -899,7 +899,7 @@ namespace WebApplications.Utilities
         /// </exception>
         [NotNull]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            [NotNull] this IEnumerable<Int64> enumerable,
+            [NotNull] this IEnumerable<long> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -1019,7 +1019,7 @@ namespace WebApplications.Utilities
         /// </exception>
         [NotNull]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            [NotNull] this IEnumerable<Decimal> enumerable,
+            [NotNull] this IEnumerable<decimal> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -1042,7 +1042,7 @@ namespace WebApplications.Utilities
         /// </exception>
         [NotNull]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            [NotNull] this IEnumerable<Double> enumerable,
+            [NotNull] this IEnumerable<double> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -1088,7 +1088,7 @@ namespace WebApplications.Utilities
         /// </exception>
         [NotNull]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            [NotNull] this IEnumerable<Single> enumerable,
+            [NotNull] this IEnumerable<float> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -1134,7 +1134,7 @@ namespace WebApplications.Utilities
         /// </exception>
         [NotNull]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            [NotNull] this IEnumerable<Int16> enumerable,
+            [NotNull] this IEnumerable<short> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (columnName == null) throw new ArgumentNullException(nameof(columnName));
@@ -1157,7 +1157,7 @@ namespace WebApplications.Utilities
         /// </exception>
         [NotNull]
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            [NotNull] this IEnumerable<Byte> enumerable,
+            [NotNull] this IEnumerable<byte> enumerable,
             [NotNull] string columnName = "Value")
         {
             if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
@@ -1197,7 +1197,7 @@ namespace WebApplications.Utilities
                 value = enumerable.Select(
                     o =>
                     {
-                        Object obj = o;
+                        object obj = o;
                         SqlDataRecord record = new SqlDataRecord(metaData);
                         // ReSharper disable once AssignNullToNotNullAttribute
                         record.SetValue(0, (checkNulls && obj == null) ? DBNull.Value : obj);

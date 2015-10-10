@@ -949,7 +949,7 @@ namespace WebApplications.Utilities
                                 default:
                                     // We are only allowed +ve integers, so the builder can have a maximum of 10 characters, and must contain digits.
                                     if ((builder.Length > 9) ||
-                                        !Char.IsDigit(c))
+                                        !char.IsDigit(c))
                                         return false;
                                     builder.Append(c);
                                     break;

@@ -31,19 +31,19 @@
     <Compile Include="Configuration\ProviderCollection.cs" />
     <Compile Include="Configuration\ProviderElement.cs" />
     <Compile Include="HashAlgorithmExtensions.cs" />
-    <Compile Include="IEncryptorDecryptor.cs" />
+    <Compile Include="ICryptoProvider.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="PBKDF2.cs" />
     <Compile Include="RSACryptographer.cs" />
     <Compile Include="Configuration\CryptographyConfiguration.cs" />
     <Compile Include="EncryptedString.cs" />
-    <Compile Include="CryptoProviderWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SecureIdentifier.cs" />
     <Compile Include="XmlCryptoExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

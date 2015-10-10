@@ -32,7 +32,7 @@ using WebApplications.Utilities.Cryptography.Configuration;
 namespace WebApplications.Utilities.Cryptography.Test
 {
     [TestClass]
-    public class ProviderElementTests : SerializationTestBase
+    public class ProviderElementTests : CryptographyTestBase
     {
         private ProviderElement _providerElement;
 

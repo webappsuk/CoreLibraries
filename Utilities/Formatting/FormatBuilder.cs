@@ -2967,7 +2967,7 @@ namespace WebApplications.Utilities.Formatting
                     coloredTextWriter.ResetColors();
                     return true;
                 case ForegroundColorTag:
-                    if (String.IsNullOrWhiteSpace(chunk.Format))
+                    if (string.IsNullOrWhiteSpace(chunk.Format))
                         coloredTextWriter.ResetForegroundColor();
                     else if (chunk.IsResolved &&
                              chunk.Value is Color)
@@ -2981,7 +2981,7 @@ namespace WebApplications.Utilities.Formatting
                     }
                     return true;
                 case BackgroundColorTag:
-                    if (String.IsNullOrWhiteSpace(chunk.Format))
+                    if (string.IsNullOrWhiteSpace(chunk.Format))
                         coloredTextWriter.ResetBackgroundColor();
                     else if (chunk.IsResolved &&
                              chunk.Value is Color)

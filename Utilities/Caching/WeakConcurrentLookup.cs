@@ -372,7 +372,7 @@ namespace WebApplications.Utilities.Caching
             /// Gets the key that corresponds to this group.
             /// </summary>
             [NotNull]
-            public TKey Key { get; private set; }
+            public TKey Key { get; }
             #endregion
 
             /// <summary>

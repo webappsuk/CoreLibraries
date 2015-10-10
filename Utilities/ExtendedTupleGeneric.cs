@@ -79,7 +79,7 @@ namespace WebApplications.Utilities
                 (!tupleType.FullName.StartsWith("System.Tuple`")))
                 // ReSharper restore PossibleNullReferenceException
                 throw new InvalidOperationException(
-                    String.Format(
+                    string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ExtendedTuple_TypeIsNotValidTuple,
                         typeof(T)));
@@ -110,7 +110,7 @@ namespace WebApplications.Utilities
                 if (size > 8)
                     throw new InvalidOperationException(
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        String.Format(Resources.ExtendedTuple_MoreThanEightGenericArguments, tupleType));
+                        string.Format(Resources.ExtendedTuple_MoreThanEightGenericArguments, tupleType));
 
                 recurse = false;
                 // Add a switch case for each tuple 

@@ -1191,7 +1191,7 @@ namespace WebApplications.Utilities
             {
                 Visit(node.Arguments[0]);
                 VisitMethod(
-                     String.Empty, 
+                     string.Empty, 
                      Array<Type>.Empty,
                      node.Arguments.Skip(1).ToArray(),
                      "(",
@@ -1203,7 +1203,7 @@ namespace WebApplications.Utilities
                 Out("new ");
                 Visit(node.Arguments[0]);
                 VisitMethod(
-                     String.Empty,
+                     string.Empty,
                      Array<Type>.Empty,
                      node.Arguments.Skip(1).ToArray(),
                      "(",
@@ -2317,7 +2317,7 @@ namespace WebApplications.Utilities
             if (type == typeof(float)) return ((float)value).ToString("R", CultureInfo.InvariantCulture) + "F";
             if (type == typeof(double)) return ((double)value).ToString("R", CultureInfo.InvariantCulture) + "D";
             if (type == typeof(bool)) return (bool)value ? "true" : "false";
-            if (type == typeof(char)) return "'" + Char.ToString((char)value).Escape() + "'";
+            if (type == typeof(char)) return "'" + char.ToString((char)value).Escape() + "'";
             if (type.DescendsFrom<Type>()) return "typeof(" + GetTypeName((Type)value) + ")";
             if (type.DescendsFrom<Enum>())
             {
