@@ -101,9 +101,6 @@
     <!-- Standard includes -->
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 
-    <!-- When running from internal build server, this will digitally sign dlls -->
-    <Import Project="$(SlnDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SlnDir)..\WebApplicationsSignature.targets')" />
-
     <!-- NuGet package restore -->
     <Import Project="$(SlnDir).nuget\NuGet.targets" Condition="Exists('$(SlnDir)\.nuget\NuGet.targets')" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -167,6 +164,10 @@
     <ItemGroup Condition="$(DefineConstants.Contains('CopyResources'))">
       <ResourceFiles Include="$(SlnDir)Utilities\Resources\**\*" />
     </ItemGroup>
+    
+    <!-- When running from internal build server, this will digitally sign dlls -->
+    <Import Project="$(SlnDir)..\WebApplicationsSignature.targets" Condition="Exists('$(SlnDir)..\WebApplicationsSignature.targets')" />
+    
     <Target Name="CopyResources" AfterTargets="AfterBuild" Condition="$(DefineConstants.Contains('CopyResources'))">
       <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)Resources\%(RecursiveDir)" />
     </Target>
