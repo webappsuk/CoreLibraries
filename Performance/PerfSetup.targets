@@ -1,31 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <PerfSetupTool Condition="!Exists('$(PerfSetupTool)')">$(MSBuildThisFileDirectory)PerfSetup32.exe</PerfSetupTool>
-    <PerfSetupPath>$(TargetDir)</PerfSetupPath>
-	<RunPerfSetup Condition="'$(RunPerfSetup)' == ''">true</RunPerfSetup>
-  </PropertyGroup>
+  <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+      <PerfSetupTool Condition="'$(PerfSetupTool)' == ''">$(MSBuildThisFileDirectory)PerfSetup32.exe</PerfSetupTool>
+      <PerfSetupPath Condition="'$(PerfSetupPath)' == ''">$(TargetDir)</PerfSetupPath>
+      <RunPerfSetup Condition="'$(RunPerfSetup)' == ''">true</RunPerfSetup>
+    </PropertyGroup>
 
-  <UsingTask TaskName="PerfSetupTask"
-             AssemblyFile="$(PerfSetupTool)" />
+    <UsingTask TaskName="PerfSetupTask" AssemblyFile="$(PerfSetupTool)" />
 
-  <Target Name="CheckPrerequisites">
-    <!-- Raise an error if we're unable to locate PerfSetup.exe  -->
-    <Error Condition="!Exists('$(PerfSetupTool)')" Text="Unable to locate '$(PerfSetupTool)'" />
-  </Target>
+    <Target Name="CheckPerfSetupPrerequisites" Condition="'$(BuildingProject)'=='true' AND '$(RunPerfSetup)' == 'true'">
+      <!-- Raise an error if we're unable to locate PerfSetup.exe  -->
+      <Error Condition="!Exists('$(PerfSetupTool)')" Text="Unable to locate the PerfSetup tool '$(PerfSetupTool)'." />
+    </Target>
 
-  <Target Name="PerfSetupTarget"
-           Condition="'$(BuildingProject)'=='true' AND Exists('$(PerfSetupTool)') AND '$(RunPerfSetup)' == 'true'">
-    <PerfSetupTask
-       Mode="Add"
-       Path="$(PerfSetupPath)"/>
-  </Target>
-
-  <!-- Introduces PerfSetup after Build -->
-  <PropertyGroup>
-    <BuildDependsOn>
-      $(BuildDependsOn);
-      PerfSetupTarget
-    </BuildDependsOn>
-  </PropertyGroup>
-</Project>
+    <!-- Run perfsetup when in admin mode -->
+    <Target Name="PerfSetupTarget" Condition="'$(BuildingProject)'=='true' AND '$(RunPerfSetup)' == 'true' AND Exists('$(PerfSetupPath)')" AfterTargets="AfterBuild" DependsOnTargets="CheckPerfSetupPrerequisites">
+      <!-- Detect admin permissions -->
+      <Exec ContinueOnError="True" IgnoreExitCode="True" IgnoreStandardErrorWarningFormat="True" Command="net session >nul 2>&amp;1">
+        <Output TaskParameter="ExitCode" PropertyName="NotAdmin" />
+      </Exec>
+      <Warning Text="Could not set up performance counters as not running in administrator mode." Condition="'$(NotAdmin)' != '0'" />
+      <PerfSetupTask Mode="Add" Path="$(PerfSetupPath)" Condition="'$(NotAdmin)' == '0'" />
+    </Target>
+  </Project>

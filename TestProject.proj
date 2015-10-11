@@ -37,5 +37,12 @@
       <TestSplit>@(MergeAsm)</TestSplit>
     </PropertyGroup>
     <Message Condition="$(TestSplit.Contains(';'))" Text ="First: $(TestSplit.Substring(0, $(TestSplit.IndexOf(';'))))" />
+    
+    <!-- Detect admin permissions -->
+    <Exec ContinueOnError="True" Command="net session >nul 2>&amp;1">
+       <Output TaskParameter="ExitCode" PropertyName="NotAdmin"/>
+    </Exec>
+    
+    <Message Text="NotAdmin: $(NotAdmin)"/>
   </Target>
 </Project>
