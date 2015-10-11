@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
+using System;
 using WebApplications.Testing;
 using WebApplications.Utilities.Annotations;
 
@@ -221,11 +221,12 @@ namespace WebApplications.Utilities.Test.Ranges
         }
 
         /// <summary>
-        /// Gets the approximate result of dividing a <paramref name="period"/> by a number.
+        /// Gets the approximate result of dividing a <paramref name="period" /> by a number.
         /// </summary>
         /// <param name="period">The period.</param>
         /// <param name="divisor">The divisor.</param>
-        /// <returns></returns>
+        /// <param name="hasTime">if set to <c>true</c> <see paramref="period"/> includes a time element (hours/minutes/seconds).</param>
+        /// <returns>Period.</returns>
         [NotNull]
         protected static Period PeriodDivideApprox([NotNull] Period period, int divisor, bool hasTime = true)
         {

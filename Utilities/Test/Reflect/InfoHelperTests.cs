@@ -25,10 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Reflect;
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
@@ -40,7 +40,9 @@ namespace WebApplications.Utilities.Test.Reflect
     [TestClass]
     public class InfoHelperTests : UtilitiesTestBase
     {
+#pragma warning disable 0649
         private InfoHelperClass _helper;
+#pragma warning restore 0649
 
         #region GetMethodInfo(Action)
         [TestMethod]
@@ -236,7 +238,7 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNotNull(info);
             Assert.AreEqual(info.Name, "IntMethod");
         }
-        
+
         [TestMethod]
         public void GetMethodInfo_FuncInstance_Invalid()
         {
@@ -710,9 +712,9 @@ namespace WebApplications.Utilities.Test.Reflect
 
         public void VoidMethod()
         {
-            
+
         }
-        
+
         public string StringMethod()
         {
             return null;

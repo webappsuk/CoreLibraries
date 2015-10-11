@@ -20,13 +20,13 @@
 // © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
 #endregion
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using WebApplications.Utilities.Annotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
+using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database.Test
@@ -96,9 +96,7 @@ namespace WebApplications.Utilities.Database.Test
         /// Creates the connection string.
         /// </summary>
         /// <param name="databaseName">Name of the database.</param>
-        /// <param name="isAsync">if set to <see langword="true"/> allows asynchronous processing.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <returns>System.String.</returns>
         [NotNull]
         protected static string CreateConnectionString(string databaseName)
         {

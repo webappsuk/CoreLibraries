@@ -186,6 +186,7 @@ namespace WebApplications.Utilities.Database.Test
         {
             int rowCount = 0;
 
+#pragma warning disable 1998
             await Task.WhenAll(
                 Enumerable.Range(0, Loops)
                     .Select(
@@ -232,6 +233,8 @@ namespace WebApplications.Utilities.Database.Test
                                 }
                             }
                         }));
+
+#pragma warning restore 1998
 
             Assert.AreEqual(Loops, rowCount, "Loop count and row count should be equal");
 

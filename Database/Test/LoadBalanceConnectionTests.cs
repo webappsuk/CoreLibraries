@@ -1,11 +1,9 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Security;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database.Test
@@ -72,7 +70,7 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        public async Task CreateConnection_WithNoParameters_ReturnsSqlConnection()
+        public void CreateConnection_WithNoParameters_ReturnsSqlConnection()
         {
             LoadBalancedConnection loadBalancedConnection =
                 new LoadBalancedConnection(CreateConnectionString("LocalData"));
