@@ -21,10 +21,4 @@
       </group>
     </references>
   </metadata>
-  <files>
-    <file src="ServiceClient\bin\NuGet\AnyCPU\ServiceClient.exe" target="lib\net452\" />
-    <file src="ServiceClient\bin\NuGet\AnyCPU\ServiceClient.exe.config" target="lib\net452\" />
-    <file src="WebApplications.Utilities.Service.Client\bin\NuGet\AnyCPU\WebApplications.Utilities.Service.Client.dll" target="lib\net452\" />
-    <file src="WebApplications.Utilities.Service.Common\bin\NuGet\AnyCPU\WebApplications.Utilities.Service.Common.dll" target="lib\net452\" />
-  </files>
 </package>

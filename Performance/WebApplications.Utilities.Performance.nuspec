@@ -25,7 +25,7 @@
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
     <file src="PerfSetup.targets" target="build\$id$.targets" />
-    <file src="..\bin\PerfSetup32.exe" target="build" />
-    <file src="..\bin\PerfSetup64.exe" target="build" />
+    <file src="PerfSetup\bin\Release\Merged\PerfSetup32.exe" target="build" />
+    <file src="PerfSetup\bin\Release\Merged\PerfSetup64.exe" target="build" />
   </files>
 </package>

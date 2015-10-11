@@ -171,6 +171,18 @@
       <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)Resources\%(RecursiveDir)" />
     </Target>
 
+    <!-- Setup nugets folder -->
+    <Target Name="SetupNuGetsDirTarget" Condition="'$(Configuration)' == 'NuGet'" BeforeTargets="BuildPackage">
+      <!-- Ensure we have a nugets folder -->
+      <MakeDir Directories="$(SlnDir)nugets" Condition="!Exists('$(SlnDir)nugets')" />
+      
+      <!-- Check for existing packages matching this one and delete -->
+      <ItemGroup>
+        <DeletePackage Include="$(SlnDir)nugets\$([System.IO.Path]::GetFileNameWithoutExtension('$(ProjectPath)'))*.nupkg" />
+      </ItemGroup>
+      <Delete Files="@(DeletePackage)" Condition="'@(DeletePackage)' != ''" />
+    </Target>
+
     <!-- Build any dependencies-->
     <Target Name="BuildDependencies" Condition="'@(ProjectsToBuild)' != ''" AfterTargets="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
       <Message Text="Building dependencies." />

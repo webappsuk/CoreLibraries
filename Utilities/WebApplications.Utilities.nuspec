@@ -22,7 +22,7 @@
     </references>
   </metadata>
   <files>
-    <file src="..\bin\WebApplications.Utilities.BuildTasks.dll" target="build\WebApplications.Utilities.BuildTasks.dll" />
+    <file src="BuildTasks\bin\Release\AnyCPU\WebApplications.Utilities.BuildTasks.dll" target="build\WebApplications.Utilities.BuildTasks.dll" />
     <file src="Utility.targets" target="build\$id$.targets" />
     <file src="Resources\*.*" target="tools\Resources" />
     <file src="app.config.transform" target="Content" />

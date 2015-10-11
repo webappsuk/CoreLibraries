@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A0713D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpecs", "NuSpecs", "{E0405738-5F57-4FC9-8C4E-9E62ED957E31}"
 	ProjectSection(SolutionItems) = preProject
-		PowerShell\WebApplications.Utilities.PowerShell.Test\Test.nuspec = PowerShell\WebApplications.Utilities.PowerShell.Test\Test.nuspec
+		PowerShell\Test\Test.nuspec = PowerShell\Test\Test.nuspec
 		Testing\WebApplications.Testing.nuspec = Testing\WebApplications.Testing.nuspec
 		Cryptography\WebApplications.Utilities.Cryptography.nuspec = Cryptography\WebApplications.Utilities.Cryptography.nuspec
 		Database\WebApplications.Utilities.Database.nuspec = Database\WebApplications.Utilities.Database.nuspec
