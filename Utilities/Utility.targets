@@ -1,51 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ResourcesPath Condition="!Exists('$(ResourcesPath)')">$(MSBuildThisFileDirectory)..\Tools\Resources\</ResourcesPath>
-    <UtilityBuildTasks Condition="!Exists('$(UtilityBuildTasks)')">$(MSBuildThisFileDirectory)\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
-  </PropertyGroup>
+  <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+      <ResourcesPath Condition="!Exists('$(ResourcesPath)')">$(MSBuildThisFileDirectory)..\Tools\Resources\</ResourcesPath>
+      <UtilityBuildTasks Condition="!Exists('$(UtilityBuildTasks)')">$(MSBuildThisFileDirectory)\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
+    </PropertyGroup>
 
-  <UsingTask TaskName="DownloadFile"
-             AssemblyFile="$(UtilityBuildTasks)" />
-  <UsingTask TaskName="DownloadTZDB"
-             AssemblyFile="$(UtilityBuildTasks)" />
-  <UsingTask TaskName="DownloadCurrencies"
-             AssemblyFile="$(UtilityBuildTasks)" />
+    <UsingTask TaskName="DownloadFile" AssemblyFile="$(UtilityBuildTasks)" />
+    <UsingTask TaskName="DownloadTZDB" AssemblyFile="$(UtilityBuildTasks)" />
+    <UsingTask TaskName="DownloadCurrencies" AssemblyFile="$(UtilityBuildTasks)" />
 
-  <Target Name="CheckPrerequisites">
-    <!-- Raise an error if we're unable to locate the resources  -->
-    <Error Condition="!Exists('$(ResourcesPath)')" Text="Unable to locate '$(ResourcesPath)'" />
-  </Target>
+    <Target Name="CheckUtilityPrerequisites">
+      <!-- Raise an error if we're unable to locate the resources  -->
+      <Error Condition="!Exists('$(ResourcesPath)')" Text="Unable to locate utility resources '$(ResourcesPath)'" />
+    </Target>
 
-  <Target Name="UtilitiesTarget"
-          Condition="'$(BuildingProject)'=='true'"
-          Outputs="@(ResourceFiles)">
+    <Target Name="UtilitiesTarget" Condition="'$(BuildingProject)'=='true'" Outputs="@(ResourceFiles)" DependsOnTargets="CheckUtilityPrerequisites">
 
-    <DownloadTZDB
-      TZDBUri="http://nodatime.org/tzdb/latest.txt"
-      Overwrite="true"
-      OutputFolderPath="$(ResourcesPath)"
-      OutputFileName="tzdb.nzd"
-      Condition="'$(DownloadTZDB)'=='true'"/>
+      <DownloadTZDB TZDBUri="http://nodatime.org/tzdb/latest.txt" Overwrite="true" OutputFolderPath="$(ResourcesPath)" OutputFileName="tzdb.nzd" Condition="'$(DownloadTZDB)'=='true'" />
 
-    <DownloadCurrencies
-      ISO4217Uri="http://www.currency-iso.org/dam/downloads/lists/list_one.xml"
-      OutputFilePath="$(ResourcesPath)iso4217.ccy"
-      Merge="true"
-      Condition="'$(DownloadISO4217)'=='true'"/>
-    
-    <ItemGroup>
-      <ResourceFiles Include="$(ResourcesPath)\**\*"/>
-    </ItemGroup>
-    
-    <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)\Resources\%(RecursiveDir)" />
-  </Target>
+      <DownloadCurrencies ISO4217Uri="http://www.currency-iso.org/dam/downloads/lists/list_one.xml" OutputFilePath="$(ResourcesPath)iso4217.ccy" Merge="true" Condition="'$(DownloadISO4217)'=='true'" />
 
-  <!-- Introduces after Build -->
-  <PropertyGroup>
-    <BuildDependsOn>
-      $(BuildDependsOn);
-      UtilitiesTarget
-    </BuildDependsOn>
-  </PropertyGroup>
-</Project>
+      <ItemGroup>
+        <ResourceFiles Include="$(ResourcesPath)\**\*" />
+      </ItemGroup>
+
+      <Copy SourceFiles="@(ResourceFiles)" DestinationFolder="$(OutputPath)\Resources\%(RecursiveDir)" />
+    </Target>
+
+    <!-- Introduces after Build -->
+    <PropertyGroup>
+      <BuildDependsOn>
+        $(BuildDependsOn); UtilitiesTarget
+      </BuildDependsOn>
+    </PropertyGroup>
+  </Project>

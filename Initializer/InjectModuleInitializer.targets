@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="InjectModuleInitializerTarget" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <InjectModuleInitializerTool Condition="!Exists('$(InjectModuleInitializerTool)')">$(MSBuildThisFileDirectory)WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+    <InjectModuleInitializerTool Condition="'$(InjectModuleInitializerTool)'==''">$(MSBuildThisFileDirectory)WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
     <InjectModuleInitializerTypeName Condition="'$(InjectModuleInitializerTypeName)' == ''">ModuleInitializer</InjectModuleInitializerTypeName>
     <InjectModuleInitializerMethodName Condition="'$(InjectModuleInitializerMethodName)' == ''">Initialize</InjectModuleInitializerMethodName>
   </PropertyGroup>
@@ -20,7 +20,7 @@
 
   <Target Name="CheckInitializerPrerequisits">
     <!-- Raise an error if we're unable to locate WebApplications.Utilities.Initializer.dll  -->
-    <Error Condition="!Exists('$(InjectModuleInitializerTool)')" Text="Unable to locate '$(InjectModuleInitializerTool)'" />
+    <Error Condition="!Exists('$(InjectModuleInitializerTool)')" Text="Unable to locate the module initialisation injection tool '$(InjectModuleInitializerTool)'" />
     <!-- Raise an error if we need to resign and can't find the key -->
     <Error Condition="'$(SignAssembly)'=='true' AND !Exists('$(InjectModuleSnk)')" Text="Could not find the signature file for resigning, module initialisation cannot be performed." />
   </Target>

@@ -16,6 +16,7 @@
       <SlnDir>$(MSBuildThisFileDirectory)</SlnDir>
       <SlnDir Condition="!HasTrailingSlash('$(SlnDir)')">$(SlnDir)\</SlnDir>
       <SolutionDir>$(SlnDir)</SolutionDir>
+      <ResourcesPath>$(SlnDir)Utilities\Resources\</ResourcesPath>
     </PropertyGroup>
 
     <!-- Configuration specific properties -->
@@ -114,8 +115,7 @@
 
     <!-- Import utilities if Utilities is defined -->
     <PropertyGroup Condition="$(DefineConstants.Contains('Utilities'))">
-      <UtilityBuildTasks>$(SlnDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
-      <ResourcesPath>$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
+      <UtilityBuildTasks>$(SlnDir)Utilities\BuildTasks\bin\Release\AnyCPU\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
     </PropertyGroup>
     <ItemGroup Condition="'$(UtilityBuildTasks)'!='' AND !Exists('$(UtilityBuildTasks)')">
       <ProjectsToBuild Include="$(SlnDir)Utilities\BuildTasks\WebApplications.Utilities.BuildTasks.csproj">
@@ -178,8 +178,7 @@
 
       <!-- Reset tool locations -->
       <PropertyGroup>
-        <UtilityBuildTasks Condition="$(DefineConstants.Contains('Utilities'))">$(SlnDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
-        <ResourcesPath Condition="$(DefineConstants.Contains('Utilities'))">$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
+        <UtilityBuildTasks Condition="$(DefineConstants.Contains('Utilities'))">$(SlnDir)Utilities\BuildTasks\bin\Release\AnyCPU\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
         <ILMergeBuildTask Condition="$(DefineConstants.Contains('ILMerge'))">$(SlnDir)ILMerge\bin\Release\AnyCPU\ILMerge.Build.Task.dll</ILMergeBuildTask>
         <InjectModuleInitializerTool Condition="$(DefineConstants.Contains('ModuleInitializer'))">$(SlnDir)Initializer\bin\Release\AnyCPU\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
         <PerfSetupTool Condition="$(DefineConstants.Contains('PerfSetup'))">$(SlnDir)Performance\PerfSetup\bin\Release\Merged\PerfSetup32.exe</PerfSetupTool>
