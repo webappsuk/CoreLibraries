@@ -25,4 +25,17 @@
       <None Include="app.config" />
       <None Include="packages.config" />
     </ItemGroup>
+
+    <Target Name="CopyILMergeExeLocal" BeforeTargets="AfterBuild">
+      <!-- Find the ILMerge tools, look in nuget packages first, then use included version. -->
+      <ItemGroup Condition="!Exists('$(ILMergeTool)')">
+        <ILMergePackage Include="$(SlnDir)packages\ilmerge.*\tools\ILMerge.exe" />
+      </ItemGroup>
+      <PropertyGroup Condition="!Exists('$(ILMergeTool)') AND '@(ILMergePackage)'!=''">
+        <ILMergeTool>@(ILMergePackage)</ILMergeTool>
+        <ILMergeTool Condition="$(ILMergeTool.Contains(';'))">$(ILMergeTool.Substring(0, $(ILMergeTool.IndexOf(';'))))</ILMergeTool>
+      </PropertyGroup>
+      <Error Text="Could not locate ILMerge.exe." Condition="!Exists('$(ILMergeTool)')" />
+      <Copy SourceFiles="$(ILMergeTool)" DestinationFolder="$(OutputPath)"/> 
+    </Target>
   </Project>

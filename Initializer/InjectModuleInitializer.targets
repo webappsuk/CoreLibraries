@@ -1,39 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="InjectModuleInitializerTarget" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <InjectModuleInitializerTool Condition="'$(InjectModuleInitializerTool)'==''">$(MSBuildThisFileDirectory)WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
-    <InjectModuleInitializerTypeName Condition="'$(InjectModuleInitializerTypeName)' == ''">ModuleInitializer</InjectModuleInitializerTypeName>
-    <InjectModuleInitializerMethodName Condition="'$(InjectModuleInitializerMethodName)' == ''">Initialize</InjectModuleInitializerMethodName>
-  </PropertyGroup>
+  <Project DefaultTargets="InjectModuleInitializerTarget" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+      <InjectModuleInitializerTool Condition="'$(InjectModuleInitializerTool)'==''">$(MSBuildThisFileDirectory)..\Tools\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+      <InjectModuleInitializerTypeName Condition="'$(InjectModuleInitializerTypeName)' == ''">ModuleInitializer</InjectModuleInitializerTypeName>
+      <InjectModuleInitializerMethodName Condition="'$(InjectModuleInitializerMethodName)' == ''">Initialize</InjectModuleInitializerMethodName>
+    </PropertyGroup>
 
-  <!-- Check for the signed assemblies and located strong name key pair file -->
-  <PropertyGroup Condition="'$(SignAssembly)'=='true'">
-    <!-- Look for key file at current path -->
-    <InjectModuleSnk Condition="Exists('$(AssemblyOriginatorKeyFile)')">$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
-    <!-- Look for key file from ProjectDir -->
-    <InjectModuleSnk Condition="'$(InjectModuleSnk)'=='' AND Exists('$(ProjectDir)$(AssemblyOriginatorKeyFile)')">$(ProjectDir)$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
-  </PropertyGroup>
+    <!-- Check for the signed assemblies and located strong name key pair file -->
+    <PropertyGroup Condition="'$(SignAssembly)'=='true'">
+      <!-- Look for key file at current path -->
+      <InjectModuleSnk Condition="Exists('$(AssemblyOriginatorKeyFile)')">$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
+      <!-- Look for key file from ProjectDir -->
+      <InjectModuleSnk Condition="'$(InjectModuleSnk)'=='' AND Exists('$(ProjectDir)$(AssemblyOriginatorKeyFile)')">$(ProjectDir)$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
+    </PropertyGroup>
 
-  <!-- Create task -->
-  <UsingTask TaskName="InjectModuleInitializer"
-             AssemblyFile="$(InjectModuleInitializerTool)" />
+    <!-- Create task -->
+    <UsingTask TaskName="InjectModuleInitializer" AssemblyFile="$(InjectModuleInitializerTool)" />
 
-  <Target Name="CheckInitializerPrerequisits">
-    <!-- Raise an error if we're unable to locate WebApplications.Utilities.Initializer.dll  -->
-    <Error Condition="!Exists('$(InjectModuleInitializerTool)')" Text="Unable to locate the module initialisation injection tool '$(InjectModuleInitializerTool)'" />
-    <!-- Raise an error if we need to resign and can't find the key -->
-    <Error Condition="'$(SignAssembly)'=='true' AND !Exists('$(InjectModuleSnk)')" Text="Could not find the signature file for resigning, module initialisation cannot be performed." />
-  </Target>
+    <!-- Inject module initializer -->
+    <Target Name="InjectModuleInitializerTarget" BeforeTargets="AfterBuild" AfterTargets="Build" Condition="$(DefineConstants.Contains('ModuleInitializer'))">
+      <!-- Raise an error if we're unable to locate WebApplications.Utilities.Initializer.dll  -->
+      <Error Condition="!Exists('$(InjectModuleInitializerTool)')" Text="Unable to locate the module initialisation injection tool '$(InjectModuleInitializerTool)'" />
+      <!-- Raise an error if we need to resign and can't find the key -->
+      <Error Condition="'$(SignAssembly)'=='true' AND !Exists('$(InjectModuleSnk)')" Text="Could not find the signature file for resigning, module initialisation cannot be performed." />
 
-  <!-- Inject module initializer -->
-  <Target Name="InjectModuleInitializerTarget"
-	      BeforeTargets="AfterBuild"
-        AfterTargets="Build"
-        DependsOnTargets="CheckInitializerPrerequisits">
-    <InjectModuleInitializer
-       AssemblyFile="$(TargetPath)"
-       TypeName="$(InjectModuleInitializerTypeName)"
-       MethodName="$(InjectModuleInitializerMethodName)"
-       StrongNameKeyPair="$(InjectModuleSnk)"/>
-  </Target>
-</Project>
+      <InjectModuleInitializer AssemblyFile="$(TargetPath)" TypeName="$(InjectModuleInitializerTypeName)" MethodName="$(InjectModuleInitializerMethodName)" StrongNameKeyPair="$(InjectModuleSnk)" />
+    </Target>
+  </Project>

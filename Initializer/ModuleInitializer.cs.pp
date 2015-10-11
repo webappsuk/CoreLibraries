@@ -8,7 +8,8 @@ namespace $rootnamespace$
     /// <summary>
     /// This type cannot be private, as it must be callable from the actual Module Initializer.
     /// </summary>
-    /// <remarks></remarks>
+    /// <remarks><para>If you define the 'ModuleInitializer' constant as part of the build then the resulting assembly is rewritten so that
+    /// the <see cref="ModuleInitializer"/> method is called when the enclosing module is first loaded.</para></remarks>
     internal static class ModuleInitializer
     {
         /// <summary>
@@ -20,7 +21,6 @@ namespace $rootnamespace$
         /// </remarks>
         internal static void Initialize()
         {
-            
         }
     }
 }
