@@ -76,7 +76,7 @@
       <Project>{2931c698-6123-49bc-81fd-f72a4c1415ea}</Project>
       <Name>WebApplications.Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebApplications.Utilities.Service.Common\WebApplications.Utilities.Service.Common.csproj">
+    <ProjectReference Include="..\Common\WebApplications.Utilities.Service.Common.csproj">
       <Project>{b365ad50-598a-4d1b-8656-1f0f8adcdbc8}</Project>
       <Name>WebApplications.Utilities.Service.Common</Name>
     </ProjectReference>

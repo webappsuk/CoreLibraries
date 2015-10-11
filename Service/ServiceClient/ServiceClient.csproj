@@ -42,7 +42,7 @@
       <Project>{2931c698-6123-49bc-81fd-f72a4c1415ea}</Project>
       <Name>WebApplications.Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebApplications.Utilities.Service.Client\WebApplications.Utilities.Service.Client.csproj">
+    <ProjectReference Include="..\Client\WebApplications.Utilities.Service.Client.csproj">
       <Project>{839d6111-ffe7-4498-928c-75054de61ce9}</Project>
       <Name>WebApplications.Utilities.Service.Client</Name>
     </ProjectReference>

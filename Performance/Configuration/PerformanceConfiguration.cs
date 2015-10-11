@@ -25,16 +25,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
 using System;
 using System.Configuration;
-using NodaTime;
-using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Performance.Configuration
 {
     /// <summary>
-    /// The configuration section for the Perfomance library.
+    /// The configuration section for the Performance library.
     /// </summary>
     [PublicAPI]
     public class PerformanceConfiguration : ConfigurationSection<PerformanceConfiguration>
