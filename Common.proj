@@ -119,40 +119,46 @@
     </PropertyGroup>
     <ItemGroup Condition="'$(UtilityBuildTasks)'!='' AND !Exists('$(UtilityBuildTasks)')">
       <ProjectsToBuild Include="$(SlnDir)Utilities\BuildTasks\WebApplications.Utilities.BuildTasks.csproj">
-        <Properties>Configuration=$(Configuration)</Properties>
+        <Properties>Configuration=Release;Platform=AnyCPU</Properties>
       </ProjectsToBuild>
     </ItemGroup>
     <Import Project="$(SlnDir)Utilities\Utility.targets" Condition="$(DefineConstants.Contains('Utilities'))" />
 
     <!-- Import ILMerge if ILMerge is defined -->
     <PropertyGroup Condition="$(DefineConstants.Contains('ILMerge'))">
-      <ILMergeBuildTask>$(SlnDir)ILMerge\bin\$(Configuration)\$(Platform)\ILMerge.Build.Task.dll</ILMergeBuildTask>
+      <ILMergeBuildTask>$(SlnDir)ILMerge\bin\Release\AnyCPU\ILMerge.Build.Task.dll</ILMergeBuildTask>
     </PropertyGroup>
     <ItemGroup Condition="'$(ILMergeBuildTask)'!='' AND !Exists('$(ILMergeBuildTask)')">
       <ProjectsToBuild Include="$(SlnDir)ILMerge\ILMerge.Build.Task.csproj">
-        <Properties>Configuration=$(Configuration)</Properties>
+        <Properties>Configuration=Release;Platform=AnyCPU</Properties>
       </ProjectsToBuild>
     </ItemGroup>
     <Import Project="$(SlnDir)ILMerge\ILMerge.targets" Condition="$(DefineConstants.Contains('ILMerge'))" />
 
     <!-- Import module initializer if ModuleInitializer is defined -->
     <PropertyGroup Condition="$(DefineConstants.Contains('ModuleInitializer'))">
-      <InjectModuleInitializerTool>$(SlnDir)Initializer\bin\$(Configuration)\$(Platform)\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+      <InjectModuleInitializerTool>$(SlnDir)Initializer\bin\Release\AnyCPU\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
     </PropertyGroup>
     <ItemGroup Condition="'$(InjectModuleInitializerTool)'!='' AND !Exists('$(InjectModuleInitializerTool)')">
       <ProjectsToBuild Include="$(SlnDir)Initializer\WebApplications.Utilities.Initializer.csproj">
-        <Properties>Configuration=$(Configuration)</Properties>
+        <Properties>Configuration=Release;Platform=AnyCPU</Properties>
       </ProjectsToBuild>
     </ItemGroup>
     <Import Project="$(SlnDir)Initializer\InjectModuleInitializer.targets" Condition="$(DefineConstants.Contains('ModuleInitializer'))" />
 
     <!-- Import PerfSetup if the PerfSetup constant is defined -->
     <PropertyGroup Condition="$(DefineConstants.Contains('PerfSetup'))">
-      <PerfSetupTool>$(SlnDir)Performance\PerfSetup\bin\$(Configuration)\$(Platform)\Merged\PerfSetup32.exe</PerfSetupTool>
+      <PerfSetupTool>$(SlnDir)Performance\PerfSetup\bin\Release\Merged\PerfSetup32.exe</PerfSetupTool>
+      <PerfSetupTool64>$(SlnDir)Performance\PerfSetup\bin\Release\Merged\PerfSetup32.exe</PerfSetupTool64>
     </PropertyGroup>
     <ItemGroup Condition="'$(PerfSetupTool)'!='' AND !Exists('$(PerfSetupTool)')">
       <ProjectsToBuild Include="$(SlnDir)Performance\PerfSetup\WebApplications.Utilities.Performance.Tools.PerfSetup.csproj">
-        <Properties>Configuration=$(Configuration)</Properties>
+        <Properties>Configuration=Release;Platform=x86</Properties>
+      </ProjectsToBuild>
+    </ItemGroup>
+    <ItemGroup Condition="'$(PerfSetupTool64)'!='' AND !Exists('$(PerfSetupTool64)')">
+      <ProjectsToBuild Include="$(SlnDir)Performance\PerfSetup\WebApplications.Utilities.Performance.Tools.PerfSetup.csproj">
+        <Properties>Configuration=Release;Platform=x64</Properties>
       </ProjectsToBuild>
     </ItemGroup>
     <Import Project="$(SlnDir)Performance\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup'))" />
@@ -174,15 +180,17 @@
       <PropertyGroup>
         <UtilityBuildTasks Condition="$(DefineConstants.Contains('Utilities'))">$(SlnDir)bin\WebApplications.Utilities.BuildTasks.dll</UtilityBuildTasks>
         <ResourcesPath Condition="$(DefineConstants.Contains('Utilities'))">$(MSBuildThisFileDirectory)Resources\</ResourcesPath>
-        <ILMergeBuildTask Condition="$(DefineConstants.Contains('ILMerge'))">$(SlnDir)ILMerge\bin\$(Configuration)\$(Platform)\ILMerge.Build.Task.dll</ILMergeBuildTask>
-        <InjectModuleInitializerTool Condition="$(DefineConstants.Contains('ModuleInitializer'))">$(SlnDir)Initializer\bin\$(Configuration)\$(Platform)\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
-        <PerfSetupTool Condition="$(DefineConstants.Contains('PerfSetup'))">$(SlnDir)Performance\PerfSetup\bin\$(Configuration)\$(Platform)\Merged\PerfSetup32.exe</PerfSetupTool>
+        <ILMergeBuildTask Condition="$(DefineConstants.Contains('ILMerge'))">$(SlnDir)ILMerge\bin\Release\AnyCPU\ILMerge.Build.Task.dll</ILMergeBuildTask>
+        <InjectModuleInitializerTool Condition="$(DefineConstants.Contains('ModuleInitializer'))">$(SlnDir)Initializer\bin\Release\AnyCPU\Merged\WebApplications.Utilities.Initializer.dll</InjectModuleInitializerTool>
+        <PerfSetupTool Condition="$(DefineConstants.Contains('PerfSetup'))">$(SlnDir)Performance\PerfSetup\bin\Release\Merged\PerfSetup32.exe</PerfSetupTool>
+        <PerfSetupTool64 Condition="$(DefineConstants.Contains('PerfSetup'))">$(SlnDir)Performance\PerfSetup\bin\Release\Merged\PerfSetup64.exe</PerfSetupTool64>
       </PropertyGroup>
 
       <!-- Verify pre-requisits -->
       <Error Text="Failed to find or build the Utilities Build Tasks ('$(UtilityBuildTasks)')." Condition="'$(UtilityBuildTasks)'!='' AND !Exists('$(UtilityBuildTasks)')" />
       <Error Text="Failed to find or build the ILMerge Build Task ('$(ILMergeBuildTask)')." Condition="'$(ILMergeBuildTask)'!='' AND !Exists('$(ILMergeBuildTask)')" />
       <Error Text="Failed to find or build the Module initializer tool ('$(InjectModuleInitializerTool)')." Condition="'$(InjectModuleInitializerTool)'!='' AND !Exists('$(InjectModuleInitializerTool)')" />
-      <Error Text="Failed to find or build the PerfSetup tool ('$(PerfSetupTool)'!='')." Condition="'$(PerfSetupTool)'!='' AND !Exists('$(PerfSetupTool)')" />
+      <Error Text="Failed to find or build the PerfSetup tool ('$(PerfSetupTool)')." Condition="'$(PerfSetupTool)'!='' AND !Exists('$(PerfSetupTool)')" />
+      <Error Text="Failed to find or build the 64-bit PerfSetup tool ('$(PerfSetupTool64)')." Condition="'$(PerfSetupTool64)'!='' AND !Exists('$(PerfSetupTool64)')" />
     </Target>
   </Project>
