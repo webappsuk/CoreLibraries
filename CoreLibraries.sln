@@ -13,6 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BA63C147
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Targets", "Targets", "{E3E40955-4440-469B-9B46-0BFF5C54AC8B}"
 	ProjectSection(SolutionItems) = preProject
+		InjectModuleInitializer.targets = InjectModuleInitializer.targets
+		ILMerge.targets = ILMerge.targets
+		PerfSetup.targets = PerfSetup.targets
 		Utilities\Utility.targets = Utilities\Utility.targets
 	EndProjectSection
 EndProject
