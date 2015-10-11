@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WebApplications.Utilities.BuildTasks</RootNamespace>
     <AssemblyName>WebApplications.Utilities.BuildTasks</AssemblyName>
-	<DefineConstants>BUILD_TASKS</DefineConstants>
+    <DefineConstants>BUILD_TASKS</DefineConstants>
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)..\..\Common.proj" />
   <ItemGroup>
