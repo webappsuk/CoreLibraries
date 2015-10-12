@@ -33,6 +33,7 @@ namespace WebApplications.Utilities.Cryptography
     /// <summary>
     /// An encryption key.
     /// </summary>
+    [Obsolete("The configuration system is being overhauled and will not support multiple keys in future.")]
     public class Key
     {
         /// <summary>

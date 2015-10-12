@@ -40,6 +40,7 @@ namespace WebApplications.Utilities.Cryptography
     /// </summary>
     [Serializable]
     [PublicAPI]
+    [Obsolete("This is legacy code and is of dubious value.")]
     public class EncryptedString : ISerializable, IEquatable<string>, IEquatable<EncryptedString>
     {
         /// <summary>
@@ -110,7 +111,8 @@ namespace WebApplications.Utilities.Cryptography
             ICryptoProvider provider = CryptographyConfiguration.Active.Provider(providerId);
 
             if (provider == null)
-                throw new SerializationException(string.Format(Resources.EncryptedString_EncryptedString_InvalidProviderId, providerId));
+                throw new SerializationException(
+                    string.Format(Resources.EncryptedString_EncryptedString_InvalidProviderId, providerId));
 
             _provider = provider;
             Encrypted = info.GetString(TagValue);

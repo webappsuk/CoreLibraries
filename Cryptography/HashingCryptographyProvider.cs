@@ -25,50 +25,25 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using WebApplications.Utilities.Annotations;
+using System.Xml.Linq;
 
 namespace WebApplications.Utilities.Cryptography
 {
     /// <summary>
-    /// Interface to an object that can encrypt and decrypt a string.
+    /// Base class for all hashing cryptographic providers.
     /// </summary>
-    [Obsolete("This is replaced by CryptographyProvider and it's descendents.")]
-    public interface ICryptoProvider
+    public abstract class HashingCryptographyProvider : CryptographyProvider
     {
-        /// <summary>
-        /// Gets the identifier, if the provider is persisted to the configuration; otherwise <see langword="null"/>.
-        /// </summary>
-        /// <value>The identifier.</value>
-        [CanBeNull]
-        string Id { get; }
+        /// <inheritdoc />
+        public override bool CanEncrypt => true;
 
         /// <summary>
-        /// Encrypts the specified input.
+        /// Initializes a new instance of the <see cref="HashingCryptographyProvider" /> class.
         /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns></returns>
-        [ContractAnnotation("null=>null;notnull=>notnull")]
-        string Encrypt([CanBeNull] string input);
-
-        /// <summary>
-        /// Decrypts the specified input.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="isLatestKey">if set to <see langword="true" /> the input was encrypted using the latest key.</param>
-        /// <returns></returns>
-        [ContractAnnotation("input:null=>null;input:notnull=>notnull")]
-        string Decrypt([CanBeNull] string input, out bool isLatestKey);
-
-        /// <summary>
-        /// Attempts to decrypt the input given.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="result">The result.</param>
-        /// <param name="isLatestKey">If set to <see langword="true" /> the input was encrypted using the latest key. Will be <see langword="null" /> if the operation failed.</param>
-        /// <returns>
-        ///   <see langword="true" /> if successful; otherwise <see langword="false" />.
-        /// </returns>
-        bool TryDecrypt([CanBeNull] string input, [CanBeNull] out string result, [CanBeNull] out bool? isLatestKey);
+        /// <param name="configuration">The provider element.</param>
+        protected HashingCryptographyProvider(XElement configuration)
+            : base(configuration)
+        {
+        }
     }
 }

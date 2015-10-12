@@ -534,25 +534,19 @@ DAMAGE. </para>
       <add key="VBdocman_generateCsharpSyntax"><![CDATA[-1]]></add>
       <add key="VBdocman_comInterface"><![CDATA[-1]]></add>
     </SettingsGroup>
-    <add key="VBdocman_ILMerge.Build.Task"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_ServiceClient"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Testing"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Testing.Test"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_WebApplications.Utilities"><![CDATA[default]]></add>
-    <add key="VBdocman_WebApplications.Utilities.BuildTasks"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_WebApplications.Utilities.Cryptography"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Utilities.Cryptography.Test"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_WebApplications.Utilities.Database"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Utilities.Database.Test"><![CDATA[default<notincluded>]]></add>
-    <add key="VBdocman_WebApplications.Utilities.Initializer"><![CDATA[default]]></add>
-    <add key="VBdocman_WebApplications.Utilities.Initializer.Test"><![CDATA[default<notincluded>]]></add>
-    <add key="VBdocman_WebApplications.Utilities.Initializer.TestApp"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_WebApplications.Utilities.Logging"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Utilities.Logging.Test"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_WebApplications.Utilities.Logging.TestConsole"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_WebApplications.Utilities.Performance"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Utilities.Performance.Test"><![CDATA[default<notincluded>]]></add>
-    <add key="VBdocman_WebApplications.Utilities.Performance.Tools.PerfSetup"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Utilities.PowerShell"><![CDATA[default]]></add>
     <add key="VBdocman_WebApplications.Utilities.PowerShell.Test"><![CDATA[default<notincluded>]]></add>
     <add key="VBdocman_WebApplications.Utilities.Scheduling"><![CDATA[default]]></add>

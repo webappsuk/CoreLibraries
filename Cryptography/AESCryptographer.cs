@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Cryptography
     /// Allows encryption and decryption using the Advanced Encryption Standard (AES).
     /// </summary>
     [PublicAPI]
+    [Obsolete]
     public class AESCryptographer : ICryptoProvider
     {
         /// <summary>

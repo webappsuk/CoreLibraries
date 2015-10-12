@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Cryptography
     /// <summary>
     /// Allows encryption and decryption using RSA.
     /// </summary>
+    [Obsolete("Used RSACryptographyProvider instead.")]
     public class RSACryptographer : ICryptoProvider
     {
         /// <summary>

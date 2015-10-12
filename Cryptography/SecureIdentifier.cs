@@ -1,4 +1,31 @@
-﻿namespace WebApplications.Utilities.Cryptography
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+namespace WebApplications.Utilities.Cryptography
 {
 #if false
     public class SecureIdentifier : IReadOnlyCollection<byte>, IComparable<SecureIdentifier>, IEquatable<SecureIdentifier>
@@ -386,38 +413,6 @@
         /// </returns>
         [CanBeNull]
         public static implicit operator SecureIdentifier([NotNull] string value) => Parse(value);
-    }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    public interface IByteSigner
-    {
-        /// <summary>
-        /// Signs the specified data and returns a new <see cref="T:byte[]" /> with the signature embedded in a verifiable manner.
-        /// </summary>
-        /// <param name="data">The data to be signed using a hash.</param>
-        /// <param name="hash">The integer value of the generated hash.</param>
-        /// <returns></returns>
-        [NotNull]
-        byte[] Sign(byte[] data, out int hash);
-
-        /// <summary>
-        /// Verifies the signature embedded into a signed byte array.
-        /// </summary>
-        /// <param name="signed">The signed data, as a <see cref="T:byte[]" />, containing both the data bytes and the signature.</param>
-        /// <returns>True if the signature on the <paramref name="signed"/> data is as expected, otherwise false.</returns>
-        bool Verify(byte[] signed);
-    }
-
-    public class SimpleHashByteSigner : HashByteSigner
-    {
-        [NotNull]
-        public static readonly SimpleHashByteSigner Instance = new SimpleHashByteSigner();
-
-        private SimpleHashByteSigner()
-        {
-        }
     }
 #endif
 }

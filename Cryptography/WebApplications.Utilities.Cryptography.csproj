@@ -25,12 +25,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AESCryptographer.cs" />
+    <Compile Include="AsymmetricCryptographyProvider.cs" />
     <Compile Include="Base32EncoderDecoder.cs" />
     <Compile Include="Configuration\KeyCollection.cs" />
     <Compile Include="Configuration\KeyElement.cs" />
     <Compile Include="Configuration\ProviderCollection.cs" />
     <Compile Include="Configuration\ProviderElement.cs" />
+    <Compile Include="CryptographyProvider.cs" />
     <Compile Include="HashAlgorithmExtensions.cs" />
+    <Compile Include="HashingCryptographyProvider.cs" />
     <Compile Include="ICryptoProvider.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="PBKDF2.cs" />
@@ -43,7 +46,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RSACryptographyProvider.cs" />
     <Compile Include="SecureIdentifier.cs" />
+    <Compile Include="SymmetricCryptographyProvider.cs" />
     <Compile Include="XmlCryptoExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

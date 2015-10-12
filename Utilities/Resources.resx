@@ -513,4 +513,10 @@
   <data name="ZonedDateTimeConverter_ConvertFrom_CannotParse" xml:space="preserve">
     <value>Cannot parse the string '{0}' to a ZonedDateTime.</value>
   </data>
+  <data name="VariableLengthEncoding_Encode_Buffer_Overflow" xml:space="preserve">
+    <value>Could not encode the value as the buffer ran out of space.</value>
+  </data>
+  <data name="VariableLengthEncoding_Decode_Buffer_Overflow" xml:space="preserve">
+    <value>The encoding was invalid, ran out of bytes before getting an end of encoding byte.</value>
+  </data>
 </root>

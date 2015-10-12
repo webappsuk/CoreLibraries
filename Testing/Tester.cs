@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.SqlServer.Types;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,7 +34,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Microsoft.SqlServer.Types;
 using WebApplications.Testing.Annotations;
 using WebApplications.Testing.Data;
 
@@ -491,33 +491,20 @@ namespace WebApplications.Testing
         /// A random number generator.
         /// </summary>
         [NotNull]
-        public static Random RandomGenerator
-        {
-            get
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return _randomGenerators.Value;
-            }
-        }
+        public static Random RandomGenerator => _randomGenerators.Value;
 
         /// <summary>
         /// Generates a random boolean.
         /// </summary>
         /// <returns>A random <see cref="System.Boolean" />.</returns>
-        public static bool RandomBoolean()
-        {
-            return RandomGenerator.Next(2) == 1;
-        }
+        public static bool RandomBoolean() => RandomGenerator.Next(2) == 1;
 
         /// <summary>
         /// Generates a random boolean.
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Boolean"/>.</returns>
-        public static bool RandomBoolean([CanBeNull] this Random random)
-        {
-            return (random ?? RandomGenerator).Next(2) == 1;
-        }
+        public static bool RandomBoolean([CanBeNull] this Random random) => (random ?? RandomGenerator).Next(2) == 1;
 
         /// <summary>
         /// Generates a random byte.

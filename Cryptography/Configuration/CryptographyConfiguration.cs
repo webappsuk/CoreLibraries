@@ -63,7 +63,6 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         {
             get { return GetProperty<string>("secureIdentifierKey"); }
             set { SetProperty("secureIdentifierKey", value); }
-
         }
 
         /// <summary>

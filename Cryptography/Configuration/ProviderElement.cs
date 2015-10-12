@@ -150,7 +150,7 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         /// Gets an instance of this provider.
         /// </summary>
         /// <value>An instance of this provider.</value>
-        /// <exception cref="ConfigurationErrorsException" accessor="get">The provider is not <see cref="IsEnabled">enabled</see>.</exception>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException" accessor="get">The provider is not <see cref="IsEnabled">enabled</see>.</exception>
         [NotNull]
         public ICryptoProvider Provider
         {
@@ -169,7 +169,7 @@ namespace WebApplications.Utilities.Cryptography.Configuration
                 Key[] keys = Keys
                     .Select(key => new Key(key.Value, key.Expiry))
                     .ToArray();
-                
+
                 // Create provider
                 provider = Type
                     .ConstructorFunc<ProviderElement, IEnumerable<Key>, ICryptoProvider>()

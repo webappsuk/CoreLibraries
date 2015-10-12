@@ -25,50 +25,30 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
+using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Cryptography
 {
     /// <summary>
-    /// Interface to an object that can encrypt and decrypt a string.
+    /// Base class for all symmetric cryptographic providers.
     /// </summary>
-    [Obsolete("This is replaced by CryptographyProvider and it's descendents.")]
-    public interface ICryptoProvider
+    [PublicAPI]
+    public abstract class SymmetricCryptographyProvider : CryptographyProvider
     {
-        /// <summary>
-        /// Gets the identifier, if the provider is persisted to the configuration; otherwise <see langword="null"/>.
-        /// </summary>
-        /// <value>The identifier.</value>
-        [CanBeNull]
-        string Id { get; }
+        /// <inheritdoc />
+        public override bool CanEncrypt => true;
+
+        /// <inheritdoc />
+        public override bool CanDecrypt => true;
 
         /// <summary>
-        /// Encrypts the specified input.
+        /// Initializes a new instance of the <see cref="SymmetricCryptographyProvider" /> class.
         /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns></returns>
-        [ContractAnnotation("null=>null;notnull=>notnull")]
-        string Encrypt([CanBeNull] string input);
-
-        /// <summary>
-        /// Decrypts the specified input.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="isLatestKey">if set to <see langword="true" /> the input was encrypted using the latest key.</param>
-        /// <returns></returns>
-        [ContractAnnotation("input:null=>null;input:notnull=>notnull")]
-        string Decrypt([CanBeNull] string input, out bool isLatestKey);
-
-        /// <summary>
-        /// Attempts to decrypt the input given.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="result">The result.</param>
-        /// <param name="isLatestKey">If set to <see langword="true" /> the input was encrypted using the latest key. Will be <see langword="null" /> if the operation failed.</param>
-        /// <returns>
-        ///   <see langword="true" /> if successful; otherwise <see langword="false" />.
-        /// </returns>
-        bool TryDecrypt([CanBeNull] string input, [CanBeNull] out string result, [CanBeNull] out bool? isLatestKey);
+        /// <param name="configuration">The configuration.</param>
+        protected SymmetricCryptographyProvider(XElement configuration)
+            : base(configuration)
+        {
+        }
     }
 }

@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime.Text;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -47,7 +48,6 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
-using NodaTime.Text;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Enumerations;
 using WebApplications.Utilities.Threading;
@@ -851,6 +851,33 @@ namespace WebApplications.Utilities
                 chars[j++] = h[1];
             }
             return new string(chars);
+        }
+
+        /// <summary>
+        /// Discards the white spaces in a string.
+        /// </summary>
+        /// <param name="input">The input buffer.</param>
+        /// <returns>System.String.</returns>
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string DiscardWhiteSpaces([NotNull] string input)
+        {
+            int i;
+            int iCount = 0;
+            int length = input.Length;
+            // Count white space
+            for (i = 0; i < length; i++)
+                if (char.IsWhiteSpace(input[i])) iCount++;
+            if (iCount < 1) return input;
+            char[] output = new char[input.Length - iCount];
+            iCount = 0;
+            for (i = 0; i < length; i++)
+            {
+                char c = input[i];
+                if (!char.IsWhiteSpace(c))
+                    output[iCount++] = c;
+            }
+            return new string(output);
         }
 
         /// <summary>
