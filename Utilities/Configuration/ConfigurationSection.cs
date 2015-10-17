@@ -32,6 +32,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Configuration;
+using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
@@ -47,10 +48,10 @@ namespace WebApplications.Utilities.Configuration
     {
         #region Delegates
         /// <summary>
-        ///   Handles changes in configuration.
+        /// Handles changes in configuration.
         /// </summary>
         /// <param name="sender">The sender (the original configuration).</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ConfigurationChangedEventArgs" /> instance containing the event data.</param>
         public delegate void ConfigurationChangedEventHandler(
             [NotNull] object sender,
             [NotNull] ConfigurationChangedEventArgs e);
@@ -77,7 +78,7 @@ namespace WebApplications.Utilities.Configuration
                             typeof(T).GetCustomAttributes(typeof(ConfigurationSectionAttribute), false).
                                 FirstOrDefault();
 
-                    string sectionName = attribute != null ? attribute.Name : null;
+                    string sectionName = attribute?.Name;
 
                     if (!string.IsNullOrEmpty(sectionName))
                         return sectionName;
@@ -130,25 +131,15 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         static ConfigurationSection()
         {
-            ConfigurationFileWatcher.Changed += OnConfigurationFileChanged;
-        }
-
-        /// <summary>
-        /// Called when the configuration file changes.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private static void OnConfigurationFileChanged(object sender, EventArgs e)
-        {
-            ConfigurationManager.RefreshSection(SectionName);
-            T oldConfiguration = _active;
-            _active = GetConfiguration();
-            _active.SetReadOnly();
-
-            ConfigurationChangedEventHandler onChanged = Changed;
-            if ((oldConfiguration != null) &&
-                (onChanged != null))
-                onChanged(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
+            ConfigurationFileWatcher.Changed += (sender, e) =>
+            {
+                ConfigurationManager.RefreshSection(SectionName);
+                T oldConfiguration = _active;
+                _active = GetConfiguration();
+            
+                if (oldConfiguration != null)
+                    Changed?.Invoke(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
+            };
         }
 
         /// <summary>
@@ -166,11 +157,7 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>For example: 'MyClassConfigurationSection' will have a name of 'myClass'.</para>
         /// </remarks>
         [NotNull]
-        public static string SectionName
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            get { return _sectionName.Value; }
-        }
+        public static string SectionName => _sectionName.Value;
 
         /// <summary>
         ///   Gets or sets the active configuration.
@@ -179,18 +166,11 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>Once set as active a configuration is marked as readonly.</para>
         ///   <para>Setting the active configuration to <see langword="null"/> will load the default configuration.</para>
         /// </remarks>
+        /// <exception cref="Exception" accessor="set">A delegate callback throws an exception.</exception>
         [NotNull]
         public static T Active
         {
-            get
-            {
-                if (_active == null)
-                {
-                    _active = GetConfiguration();
-                    _active.SetReadOnly();
-                }
-                return _active;
-            }
+            get { return _active ?? (_active = GetConfiguration()); }
             set
             {
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse, HeuristicUnreachableCode
@@ -203,22 +183,16 @@ namespace WebApplications.Utilities.Configuration
 
                 T oldConfiguration = _active;
                 _active = value;
-                _active.SetReadOnly();
-
-                ConfigurationChangedEventHandler onChanged = Changed;
-                if ((oldConfiguration != null) &&
-                    (onChanged != null))
-                    onChanged(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
+                
+                if (oldConfiguration != null)
+                    Changed?.Invoke(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
             }
         }
 
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance is the active configuration.
         /// </summary>
-        public bool IsActive
-        {
-            get { return ReferenceEquals(this, _active); }
-        }
+        public bool IsActive => ReferenceEquals(this, _active);
 
         /// <summary>
         ///   Gets the XMLNS.
@@ -228,41 +202,49 @@ namespace WebApplications.Utilities.Configuration
         ///   Without this property, specifying a namespace on a configuration section will cause the configuration section
         ///   to fail to load at runtime.
         /// </remarks>
-        /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         [ConfigurationProperty("xmlns", IsRequired = false)]
-        public string Xmlns
+        public XNamespace Xmlns
         {
-            get { return (string)base["xmlns"]; }
-            set { base["xmlns"] = value; }
+            get { return (XNamespace)this["xmlns"]; }
+            set { this["xmlns"] = value; }
         }
 
         /// <summary>
         ///   Occurs when the <see cref="Active"/> ConfigurationSection is changed.
         /// </summary>
         public static event ConfigurationChangedEventHandler Changed;
-
+        
         /// <summary>
-        ///   Gets a <see cref="bool"/> value indicating whether the configuration section is read-only.
-        /// </summary>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the configuration section is read-only; otherwise returns <see langword="false"/>.
-        /// </returns>
-        public override bool IsReadOnly()
-        {
-            return IsActive;
-        }
-
-        /// <summary>
-        ///   Gets the configuration name and stores it in the <see cref="ConfigurationSection&lt;T&gt;.SectionName"/> property.
+        ///   Gets the configuration.
         /// </summary>
         [NotNull]
         private static T GetConfiguration()
         {
+            System.Configuration.Configuration configuration = HttpContext.Current == null
+                ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+                : WebConfigurationManager.OpenWebConfiguration(null);
+            
             // We get the configuration from different places, depending on whether we are
             // running as a website or an application.
+            T section = configuration.GetSection(SectionName) as T;
+            if (section != null) return section;
+
+            // Create new configuration and set it as the active one.
+            section = _constructor();
+            // ReSharper disable once PossibleNullReferenceException
+            section.Init();
+            section.InitializeDefault();
+
+            // Add to existing configuration and save
+            configuration.Sections.Add(SectionName, section);
+            configuration.Save();
+
+            // Return the new section.
+            return section;
+            /*
             T configuration = HttpContext.Current == null
-                ? ConfigurationManager.GetSection(SectionName) as T
-                : WebConfigurationManager.GetSection(SectionName) as T;
+    ? ConfigurationManager.GetSection(SectionName) as T
+    : WebConfigurationManager.GetSection(SectionName) as T;
 
             if (configuration == null)
             {
@@ -271,6 +253,7 @@ namespace WebApplications.Utilities.Configuration
                 configuration.InitializeDefault();
             }
             return configuration;
+            */
         }
 
         /// <summary>
@@ -279,10 +262,9 @@ namespace WebApplications.Utilities.Configuration
         /// <typeparam name="TProp">The property type.</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <returns>The specified property.</returns>
-        /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         protected TProp GetProperty<TProp>(string propertyName)
         {
-            return (TProp)base[propertyName];
+            return (TProp)this[propertyName];
         }
 
         /// <summary>
@@ -291,12 +273,11 @@ namespace WebApplications.Utilities.Configuration
         /// <typeparam name="TProp">The property type.</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value to set the property.</param>
-        /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         protected void SetProperty<TProp>(string propertyName, TProp value)
         {
-            base[propertyName] = value;
+            this[propertyName] = value;
         }
-
+        
         #region Nested type: ConfigurationChangedEventArgs
         /// <summary>
         ///   Information about the configuration changed event.
@@ -311,13 +292,13 @@ namespace WebApplications.Utilities.Configuration
             public readonly T NewConfiguration;
 
             /// <summary>
-            ///   The old configuration (if any).
+            ///   The old configuration.
             /// </summary>
             [NotNull]
             public readonly T OldConfiguration;
-
+            
             /// <summary>
-            ///   Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs"/> class.
+            /// Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs" /> class.
             /// </summary>
             /// <param name="oldConfiguration">The old configuration.</param>
             /// <param name="newConfiguration">The new configuration.</param>

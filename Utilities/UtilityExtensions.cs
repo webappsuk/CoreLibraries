@@ -860,7 +860,7 @@ namespace WebApplications.Utilities
         /// <returns>System.String.</returns>
         [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string DiscardWhiteSpaces([NotNull] string input)
+        public static string DiscardWhiteSpaces([NotNull] this string input)
         {
             int i;
             int iCount = 0;

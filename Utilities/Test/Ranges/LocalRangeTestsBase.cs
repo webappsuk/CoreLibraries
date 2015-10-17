@@ -225,7 +225,7 @@ namespace WebApplications.Utilities.Test.Ranges
         /// </summary>
         /// <param name="period">The period.</param>
         /// <param name="divisor">The divisor.</param>
-        /// <param name="hasTime">if set to <c>true</c> <see paramref="period"/> includes a time element (hours/minutes/seconds).</param>
+        /// <param name="hasTime">if set to <c>true</c> <paramref name="period"/> includes a time element (hours/minutes/seconds).</param>
         /// <returns>Period.</returns>
         [NotNull]
         protected static Period PeriodDivideApprox([NotNull] Period period, int divisor, bool hasTime = true)

@@ -1015,6 +1015,24 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; type was not found..
+        /// </summary>
+        internal static string SimplifiedTypeNameConverter_ConvertFrom_Unknown_Type {
+            get {
+                return ResourceManager.GetString("SimplifiedTypeNameConverter_ConvertFrom_Unknown_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified value must be a type..
+        /// </summary>
+        internal static string SimplifiedTypeNameConverter_ConvertTo_Invalid_Type {
+            get {
+                return ResourceManager.GetString("SimplifiedTypeNameConverter_ConvertTo_Invalid_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The tuple at the top of the stack was null..
         /// </summary>
         internal static string Stack_TupleNull {
@@ -1254,6 +1272,24 @@ namespace WebApplications.Utilities {
         internal static string WeakConcurrentDictionary_KeyIsNull {
             get {
                 return ResourceManager.GetString("WeakConcurrentDictionary_KeyIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The element name &apos;{0}&apos; does not match the specified element name &apos;{1}&apos;..
+        /// </summary>
+        internal static string XmlConfigurationSection_SetElement_Element_Name_Mismatch {
+            get {
+                return ResourceManager.GetString("XmlConfigurationSection_SetElement_Element_Name_Mismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The configuration element&apos;s child element cannot be modified as the configuration element is read only..
+        /// </summary>
+        internal static string XmlConfigurationSection_SetElement_ReadOnly {
+            get {
+                return ResourceManager.GetString("XmlConfigurationSection_SetElement_ReadOnly", resourceCulture);
             }
         }
         

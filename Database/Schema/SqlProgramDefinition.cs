@@ -476,7 +476,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>-or-</para>
         ///   <para>One of the parameter types specified is not compatible with the <see cref="SqlDbType"/>.</para>
         ///   <para>-or-</para>
-        ///   <para>Must specify parameter names when <see paramref="validateOrder"/> is <see langword="false"/>.</para>
+        ///   <para>Must specify parameter names when <paramref name="validateOrder"/> is <see langword="false"/>.</para>
         /// </exception>
         [NotNull]
         public IEnumerable<SqlProgramParameter> ValidateParameters(

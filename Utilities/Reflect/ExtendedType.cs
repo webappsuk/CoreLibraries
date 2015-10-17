@@ -658,6 +658,23 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
+        /// Finds the type with the specified <paramref name="typeName" />.
+        /// </summary>
+        /// <param name="typeName">Name of the type.</param>
+        /// <param name="throwOnError">Throws an error if <see langword="true"/> and not found.</param>
+        /// <param name="ignoreCase">Ignores the case if <see langword="true"/>.</param>
+        /// <returns>The <see cref="Type" /> if found; otherwise <see langword="null" />.</returns>
+        /// <remarks>This is more robust than using <see cref="Type.GetType(string,bool,bool)" /> as it supports partial assembly names.</remarks>
+        public static Type FindType([NotNull] string typeName, bool throwOnError = false, bool ignoreCase = false) => Type.GetType(
+            typeName,
+            an => an.Name.Equals(an.FullName) ? Assembly.LoadWithPartialName(an.Name) : Assembly.Load(an),
+            (a, t, i) => a != null
+                ? a.GetType(t, false, i)
+                : Type.GetType(t, false, i),
+            throwOnError,
+            ignoreCase);
+
+        /// <summary>
         /// Gets the extended type information for the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
@@ -1606,7 +1623,7 @@ namespace WebApplications.Utilities.Reflect
                 try
                 {
                     // Try to get the type for the typeconverter
-                    Type typeConverterType = Type.GetType(typeConverterAttribute.ConverterTypeName);
+                    Type typeConverterType = FindType(typeConverterAttribute.ConverterTypeName);
 
                     if (typeConverterType != null)
                     {

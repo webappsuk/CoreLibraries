@@ -24,20 +24,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AESCryptographer.cs" />
+    <None Include="AESCryptographer.cs" />
     <Compile Include="AsymmetricCryptographyProvider.cs" />
     <Compile Include="Base32EncoderDecoder.cs" />
-    <Compile Include="Configuration\KeyCollection.cs" />
-    <Compile Include="Configuration\KeyElement.cs" />
     <Compile Include="Configuration\ProviderCollection.cs" />
     <Compile Include="Configuration\ProviderElement.cs" />
     <Compile Include="CryptographyProvider.cs" />
     <Compile Include="HashAlgorithmExtensions.cs" />
     <Compile Include="HashingCryptographyProvider.cs" />
-    <Compile Include="ICryptoProvider.cs" />
-    <Compile Include="Key.cs" />
     <Compile Include="PBKDF2.cs" />
-    <Compile Include="RSACryptographer.cs" />
+    <Compile Include="RandomCryptographyProvider.cs" />
     <Compile Include="Configuration\CryptographyConfiguration.cs" />
     <Compile Include="EncryptedString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

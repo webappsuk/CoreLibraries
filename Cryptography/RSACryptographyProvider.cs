@@ -33,13 +33,13 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Cryptography
 {
     /// <summary>
-    /// Implements the RSA algorihmn as an <see cref="AsymmetricCryptographyProvider" />.
+    /// Implements the RSA algorithm as an <see cref="AsymmetricCryptographyProvider" />.
     /// </summary>
     /// TODO Support padding in .Net 4.5, and RSAEncryptionPadding in 4.6
     public class RSACryptographyProvider : AsymmetricCryptographyProvider
     {
         /// <summary>
-        /// The parmaters for the RSA algorithm.
+        /// The parameters for the RSA algorithm.
         /// </summary>
         private readonly RSAParameters _parameters;
 
@@ -72,7 +72,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class.
         /// </summary>
-        /// <exception cref="CryptographicException">Error initializing the cyptographic service provider.</exception>
+        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
         public RSACryptographyProvider(int keySize = 1024, bool encodeLength = true)
             : base(null)
         {
@@ -92,7 +92,7 @@ namespace WebApplications.Utilities.Cryptography
         /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        /// <exception cref="CryptographicException">Error initializing the cyptographic service provider.</exception>
+        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
         public RSACryptographyProvider(RSAParameters parameters, bool encodeLength = true)
             : base(null)
         {
@@ -114,7 +114,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <see cref="XElement">XML</see> configuration.
         /// </summary>
         /// <param name="configuration">The provider element.</param>
-        /// <exception cref="CryptographicException">Error initializing the cyptographic service provider.</exception>
+        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
         public RSACryptographyProvider([NotNull] XElement configuration)
             : base(configuration)
         {
@@ -143,28 +143,30 @@ namespace WebApplications.Utilities.Cryptography
                 throw new CryptographicException(
                     "The expected 'Exponent' element was not found in the 'RSAKeyValue' element.");
 
-            RSAParameters parameters = new RSAParameters();
-            parameters.Modulus = Convert.FromBase64String(modulus);
-            parameters.Exponent = Convert.FromBase64String(exponent);
+            RSAParameters parameters = new RSAParameters
+            {
+                Modulus = Convert.FromBase64String(modulus.DiscardWhiteSpaces()),
+                Exponent = Convert.FromBase64String(exponent.DiscardWhiteSpaces())
+            };
 
             // Grab private key elements
             string p = rsakvElement.Element(ns + "P")?.Value;
-            if (!string.IsNullOrWhiteSpace(p)) parameters.P = Convert.FromBase64String(p);
+            if (!string.IsNullOrWhiteSpace(p)) parameters.P = Convert.FromBase64String(p.DiscardWhiteSpaces());
 
             string q = rsakvElement.Element(ns + "Q")?.Value;
-            if (!string.IsNullOrWhiteSpace(q)) parameters.Q = Convert.FromBase64String(q);
+            if (!string.IsNullOrWhiteSpace(q)) parameters.Q = Convert.FromBase64String(q.DiscardWhiteSpaces());
 
             string dp = rsakvElement.Element(ns + "DP")?.Value;
-            if (!string.IsNullOrWhiteSpace(dp)) parameters.DP = Convert.FromBase64String(dp);
+            if (!string.IsNullOrWhiteSpace(dp)) parameters.DP = Convert.FromBase64String(dp.DiscardWhiteSpaces());
 
             string dq = rsakvElement.Element(ns + "DQ")?.Value;
-            if (!string.IsNullOrWhiteSpace(dq)) parameters.DQ = Convert.FromBase64String(dq);
+            if (!string.IsNullOrWhiteSpace(dq)) parameters.DQ = Convert.FromBase64String(dq.DiscardWhiteSpaces());
 
             string inverseQ = rsakvElement.Element(ns + "InverseQ")?.Value;
-            if (!string.IsNullOrWhiteSpace(inverseQ)) parameters.InverseQ = Convert.FromBase64String(inverseQ);
+            if (!string.IsNullOrWhiteSpace(inverseQ)) parameters.InverseQ = Convert.FromBase64String(inverseQ.DiscardWhiteSpaces());
 
             string d = rsakvElement.Element(ns + "D")?.Value;
-            if (!string.IsNullOrWhiteSpace(d)) parameters.D = Convert.FromBase64String(d);
+            if (!string.IsNullOrWhiteSpace(d)) parameters.D = Convert.FromBase64String(d.DiscardWhiteSpaces());
 
             // Ensure parameters are valid.
             using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())

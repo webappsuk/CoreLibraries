@@ -41,10 +41,13 @@
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
     <Compile Include="Caching\WeakSingleton.cs" />
+    <Compile Include="Configuration\XmlConfigurationElement.cs" />
+    <Compile Include="Configuration\XmlConfigurationSection.cs" />
     <Compile Include="Converters\DurationConverter.cs" />
     <Compile Include="Converters\InstantConverter.cs" />
     <Compile Include="Converters\LocalDateTimeConverter.cs" />
     <Compile Include="Converters\PeriodConverter.cs" />
+    <Compile Include="Converters\SimplifiedTypeNameConverter.cs" />
     <Compile Include="Converters\ZonedDateTimeConverter.cs" />
     <Compile Include="Configuration\ConfigurationFileWatcher.cs" />
     <Compile Include="Actions.cs">

@@ -29,7 +29,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using WebApplications.Testing;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography.Test
 {
@@ -41,29 +40,9 @@ namespace WebApplications.Utilities.Cryptography.Test
         [NotNull]
         protected static readonly Random Random = new Random();
 
-        [NotNull]
-        protected static CryptographyConfiguration Configuration { get; private set; }
-
-        [NotNull]
-        protected static ICryptoProvider RSA { get; private set; }
-
-        [NotNull]
-        protected static ICryptoProvider AES { get; private set; }
-
-        [NotNull]
-        protected static ICryptoProvider AES2 { get; private set; }
-
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
-            Configuration = CryptographyConfiguration.Active;
-            Assert.IsNotNull(Configuration);
-            RSA = Configuration.Provider("RSA");
-            Assert.IsNotNull(RSA);
-            AES = Configuration.Provider("AES");
-            Assert.IsNotNull(AES);
-            AES2 = Configuration.Provider("AES2");
-            Assert.IsNotNull(AES2);
         }
     }
 }

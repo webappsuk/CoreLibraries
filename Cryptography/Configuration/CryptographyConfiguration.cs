@@ -26,8 +26,6 @@
 #endregion
 
 using System.Configuration;
-using System.Diagnostics;
-using System.Text;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
@@ -54,85 +52,6 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="SecureIdentifier"/> key.
-        /// </summary>
-        /// <value>The secure identifier key.</value>
-        [ConfigurationProperty("secureIdentifierKey", DefaultValue = null, IsRequired = false)]
-        [CanBeNull]
-        public string SecureIdentifierKey
-        {
-            get { return GetProperty<string>("secureIdentifierKey"); }
-            set { SetProperty("secureIdentifierKey", value); }
-        }
-
-        /// <summary>
-        /// Gets the raw XML representation of this section.
-        /// </summary>
-        internal string RawXml
-        {
-            get
-            {
-                StringBuilder xml = new StringBuilder("<cryptography><providers>");
-
-                foreach (ProviderElement provider in Providers)
-                {
-                    Debug.Assert(provider != null);
-                    Debug.Assert(provider.Type != null);
-
-                    xml.Append("<add name=\"")
-                        .Append(provider.Name)
-                        .Append("\" type=\"")
-                        .Append(provider.Type.SimplifiedTypeFullName())
-                        .Append("\" enabled=\"")
-                        .Append(provider.IsEnabled)
-                        .Append("\" id=\"")
-                        .Append(provider.Id)
-                        .Append("\" keyLifeInDays=\"")
-                        .Append(provider.KeyLifeInDays)
-                        .Append("\"");
-                    if (provider.Keys.Count > 0)
-                    {
-                        xml.Append("><keys>");
-                        foreach (KeyElement key in provider.Keys)
-                        {
-                            Debug.Assert(key != null);
-
-                            xml.Append("<add value=\"")
-                                .Append(key.Value)
-                                .Append("\" expiry=\"")
-                                .Append(key.Expiry.ToString("yyyy-MM-dd HH:mm:ss"))
-                                .Append("\"/>");
-                        }
-
-                        xml.Append("</keys></add>");
-                    }
-                    else
-                        xml.Append("/>");
-                }
-
-                xml.Append("</providers></cryptography>");
-
-                return xml.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Get the <see cref="ICryptoProvider"/> with the <see paramref="index">specified index</see>.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>A <see cref="ICryptoProvider"/> if found; otherwise <see langword="null"/>.</returns>
-        [CanBeNull]
-        public ICryptoProvider Provider(int index) => Providers[index]?.Provider;
-
-        /// <summary>
-        /// Get the <see cref="ICryptoProvider"/> with the <see paramref="id">specified identifier</see>.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns>A <see cref="ICryptoProvider"/> if found; otherwise <see langword="null"/>.</returns>
-        [CanBeNull]
-        public ICryptoProvider Provider(string id) => !string.IsNullOrEmpty(id) ? Providers[id]?.Provider : null;
-
-        /// <summary>
         /// Used to initialize a default set of values for the <see cref="CryptographyConfiguration"/> object.
         /// </summary>
         protected override void InitializeDefault()
@@ -141,6 +60,16 @@ namespace WebApplications.Utilities.Cryptography.Configuration
             Providers = Providers ?? new ProviderCollection();
             // ReSharper restore ConstantNullCoalescingCondition
             base.InitializeDefault();
+        }
+
+        /// <summary>
+        /// Get's the provider with the specified identity.
+        /// </summary>
+        /// <param name="providerId">The provider identifier.</param>
+        /// <returns>A <see cref="CryptographyProvider"/>.</returns>
+        public CryptographyProvider Provider(string providerId)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

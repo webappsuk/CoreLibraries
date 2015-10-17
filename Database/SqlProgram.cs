@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -35,7 +36,6 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
@@ -330,7 +330,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
         /// <param name="ignoreValidationErrors"><para>If set to <see langword="true" /> then don't throw any parameter validation errors.</para>
         /// <para>By default this is set to <see langword="false" />.</para></param>
-        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <see paramref="parameters" />.</para>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <paramref name="parameters" />.</para>
         /// <para>By default this is set to <see langword="false" />.</para></param>
         /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
         /// <para>This is the time to wait for the command to execute.</para>
@@ -370,7 +370,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameters">The program <see cref="Parameters">parameters</see>.</param>
         /// <param name="ignoreValidationErrors"><para>If set to <see langword="true" /> then don't throw any parameter validation errors.</para>
         /// <para>By default this is set to <see langword="false" />.</para></param>
-        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <see paramref="parameters" />.</para>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <paramref name="parameters" />.</para>
         /// <para>By default this is set to <see langword="false" />.</para></param>
         /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
         /// <para>This is the time to wait for the command to execute.</para>
@@ -535,7 +535,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="program">The base program (stored procedure/function).</param>
         /// <param name="ignoreValidationErrors">If set to <see langword="true" /> then don't throw any parameter validation errors.</param>
-        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <see paramref="parameters" />.</para>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <paramref name="parameters" />.</para>
         /// <para>By default this is set to <see langword="false" />.</para></param>
         /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
         /// <para>This is the time to wait for the command to execute.</para>

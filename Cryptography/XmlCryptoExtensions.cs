@@ -43,31 +43,26 @@ namespace WebApplications.Utilities.Cryptography
     public static class XmlCryptoExtensions
     {
         /// <summary>
-        /// Decrypts a <see cref="XNode"/>.
+        /// Decrypts a <see cref="XNode" />.
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="cryptoProvider">The encryptor decryptor.</param>
+        /// <param name="provider">The cryptography provider.</param>
         /// <param name="decryptedXml">The decrypted XML.</param>
-        /// <param name="isLatestKey">The latest key.</param>
-        /// <returns>
-        /// The upmost <see cref="XElement"/> that was decrypted.
-        /// </returns>
+        /// <returns>The upmost <see cref="XElement" /> that was decrypted.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
         public static bool TryDecrypt(
             [NotNull] this XNode inputNode,
-            [NotNull] ICryptoProvider cryptoProvider,
-            out XElement decryptedXml,
-            out bool? isLatestKey)
+            [NotNull] CryptographyProvider provider,
+            out XElement decryptedXml)
         {
-            if (inputNode == null) throw new ArgumentNullException("inputNode");
-            if (cryptoProvider == null) throw new ArgumentNullException("cryptoProvider");
+            if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
 
             decryptedXml = null;
-            isLatestKey = null;
             try
             {
-                bool l;
-                decryptedXml = Decrypt(inputNode, cryptoProvider, out l);
-                isLatestKey = l;
+                decryptedXml = Decrypt(inputNode, provider);
                 return true;
             }
             catch
@@ -77,31 +72,27 @@ namespace WebApplications.Utilities.Cryptography
         }
 
         /// <summary>
-        /// Decrypts a <see cref="XmlNode"/>.
+        /// Decrypts a <see cref="XmlNode" />.
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="cryptoProvider">The encryptor decryptor.</param>
+        /// <param name="provider">The cryptography provider.</param>
         /// <param name="decryptedXml">The decrypted XML.</param>
-        /// <param name="isLatestKey">The is latest key.</param>
-        /// <returns>
-        /// The upmost <see cref="XmlElement"/> that was decrypted.
-        /// </returns>
+        /// <returns>The upmost <see cref="XmlElement" /> that was decrypted.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
         public static bool TryDecrypt(
             [NotNull] XmlNode inputNode,
-            [NotNull] ICryptoProvider cryptoProvider,
-            out XmlElement decryptedXml,
-            out bool? isLatestKey)
+            [NotNull] CryptographyProvider provider,
+            out XmlElement decryptedXml)
         {
-            if (inputNode == null) throw new ArgumentNullException("inputNode");
-            if (cryptoProvider == null) throw new ArgumentNullException("cryptoProvider");
+            if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
 
             decryptedXml = null;
-            isLatestKey = null;
             try
             {
                 bool l;
-                decryptedXml = Decrypt(inputNode, cryptoProvider, out l);
-                isLatestKey = l;
+                decryptedXml = Decrypt(inputNode, provider);
                 return true;
             }
             catch
@@ -111,26 +102,24 @@ namespace WebApplications.Utilities.Cryptography
         }
 
         /// <summary>
-        /// Decrypts a <see cref="XNode"/>.
+        /// Decrypts a <see cref="XNode" />.
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="cryptoProvider">The encryptor decryptor.</param>
-        /// <param name="isLatestKey">if set to <see langword="true"/> the latest key was always used.</param>
-        /// <returns>
-        /// The upmost <see cref="XElement"/> that was decrypted.
-        /// </returns>
+        /// <param name="cryptoProvider">The crypto provider.</param>
+        /// <returns>The upmost <see cref="XElement" /> that was decrypted.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         [CanBeNull]
         public static XElement Decrypt(
             [NotNull] this XNode inputNode,
-            [NotNull] ICryptoProvider cryptoProvider,
-            out bool isLatestKey)
+            [NotNull] CryptographyProvider cryptoProvider)
         {
-            if (inputNode == null) throw new ArgumentNullException("inputNode");
-            if (cryptoProvider == null) throw new ArgumentNullException("cryptoProvider");
+            if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
+            if (cryptoProvider == null) throw new ArgumentNullException(nameof(cryptoProvider));
 
             XElement element;
             XDocument ownerDocument;
-            isLatestKey = true;
             switch (inputNode.NodeType)
             {
                 case XmlNodeType.Element:
@@ -156,7 +145,7 @@ namespace WebApplications.Utilities.Cryptography
              */
                 default:
                     throw new ArgumentOutOfRangeException(
-                        "inputNode",
+                        nameof(inputNode),
                         string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Cryptographer_Decrypt_CannotDecryptNode,
@@ -178,13 +167,10 @@ namespace WebApplications.Utilities.Cryptography
                 if (element.Name == "Encrypted")
                 {
                     // Decrypt the element
-                    bool l;
-                    string decryptedXmlStr = cryptoProvider.Decrypt(element.Value, out l);
+                    string decryptedXmlStr = cryptoProvider.DecryptFromStringToString(element.Value);
                     if (string.IsNullOrEmpty(decryptedXmlStr))
                         continue;
-
-                    // Update output flags.
-                    isLatestKey &= l;
+                    
 
                     XElement decryptedElement = XElement.Parse(decryptedXmlStr);
                     element.ReplaceWith(decryptedElement);
@@ -202,7 +188,7 @@ namespace WebApplications.Utilities.Cryptography
         /// Decrypts a <see cref="XmlNode"/>.
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="cryptoProvider">The encryptor decryptor.</param>
+        /// <param name="provider">The cryptography provider.</param>
         /// <param name="isLatestKey">if set to <see langword="true"/> the latest key was always used.</param>
         /// <returns>
         /// The upmost <see cref="XmlElement"/> that was decrypted.
@@ -210,15 +196,13 @@ namespace WebApplications.Utilities.Cryptography
         [CanBeNull]
         public static XmlElement Decrypt(
             [NotNull] this XmlNode inputNode,
-            [NotNull] ICryptoProvider cryptoProvider,
-            out bool isLatestKey)
+            [NotNull] CryptographyProvider cryptoProvider)
         {
-            if (inputNode == null) throw new ArgumentNullException("inputNode");
-            if (cryptoProvider == null) throw new ArgumentNullException("cryptoProvider");
+            if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
+            if (cryptoProvider == null) throw new ArgumentNullException(nameof(cryptoProvider));
 
             XmlElement element;
             XmlDocument ownerDocument;
-            isLatestKey = true;
             switch (inputNode.NodeType)
             {
                 case XmlNodeType.Element:
@@ -244,7 +228,7 @@ namespace WebApplications.Utilities.Cryptography
              */
                 default:
                     throw new ArgumentOutOfRangeException(
-                        "inputNode",
+                        nameof(inputNode),
                         string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Cryptographer_Decrypt_CannotDecryptNode,
@@ -280,13 +264,9 @@ namespace WebApplications.Utilities.Cryptography
                 if (element.LocalName == "Encrypted")
                 {
                     // Decrypt the element
-                    bool l;
-                    string decryptedXmlStr = cryptoProvider.Decrypt(element.InnerText, out l);
+                    string decryptedXmlStr = cryptoProvider.DecryptFromStringToString(element.InnerText);
                     if (string.IsNullOrEmpty(decryptedXmlStr))
                         continue;
-
-                    // Update output flags.
-                    isLatestKey &= l;
 
                     // Create document fragment
                     loaderDocument.LoadXml(decryptedXmlStr);
@@ -327,15 +307,15 @@ namespace WebApplications.Utilities.Cryptography
         /// Encrypts a <see cref="XNode"/>
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="cryptoProvider">The encryptor decryptor.</param>
+        /// <param name="provider">The cryptography provider.</param>
         /// <returns>
         /// The upmost <see cref="XElement"/> that was encrypted.
         /// </returns>
         [CanBeNull]
-        public static XElement Encrypt([NotNull] this XNode inputNode, [NotNull] ICryptoProvider cryptoProvider)
+        public static XElement Encrypt([NotNull] this XNode inputNode, [NotNull] CryptographyProvider provider)
         {
-            if (inputNode == null) throw new ArgumentNullException("inputNode");
-            if (cryptoProvider == null) throw new ArgumentNullException("cryptoProvider");
+            if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
 
             XElement element;
             XDocument ownerDocument;
@@ -364,7 +344,7 @@ namespace WebApplications.Utilities.Cryptography
              */
                 default:
                     throw new ArgumentOutOfRangeException(
-                        "inputNode",
+                        nameof(inputNode),
                         string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Cryptographer_Encrypt_CannotEncryptNode,
@@ -376,7 +356,7 @@ namespace WebApplications.Utilities.Cryptography
                 return null;
 
             // Create an encrypted element.
-            XElement encryptedElement = new XElement("Encrypted", cryptoProvider.Encrypt(element.ToString()));
+            XElement encryptedElement = new XElement("Encrypted", provider.Encrypt(element.ToString()));
             element.ReplaceWith(encryptedElement);
             return encryptedElement;
         }
@@ -385,17 +365,17 @@ namespace WebApplications.Utilities.Cryptography
         /// Encrypts a <see cref="XmlNode"/>
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="cryptoProvider">The encryptor decryptor.</param>
+        /// <param name="provider">The cryptography provider.</param>
         /// <returns>
         /// The upmost <see cref="XmlElement"/> that was encrypted.
         /// </returns>
         [CanBeNull]
         public static XmlElement Encrypt(
             [NotNull] this XmlNode inputNode,
-            [NotNull] ICryptoProvider cryptoProvider)
+            [NotNull] CryptographyProvider provider)
         {
-            if (inputNode == null) throw new ArgumentNullException("inputNode");
-            if (cryptoProvider == null) throw new ArgumentNullException("cryptoProvider");
+            if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
 
             XmlElement element;
             XmlDocument ownerDocument;
@@ -424,7 +404,7 @@ namespace WebApplications.Utilities.Cryptography
              */
                 default:
                     throw new ArgumentOutOfRangeException(
-                        "inputNode",
+                        nameof(inputNode),
                         string.Format(
                             // ReSharper disable once AssignNullToNotNullAttribute
                             Resources.Cryptographer_Encrypt_CannotEncryptNode,
@@ -442,7 +422,7 @@ namespace WebApplications.Utilities.Cryptography
 
             // Create an encrypted element.
             XmlElement encryptedElement = ownerDocument.CreateElement("Encrypted", ownerDocument.NamespaceURI);
-            encryptedElement.InnerText = cryptoProvider.Encrypt(element.OuterXml);
+            encryptedElement.InnerText = provider.EncryptToString(element.OuterXml);
 
             parentNode.ReplaceChild(encryptedElement, element);
             return encryptedElement;

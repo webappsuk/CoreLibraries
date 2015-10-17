@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Cryptography
         private const string TagValue = "Value";
 
         [NotNull]
-        private readonly ICryptoProvider _provider;
+        private readonly CryptographyProvider _provider;
 
         /// <summary>
         /// Flag indicating which value (if either) is out of date
@@ -85,7 +85,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="isHidden">if set to <see langword="true"/> is hidden.</param>
         /// <exception cref="ArgumentNullException"><paramref name="provider"/> is <see langword="null" />.</exception>
         public EncryptedString(
-            [NotNull] ICryptoProvider provider,
+            [NotNull] CryptographyProvider provider,
             string value = null,
             bool isEncrypted = false,
             bool isHidden = false)
@@ -108,7 +108,7 @@ namespace WebApplications.Utilities.Cryptography
         private EncryptedString([NotNull] SerializationInfo info, StreamingContext context)
         {
             string providerId = info.GetString(TagID);
-            ICryptoProvider provider = CryptographyConfiguration.Active.Provider(providerId);
+            CryptographyProvider provider = CryptographyConfiguration.Active.Provider(providerId);
 
             if (provider == null)
                 throw new SerializationException(
@@ -140,7 +140,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (_dirty == Dirty.Encrypted)
                 {
                     _encrypted = !string.IsNullOrEmpty(_unencrypted)
-                        ? _provider.Encrypt(_unencrypted)
+                        ? _provider.EncryptToString(_unencrypted)
                         : _unencrypted;
                     _dirty = Dirty.Neither;
                 }
@@ -172,9 +172,8 @@ namespace WebApplications.Utilities.Cryptography
             {
                 if (_dirty == Dirty.Unencrypted)
                 {
-                    bool latestKey;
                     _unencrypted = !string.IsNullOrEmpty(_encrypted)
-                        ? _provider.Decrypt(_encrypted, out latestKey)
+                        ? _provider.DecryptFromStringToString(_encrypted)
                         : _encrypted;
                     _dirty = Dirty.Neither;
                 }

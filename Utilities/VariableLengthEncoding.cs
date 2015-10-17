@@ -81,7 +81,7 @@ namespace WebApplications.Utilities
         /// less than 128 (1 &lt;&lt; 7).  As such the compression becomes inefficient above 28 bits, however it has
         /// the distinct benefit of being able to encode all possible ulong values, requiring up to 10 bytes for the
         /// largest values, at a cost of two bytes compared to a ulong.</para></remarks>
-        /// <exception cref="ArgumentNullException"><see paramref="buffer"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null"/>.</exception>
         /// <exception cref="InternalBufferOverflowException">Could not encode the value as the buffer ran out of space.</exception>
         [PublicAPI]
         public static void Encode(ulong value, [NotNull] byte[] buffer, long offset = 0)
@@ -103,7 +103,7 @@ namespace WebApplications.Utilities
         /// less than 128 (1 &lt;&lt; 7).  As such the compression becomes inefficient above 28 bits, however it has
         /// the distinct benefit of being able to encode all possible ulong values, requiring up to 10 bytes for the
         /// largest values, at a cost of two bytes compared to a ulong.</para></remarks>
-        /// <exception cref="ArgumentNullException"><see paramref="buffer"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null"/>.</exception>
         /// <exception cref="InternalBufferOverflowException">Could not encode the value as the buffer ran out of space.</exception>
         [PublicAPI]
         public static void Encode(ulong value, [NotNull] byte[] buffer, ref long offset)
@@ -131,7 +131,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(ulong)"/>
         /// <seealso cref="Encode(ulong,byte[],long)"/>
         /// <seealso cref="Encode(ulong,byte[],ref long)"/>
-        /// <exception cref="ArgumentNullException"><see paramref="buffer"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null"/>.</exception>
         /// <remarks><para>As this uses a variable length encoding that encodes it's own length a length is no required.</para></remarks>
         /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
         [PublicAPI]
@@ -145,7 +145,7 @@ namespace WebApplications.Utilities
         /// <returns>The uncompressed value.</returns>
         /// <seealso cref="Encode(ulong)"/>
         /// <seealso cref="Encode(ulong,byte[],long)"/>
-        /// <exception cref="ArgumentNullException"><see paramref="buffer"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null"/>.</exception>
         /// <remarks><para>As this uses a variable length encoding that encodes it's own length a length is no required.</para></remarks>
         /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
         [PublicAPI]

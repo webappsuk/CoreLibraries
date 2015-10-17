@@ -25,13 +25,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.SqlServer.Server;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -57,7 +57,7 @@ namespace WebApplications.Utilities
         ///   There is a type mismatch between the retrieved column and the specified <paramref name="value"/>.
         /// </exception>
         /// <exception cref="NullReferenceException">
-        ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
+        ///   <paramref name="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, int ordinal, T value) where T : class
         {
@@ -77,7 +77,7 @@ namespace WebApplications.Utilities
         ///   <paramref name="ordinal"/> is less than zero or greater than the number of columns in the record.
         /// </exception>
         /// <exception cref="NullReferenceException">
-        ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
+        ///   <paramref name="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, int ordinal, T? value) where T : struct
         {
@@ -101,7 +101,7 @@ namespace WebApplications.Utilities
         ///   There is a type mismatch between the retrieved column and the specified <paramref name="value"/>.
         /// </exception>
         /// <exception cref="NullReferenceException">
-        ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
+        ///   <paramref name="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, [NotNull] string columnName, T value)
             where T : class
@@ -127,7 +127,7 @@ namespace WebApplications.Utilities
         ///   There is a type mismatch between the retrieved column and the <paramref name="value"/>.
         /// </exception>
         /// <exception cref="NullReferenceException">
-        ///   <see paramref="sqlDataRecord"/> is <see langword="null"/>.
+        ///   <paramref name="sqlDataRecord"/> is <see langword="null"/>.
         /// </exception>
         public static void Set<T>([NotNull] this SqlDataRecord sqlDataRecord, [NotNull] string columnName, T? value)
             where T : struct

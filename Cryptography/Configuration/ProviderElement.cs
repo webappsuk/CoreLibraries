@@ -26,11 +26,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
-using System.Linq;
-using System.Threading;
 using WebApplications.Utilities.Annotations;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
@@ -65,8 +61,6 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         /// The type.
         /// </value>
         [ConfigurationProperty("type", IsRequired = true)]
-        [TypeConverter(typeof(TypeNameConverter))]
-        [SubclassTypeValidator(typeof(ICryptoProvider))]
         [NotNull]
         public Type Type
         {
@@ -101,37 +95,7 @@ namespace WebApplications.Utilities.Cryptography.Configuration
             get { return GetProperty<string>("name"); }
             set { SetProperty("name", value); }
         }
-
-        /// <summary>
-        /// Gets or sets the life of the key in days.
-        /// </summary>
-        /// <value>
-        /// The key life in days.
-        /// </value>
-        [ConfigurationProperty("keyLifeInDays", IsRequired = false, DefaultValue = 7)]
-        public int KeyLifeInDays
-        {
-            get { return GetProperty<int>("keyLifeInDays"); }
-            set { this["keyLifeInDays"] = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the keys for this provider.
-        /// </summary>
-        /// <value>
-        /// The keys.
-        /// </value>
-        [ConfigurationProperty("keys", IsRequired = false, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof(KeyCollection),
-            CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
-        [NotNull]
-        [ItemNotNull]
-        public virtual KeyCollection Keys
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<KeyCollection>("keys"); }
-            set { this["keys"] = value; }
-        }
+        
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Configuration.ConfigurationElement" /> object is read-only.
@@ -142,72 +106,6 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         public override bool IsReadOnly()
         {
             return false;
-        }
-
-        private ICryptoProvider _provider;
-
-        /// <summary>
-        /// Gets an instance of this provider.
-        /// </summary>
-        /// <value>An instance of this provider.</value>
-        /// <exception cref="System.Configuration.ConfigurationErrorsException" accessor="get">The provider is not <see cref="IsEnabled">enabled</see>.</exception>
-        [NotNull]
-        public ICryptoProvider Provider
-        {
-            get
-            {
-                if (!IsEnabled)
-                    throw new ConfigurationErrorsException(
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        string.Format(Resources.CryptoProviderWrapper_Constructor_ProviderNotEnabled, Id));
-
-                ICryptoProvider provider = _provider;
-                if (provider != null) return provider;
-
-
-                // Get keys to pass through to the provider constructor.
-                Key[] keys = Keys
-                    .Select(key => new Key(key.Value, key.Expiry))
-                    .ToArray();
-
-                // Create provider
-                provider = Type
-                    .ConstructorFunc<ProviderElement, IEnumerable<Key>, ICryptoProvider>()
-                    (this, keys.Length > 0 ? keys : null);
-
-                // Only set a new provider if there isn't already one set.
-                return Interlocked.CompareExchange(ref _provider, provider, null) ?? provider;
-            }
-        }
-
-
-        /// <summary>
-        /// Adds a new encryption key to the configuration and saves.
-        /// </summary>
-        /// <param name="newKey">The new key to add to the configuration file.</param>
-        internal void AddKey([NotNull] Key newKey)
-        {
-            if (newKey == null) throw new ArgumentNullException("newKey");
-
-            //_aesEncryptionKeys.Add(newKey);
-            //_aesEncryptionKeys = _aesEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
-
-            //// If the ProviderElement is null we cannot save to the configuration.
-            //if (_provider == null)
-            //    return;
-
-            // Create a key element to add to the provider element.
-            KeyElement newKeyElement = new KeyElement
-            {
-                Value = newKey.Value,
-                Expiry = newKey.Expiry
-            };
-
-            Keys.Add(newKeyElement);
-
-            System.Configuration.Configuration currentConfiguration = CurrentConfiguration;
-            if (currentConfiguration?.HasFile == true)
-                currentConfiguration.Save(ConfigurationSaveMode.Modified);
         }
     }
 }

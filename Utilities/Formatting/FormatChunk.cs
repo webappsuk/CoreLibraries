@@ -528,8 +528,8 @@ namespace WebApplications.Utilities.Formatting
 
         /// <summary>
         /// Writes this instance to the
-        /// <see paramref="writer" />, using the optional
-        /// <see paramref="format" />.
+        /// <paramref name="writer" />, using the optional
+        /// <paramref name="format" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>

@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Configuration;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Converters;
 using WebApplications.Utilities.Logging.Interfaces;
 
 namespace WebApplications.Utilities.Logging.Configuration
@@ -45,7 +46,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         /// <value>The logger type.</value>
         [ConfigurationProperty("type")]
-        [TypeConverter(typeof(TypeNameConverter))]
+        [TypeConverter(typeof(SimplifiedTypeNameConverter))]
         [SubclassTypeValidator(typeof(ILogger))]
         public override Type Type
         {

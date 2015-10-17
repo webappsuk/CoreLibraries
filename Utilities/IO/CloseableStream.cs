@@ -58,12 +58,12 @@ namespace WebApplications.Utilities.IO
         private readonly Func<Exception, bool> _onError;
 
         /// <summary>
-        /// Create a stream that will invoke the specified <see paramref="onClose"/> action when the <see paramref="stream"/> is closed/disposed.
+        /// Create a stream that will invoke the specified <paramref name="onClose"/> action when the <paramref name="stream"/> is closed/disposed.
         /// </summary>
         /// <param name="stream">The stream to wrap</param>
-        /// <param name="onClose">The action to call after the specified <see paramref="stream"/> is closed.</param>
-        /// <param name="onError">The optional function to call if the underlying stream errors on close (<see paramref="onClose" /> will still be called after
-        /// <see paramref="onError"/>), return <see langword="true"/> to suppress the exception.</param>
+        /// <param name="onClose">The action to call after the specified <paramref name="stream"/> is closed.</param>
+        /// <param name="onError">The optional function to call if the underlying stream errors on close (<paramref name="onClose" /> will still be called after
+        /// <paramref name="onError"/>), return <see langword="true"/> to suppress the exception.</param>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="onClose"/> is <see langword="null" />.</exception>
         [PublicAPI]

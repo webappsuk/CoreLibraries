@@ -86,7 +86,7 @@ namespace WebApplications.Utilities.Cryptography
         }
 
         /// <summary>
-        /// Generate a random unicode string of the specified <see paramref="length"/>.
+        /// Generate a random unicode string of the specified <paramref name="length"/>.
         /// </summary>
         /// <param name="length">The length.</param>
         /// <returns>A random unicode string.</returns>
@@ -241,7 +241,7 @@ namespace WebApplications.Utilities.Cryptography
         /// </value>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        /// <exception cref="System.IndexOutOfRangeException">The specified <see paramref="index" /> should be less than <see cref="Length"/>.</exception>
+        /// <exception cref="System.IndexOutOfRangeException">The specified <paramref name="index" /> should be less than <see cref="Length"/>.</exception>
         [PublicAPI]
         public byte this[byte index]
         {

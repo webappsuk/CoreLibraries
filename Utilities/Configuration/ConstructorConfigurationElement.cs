@@ -34,6 +34,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Converters;
 
 namespace WebApplications.Utilities.Configuration
 {
@@ -49,7 +50,7 @@ namespace WebApplications.Utilities.Configuration
         /// <value>The type of the object to construct.</value>
         /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         [ConfigurationProperty("type", IsRequired = true)]
-        [TypeConverter(typeof(TypeNameConverter))]
+        [TypeConverter(typeof(SimplifiedTypeNameConverter))]
         [NotNull]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual Type Type

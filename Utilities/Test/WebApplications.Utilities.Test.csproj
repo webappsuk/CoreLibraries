@@ -43,14 +43,6 @@
   <ItemGroup>
     <Compile Include="Caching\ConcurrentLookupTests.cs" />
     <Compile Include="Caching\CyclicConcurrentQueueTests.cs" />
-    <Compile Include="Configuration\ConfigurationElementCollectionTests.cs" />
-    <Compile Include="Configuration\ConfigurationElementTests.cs" />
-    <Compile Include="Configuration\ConfigurationSectionAttributeTests.cs" />
-    <Compile Include="Configuration\ConfigurationSectionTests.cs" />
-    <Compile Include="Configuration\ConfigurationTestBase.cs" />
-    <Compile Include="Configuration\ConstructorConfigurationElementTests.cs" />
-    <Compile Include="Configuration\ParameterCollectionTests.cs" />
-    <Compile Include="Configuration\ParameterElementTests.cs" />
     <Compile Include="DebuggingExtensionsTests.cs" />
     <Compile Include="Extensions\ArraySplitTests.cs" />
     <Compile Include="Extensions\EqualityFunctionsTests.cs" />

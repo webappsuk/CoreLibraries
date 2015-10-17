@@ -29,6 +29,7 @@ using System;
 using System.ComponentModel;
 using System.Configuration;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Converters;
 
 namespace WebApplications.Utilities.Configuration
 {
@@ -88,7 +89,7 @@ namespace WebApplications.Utilities.Configuration
         ///   The configuration property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("type", IsRequired = false)]
-        [TypeConverter(typeof(TypeNameConverter))]
+        [TypeConverter(typeof(SimplifiedTypeNameConverter))]
         [CanBeNull]
         public Type Type
         {
@@ -104,7 +105,7 @@ namespace WebApplications.Utilities.Configuration
         ///   The configuration property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("typeConverter", IsRequired = false)]
-        [TypeConverter(typeof(TypeNameConverter))]
+        [TypeConverter(typeof(SimplifiedTypeNameConverter))]
         [SubclassTypeValidator(typeof(TypeConverter))]
         [CanBeNull]
         public Type TypeConverter

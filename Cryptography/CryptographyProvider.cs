@@ -27,6 +27,7 @@
 
 using System;
 using System.Configuration;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
@@ -256,17 +257,17 @@ namespace WebApplications.Utilities.Cryptography
         /// Gets the configuration XML, this can be used to create a new provider in future.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <returns>The <see paramref="configuration"/> element.</returns>
+        /// <returns>The <paramref name="configuration"/> element.</returns>
         [NotNull]
         public XElement GetConfigurationXml(XName name = null) => SetXml(new XElement(name ?? "CryptoProvider"));
 
         /// <summary>
-        /// Saves this cryptography provider's configuration to the specified <see paramref="configuration"/>.
+        /// Saves this cryptography provider's configuration to the specified <paramref name="configuration"/>.
         /// </summary>
         /// <param name="id">The identifier; defaults to <see cref="Id"/> if not specified.</param>
         /// <param name="configuration">The configuration; defaults to the 
         /// <see cref="ConfigurationSection{T}.Active">active</see> <see cref="CryptographyConfiguration"/>.</param>
-        /// <exception cref="ConfigurationErrorsException">Cannot persist the current cryptography provider to the configuration if no <see paramref="id"/> is supplied, and there is no <see cref="Id"/>.</exception>
+        /// <exception cref="ConfigurationErrorsException">Cannot persist the current cryptography provider to the configuration if no <paramref name="id"/> is supplied, and there is no <see cref="Id"/>.</exception>
         public void SaveToConfiguration(
             [CanBeNull] string id = null,
             [CanBeNull] CryptographyConfiguration configuration = null)
@@ -287,7 +288,7 @@ namespace WebApplications.Utilities.Cryptography
         /// Sets the XML configuration for this cryptographic provider.
         /// </summary>
         /// <param name="configuration">The configuration element.</param>
-        /// <returns>The <see paramref="configuration"/> element.</returns>
+        /// <returns>The <paramref name="configuration"/> element.</returns>
         [NotNull]
         protected virtual XElement SetXml([NotNull] XElement configuration)
         {
@@ -298,11 +299,50 @@ namespace WebApplications.Utilities.Cryptography
         }
 
         /// <summary>
+        /// Creates a <see cref="CryptographyProvider" /> from a name. See <see cref="https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx" /> for details.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>A <see cref="CryptographyProvider" />.</returns>
+        /// <exception cref="TargetInvocationException">The algorithm described by the <paramref name="name" /> parameter was used with Federal Information Processing Standards (FIPS) mode enabled, but is not FIPS compatible.</exception>
+        public static CryptographyProvider Create([NotNull] string name, params object[] args)
+        {
+            object provider = CryptoConfig.CreateFromName(name, args);
+            AsymmetricAlgorithm asymm = provider as AsymmetricAlgorithm;
+            if (asymm != null)
+            {
+                // TODO We currently only support RSA
+                RSACryptoServiceProvider rsa = asymm as RSACryptoServiceProvider;
+                // TODO if (rsa != null) return new RSACryptographyProvider(asymm);
+
+                throw new CryptographicException(
+                    string.Format("Unknown, or unsupported, cryptographic provider '{0}'.", name));
+            }
+
+            SymmetricAlgorithm sym = provider as SymmetricAlgorithm;
+            // TODO if (sym != null) return SymmetricCryptographyProvider.Create(sym);
+
+            HashAlgorithm hash = provider as HashAlgorithm;
+            // TODO if (hash != null) return HashingCryptographyProvider.Create(hash);
+
+            RandomNumberGenerator rnd = provider as RandomNumberGenerator;
+            // TODO if (rnd != null) return RandomCryptographyProvider.Create(rnd);
+
+            throw new CryptographicException(
+                string.Format("Unknown, or unsupported, cryptographic provider '{0}'.", name));
+        }
+
+        /// <summary>
         /// Creates a <see cref="CryptographyProvider" /> from an <see cref="XElement">XML</see> configuration.
         /// </summary>
         /// <param name="configuration">The configuration element.</param>
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
         public static CryptographyProvider Create([NotNull] XElement configuration)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static CryptographyProvider Create([NotNull] ProviderElement provider)
         {
             throw new NotImplementedException();
         }

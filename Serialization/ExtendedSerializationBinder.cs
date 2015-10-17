@@ -29,6 +29,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Runtime.Serialization;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities.Serialization
 {
@@ -79,11 +80,11 @@ namespace WebApplications.Utilities.Serialization
         /// <seealso cref="System.Reflection.AssemblyName"/>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            if (assemblyName == null) throw new ArgumentNullException("assemblyName");
-            if (typeName == null) throw new ArgumentNullException("typeName");
+            if (assemblyName == null) throw new ArgumentNullException(nameof(assemblyName));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             return _typeMap.GetOrAdd(
                 Reflection.SimplifiedTypeFullName(new[] { typeName, assemblyName }.JoinNotNullOrWhiteSpace(",")),
-                Type.GetType);
+                n => ExtendedType.FindType(n, false, true));
         }
 
         /// <summary>
@@ -112,8 +113,8 @@ namespace WebApplications.Utilities.Serialization
         /// <seealso cref="System.Reflection.AssemblyName"/>
         public static void MapType([NotNull] string assemblyName, [NotNull] string typeName, [NotNull] Type newType)
         {
-            if (assemblyName == null) throw new ArgumentNullException("assemblyName");
-            if (typeName == null) throw new ArgumentNullException("typeName");
+            if (assemblyName == null) throw new ArgumentNullException(nameof(assemblyName));
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             _typeMap.AddOrUpdate(
                 Reflection.SimplifiedTypeFullName(new[] { typeName, assemblyName }.JoinNotNullOrWhiteSpace(",")),
                 newType,

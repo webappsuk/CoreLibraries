@@ -34,6 +34,7 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -67,7 +68,7 @@ namespace WebApplications.Utilities.Logging
             get { return _defaultCulture; }
             set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 _defaultCulture = value;
             }
         }
@@ -99,7 +100,7 @@ namespace WebApplications.Utilities.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ResourceManager GetResourceManager([NotNull] Type type)
         {
-            if (type == null) throw new ArgumentNullException("type");
+            if (type == null) throw new ArgumentNullException(nameof(type));
             Debug.Assert(type.FullName != null);
 
             return _resourceManagers.GetOrAdd(
@@ -134,7 +135,7 @@ namespace WebApplications.Utilities.Logging
         [CanBeNull]
         public static ResourceManager GetResourceManager([NotNull] string typeFullName)
         {
-            if (typeFullName == null) throw new ArgumentNullException("typeFullName");
+            if (typeFullName == null) throw new ArgumentNullException(nameof(typeFullName));
 
             ResourceManager resourceManager;
             return _resourceManagers.TryGetValue(typeFullName, out resourceManager) ? resourceManager : null;
@@ -146,7 +147,7 @@ namespace WebApplications.Utilities.Logging
         /// <typeparam name="TResource">The type of the resource.</typeparam>
         /// <param name="property">The property.</param>
         /// <returns>
-        /// The resource's value in the specified <see paramref="culture" />; otherwise <see langword="null" />.
+        /// The resource's value in the specified <see cref="DefaultCulture">default culture</see>; otherwise <see langword="null" />.
         /// </returns>
         [CanBeNull]
         public static string GetResource<TResource>([NotNull] string property)
@@ -162,7 +163,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="property">The property.</param>
         /// <returns>
-        /// The resource's value in the specified <see paramref="culture" />; otherwise <see langword="null" />.
+        /// The resource's value in the specified <see cref="DefaultCulture">default culture</see>; otherwise <see langword="null" />.
         /// </returns>
         [CanBeNull]
         public static string GetResource([NotNull] Type resourceType, [NotNull] string property)
@@ -172,13 +173,13 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the resource's value, in the <see paramref="culture">specified culture</see>.
+        /// Gets the resource's value, in the <see cref="DefaultCulture">default culture</see>.
         /// </summary>
         /// <typeparam name="TResource">The type of the resource.</typeparam>
         /// <param name="property">The property.</param>
         /// <param name="culture">The culture.</param>
         /// <returns>
-        /// The resource's value in the specified <see paramref="culture" />; otherwise <see langword="null" />.
+        /// The resource's value in the specified <see cref="DefaultCulture">default culture</see>; otherwise <see langword="null" />.
         /// </returns>
         [CanBeNull]
         public static string GetResource<TResource>([NotNull] string property, [CanBeNull] CultureInfo culture)
@@ -189,12 +190,12 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the resource's value, in the <see paramref="culture">specified culture</see>.
+        /// Gets the resource's value, in the <paramref name="culture">specified culture</paramref>.
         /// </summary>
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="property">The property.</param>
         /// <param name="culture">The culture.</param>
-        /// <returns>The resource's value in the specified <see paramref="culture"/>; otherwise <see langword="null"/>.</returns>
+        /// <returns>The resource's value in the specified <paramref name="culture"/>; otherwise <see langword="null"/>.</returns>
         [CanBeNull]
         public static string GetResource(
             [NotNull] Type resourceType,
@@ -240,7 +241,7 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Tries to get the resource value, in the <see paramref="culture">specified culture</see>, for the given property name.
+        /// Tries to get the resource value, in the <paramref name="culture">specified culture</paramref>, for the given property name.
         /// </summary>
         /// <typeparam name="TResource">The type of the resource.</typeparam>
         /// <param name="property">The property.</param>
@@ -260,7 +261,7 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Tries to get the resource value, in the <see paramref="culture">specified culture</see>, for the given property name.
+        /// Tries to get the resource value, in the <paramref name="culture">specified culture</paramref>, for the given property name.
         /// </summary>
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="property">The property.</param>
@@ -275,8 +276,8 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             out string translation)
         {
-            if (resourceType == null) throw new ArgumentNullException("resourceType");
-            if (property == null) throw new ArgumentNullException("property");
+            if (resourceType == null) throw new ArgumentNullException(nameof(resourceType));
+            if (property == null) throw new ArgumentNullException(nameof(property));
 
             ResourceManager resourceManager = GetResourceManager(resourceType);
             if (resourceManager == null)
@@ -303,7 +304,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="typeFullName">Full name of the type.</param>
         /// <param name="property">The property.</param>
         /// <returns>
-        /// The resource's value in the specified <see paramref="culture" />; otherwise <see langword="null" />.
+        /// The resource's value in the specified <see cref="DefaultCulture">default culture</see>; otherwise <see langword="null" />.
         /// </returns>
         /// <remarks>This will only retrieve resource values for previously registered types.</remarks>
         [CanBeNull]
@@ -314,12 +315,12 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the resource's value, in the <see paramref="culture">specified culture</see>.
+        /// Gets the resource's value, in the <paramref name="culture">specified culture</paramref>.
         /// </summary>
         /// <param name="typeFullName">Full name of the type.</param>
         /// <param name="property">The property.</param>
         /// <param name="culture">The culture.</param>
-        /// <returns>The resource's value in the specified <see paramref="culture"/>; otherwise <see langword="null"/>.</returns>
+        /// <returns>The resource's value in the specified <paramref name="culture"/>; otherwise <see langword="null"/>.</returns>
         /// <remarks>This will only retrieve resource values for previously registered types.</remarks>
         [CanBeNull]
         public static string GetResource(
@@ -368,7 +369,7 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Tries to get the resource value, in the <see paramref="culture">specified culture</see>, for the given property name.
+        /// Tries to get the resource value, in the <paramref name="culture">specified culture</paramref>, for the given property name.
         /// </summary>
         /// <param name="typeFullName">Full name of the type.</param>
         /// <param name="property">The property.</param>
@@ -384,8 +385,8 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             out string translation)
         {
-            if (typeFullName == null) throw new ArgumentNullException("typeFullName");
-            if (property == null) throw new ArgumentNullException("property");
+            if (typeFullName == null) throw new ArgumentNullException(nameof(typeFullName));
+            if (property == null) throw new ArgumentNullException(nameof(property));
 
             ResourceManager resourceManager = GetResourceManager(typeFullName);
             if (resourceManager == null)
@@ -452,7 +453,7 @@ namespace WebApplications.Utilities.Logging
             try
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
-                return Expression.Lambda<Func<string>>(Expression.Property(null, Type.GetType(typeFullName), property));
+                return Expression.Lambda<Func<string>>(Expression.Property(null, ExtendedType.FindType(typeFullName), property));
             }
             catch
             {
@@ -493,8 +494,8 @@ namespace WebApplications.Utilities.Logging
             out Translation value,
             [CanBeNull] CultureInfo culture = null)
         {
-            if (resourceType == null) throw new ArgumentNullException("resourceType");
-            if (property == null) throw new ArgumentNullException("property");
+            if (resourceType == null) throw new ArgumentNullException(nameof(resourceType));
+            if (property == null) throw new ArgumentNullException(nameof(property));
 
             ResourceManager resourceManager = GetResourceManager(resourceType);
             if (resourceManager == null)
@@ -536,8 +537,8 @@ namespace WebApplications.Utilities.Logging
             out Translation value,
             [CanBeNull] CultureInfo culture = null)
         {
-            if (typeFullName == null) throw new ArgumentNullException("typeFullName");
-            if (property == null) throw new ArgumentNullException("property");
+            if (typeFullName == null) throw new ArgumentNullException(nameof(typeFullName));
+            if (property == null) throw new ArgumentNullException(nameof(property));
 
             ResourceManager resourceManager = GetResourceManager(typeFullName);
             if (resourceManager == null)
@@ -575,7 +576,7 @@ namespace WebApplications.Utilities.Logging
             out Translation value,
             [CanBeNull] CultureInfo culture = null)
         {
-            if (resource == null) throw new ArgumentNullException("resource");
+            if (resource == null) throw new ArgumentNullException(nameof(resource));
 
             try
             {
@@ -738,11 +739,11 @@ namespace WebApplications.Utilities.Logging
             [NotNull] CultureInfo culture,
             [NotNull] ResourceManager resourceManager)
         {
-            if (resourceTypeFullName == null) throw new ArgumentNullException("resourceTypeFullName");
-            if (resourceTag == null) throw new ArgumentNullException("resourceTag");
-            if (message == null) throw new ArgumentNullException("message");
-            if (culture == null) throw new ArgumentNullException("culture");
-            if (resourceManager == null) throw new ArgumentNullException("resourceManager");
+            if (resourceTypeFullName == null) throw new ArgumentNullException(nameof(resourceTypeFullName));
+            if (resourceTag == null) throw new ArgumentNullException(nameof(resourceTag));
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (culture == null) throw new ArgumentNullException(nameof(culture));
+            if (resourceManager == null) throw new ArgumentNullException(nameof(resourceManager));
 
             ResourceTypeFullName = resourceTypeFullName;
             ResourceTag = resourceTag;

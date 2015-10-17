@@ -274,7 +274,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="categoryName">Name of the category.</param>
         /// <param name="categoryHelp">The category help (only used by PerfSetup).</param>
         /// <returns>The performance counter.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">The <see paramref="PerfCategoryType" /> is not registered as a performance counter type.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The <typeparamref name="T">performance category type</typeparamref> is not registered as a performance counter type.</exception>
         /// <remarks>
         /// <para>Note that the category help parameter is used by PerfSetup to create and administer counters.  This method
         /// should always be called directly and should always be passed string literals - otherwise the counters cannot be

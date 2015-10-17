@@ -60,7 +60,7 @@ namespace WebApplications.Testing.Data
         /// <param name="recordSetDefinition">The table definition.</param>
         /// <param name="randomData">if set to <see langword="true" /> fills columns with random data; otherwise fills them with their default values.</param>
         /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) -
-        /// this is only applicable is <see paramref="randomData" /> is set to <see langword="true" /> [Defaults to 0.1 = 10%].</param>
+        /// this is only applicable is <paramref name="randomData" /> is set to <see langword="true" /> [Defaults to 0.1 = 10%].</param>
         /// <param name="columnGenerators">The column generators is an array of functions that generate a value for each column, if the function is
         /// <see langword="null" /> for a particular index then a random value is generated, if it is not null then the function is used.  The function takes
         /// the current row number as it's only parameter and must return an object of the correct type for the column.</param>

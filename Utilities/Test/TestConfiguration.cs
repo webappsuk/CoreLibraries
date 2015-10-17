@@ -25,11 +25,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
+using System.Threading;
+using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Test
@@ -40,6 +43,7 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestConstructor()
         {
+            /*
             ConfigurationSection<TestConfigurationSection>.Changed += (o, e) =>
             {
                 Assert.IsNotNull(o);
@@ -52,6 +56,7 @@ namespace WebApplications.Utilities.Test
                         Active);
                 Assert.IsTrue(e.NewConfiguration.IsActive);
             };
+            */
             TestConfigurationSection section = new TestConfigurationSection();
             string a = section.String;
             string b = section.String2;
@@ -63,13 +68,87 @@ namespace WebApplications.Utilities.Test
             /*string name = configuration.Constructors.First().Name;
             configuration.Constructors.Remove(name);
              */
-            TestConfigurationSection.Active = configuration;
+            //TestConfigurationSection.Active = configuration;
             Assert.IsNotNull(configuration);
             foreach (TestObjectConstructor constructor in configuration.Constructors)
             {
                 TestObject obj = constructor.GetInstance<TestObject>();
                 Assert.IsNotNull(obj);
             }
+        }
+
+        [TestMethod]
+        public void TestString()
+        {
+            Assert.AreEqual("A Test String", TestConfigurationSection.Active.String);
+        }
+
+        [TestMethod]
+        public void TestCustomXElement()
+        {
+            XElement custom = TestConfigurationSection.Active.Custom;
+            Assert.IsNotNull(custom);
+            XElement custom2 = TestConfigurationSection.Active.Custom;
+            Assert.IsNotNull(custom2);
+            Assert.AreNotSame(custom, custom2, "Get element should retrieve fresh XElement objects to prevent corruption.");
+
+            string cStr = custom.ToString(SaveOptions.DisableFormatting);
+            string cStr2 = custom2.ToString(SaveOptions.DisableFormatting);
+            Assert.AreEqual(cStr, cStr2);
+            Assert.AreEqual("custom", custom.Name.LocalName);
+            Assert.AreEqual("A", custom.Element("A").Value);
+            Assert.AreEqual("B", custom.Element("B").Value);
+            Assert.AreEqual("C", custom.Element("C").Value);
+
+            // Modify
+            custom.Element("A").Value = "1";
+            custom.Element("B").Value = "2";
+            custom.Element("C").Value = "3";
+
+            // Detect changes
+            EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
+            ConfigurationSection<TestConfigurationSection>.Changed += (o, e) =>
+            {
+                Assert.IsNotNull(o);
+                Assert.IsNotNull(e);
+                Assert.IsNotNull(e.OldConfiguration);
+                Assert.IsNotNull(e.NewConfiguration);
+                Assert.AreEqual(
+                    e.NewConfiguration,
+                    TestConfigurationSection.
+                        Active);
+                Assert.IsTrue(e.NewConfiguration.IsActive);
+                Trace.WriteLine("Configuration changed.");
+                ewh.Set();
+            };
+
+            // Update the custom node.
+            TestConfigurationSection.Active.Custom = custom;
+            TestConfigurationSection.Active.CurrentConfiguration?.Save();
+            
+            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
+
+            custom = TestConfigurationSection.Active.Custom;
+            Assert.AreEqual("custom", custom.Name.LocalName);
+            Assert.AreEqual("1", custom.Element("A").Value);
+            Assert.AreEqual("2", custom.Element("B").Value);
+            Assert.AreEqual("3", custom.Element("C").Value);
+
+            // Revert
+            custom.Element("A").Value = "A";
+            custom.Element("B").Value = "B";
+            custom.Element("C").Value = "C";
+
+            // Update the custom node.
+            TestConfigurationSection.Active.Custom = custom;
+            TestConfigurationSection.Active.CurrentConfiguration?.Save();
+
+            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
+            custom = TestConfigurationSection.Active.Custom;
+            Assert.AreEqual("custom", custom.Name.LocalName);
+            Assert.AreEqual("A", custom.Element("A").Value);
+            Assert.AreEqual("B", custom.Element("B").Value);
+            Assert.AreEqual("C", custom.Element("C").Value);
         }
     }
 
@@ -132,7 +211,7 @@ namespace WebApplications.Utilities.Test
     /// </summary>
     /// <remarks></remarks>
     [UsedImplicitly]
-    public class TestConfigurationSection : ConfigurationSection<TestConfigurationSection>
+    public class TestConfigurationSection : XmlConfigurationSection<TestConfigurationSection>
     {
         /// <summary>
         /// Gets or sets the name.
@@ -140,7 +219,7 @@ namespace WebApplications.Utilities.Test
         /// <value>The name.</value>
         /// <remarks></remarks>
         [NotNull]
-        [ConfigurationProperty("string", DefaultValue = "A String")]
+        [ConfigurationProperty("string", IsRequired = true)]
         public string String
         {
             get { return GetProperty<string>("string"); }
@@ -158,6 +237,16 @@ namespace WebApplications.Utilities.Test
         {
             get { return GetProperty<string>("string2"); }
             set { SetProperty("string2", value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the custom <see cref="XElement"/>.
+        /// </summary>
+        /// <value>The custom.</value>
+        public XElement Custom
+        {
+            get { return GetElement("custom"); }
+            set { SetElement("custom", value); }
         }
 
         /// <summary>

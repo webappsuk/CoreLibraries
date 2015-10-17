@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Configuration;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Converters;
 
 namespace WebApplications.Utilities.Scheduling.Configuration
 {
@@ -79,7 +80,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         /// </summary>
         /// <value>The logger type.</value>
         [ConfigurationProperty("type")]
-        [TypeConverter(typeof(TypeNameConverter))]
+        [TypeConverter(typeof(SimplifiedTypeNameConverter))]
         [SubclassTypeValidator(typeof(ISchedule))]
         [PublicAPI]
         public override Type Type
