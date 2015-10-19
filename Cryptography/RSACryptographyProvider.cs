@@ -26,9 +26,11 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -42,17 +44,6 @@ namespace WebApplications.Utilities.Cryptography
         /// The parameters for the RSA algorithm.
         /// </summary>
         private readonly RSAParameters _parameters;
-
-        /// <summary>
-        /// Whether the encrypted data should include length information.
-        /// </summary>
-        /// <remarks><para>By default this is set to <see langword="true"/> otherwise there is no reliable way of
-        /// deciphering the length of the input data.</para>
-        /// <para>When <see langword="false"/> the decrypted data will always be a multiple of <see cref="OutputBlockSize"/>
-        /// in length.</para>
-        /// </remarks>
-        [PublicAPI]
-        public readonly bool EncodeLength;
 
         /// <inheritdoc />
         public override bool CanEncrypt { get; }
@@ -70,290 +61,175 @@ namespace WebApplications.Utilities.Cryptography
         public readonly ushort OutputBlockSize;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class.
-        /// </summary>
-        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
-        public RSACryptographyProvider(int keySize = 1024, bool encodeLength = true)
-            : base(null)
-        {
-            // Generate new key.
-            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider(keySize))
-            {
-                CanEncrypt = !provider.PublicOnly;
-                _parameters = provider.ExportParameters(!provider.PublicOnly);
-                OutputBlockSize = (ushort)(provider.KeySize / 8);
-                // TODO Calculation depends on padding...
-                InputBlockSize = (ushort)(OutputBlockSize - 11);
-            }
-            EncodeLength = encodeLength;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
-        public RSACryptographyProvider(RSAParameters parameters, bool encodeLength = true)
-            : base(null)
-        {
-            // Generate new key.
-            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
-            {
-                provider.ImportParameters(parameters);
-                CanEncrypt = !provider.PublicOnly;
-                _parameters = provider.ExportParameters(!provider.PublicOnly);
-                OutputBlockSize = (ushort)(provider.KeySize / 8);
-                // TODO Calculation depends on padding...
-                InputBlockSize = (ushort)(OutputBlockSize - 11);
-            }
-            EncodeLength = encodeLength;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class from an
         /// <see cref="XElement">XML</see> configuration.
         /// </summary>
+        /// <param name="providerElement">The provider element.</param>
         /// <param name="configuration">The provider element.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="canEncrypt">if set to <c>true</c> [can encrypt].</param>
+        /// <param name="inputBlockSize">Size of the input block.</param>
+        /// <param name="outputBlockSize">Size of the output block.</param>
         /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
-        public RSACryptographyProvider([NotNull] XElement configuration)
-            : base(configuration)
+        private RSACryptographyProvider(
+            [CanBeNull] ProviderElement providerElement,
+            [CanBeNull] XElement configuration,
+            RSAParameters parameters,
+            bool canEncrypt,
+            ushort inputBlockSize,
+            ushort outputBlockSize)
+            : base(providerElement, configuration, false)
         {
-            XNamespace ns = configuration.Name.Namespace;
-
-            // We encode length unless we have and 'encodeLength' attribute set to false.
-            string encodeLengthStr = configuration.Attribute("encodeLength")?.Value;
-            bool encodeLength;
-            if (string.IsNullOrWhiteSpace(encodeLengthStr) ||
-                !bool.TryParse(encodeLengthStr, out encodeLength))
-                encodeLength = true;
-
-            XElement rsakvElement = configuration.Element(ns + "RSAKeyValue");
-
-            if (rsakvElement == null)
-                throw new CryptographicException(
-                    "The expected 'RSAKeyValue' element was not found in the configuration element.");
-
-            string modulus = rsakvElement.Element(ns + "Modulus")?.Value;
-            if (string.IsNullOrWhiteSpace(modulus))
-                throw new CryptographicException(
-                    "The expected 'Modulus' element was not found in the 'RSAKeyValue' element.");
-
-            string exponent = rsakvElement.Element(ns + "Exponent")?.Value;
-            if (string.IsNullOrWhiteSpace(exponent))
-                throw new CryptographicException(
-                    "The expected 'Exponent' element was not found in the 'RSAKeyValue' element.");
-
-            RSAParameters parameters = new RSAParameters
-            {
-                Modulus = Convert.FromBase64String(modulus.DiscardWhiteSpaces()),
-                Exponent = Convert.FromBase64String(exponent.DiscardWhiteSpaces())
-            };
-
-            // Grab private key elements
-            string p = rsakvElement.Element(ns + "P")?.Value;
-            if (!string.IsNullOrWhiteSpace(p)) parameters.P = Convert.FromBase64String(p.DiscardWhiteSpaces());
-
-            string q = rsakvElement.Element(ns + "Q")?.Value;
-            if (!string.IsNullOrWhiteSpace(q)) parameters.Q = Convert.FromBase64String(q.DiscardWhiteSpaces());
-
-            string dp = rsakvElement.Element(ns + "DP")?.Value;
-            if (!string.IsNullOrWhiteSpace(dp)) parameters.DP = Convert.FromBase64String(dp.DiscardWhiteSpaces());
-
-            string dq = rsakvElement.Element(ns + "DQ")?.Value;
-            if (!string.IsNullOrWhiteSpace(dq)) parameters.DQ = Convert.FromBase64String(dq.DiscardWhiteSpaces());
-
-            string inverseQ = rsakvElement.Element(ns + "InverseQ")?.Value;
-            if (!string.IsNullOrWhiteSpace(inverseQ)) parameters.InverseQ = Convert.FromBase64String(inverseQ.DiscardWhiteSpaces());
-
-            string d = rsakvElement.Element(ns + "D")?.Value;
-            if (!string.IsNullOrWhiteSpace(d)) parameters.D = Convert.FromBase64String(d.DiscardWhiteSpaces());
-
-            // Ensure parameters are valid.
-            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
-            {
-                provider.ImportParameters(parameters);
-                CanEncrypt = !provider.PublicOnly;
-                _parameters = provider.ExportParameters(!provider.PublicOnly);
-                OutputBlockSize = (ushort)(provider.KeySize / 8);
-                // TODO Calculation depends on padding...
-                InputBlockSize = (ushort)(OutputBlockSize - 11);
-            }
-            EncodeLength = encodeLength;
+            _parameters = parameters;
+            CanEncrypt = canEncrypt;
+            InputBlockSize = inputBlockSize;
+            OutputBlockSize = outputBlockSize;
         }
 
         /// <inheritdoc />
-        /// <exception cref="CryptographicException">The cryptographic provider cannot perform encryption.</exception>
-        public override byte[] Encrypt(byte[] input)
+        public override ICryptoTransform GetEncryptor()
         {
-            if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
-            if (input == null) return null;
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
+            provider.ImportParameters(_parameters);
+            return new CryptoTransform<RSACryptoServiceProvider>(
+                provider,
+                EncryptBlock,
+                EncryptFinalBlock,
+                InputBlockSize,
+                OutputBlockSize);
+        }
 
-            // Encode first block including header.
-            long length = input.LongLength;
-            if (length < 1) return new byte[0];
-
-            byte[] inputBuffer = new byte[InputBlockSize];
-            long inputOffset;
-            long remainder;
-            if (EncodeLength)
+        /// <summary>
+        /// Encrypts the specified region of the input byte array and copies the resulting transform to the specified region of the output byte array.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="inputBuffer">The input for which to compute the transform.</param>
+        /// <param name="inputOffset">The offset into the input byte array from which to begin using data.</param>
+        /// <param name="inputCount">The number of bytes in the input byte array to use as data.</param>
+        /// <param name="outputBuffer">The output to which to write the transform.</param>
+        /// <param name="outputOffset">The offset into the output byte array from which to begin writing data.</param>
+        /// <returns>The number of bytes written.</returns>
+        private int EncryptBlock(
+            [NotNull] RSACryptoServiceProvider provider,
+            [NotNull] byte[] inputBuffer,
+            int inputOffset,
+            int inputCount,
+            [NotNull] byte[] outputBuffer,
+            int outputOffset)
+        {
+            // As we do not support multi-block encryption the input buffer should always start at 0, and be InputBlockSize in length.
+            Debug.Assert(inputOffset == 0 && inputCount == InputBlockSize);
+            if (inputBuffer.Length > inputCount)
             {
-                long offset = 0;
-                VariableLengthEncoding.Encode((ulong)length, inputBuffer, ref offset);
-                length += offset;
-                remainder = InputBlockSize - offset;
-                if (remainder > input.LongLength) remainder = input.LongLength;
-                Array.Copy(input, 0, inputBuffer, offset, remainder);
-                inputOffset = -offset;
+                byte[] ib = new byte[inputCount];
+                Array.Copy(inputBuffer, ib, inputCount);
+                inputBuffer = ib;
             }
-            else
-            {
-                remainder = input.LongLength;
-                if (remainder > InputBlockSize) remainder = InputBlockSize;
-                Array.Copy(input, inputBuffer, remainder);
-                inputOffset = 0;
-            }
+            byte[] encrypted = provider.Encrypt(inputBuffer, false);
+            int encryptedLength = encrypted.Length;
+            Debug.Assert(encryptedLength == OutputBlockSize);
+            Array.Copy(encrypted, outputBuffer, encryptedLength);
+            return encryptedLength;
+        }
 
-            // Calculate blocks.
-            long blocks = 1 + ((length - 1) / InputBlockSize);
+        /// <summary>
+        /// Encrypts the specified region of the specified byte array.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="inputBuffer">The input for which to compute the transform.</param>
+        /// <param name="inputOffset">The offset into the byte array from which to begin using data.</param>
+        /// <param name="inputCount">The number of bytes in the byte array to use as data.</param>
+        /// <returns>The computed transform.</returns>
+        private byte[] EncryptFinalBlock(
+            [NotNull] RSACryptoServiceProvider provider,
+            [NotNull] byte[] inputBuffer,
+            int inputOffset,
+            int inputCount)
+        {
+            if (inputCount < 1) return Array<byte>.Empty;
 
-            // Encrypt blocks
-            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
-            {
-                provider.ImportParameters(_parameters);
+            // As we do not support multi-block encryption the input buffer should always start at 0
+            Debug.Assert(inputOffset == 0 && inputCount <= InputBlockSize);
 
-                // If we only have one block encrypt and return;
-                if (blocks < 2) return provider.Encrypt(inputBuffer, false);
-
-                // Create output buffer
-                byte[] outputBuffer = new byte[OutputBlockSize * blocks];
-                long outputOffset = 0;
-
-                int b = 0;
-                while (true)
-                {
-                    byte[] encrypted = provider.Encrypt(inputBuffer, false);
-                    // Copy encrypted data into output buffer.
-                    Array.Copy(encrypted, 0, outputBuffer, outputOffset, OutputBlockSize);
-
-                    // Exit after processing all blocks.
-                    if (++b >= blocks) return outputBuffer;
-
-                    inputOffset += InputBlockSize;
-                    outputOffset += OutputBlockSize;
-                    remainder = input.LongLength - inputOffset;
-                    if (remainder >= InputBlockSize)
-                        Array.Copy(input, inputOffset, inputBuffer, 0, InputBlockSize);
-                    else
-                    {
-                        Array.Copy(input, inputOffset, inputBuffer, 0, remainder);
-                        Array.Clear(inputBuffer, (int)remainder, (int)(InputBlockSize - remainder));
-                    }
-                }
-            }
+            byte[] encrypted = provider.Encrypt(inputBuffer, false);
+            Debug.Assert(encrypted.Length == OutputBlockSize);
+            return encrypted;
         }
 
         /// <inheritdoc />
-        public override byte[] Decrypt(byte[] input)
+        public override ICryptoTransform GetDecryptor()
         {
-            if (input == null) return null;
-
-            // Calculate maximum length
-            long inputLength = input.LongLength;
-            if (inputLength < 1) return new byte[0];
-
-            if (inputLength % OutputBlockSize != 0)
-                throw new CryptographicException("Cannot decrypt input block as wrong size.");
-
-            long blocks = inputLength / OutputBlockSize;
-            // Decrypt blocks
-            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
-            {
-                provider.ImportParameters(_parameters);
-
-                // Decrypt the first block and get the length.
-                byte[] inputBuffer;
-
-                if (blocks < 2)
-                    inputBuffer = input;
-                else
-                {
-                    inputBuffer = new byte[OutputBlockSize];
-                    Array.Copy(input, inputBuffer, OutputBlockSize);
-                }
-
-                byte[] decrypted = provider.Decrypt(inputBuffer, false);
-
-                // If we haven't encoded length and we have only one block, we're done.
-                if (!EncodeLength && blocks < 2) return decrypted;
-
-                long outputOffset = 0;
-                long outputLength;
-                long remainder;
-                if (EncodeLength)
-                {
-                    outputLength = (long)VariableLengthEncoding.Decode(decrypted, ref outputOffset);
-
-                    if (outputOffset + outputLength > blocks * InputBlockSize)
-                        throw new CryptographicException("Cannot decrypt input block as invalid length found.");
-
-                    remainder = decrypted.LongLength - outputOffset;
-                    if (remainder > outputLength) remainder = outputLength;
-                }
-                else
-                {
-                    outputLength = blocks * InputBlockSize;
-                    remainder = decrypted.LongLength;
-                }
-
-                // Create output array and copy in first block of data
-                byte[] output = new byte[outputLength];
-                Array.Copy(decrypted, outputOffset, output, 0, remainder);
-
-                // If we have one block we're done.
-                if (blocks < 2) return output;
-
-                // Decrypt remaining blocks
-                int b = 1;
-                long inputOffset = 0;
-                outputOffset = 0;
-                while (true)
-                {
-                    outputOffset += remainder;
-                    inputOffset += OutputBlockSize;
-
-                    // Get next block
-                    remainder = inputLength - inputOffset;
-                    if (remainder >= OutputBlockSize)
-                        Array.Copy(input, inputOffset, inputBuffer, 0, OutputBlockSize);
-                    else
-                    {
-                        Array.Copy(input, inputOffset, inputBuffer, 0, remainder);
-                        Array.Clear(inputBuffer, (int)remainder, (int)(OutputBlockSize - remainder));
-                    }
-
-                    // Decrypt block and copy into output
-                    decrypted = provider.Decrypt(inputBuffer, false);
-
-                    remainder = outputLength - outputOffset;
-                    if (remainder >= decrypted.LongLength) remainder = decrypted.LongLength;
-                    Array.Copy(decrypted, 0, output, outputOffset, remainder);
-
-                    // If we're done return output.
-                    if (++b >= blocks) return output;
-                }
-            }
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
+            provider.ImportParameters(_parameters);
+            return new CryptoTransform<RSACryptoServiceProvider>(
+                provider,
+                DecryptBlock,
+                DecryptFinalBlock,
+                OutputBlockSize,
+                InputBlockSize);
+        }
+        
+        /// <summary>
+        /// Decrypts the specified region of the input byte array and copies the resulting transform to the specified region of the output byte array.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="inputBuffer">The input for which to compute the transform.</param>
+        /// <param name="inputOffset">The offset into the input byte array from which to begin using data.</param>
+        /// <param name="inputCount">The number of bytes in the input byte array to use as data.</param>
+        /// <param name="outputBuffer">The output to which to write the transform.</param>
+        /// <param name="outputOffset">The offset into the output byte array from which to begin writing data.</param>
+        /// <returns>The number of bytes written.</returns>
+        private int DecryptBlock(
+            [NotNull] RSACryptoServiceProvider provider,
+            [NotNull] byte[] inputBuffer,
+            int inputOffset,
+            int inputCount,
+            [NotNull] byte[] outputBuffer,
+            int outputOffset)
+        {
+            // As we do not support multi-block encryption the input buffer should always start at 0, and be OutputBlockSize in length.
+            Debug.Assert(inputOffset == 0 && inputCount == OutputBlockSize);
+            byte[] decrypted = provider.Decrypt(inputBuffer, false);
+            int decryptedLength = decrypted.Length;
+            Debug.Assert(decryptedLength == InputBlockSize);
+            Array.Copy(decrypted, outputBuffer, decryptedLength);
+            return decryptedLength;
         }
 
+        /// <summary>
+        /// Decrypts the specified region of the specified byte array.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="inputBuffer">The input for which to compute the transform.</param>
+        /// <param name="inputOffset">The offset into the byte array from which to begin using data.</param>
+        /// <param name="inputCount">The number of bytes in the byte array to use as data.</param>
+        /// <returns>The computed transform.</returns>
+        private byte[] DecryptFinalBlock(
+            [NotNull] RSACryptoServiceProvider provider,
+            [NotNull] byte[] inputBuffer,
+            int inputOffset,
+            int inputCount)
+        {
+            // As we do not support multi-block encryption the input buffer should always start at 0
+            Debug.Assert(inputOffset == 0);
+            if (inputCount < 1) return Array<byte>.Empty;
+
+            Debug.Assert(inputCount == OutputBlockSize);
+            byte[] decrypted = provider.Decrypt(inputBuffer, false);
+            Debug.Assert(decrypted.Length == InputBlockSize);
+            return decrypted;
+        }
 
         /// <summary>
         /// Sets the XML configuration for this cryptographic provider.
         /// </summary>
-        /// <param name="configuration">The configuration element.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="elementName">Name of the element.</param>
         /// <param name="includePrivateKey">Whether to include the private key.</param>
         /// <returns>The configuration element.</returns>
         /// <exception cref="CryptographicException">The private key cannot be included if it is not available (<see cref="CanEncrypt" /> is <see langword="false" />.</exception>
         /// <remarks><para>
-        ///   <i>Warning:</i> This will expose the private key and should be used with
+        ///   <i>Warning:</i> This may expose the private key and should be used with
         /// care to only store the key in a secure location.</para>
         /// <para> Conforms with the XMLDSIG spec, <see href="https://www.ietf.org/rfc/rfc3075.txt">RFC 3075, Section 6.4.2</see>:
         /// </para>
@@ -384,34 +260,169 @@ namespace WebApplications.Utilities.Cryptography
         /// </complexType>
         /// </element>
         /// ]]></code></remarks>
-        protected override XElement SetXml(XElement configuration, bool includePrivateKey)
+        private static XElement GetConfiguration(
+            RSAParameters parameters,
+            [NotNull] XName elementName,
+            bool includePrivateKey)
         {
-            if (includePrivateKey && !CanEncrypt)
-                throw new CryptographicException("The private key cannot be included as it is not available.");
-
-            if (!EncodeLength)
-                configuration.SetAttributeValue("encodeLength", false);
-
-            XNamespace ns = configuration.Name.Namespace;
+            XNamespace ns = elementName.Namespace;
             // ReSharper disable AssignNullToNotNullAttribute
-            XElement rsakv = new XElement(
-                ns + "RSAKeyValue",
-                new XElement(ns + "Modulus", Convert.ToBase64String(_parameters.Modulus)),
-                new XElement(ns + "Exponent", Convert.ToBase64String(_parameters.Exponent)));
-            configuration.Add(rsakv);
+            XElement configuration = new XElement(
+                elementName,
+                new XElement(ns + "Modulus", Convert.ToBase64String(parameters.Modulus)),
+                new XElement(ns + "Exponent", Convert.ToBase64String(parameters.Exponent)));
 
             // If we're not including the private key we're done.
             if (!includePrivateKey) return configuration;
 
-            if (_parameters.P != null) rsakv.Add(new XElement(ns + "P", Convert.ToBase64String(_parameters.P)));
-            if (_parameters.Q != null) rsakv.Add(new XElement(ns + "Q", Convert.ToBase64String(_parameters.Q)));
-            if (_parameters.DP != null) rsakv.Add(new XElement(ns + "DP", Convert.ToBase64String(_parameters.DP)));
-            if (_parameters.DQ != null) rsakv.Add(new XElement(ns + "DQ", Convert.ToBase64String(_parameters.DQ)));
-            if (_parameters.InverseQ != null)
-                rsakv.Add(new XElement(ns + "InverseQ", Convert.ToBase64String(_parameters.InverseQ)));
-            if (_parameters.D != null) rsakv.Add(new XElement(ns + "D", Convert.ToBase64String(_parameters.D)));
+            if (parameters.P != null) configuration.Add(new XElement(ns + "P", Convert.ToBase64String(parameters.P)));
+            if (parameters.Q != null) configuration.Add(new XElement(ns + "Q", Convert.ToBase64String(parameters.Q)));
+            if (parameters.DP != null)
+                configuration.Add(new XElement(ns + "DP", Convert.ToBase64String(parameters.DP)));
+            if (parameters.DQ != null)
+                configuration.Add(new XElement(ns + "DQ", Convert.ToBase64String(parameters.DQ)));
+            if (parameters.InverseQ != null)
+                configuration.Add(new XElement(ns + "InverseQ", Convert.ToBase64String(parameters.InverseQ)));
+            if (parameters.D != null) configuration.Add(new XElement(ns + "D", Convert.ToBase64String(parameters.D)));
             // ReSharper restore AssignNullToNotNullAttribute
             return configuration;
+        }
+
+
+        /// <summary>
+        /// Gets the <see cref="RSAParameters"/> from the configuration..
+        /// </summary>
+        /// <param name="configurationElement">The configuration element.</param>
+        /// <exception cref="CryptographicException">The configuration was invalid.</exception>
+        /// <returns>An <see cref="RSAParameters"/>.</returns>
+        private static RSAParameters GetParameters([NotNull] XElement configurationElement)
+        {
+            XNamespace ns = configurationElement.Name.Namespace;
+            string modulus = configurationElement.Element(ns + "Modulus")?.Value;
+            if (string.IsNullOrWhiteSpace(modulus))
+                throw new CryptographicException(
+                    "The expected 'Modulus' element was not found in the 'RSAKeyValue' element.");
+
+            string exponent = configurationElement.Element(ns + "Exponent")?.Value;
+            if (string.IsNullOrWhiteSpace(exponent))
+                throw new CryptographicException(
+                    "The expected 'Exponent' element was not found in the 'RSAKeyValue' element.");
+
+            RSAParameters parameters = new RSAParameters
+            {
+                Modulus = Convert.FromBase64String(modulus.DiscardWhiteSpaces()),
+                Exponent = Convert.FromBase64String(exponent.DiscardWhiteSpaces())
+            };
+
+            // Grab private key elements
+            string p = configurationElement.Element(ns + "P")?.Value;
+            if (!string.IsNullOrWhiteSpace(p)) parameters.P = Convert.FromBase64String(p.DiscardWhiteSpaces());
+
+            string q = configurationElement.Element(ns + "Q")?.Value;
+            if (!string.IsNullOrWhiteSpace(q)) parameters.Q = Convert.FromBase64String(q.DiscardWhiteSpaces());
+
+            string dp = configurationElement.Element(ns + "DP")?.Value;
+            if (!string.IsNullOrWhiteSpace(dp)) parameters.DP = Convert.FromBase64String(dp.DiscardWhiteSpaces());
+
+            string dq = configurationElement.Element(ns + "DQ")?.Value;
+            if (!string.IsNullOrWhiteSpace(dq)) parameters.DQ = Convert.FromBase64String(dq.DiscardWhiteSpaces());
+
+            string inverseQ = configurationElement.Element(ns + "InverseQ")?.Value;
+            if (!string.IsNullOrWhiteSpace(inverseQ))
+                parameters.InverseQ = Convert.FromBase64String(inverseQ.DiscardWhiteSpaces());
+
+            string d = configurationElement.Element(ns + "D")?.Value;
+            if (!string.IsNullOrWhiteSpace(d)) parameters.D = Convert.FromBase64String(d.DiscardWhiteSpaces());
+
+            return parameters;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class.
+        /// </summary>
+        /// <param name="keySize">Size of the key.</param>
+        /// <returns>An <see cref="RSACryptographyProvider"/>.</returns>
+        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
+        [NotNull]
+        public static RSACryptographyProvider Create(int keySize = 1024)
+        {
+            // Generate new key.
+            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider(keySize))
+                return Create(provider, null, null);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>An <see cref="RSACryptographyProvider"/>.</returns>
+        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
+        [NotNull]
+        public static RSACryptographyProvider Create(RSAParameters parameters)
+        {
+            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
+            {
+                provider.ImportParameters(parameters);
+                return Create(provider, null, null);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns>An <see cref="RSACryptographyProvider" />.</returns>
+        /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
+        /// <exception cref="CryptographicException">The configuration was invalid.</exception>
+        [NotNull]
+        public static RSACryptographyProvider Create([CanBeNull] XElement configuration)
+        {
+            using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
+                return Create(provider, null, configuration);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class from an
+        /// <see cref="XElement">XML</see> configuration.
+        /// </summary>
+        /// <param name="algorithm">The algorithm.</param>
+        /// <param name="providerElement">The provider element.</param>
+        /// <param name="configuration">The provider element.</param>
+        /// <exception cref="CryptographicException">The configuration was invalid.</exception>
+        [NotNull]
+        internal static RSACryptographyProvider Create(
+            [NotNull] RSACryptoServiceProvider algorithm,
+            [CanBeNull] ProviderElement providerElement,
+            [CanBeNull] XElement configuration)
+        {
+            if (providerElement != null)
+                configuration = providerElement.Configuration;
+
+            RSAParameters parameters;
+            if (configuration != null)
+            {
+                // Import the parameters from the configuration
+                parameters = GetParameters(configuration);
+                algorithm.ImportParameters(parameters);
+            }
+            else
+            {
+                // Set the configuration from the parameters
+                parameters = algorithm.ExportParameters(!algorithm.PublicOnly);
+                configuration = GetConfiguration(parameters, "configuration", !algorithm.PublicOnly);
+            }
+
+            ushort outputBlockSize = (ushort)(algorithm.KeySize / 8);
+            // TODO Calculation depends on padding...
+            ushort inputBlockSize = (ushort)(outputBlockSize - 11);
+
+            return new RSACryptographyProvider(
+                providerElement,
+                configuration,
+                parameters,
+                !algorithm.PublicOnly,
+                inputBlockSize,
+                outputBlockSize);
         }
     }
 }

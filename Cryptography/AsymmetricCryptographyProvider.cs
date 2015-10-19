@@ -28,6 +28,7 @@
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -42,52 +43,50 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// Initializes a new instance of the <see cref="AsymmetricCryptographyProvider" /> class.
         /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        protected AsymmetricCryptographyProvider(XElement configuration)
-            : base(configuration)
+        /// <param name="providerElement">The provider element (if any).</param>
+        /// <param name="configuration">The configuration (if any).</param>
+        /// <param name="preservesLength"><see langword="true"/> if the provider preserves the length.</param>
+        protected AsymmetricCryptographyProvider(
+            [CanBeNull] ProviderElement providerElement = null,
+            [CanBeNull] XElement configuration = null,
+            bool preservesLength = true)
+            : base(providerElement, configuration, preservesLength)
         {
         }
 
         /// <summary>
-        /// Sets the XML configuration for this cryptographic provider.
+        /// Creates a <see cref="CryptographyProvider" /> from an <see cref="AsymmetricAlgorithm" />.
         /// </summary>
-        /// <remarks>
-        ///   <para>
-        ///     <i>Warning:</i> This will expose the private key and should be used with
-        /// care to only store the key in a secure location.</para>
-        /// </remarks>
-        /// <param name="configuration">The configuration element.</param>
-        /// <returns>
-        /// The configuration element.
-        /// </returns>
-        protected override sealed XElement SetXml(XElement configuration)
-            => SetXml(base.SetXml(configuration), CanEncrypt);
+        /// <param name="algorithm">The algorithm.</param>
+        /// <param name="configurationElement">The optional configuration element.</param>
+        /// <returns>A <see cref="CryptographyProvider" />.</returns>
+        /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
+        [NotNull]
+        public static CryptographyProvider Create(
+            [NotNull] AsymmetricAlgorithm algorithm,
+            [CanBeNull] XElement configurationElement = null) => Create(algorithm, null, configurationElement);
 
         /// <summary>
-        /// Sets the XML configuration for this cryptographic provider.
+        /// Creates a <see cref="CryptographyProvider" /> from an <see cref="AsymmetricAlgorithm" />.
         /// </summary>
-        /// <param name="configuration">The configuration element.</param>
-        /// <param name="includePrivateKey">Whether to include the private key.</param>
-        /// <returns>The configuration element.</returns>
-        /// <remarks><i>Warning:</i> This will expose the private key and should be used with
-        /// care to only store the key in a secure location.</remarks>
+        /// <param name="algorithm">The algorithm.</param>
+        /// <param name="providerElement">The optional provider element.</param>
+        /// <param name="configurationElement">The optional configuration element.</param>
+        /// <returns>A <see cref="CryptographyProvider" />.</returns>
+        /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
         [NotNull]
-        protected abstract XElement SetXml([NotNull] XElement configuration, bool includePrivateKey);
-
-        /// <summary>
-        /// Gets the configuration XML, this can be used to create a new provider in future.
-        /// </summary>
-        /// <param name="includePrivateKey">Whether to include the private key.</param>
-        /// <param name="name">The name.</param>
-        /// <returns>The configuration element.</returns>
-        /// <exception cref="CryptographicException">The private key cannot be included if it is not available (<see cref="CryptographyProvider.CanEncrypt"/> is <see langword="false"/>.</exception>
-        [NotNull]
-        public XElement GetConfigurationXml(bool includePrivateKey, XName name = null)
+        internal static CryptographyProvider Create(
+            [NotNull] AsymmetricAlgorithm algorithm,
+            [CanBeNull] ProviderElement providerElement,
+            [CanBeNull] XElement configurationElement)
         {
-            if (includePrivateKey && !CanEncrypt)
-                throw new CryptographicException("The private key cannot be included as it is not available.");
+            // TODO We currently only support RSA
+            RSACryptoServiceProvider rsa = algorithm as RSACryptoServiceProvider;
+            if (rsa == null)
+                throw new CryptographicException(
+                    string.Format("Unknown, or unsupported, cryptographic provider '{0}'.", algorithm.GetType()));
 
-            return SetXml(new XElement(name ?? "CryptoProvider"), includePrivateKey);
+            return RSACryptographyProvider.Create(rsa, providerElement, configurationElement);
         }
     }
 }

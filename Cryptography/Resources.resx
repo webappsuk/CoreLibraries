@@ -165,4 +165,7 @@
   <data name="EncryptedString_GetObjectData_No_Provider_Id" xml:space="preserve">
     <value>Cannot serialize an encrypted string unless the cryptography provider is persisted in the configuration.</value>
   </data>
+  <data name="CryptographyProvider_Create_Unknown_Provider" xml:space="preserve">
+    <value>Unknown, or unsupported, cryptographic provider '{0}'.</value>
+  </data>
 </root>

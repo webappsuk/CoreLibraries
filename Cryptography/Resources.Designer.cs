@@ -115,6 +115,15 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unknown, or unsupported, cryptographic provider &apos;{0}&apos;..
+        /// </summary>
+        internal static string CryptographyProvider_Create_Unknown_Provider {
+            get {
+                return ResourceManager.GetString("CryptographyProvider_Create_Unknown_Provider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The provider with id: &apos;{0}&apos; wasn&apos;t enabled in the configuration..
         /// </summary>
         internal static string CryptoProviderWrapper_Constructor_ProviderNotEnabled {

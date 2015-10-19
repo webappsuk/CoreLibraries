@@ -26,6 +26,8 @@
 #endregion
 
 using System.Xml.Linq;
+using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -40,9 +42,14 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// Initializes a new instance of the <see cref="HashingCryptographyProvider" /> class.
         /// </summary>
-        /// <param name="configuration">The provider element.</param>
-        protected HashingCryptographyProvider(XElement configuration)
-            : base(configuration)
+        /// <param name="providerElement">The provider element (if any).</param>
+        /// <param name="configuration">The provider element (if any).</param>
+        /// <param name="preservesLength"><see langword="true"/> if the provider preserves the length.</param>
+        protected HashingCryptographyProvider(
+            [CanBeNull] ProviderElement providerElement = null,
+            [CanBeNull] XElement configuration = null,
+            bool preservesLength = true)
+            : base(providerElement, configuration, preservesLength)
         {
         }
     }

@@ -64,15 +64,15 @@ namespace WebApplications.Utilities.Configuration
             if (element.Name != elementName)
                 throw new ConfigurationErrorsException(string.Format(Resources.XmlConfigurationSection_SetElement_Element_Name_Mismatch, element.Name, elementName));
 
-            if (IsReadOnly())
-                throw new ConfigurationErrorsException(Resources.XmlConfigurationSection_SetElement_ReadOnly);
-
             string elementStr = element.ToString(SaveOptions.DisableFormatting);
 
             lock (_elements)
             {
                 string original;
                 if (_elements.TryGetValue(element.Name, out original) && string.Equals(original, elementStr)) return;
+
+                if (IsReadOnly())
+                    throw new ConfigurationErrorsException(Resources.XmlConfigurationSection_SetElement_ReadOnly);
                 _isModified = true;
                 _elements[element.Name] = elementStr;
             }

@@ -25,10 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Configuration;
+using System.Linq;
+using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
+using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Cryptography.Configuration
 {
@@ -37,7 +38,7 @@ namespace WebApplications.Utilities.Cryptography.Configuration
     /// </summary>
     [PublicAPI]
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-    public class ProviderElement : ConfigurationElement
+    public class ProviderElement : XmlConfigurationElement
     {
         /// <summary>
         /// Gets or sets the provider ID.
@@ -60,12 +61,12 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         /// <value>
         /// The type.
         /// </value>
-        [ConfigurationProperty("type", IsRequired = true)]
+        [ConfigurationProperty("name", IsRequired = true, DefaultValue = "Rijndael")]
         [NotNull]
-        public Type Type
+        public string Name
         {
-            get { return GetProperty<Type>("type"); }
-            set { SetProperty("type", value); }
+            get { return GetProperty<string>("name"); }
+            set { SetProperty("name", value); }
         }
 
         /// <summary>
@@ -82,20 +83,42 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         }
 
         /// <summary>
-        /// Gets or sets the provider name.
+        ///   Gets or sets the parameters to be passed to the constructor.
         /// </summary>
         /// <value>
-        /// The provider name.
+        ///   The <see cref="WebApplications.Utilities.Configuration.ParameterCollection"/>,
+        ///   which is all of the child elements within the parameters element in the configuration file.
         /// </value>
-        [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
+        [ConfigurationProperty("parameters", IsRequired = false, IsDefaultCollection = true)]
+        [ConfigurationCollection(typeof(ParameterCollection),
+            AddItemName = "add",
+            ClearItemsName = "clear",
+            RemoveItemName = "remove")]
         [NotNull]
-        public string Name
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
+        public ParameterCollection Parameters
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<string>("name"); }
-            set { SetProperty("name", value); }
+            get { return GetProperty<ParameterCollection>("parameters"); }
+            set { SetProperty("parameters", value); }
         }
-        
+
+        /// <summary>
+        /// Gets the <see cref="CryptographyProvider"/>.
+        /// </summary>
+        /// <returns>A <see cref="CryptographyProvider"/> if <see cref="IsEnabled">enabled</see>; otherwise <see langword="null"/>.</returns>
+        public CryptographyProvider GetProvider() => CryptographyProvider.Create(this);
+
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
+        /// <value>The configuration.</value>
+        public XElement Configuration
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get { return GetElement("configuration"); }
+            set { SetElement("configuration", value); }
+        }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Configuration.ConfigurationElement" /> object is read-only.
@@ -107,5 +130,12 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         {
             return false;
         }
+
+        /// <summary>
+        /// Gets the parameters as an object array.
+        /// </summary>
+        /// <returns>An <see cref="T:object[]"/>.</returns>
+        [NotNull]
+        internal object[] GetParameters() => Parameters.Count < 1 ? Array<object>.Empty : Parameters.Select(p => (object)p).ToArray();
     }
 }
