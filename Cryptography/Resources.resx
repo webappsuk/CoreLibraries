@@ -168,4 +168,16 @@
   <data name="CryptographyProvider_Create_Unknown_Provider" xml:space="preserve">
     <value>Unknown, or unsupported, cryptographic provider '{0}'.</value>
   </data>
+  <data name="CryptographyConfiguration_GetOrAddProvider_Add_Returned_Null" xml:space="preserve">
+    <value>The supplied function did not return a CryptographyProvider</value>
+  </data>
+  <data name="CryptographyConfiguration_GetOrAddProvider_Invalid_Provider_ID" xml:space="preserve">
+    <value>Invalid provider ID supplied.</value>
+  </data>
+  <data name="CryptographyProvider_SaveToConfiguration_No_Configuration" xml:space="preserve">
+    <value>Cannot persist the current cryptography provider to the configuration as no configuration could be found.</value>
+  </data>
+  <data name="CryptographyProvider_SaveToConfiguration_No_ID" xml:space="preserve">
+    <value>Cannot persist the current cryptography provider to the configuration as it doesn't have an existing id and no id was specified.</value>
+  </data>
 </root>

@@ -35,13 +35,13 @@ namespace WebApplications.Utilities.Configuration
     /// The configuration section for the Utility library.
     /// </summary>
     [PublicAPI]
-    public class UtilityConfiguration : ConfigurationSection<UtilityConfiguration>
+    public sealed class UtilityConfiguration : ConfigurationSection<UtilityConfiguration>
     {
         static UtilityConfiguration()
         {
             // NOTE: Handlers assigned here to ensure they will always be the first ones invoked
-            Changed += CurrencyInfoProvider.OnUtilityConfigurationChanged;
-            Changed += TimeHelpers.OnUtilityConfigurationChanged;
+            ActiveChanged += CurrencyInfoProvider.OnActiveUtilityConfigurationChanged;
+            ActiveChanged += TimeHelpers.OnActiveUtilityConfigurationChanged;
         }
         
         /// <summary>

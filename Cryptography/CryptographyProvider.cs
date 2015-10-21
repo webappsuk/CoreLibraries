@@ -47,8 +47,7 @@ namespace WebApplications.Utilities.Cryptography
         /// The source provider element, if any.
         /// </summary>
         [CanBeNull]
-        [PublicAPI]
-        public readonly ProviderElement ProviderElement;
+        private readonly ProviderElement _providerElement;
 
         /// <summary>
         /// <see langword="true"/> if the cryptography provider preserves length during encryption/decryption.
@@ -61,7 +60,15 @@ namespace WebApplications.Utilities.Cryptography
         /// <para>All other encryption/decription methods respect this flag and will automatically mark the end of an
         /// input stream.</para>
         /// </remarks>
+        [PublicAPI]
         public readonly bool PreservesLength;
+
+        /// <summary>
+        /// The name of the provider.
+        /// </summary>
+        [PublicAPI]
+        [NotNull]
+        public readonly string Name;
 
         /// <summary>
         /// The configuration as a string.
@@ -74,9 +81,7 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         [CanBeNull]
         [PublicAPI]
-        public XElement Configuration => ProviderElement != null
-            ? ProviderElement.Configuration
-            : _configuration != null ? XElement.Parse(_configuration, LoadOptions.PreserveWhitespace) : null;
+        public XElement Configuration => _configuration != null ? XElement.Parse(_configuration, LoadOptions.PreserveWhitespace) : null;
 
         /// <summary>
         /// Whether the provider can decrypt.
@@ -99,15 +104,19 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// Initializes a new instance of the <see cref="CryptographyProvider" /> class.
         /// </summary>
+        /// <param name="name">The name.</param>
         /// <param name="providerElement">The provider element (if any).</param>
         /// <param name="configuration">The configuration (if any).</param>
-        /// <param name="preservesLength"><see langword="true"/> if the provider preserves the length.</param>
+        /// <param name="preservesLength">
+        ///   <see langword="true" /> if the provider preserves the length.</param>
         protected CryptographyProvider(
+            string name,
             [CanBeNull] ProviderElement providerElement = null,
             [CanBeNull] XElement configuration = null,
             bool preservesLength = true)
         {
-            ProviderElement = providerElement;
+            Name = name;
+            _providerElement = providerElement;
             _configuration = configuration?.ToString(SaveOptions.DisableFormatting);
             PreservesLength = preservesLength;
         }
@@ -118,7 +127,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <value>The identifier.</value>
         [PublicAPI]
         [CanBeNull]
-        public string Id => ProviderElement?.Id;
+        public string Id => _providerElement?.Id;
 
         /// <summary>
         /// Gets the crypto transform for encryption.
@@ -396,6 +405,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="id">The identifier; defaults to <see cref="Id" /> if not specified.</param>
         /// <param name="cryptographyConfiguration">The cryptography configuration; default to the source configuration (if any), or the active configuration.</param>
         /// <exception cref="ConfigurationErrorsException">Cannot persist the current cryptography provider to the configuration if no <paramref name="id" /> is supplied, and there is no <see cref="Id" />.</exception>
+        /// <exception cref="ConfigurationErrorsException">No valid configuration was found to save to.</exception>
         public void SaveToConfiguration(
             [CanBeNull] string id = null,
             [CanBeNull] CryptographyConfiguration cryptographyConfiguration = null)
@@ -404,15 +414,64 @@ namespace WebApplications.Utilities.Cryptography
             {
                 id = Id;
                 if (id == null)
+                    throw new ConfigurationErrorsException(Resources.CryptographyProvider_SaveToConfiguration_No_ID);
+            }
+            
+            // Find the appropriate configuration and configuration section
+            System.Configuration.Configuration configuration;
+            if (cryptographyConfiguration == null)
+            {
+                configuration = _providerElement?.CurrentConfiguration ??
+                                CryptographyConfiguration.Active.CurrentConfiguration;
+                if (configuration == null)
                     throw new ConfigurationErrorsException(
-                        "Cannot persist the current cryptography provider to the configuration as it doesn't have an existing id and no id was specified.");
+                        Resources.CryptographyProvider_SaveToConfiguration_No_Configuration);
+
+                // Get the correct section
+                cryptographyConfiguration =
+                    configuration.GetSection(CryptographyConfiguration.SectionName) as CryptographyConfiguration;
+
+                // If not found create and add the section
+                if (cryptographyConfiguration == null)
+                {
+                    cryptographyConfiguration = CryptographyConfiguration.Create();
+                    configuration.Sections.Add(CryptographyConfiguration.SectionName, cryptographyConfiguration);
+                }
+            }
+            else
+            {
+                configuration = cryptographyConfiguration.CurrentConfiguration;
+                if (configuration == null)
+                    throw new ConfigurationErrorsException(
+                        Resources.CryptographyProvider_SaveToConfiguration_No_Configuration);
+            }
+            
+            // Check for existing provider element
+            ProviderElement providerElement = cryptographyConfiguration.Providers[id];
+            if (providerElement == null)
+            {
+                providerElement = new ProviderElement
+                {
+                    Id = id,
+                    Name = Name,
+                    Configuration = Configuration,
+                    IsEnabled = true
+                };
+                cryptographyConfiguration.Providers.Add(providerElement);
+            }
+            else
+            {
+                providerElement.Name = Name;
+                providerElement.Configuration = Configuration;
+                providerElement.IsEnabled = true;
             }
 
-            System.Configuration.Configuration configuration = cryptographyConfiguration != null
-                ? cryptographyConfiguration.CurrentConfiguration
-                : (ProviderElement?.CurrentConfiguration ?? CryptographyConfiguration.Active.CurrentConfiguration);
-
-            throw new NotImplementedException();
+            // If this is the active configuration, then save using the active save method as it will remove the cached
+            // active configuration immediately.
+            if (ReferenceEquals(configuration, CryptographyConfiguration.Active.CurrentConfiguration))
+                CryptographyConfiguration.Active.Save();
+            else
+                configuration.Save();
         }
 
         /// <summary>
@@ -428,7 +487,7 @@ namespace WebApplications.Utilities.Cryptography
             => Create(null, name, args);
 
         /// <summary>
-        /// Creates a <see cref="CryptographyProvider" /> from a <see cref="ProviderElement" />.
+        /// Creates a <see cref="CryptographyProvider" /> from a <see cref="_providerElement" />.
         /// </summary>
         /// <param name="providerElement">The provider element.</param>
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
@@ -436,7 +495,7 @@ namespace WebApplications.Utilities.Cryptography
         [NotNull]
         [PublicAPI]
         internal static CryptographyProvider Create([NotNull] ProviderElement providerElement)
-            => Create(null, providerElement.Name, providerElement.GetParameters());
+            => Create(null, providerElement.Name);
 
         /// <summary>
         /// Creates a <see cref="CryptographyProvider" /> from a name. See <see cref="https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx" /> for details.

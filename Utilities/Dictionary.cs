@@ -25,10 +25,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities
 {
@@ -38,6 +41,94 @@ namespace WebApplications.Utilities
     [PublicAPI]
     public static class Dictionary
     {
+        // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+
+        /// <summary>
+        /// The name object entry type (this is an internal framework type).
+        /// </summary>
+        [NotNull]
+        private static readonly ExtendedType _nameObjectEntryType =
+            ExtendedType.Get("System.Collections.Specialized.NameObjectCollectionBase+NameObjectEntry, System");
+        
+        /// <summary>
+        /// The function to efficiently get the entries array from a <see cref="NameObjectCollectionBase"/>.
+        /// </summary>
+        [NotNull]
+        private static readonly Func<NameObjectCollectionBase, ArrayList> _getEntriesFunc =
+            ExtendedType.Get(typeof(NameObjectCollectionBase))
+                .GetField("_entriesArray")
+                .Getter<NameObjectCollectionBase, ArrayList>();
+
+        /// <summary>
+        /// Gets the key from a NameObjectEntry. 
+        /// </summary>
+        [NotNull]
+        private static readonly Func<object, string> _getNameObjectEntryKeyFunc =
+            _nameObjectEntryType
+                .GetField("Key")
+                .Getter<object, string>();
+
+        /// <summary>
+        /// Gets the value from a NameObjectEntry. 
+        /// </summary>
+        [NotNull]
+        private static readonly Func<object, object> _getNameObjectEntryValueFunc =
+            _nameObjectEntryType
+                .GetField("Value")
+                .Getter<object, object>();
+
+        /// <summary>
+        /// Gets a collection of keys from any <see cref="NameObjectCollectionBase"/> descendant.
+        /// </summary>
+        /// <param name="nameObjectCollection">The name object collection.</param>
+        /// <returns>A read only collection of keys.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="nameObjectCollection"/> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IReadOnlyCollection<string> Keys(
+            [NotNull] this NameObjectCollectionBase nameObjectCollection)
+        {
+            if (nameObjectCollection == null) throw new ArgumentNullException(nameof(nameObjectCollection));
+            return nameObjectCollection.Keys.Cast<string>().ToArray();
+        }
+        /// <summary>
+        /// Gets a collection of values from any <see cref="NameObjectCollectionBase"/> descendant.
+        /// </summary>
+        /// <param name="nameObjectCollection">The name object collection.</param>
+        /// <returns>A read only collection of keys.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="nameObjectCollection"/> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IReadOnlyCollection<object> Values(
+            [NotNull] this NameObjectCollectionBase nameObjectCollection)
+        {
+            if (nameObjectCollection == null) throw new ArgumentNullException(nameof(nameObjectCollection));
+            // ReSharper disable EventExceptionNotDocumented
+            return _getEntriesFunc(nameObjectCollection)
+                .Cast<object>()
+                .Select(_getNameObjectEntryValueFunc)
+                .ToArray();
+            // ReSharper restore EventExceptionNotDocumented
+        }
+
+        /// <summary>
+        /// Converts any <see cref="NameObjectCollectionBase"/> descendant to a dictionary.
+        /// </summary>
+        /// <param name="nameObjectCollection">The name object collection.</param>
+        /// <returns>A read only dictionary</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="nameObjectCollection"/> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IReadOnlyDictionary<string, object> ToDictionary(
+            [NotNull] this NameObjectCollectionBase nameObjectCollection)
+        {
+            if (nameObjectCollection == null) throw new ArgumentNullException(nameof(nameObjectCollection));
+            // ReSharper disable EventExceptionNotDocumented
+            return _getEntriesFunc(nameObjectCollection)
+                .Cast<object>()
+                .ToDictionary(_getNameObjectEntryKeyFunc, _getNameObjectEntryValueFunc);
+            // ReSharper restore EventExceptionNotDocumented
+        }
+
+        // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
+
         /// <summary>
         /// Returns an empty <see cref="IReadOnlyDictionary{T,T}"/>.
         /// </summary>

@@ -190,19 +190,5 @@ namespace WebApplications.Utilities.Database.Configuration
             get { return GetProperty<int>("maxConcurrency"); }
             set { SetProperty("maxConcurrency", value); }
         }
-
-        /// <summary>
-        ///   Used to initialize a default set of values for the <see cref="ProgramElement"/> object.
-        /// </summary>
-        /// <remarks>
-        ///   Called to set the internal state to appropriate default values.
-        /// </remarks>
-        protected override void InitializeDefault()
-        {
-            // ReSharper disable ConstantNullCoalescingCondition
-            Parameters = Parameters ?? new ParameterCollection();
-            // ReSharper restore ConstantNullCoalescingCondition
-            base.InitializeDefault();
-        }
     }
 }

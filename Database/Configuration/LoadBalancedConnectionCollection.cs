@@ -42,9 +42,9 @@ namespace WebApplications.Utilities.Database.Configuration
         ConfigurationElementCollection<string, LoadBalancedConnectionElement>
     {
         /// <summary>
-        /// The database element this collection is in.
+        /// The database element this collection belongs to.
         /// </summary>
-        internal DatabaseElement Database;
+        internal DatabaseElement Database => Parent as DatabaseElement;
 
         /// <summary>
         ///   Gets the name used to identify the element.

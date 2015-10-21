@@ -78,7 +78,7 @@ namespace WebApplications.Utilities.Cryptography
             bool canEncrypt,
             ushort inputBlockSize,
             ushort outputBlockSize)
-            : base(providerElement, configuration, false)
+            : base("RSA", providerElement, configuration, false)
         {
             _parameters = parameters;
             CanEncrypt = canEncrypt;

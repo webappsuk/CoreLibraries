@@ -25,9 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
 using System;
 using System.Configuration;
-using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Configuration.Validators;
@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
         static SchedulerConfiguration()
         {
             // NOTE: Handler assigned here to ensure it will always be the first one invoked
-            Changed += (s, e) => Scheduler.LoadConfiguration();
+            ActiveChanged += (s, e) => Scheduler.LoadConfiguration();
         }
 
         /// <summary>
@@ -98,19 +98,6 @@ namespace WebApplications.Utilities.Scheduling.Configuration
                 if (value == null) throw new ArgumentNullException("value");
                 this["schedules"] = value;
             }
-        }
-
-        /// <summary>
-        ///   Sets the <see cref="SchedulerConfiguration"/> to its initial state.
-        /// </summary>
-        protected override void InitializeDefault()
-        {
-            // Ensure loggers is initialised.
-            // ReSharper disable ConstantNullCoalescingCondition
-            Schedules = Schedules ?? new ScheduleCollection();
-            // ReSharper restore ConstantNullCoalescingCondition
-
-            base.InitializeDefault();
         }
     }
 }

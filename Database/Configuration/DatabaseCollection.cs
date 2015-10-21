@@ -47,10 +47,7 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <value>
         ///   The element name.
         /// </value>
-        protected override string ElementName
-        {
-            get { return EName; }
-        }
+        protected override string ElementName => EName;
 
         /// <summary>
         ///   Gets the type of the <see cref="ConfigurationElementCollection"/>.
@@ -58,10 +55,7 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <value>
         ///   The <see cref="ConfigurationElementCollectionType"/> of this collection.
         /// </value>
-        public override ConfigurationElementCollectionType CollectionType
-        {
-            get { return ConfigurationElementCollectionType.BasicMapAlternate; }
-        }
+        public override ConfigurationElementCollectionType CollectionType => ConfigurationElementCollectionType.BasicMapAlternate;
 
         /// <summary>
         ///   Indicates whether the specified <see cref="System.Configuration.ConfigurationElement"/>
@@ -72,10 +66,7 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   Returns <see langword="true"/> if the element exists in the collection; otherwise returns <see langword="false"/>.
         ///   By default this value is <see langword="false"/>.
         /// </returns>
-        protected override bool IsElementName(string elementName)
-        {
-            return EName.Equals(elementName);
-        }
+        protected override bool IsElementName(string elementName) => EName.Equals(elementName);
 
         /// <summary>
         ///   Gets the element key.
@@ -85,9 +76,6 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        protected override string GetElementKey(DatabaseElement element)
-        {
-            return element.Id;
-        }
+        protected override string GetElementKey(DatabaseElement element) => element.Id;
     }
 }

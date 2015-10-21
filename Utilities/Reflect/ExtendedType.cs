@@ -665,26 +665,42 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="ignoreCase">Ignores the case if <see langword="true"/>.</param>
         /// <returns>The <see cref="Type" /> if found; otherwise <see langword="null" />.</returns>
         /// <remarks>This is more robust than using <see cref="Type.GetType(string,bool,bool)" /> as it supports partial assembly names.</remarks>
-        public static Type FindType([NotNull] string typeName, bool throwOnError = false, bool ignoreCase = false) => Type.GetType(
-            typeName,
-            an => an.Name.Equals(an.FullName) ? Assembly.LoadWithPartialName(an.Name) : Assembly.Load(an),
-            (a, t, i) => a != null
-                ? a.GetType(t, false, i)
-                : Type.GetType(t, false, i),
-            throwOnError,
-            ignoreCase);
+        public static Type FindType([NotNull] string typeName, bool throwOnError = false, bool ignoreCase = false)
+            => Type.GetType(
+                typeName,
+                an => an.Name.Equals(an.FullName) ? Assembly.LoadWithPartialName(an.Name) : Assembly.Load(an),
+                (a, t, i) => a != null
+                    ? a.GetType(t, false, i)
+                    : Type.GetType(t, false, i),
+                throwOnError,
+                ignoreCase);
 
+        
         /// <summary>
         /// Gets the extended type information for the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The type as an extended type.</returns>
         [NotNull]
-        public static ExtendedType Get([NotNull] Type type)
+        // ReSharper disable AssignNullToNotNullAttribute, ExceptionNotDocumented
+        public static ExtendedType Get([NotNull] Type type) => _extendedTypes.GetOrAdd(type, t => new ExtendedType(t));
+        // ReSharper restore AssignNullToNotNullAttribute, ExceptionNotDocumented
+
+        /// <summary>
+        /// Gets the extended type information for the specified type.
+        /// </summary>
+        /// <param name="typeName">Name of the type.</param>
+        /// <param name="ignoreCase">Ignores the case if <see langword="true"/>.</param>
+        /// <returns>The type as an extended type, if found; otherwise <see langword="null"/>.</returns>
+        [CanBeNull]
+        public static ExtendedType Get([NotNull] string typeName, bool ignoreCase = false)
         {
-            // ReSharper disable AssignNullToNotNullAttribute
-            return _extendedTypes.GetOrAdd(type, t => new ExtendedType(t));
-            // ReSharper restore AssignNullToNotNullAttribute
+            Type type = FindType(typeName, false, ignoreCase);
+            // ReSharper disable AssignNullToNotNullAttribute, ExceptionNotDocumented
+            return type != null
+                ? _extendedTypes.GetOrAdd(type, t => new ExtendedType(t))
+                : null;
+            // ReSharper restore AssignNullToNotNullAttribute, ExceptionNotDocumented
         }
 
         /// <summary>

@@ -28,6 +28,7 @@
 using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -38,13 +39,12 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Configuration
 {
     /// <summary>
-    ///   Provides extended functionality for <see cref="System.Configuration.ConfigurationSection"/>.
-    ///   Allows easy configuration retrieval.
+    /// Provides extended functionality for <see cref="System.Configuration.ConfigurationSection" />.
+    /// Allows easy configuration retrieval.
     /// </summary>
-    /// <typeparam name="T">The section type.</typeparam>
     [PublicAPI]
-    public abstract class ConfigurationSection<T> : ConfigurationSection
-        where T : ConfigurationSection<T>
+    public abstract partial class ConfigurationSection<T> : ConfigurationSection, IInternalConfigurationElement
+        where T : ConfigurationSection<T>, IConfigurationElement, new()
     {
         #region Delegates
         /// <summary>
@@ -56,12 +56,6 @@ namespace WebApplications.Utilities.Configuration
             [NotNull] object sender,
             [NotNull] ConfigurationChangedEventArgs e);
         #endregion
-
-        /// <summary>
-        ///   Holds the constructor function.
-        /// </summary>
-        [NotNull]
-        private static readonly Func<T> _constructor = typeof(T).ConstructorFunc<T>();
 
         /// <summary>
         /// Calculates the section name.
@@ -121,27 +115,61 @@ namespace WebApplications.Utilities.Configuration
 
 
         /// <summary>
+        /// Flag to indicate that this configuration needs to be reloaded.
+        /// </summary>
+        private bool _forceReload;
+
+        /// <summary>
         ///   Holds the currently active configuration section.
         /// </summary>
         [CanBeNull]
         private static T _active;
 
+        [CanBeNull]
+        private FileSystemWatcher _configWatcher;
+
         /// <summary>
-        /// Initializes the <see cref="ConfigurationSection{T}"/> class.
+        /// Handles the <see cref="FileSystemWatcher.Changed">configuration file changed event</see>.
         /// </summary>
-        static ConfigurationSection()
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.IO.FileSystemEventArgs" /> instance containing the event data.</param>
+        private void OnConfigFileChanged(object sender, FileSystemEventArgs e)
         {
-            ConfigurationFileWatcher.Changed += (sender, e) =>
-            {
-                ConfigurationManager.RefreshSection(SectionName);
-                T oldConfiguration = _active;
-                _active = GetConfiguration();
-            
-                if (oldConfiguration != null)
-                    Changed?.Invoke(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
-            };
+            // Only detect the first change, after which we have to be reloaded anyway.
+            FileSystemWatcher configWatcher = Interlocked.Exchange(ref _configWatcher, null);
+            configWatcher?.Dispose();
+
+            _forceReload = true;
+
+            ConfigurationManager.RefreshSection(SectionName);
+            T newConfiguration = CurrentConfiguration?.GetSection(SectionName) as T;
+            if (newConfiguration != null)
+                Changed?.Invoke(this, new ConfigurationChangedEventArgs((T)this, newConfiguration));
         }
 
+        /// <summary>
+        /// Handles the <see cref="E:ActiveChanged" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="WebApplications.Utilities.Configuration.ConfigurationSection{T}.ConfigurationChangedEventArgs" /> instance containing the event data.</param>
+        private static void OnActiveChanged(object sender, ConfigurationChangedEventArgs e)
+        {
+            _active = e.NewConfiguration;
+            ActiveChanged?.Invoke(_active, e);
+        }
+
+        /// <summary>
+        /// Creates an instance of this section.
+        /// </summary>
+        /// <returns>A <see cref="ConfigurationSection{T}"/> of the correct type.</returns>
+        [NotNull]
+        public static T Create()
+        {
+            T section = new T();
+            section.Init();
+            return section;
+        }
+        
         /// <summary>
         ///   Gets the name of the configuration section.
         /// </summary>
@@ -163,29 +191,24 @@ namespace WebApplications.Utilities.Configuration
         ///   Gets or sets the active configuration.
         /// </summary>
         /// <remarks>
-        ///   <para>Once set as active a configuration is marked as readonly.</para>
+        ///   <para>Once set as active a configuration is marked as read only.</para>
         ///   <para>Setting the active configuration to <see langword="null"/> will load the default configuration.</para>
         /// </remarks>
-        /// <exception cref="Exception" accessor="set">A delegate callback throws an exception.</exception>
         [NotNull]
         public static T Active
         {
-            get { return _active ?? (_active = GetConfiguration()); }
-            set
+            get
             {
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalse, HeuristicUnreachableCode
-                if (value == null)
-                    // ReSharper disable HeuristicUnreachableCode
-                    value = GetConfiguration();
-                // ReSharper restore HeuristicUnreachableCode
-                else if (Equals(_active, value))
-                    return;
+                T active = _active;
+                if (active == null || active._forceReload)
+                {
+                    if (active != null)
+                        active.Changed -= OnActiveChanged;
 
-                T oldConfiguration = _active;
-                _active = value;
-                
-                if (oldConfiguration != null)
-                    Changed?.Invoke(_active, new ConfigurationChangedEventArgs(oldConfiguration, _active));
+                    _active = active = GetConfiguration();
+                    active.Changed += OnActiveChanged;
+                }
+                return active;
             }
         }
 
@@ -210,74 +233,93 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <summary>
-        ///   Occurs when the <see cref="Active"/> ConfigurationSection is changed.
+        ///   Occurs when the <see cref="Active"/> ConfigurationSection is changed on disk.
         /// </summary>
-        public static event ConfigurationChangedEventHandler Changed;
-        
+        public static event ConfigurationChangedEventHandler ActiveChanged;
+
+        /// <summary>
+        ///   Occurs when the <see cref="Active"/> ConfigurationSection is changed on disk.
+        /// </summary>
+        public event ConfigurationChangedEventHandler Changed;
+
         /// <summary>
         ///   Gets the configuration.
         /// </summary>
         [NotNull]
         private static T GetConfiguration()
         {
-            System.Configuration.Configuration configuration = HttpContext.Current == null
-                ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-                : WebConfigurationManager.OpenWebConfiguration(null);
-            
-            // We get the configuration from different places, depending on whether we are
-            // running as a website or an application.
-            T section = configuration.GetSection(SectionName) as T;
-            if (section != null) return section;
-
-            // Create new configuration and set it as the active one.
-            section = _constructor();
-            // ReSharper disable once PossibleNullReferenceException
-            section.Init();
-            section.InitializeDefault();
-
-            // Add to existing configuration and save
-            configuration.Sections.Add(SectionName, section);
-            configuration.Save();
-
-            // Return the new section.
-            return section;
-            /*
-            T configuration = HttpContext.Current == null
-    ? ConfigurationManager.GetSection(SectionName) as T
-    : WebConfigurationManager.GetSection(SectionName) as T;
-
-            if (configuration == null)
+            do
             {
-                configuration = _constructor();
-                // ReSharper disable once PossibleNullReferenceException
-                configuration.InitializeDefault();
-            }
-            return configuration;
-            */
+                System.Configuration.Configuration configuration = HttpContext.Current == null
+                    ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+                    : WebConfigurationManager.OpenWebConfiguration(null);
+
+                // We get the configuration from different places, depending on whether we are
+                // running as a website or an application.
+                T section = configuration.GetSection(SectionName) as T;
+                if (section != null) return section;
+
+                // Create new configuration and set it as the active one.
+                section = Create();
+
+                // Add to existing configuration and save
+                configuration.Sections.Add(SectionName, section);
+                configuration.Save();
+
+                // We need to reload after a save!
+                section._forceReload = true;
+            } while (true);
         }
 
         /// <summary>
-        ///   Gets the configuration property.
+        /// Saves the section.
         /// </summary>
-        /// <typeparam name="TProp">The property type.</typeparam>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <returns>The specified property.</returns>
-        protected TProp GetProperty<TProp>(string propertyName)
+        /// <param name="saveMode">The save mode.</param>
+        /// <param name="forceSaveAll"><see langword="true"/> to save even if the configuration was not modified.</param>
+        /// <exception cref="ConfigurationErrorsException">The current section is not associated with a configuration.</exception>
+        /// <remarks>After saving a configuration section you should always retrieve it using <see cref="Active" />
+        /// before using again.</remarks>
+        public void Save(ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified, bool forceSaveAll = false)
         {
-            return (TProp)this[propertyName];
+            System.Configuration.Configuration configuration = CurrentConfiguration;
+            if (configuration == null)
+                throw new ConfigurationErrorsException(Resources.ConfigurationSection_Save_No_Configuration);
+
+            configuration.Save(saveMode, forceSaveAll);
+            ConfigurationManager.RefreshSection(SectionName);
+
+            // Force configuration to reload after a save.
+            _forceReload = true;
         }
 
         /// <summary>
-        ///   Sets the configuration property.
+        /// Saves as.
         /// </summary>
-        /// <typeparam name="TProp">The property type.</typeparam>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <param name="value">The value to set the property.</param>
-        protected void SetProperty<TProp>(string propertyName, TProp value)
+        /// <param name="filename">The filename.</param>
+        /// <param name="saveMode">The save mode.</param>
+        /// <param name="forceSaveAll">
+        ///   <see langword="true" /> to save even if the configuration was not modified.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="filename"/> is <see langword="null" />.</exception>
+        /// <exception cref="ConfigurationErrorsException">The current section is not associated with a configuration.</exception>
+        public void SaveAs([NotNull] string filename, ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified, bool forceSaveAll = false)
         {
-            this[propertyName] = value;
+            if (filename == null)
+                throw new ArgumentNullException(nameof(filename));
+
+            System.Configuration.Configuration configuration = CurrentConfiguration;
+            if (configuration == null)
+                throw new ConfigurationErrorsException(Resources.ConfigurationSection_Save_No_Configuration);
+
+            configuration.SaveAs(filename, saveMode, forceSaveAll);
+            ConfigurationManager.RefreshSection(SectionName);
+
+            // Force configuration to reload after a save.
+            _forceReload = true;
         }
-        
+
+        /// <inheritdoc />
+        public IConfigurationElement Section => this;
+
         #region Nested type: ConfigurationChangedEventArgs
         /// <summary>
         ///   Information about the configuration changed event.
@@ -296,7 +338,7 @@ namespace WebApplications.Utilities.Configuration
             /// </summary>
             [NotNull]
             public readonly T OldConfiguration;
-            
+
             /// <summary>
             /// Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs" /> class.
             /// </summary>

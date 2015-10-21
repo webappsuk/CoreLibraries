@@ -109,7 +109,7 @@ namespace WebApplications.Utilities.Performance.Configuration
         {
             Update(Active);
             // ReSharper disable once PossibleNullReferenceException
-            Changed += (s, e) => Update(e.NewConfiguration);
+            ActiveChanged += (s, e) => Update(e.NewConfiguration);
         }
 
         /// <summary>

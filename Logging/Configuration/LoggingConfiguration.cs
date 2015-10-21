@@ -25,12 +25,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
 using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
-using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Loggers;
@@ -210,11 +210,6 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         protected override void InitializeDefault()
         {
-            // Ensure loggers is initialised.
-            // ReSharper disable ConstantNullCoalescingCondition
-            Loggers = Loggers ?? new LoggersCollection();
-            // ReSharper restore ConstantNullCoalescingCondition
-
             // Add a trace logger.
             Loggers.Add(
                 new LoggerElement

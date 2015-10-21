@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Database.Configuration
     {
         static DatabasesConfiguration()
         {
-            Changed += ConcurrencyController.OnConfigChanged;
+            ActiveChanged += ConcurrencyController.OnActiveConfigChanged;
             ConcurrencyController.UpdateSemaphores(Active);
         }
 
@@ -71,21 +71,7 @@ namespace WebApplications.Utilities.Database.Configuration
                 SetProperty("", value);
             }
         }
-
-        /// <summary>
-        ///   Used to initialize a default set of values for the <see cref="DatabasesConfiguration"/> object.
-        /// </summary>
-        /// <remarks>
-        ///   Called to set the internal state to appropriate default values.
-        /// </remarks>
-        protected override void InitializeDefault()
-        {
-            // ReSharper disable ConstantNullCoalescingCondition
-            Databases = Databases ?? new DatabaseCollection();
-            // ReSharper restore ConstantNullCoalescingCondition
-            base.InitializeDefault();
-        }
-
+        
         /// <summary>
         /// Gets the <see cref="LoadBalancedConnection">load balanced connection</see> from the configuration with the specified database ID and optional
         /// connection ID.

@@ -196,7 +196,7 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
-        internal static void OnUtilityConfigurationChanged(
+        internal static void OnActiveUtilityConfigurationChanged(
             [NotNull] object sender,
             [NotNull] UtilityConfiguration.ConfigurationChangedEventArgs e)
         {

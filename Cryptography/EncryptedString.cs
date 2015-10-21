@@ -108,7 +108,7 @@ namespace WebApplications.Utilities.Cryptography
         private EncryptedString([NotNull] SerializationInfo info, StreamingContext context)
         {
             string providerId = info.GetString(TagID);
-            CryptographyProvider provider = CryptographyConfiguration.Active.Provider(providerId);
+            CryptographyProvider provider = CryptographyConfiguration.Active.GetProvider(providerId);
 
             if (provider == null)
                 throw new SerializationException(

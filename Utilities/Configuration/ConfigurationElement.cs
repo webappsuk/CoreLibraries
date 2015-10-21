@@ -25,7 +25,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Reflection;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities.Configuration
 {
@@ -33,34 +40,72 @@ namespace WebApplications.Utilities.Configuration
     ///   Represents a configuration element in a configuration file.
     /// </summary>
     [PublicAPI]
-    public class ConfigurationElement : System.Configuration.ConfigurationElement
+    public abstract partial class ConfigurationElement : System.Configuration.ConfigurationElement, IInternalConfigurationElement
     {
+        // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
         /// <summary>
-        ///   Gets the configuration property.
+        /// The <see cref="MethodInfo"/> corresponding to <see cref="IInternalConfigurationElement.Initialize"/>.
         /// </summary>
-        /// <typeparam name="T">The property type.</typeparam>
-        /// <param name="propertyName">The name of the property to get.</param>
-        /// <returns>The specified property, attribute or child element.</returns>
-        /// <exception cref="System.Configuration.ConfigurationErrorsException">
-        ///   The property is read-only or locked.
-        /// </exception>
-        protected T GetProperty<T>(string propertyName)
-        {
-            return (T)base[propertyName];
-        }
+        [NotNull]
+        private static readonly MethodInfo _initializeMethod =
+            ExtendedType.Get(typeof(IInternalConfigurationElement))
+                .GetMethod("Initialize", TypeSearch.Void);
 
         /// <summary>
-        ///   Sets the configuration property to the value specified.
+        /// The function to efficiently get the values collection from a <see cref="System.Configuration.ConfigurationElement"/>.
         /// </summary>
-        /// <typeparam name="T">The property type.</typeparam>
-        /// <param name="propertyName">The name of the property to set.</param>
-        /// <param name="value">The value to set.</param>
-        /// <exception cref="System.Configuration.ConfigurationErrorsException">
-        ///   The property is read-only or locked.
-        /// </exception>
-        protected void SetProperty<T>(string propertyName, T value)
-        {
-            base[propertyName] = value;
-        }
+        [NotNull]
+        internal static readonly Func<System.Configuration.ConfigurationElement, NameObjectCollectionBase> GetValues =
+            ExtendedType.Get(typeof(System.Configuration.ConfigurationElement))
+                .GetField("_values")
+                .Getter<System.Configuration.ConfigurationElement, NameObjectCollectionBase>();
+        // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
+
+        /// <summary>
+        /// Holds code for creating collection types.
+        /// </summary>
+        [NotNull]
+        private static readonly ConcurrentDictionary<Type, Func<IInternalConfigurationElement>> _createElements
+            = new ConcurrentDictionary<Type, Func<IInternalConfigurationElement>>();
+
+        /// <summary>
+        /// Creates the element, if the supplied <paramref name="type"/> implements
+        /// <see cref="IInternalConfigurationElement"/>.
+        /// </summary>
+        /// <param name="type">Type of the element.</param>
+        /// <returns>WebApplications.Utilities.Configuration.IInternalConfigurationElement.</returns>
+            // ReSharper disable ExceptionNotDocumented
+        internal static IInternalConfigurationElement Create([NotNull] Type type) =>
+                    _createElements.GetOrAdd(
+                        type,
+                        t =>
+                        {
+                            Debug.Assert(t != null);
+                            if (!t.ImplementsInterface(typeof(IInternalConfigurationElement))) return null;
+
+                            ParameterExpression result = Expression.Parameter(typeof(IInternalConfigurationElement), "result");
+                            return (Func<IInternalConfigurationElement>)Expression.Lambda(
+                                Expression.Block(
+                                    new[] { result },
+                                    Expression.Assign(
+                                        result,
+                                        Expression.Convert(Expression.New(type), typeof(IInternalConfigurationElement))),
+                                    Expression.Call(result, _initializeMethod),
+                                    result)).Compile();
+                        })?.Invoke();
+        // ReSharper restore ExceptionNotDocumented
+
+        /// <summary>
+        /// Creates an element of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The element type.</typeparam>
+        /// <returns>An element of type <typeparamref name="T"/>.</returns>
+        /// <seealso cref="IConfigurationElement" />
+        public static T Create<T>()
+            where T : IConfigurationElement, new()
+            => (T)Create(typeof(T));
+
+        /// <inheritdoc />
+        public IConfigurationElement Section => Parent?.Section;
     }
 }

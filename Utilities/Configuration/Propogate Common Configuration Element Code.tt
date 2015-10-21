@@ -1,0 +1,27 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Xml.dll" #>
+<#@ Assembly Name="System.Xml.Linq.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#   
+   string[] classes = new string[] { "ConfigurationElementCollection<TKey, TValue>", "ConfigurationSection<T>" };
+   //template code - you get IntelliSense here
+   string sourceFile = System.IO.Path.GetDirectoryName(this.Host.TemplateFile) + "\\ConfigurationElement - Common.cs";  
+   string content =  System.IO.File.ReadAllText(sourceFile);
+   
+   System.Text.RegularExpressions.Regex regexObj = new System.Text.RegularExpressions.Regex(@"public abstract partial class ([^\s]+)", System.Text.RegularExpressions.RegexOptions.Multiline);
+   foreach (string c in classes)
+   {
+	   #>
+<#= regexObj.Replace(content, "public abstract partial class "+c) #>
+<#
+   }
+#>

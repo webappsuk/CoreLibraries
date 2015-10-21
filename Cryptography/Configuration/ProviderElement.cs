@@ -26,19 +26,18 @@
 #endregion
 
 using System.Configuration;
-using System.Linq;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Configuration;
+using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
 namespace WebApplications.Utilities.Cryptography.Configuration
 {
     /// <summary>
-    /// A crypto provider element.
+    /// A cryptography provider element.
     /// </summary>
     [PublicAPI]
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-    public class ProviderElement : XmlConfigurationElement
+    public class ProviderElement : ConfigurationElement
     {
         /// <summary>
         /// Gets or sets the provider ID.
@@ -81,28 +80,7 @@ namespace WebApplications.Utilities.Cryptography.Configuration
             get { return GetProperty<bool>("enabled"); }
             set { SetProperty("enabled", value); }
         }
-
-        /// <summary>
-        ///   Gets or sets the parameters to be passed to the constructor.
-        /// </summary>
-        /// <value>
-        ///   The <see cref="WebApplications.Utilities.Configuration.ParameterCollection"/>,
-        ///   which is all of the child elements within the parameters element in the configuration file.
-        /// </value>
-        [ConfigurationProperty("parameters", IsRequired = false, IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof(ParameterCollection),
-            AddItemName = "add",
-            ClearItemsName = "clear",
-            RemoveItemName = "remove")]
-        [NotNull]
-        // ReSharper disable once VirtualMemberNeverOverriden.Global
-        public ParameterCollection Parameters
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<ParameterCollection>("parameters"); }
-            set { SetProperty("parameters", value); }
-        }
-
+        
         /// <summary>
         /// Gets the <see cref="CryptographyProvider"/>.
         /// </summary>
@@ -130,12 +108,5 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         {
             return false;
         }
-
-        /// <summary>
-        /// Gets the parameters as an object array.
-        /// </summary>
-        /// <returns>An <see cref="T:object[]"/>.</returns>
-        [NotNull]
-        internal object[] GetParameters() => Parameters.Count < 1 ? Array<object>.Empty : Parameters.Select(p => (object)p).ToArray();
     }
 }

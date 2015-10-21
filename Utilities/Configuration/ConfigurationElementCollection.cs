@@ -29,28 +29,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
 {
     /// <summary>
-    ///   Generic version of <see cref="System.Configuration.ConfigurationElementCollection"/>.
+    /// Generic version of <see cref="System.Configuration.ConfigurationElementCollection" />.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the elements.</typeparam>
     [PublicAPI]
-    public abstract class ConfigurationElementCollection<TKey, TValue> : ConfigurationElementCollection,
-        ICollection<TValue>
-        where TValue : ConfigurationElement, new()
+    public abstract partial class ConfigurationElementCollection<TKey, TValue> : ConfigurationElementCollection,
+        ICollection<TValue>, IInternalConfigurationElement
+        where TValue : ConfigurationElement, IConfigurationElement, new()
     {
         /// <summary>
-        ///   Gets or sets a property, attribute, or child element of this configuration element.
+        /// Gets or sets a property, attribute, or child element of this configuration element.
         /// </summary>
-        /// <param name="key">The name of the property to access.</param>
+        /// <param name="key">The key.</param>
         /// <returns>The specified property, attribute, or child element</returns>
-        /// <exception cref="ConfigurationErrorsException">
-        ///   <paramref name="key"/> is read-only or locked.
-        /// </exception>
         [CanBeNull]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue this[[NotNull] TKey key]
@@ -58,19 +56,26 @@ namespace WebApplications.Utilities.Configuration
             get { return (TValue)BaseGet(key); }
             set
             {
-                BaseRemove(key);
-                if (value != null)
+                lock (_children)
                 {
-                    TKey elementKey = GetElementKey(value);
-                    if (!key.Equals(elementKey))
-                        throw new InvalidOperationException(
-                            string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                Resources.ConfigurationElementCollection_SetElement_KeyMismatch,
-                                key,
-                                elementKey));
-                    BaseAdd(value);
+                    TValue original = (TValue)BaseGet(key);
+                    if (Equals(original, value)) return;
+
+                    if (original != null && _children.Contains(original))
+                    {
+                        _children.Remove(original);
+                        ((IInternalConfigurationElement)original).Parent = null;
+                    }
+
+                    if (value != null)
+                    {
+
+                        _children.Add(value);
+                        ((IInternalConfigurationElement)value).Parent = this;
+                        base.BaseAdd(value);
+                    }
                 }
+                ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
             }
         }
 
@@ -81,16 +86,42 @@ namespace WebApplications.Utilities.Configuration
         /// <exception cref="ConfigurationErrorsException">
         ///   <paramref name="index"/> is read-only or locked.
         /// </exception>
-        [CanBeNull]
+        /// <exception cref="ArgumentNullException" accessor="set"><paramref name="value"/> is <see langword="null" />.</exception>
+        [NotNull]
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue this[int index]
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return (TValue)BaseGet(index); }
             set
             {
-                BaseRemove(index);
-                if (value != null)
-                    BaseAdd(index, value);
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+
+                TKey originalKey;
+                TKey newKey = GetElementKey(value);
+                lock (_children)
+                {
+                    TValue original = (TValue)BaseGet(index);
+                    if (Equals(original, value)) return;
+
+                    // Cannot have null values
+                    Debug.Assert(original != null);
+                    originalKey = GetElementKey(original);
+                    BaseRemoveAt(index);
+
+                    if (_children.Contains(original))
+                    {
+                        _children.Remove(original);
+                        ((IInternalConfigurationElement)original).Parent = null;
+                    }
+
+                    _children.Add(value);
+                    ((IInternalConfigurationElement)value).Parent = this;
+                    base.BaseAdd(index, value);
+                }
+                ((IInternalConfigurationElement)this).OnChanged(this, $"[{originalKey}]");
+                ((IInternalConfigurationElement)this).OnChanged(this, $"[{newKey}]");
             }
         }
 
@@ -112,10 +143,9 @@ namespace WebApplications.Utilities.Configuration
         ///   Adds the specified value to the collection.
         /// </summary>
         /// <param name="value">This is the element to add to the collection.</param>
-        public virtual void Add([NotNull] TValue value)
-        {
-            BaseAdd(value);
-        }
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null" />.</exception>
+        // ReSharper disable once ExceptionNotDocumented
+        public virtual void Add([NotNull] TValue value) => BaseAdd(value);
 
         /// <summary>
         ///   Copies the elements in the collection to the provided <see cref="System.Array"/>.
@@ -153,12 +183,24 @@ namespace WebApplications.Utilities.Configuration
         /// </exception>
         bool ICollection<TValue>.Remove([NotNull] TValue item)
         {
-            System.Configuration.ConfigurationElement element = BaseGet(GetElementKey(item));
-            if (element == null)
-                return false;
-            BaseRemove(item);
-            return true;
-            //return BaseIsRemoved(item);
+            TKey key = GetElementKey(item);
+            bool found;
+            lock (_children)
+            {
+                TValue value = (TValue)BaseGet(key);
+                if (value == null)
+                    found = false;
+                else
+                {
+                    ((IInternalConfigurationElement)value).Parent = null;
+                    _children.Remove(value);
+                    BaseRemove(item);
+                    found = true;
+                }
+            }
+
+            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
+            return found;
         }
 
         /// <summary>
@@ -168,10 +210,7 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>
         ///   Returns <see langword="true"/> collection is read-only; otherwise returns <see langword="false"/>.
         /// </returns>
-        bool ICollection<TValue>.IsReadOnly
-        {
-            get { return base.IsReadOnly(); }
-        }
+        bool ICollection<TValue>.IsReadOnly => base.IsReadOnly();
 
         /// <summary>
         ///   Clears this instance, removing all elements from the collection.
@@ -183,7 +222,17 @@ namespace WebApplications.Utilities.Configuration
         /// </exception>
         public virtual void Clear()
         {
-            BaseClear();
+            lock (_children)
+            {
+                foreach (IInternalConfigurationElement element in this)
+                {
+                    Debug.Assert(element != null);
+                    _children.Remove(element);
+                    element.Parent = null;
+                }
+                BaseClear();
+            }
+            ((IInternalConfigurationElement)this).OnChanged(this, string.Empty);
         }
 
         /// <summary>
@@ -193,33 +242,40 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>
         ///   Returns <see langword="true"/> if <paramref name="item"/> is found in the collection; otherwise returns <see langword="false"/>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="item"/> is <see langword="null" />.</exception>
         public bool Contains([NotNull] TValue item)
         {
-            if (item == null) throw new ArgumentNullException("item");
+            if (item == null) throw new ArgumentNullException(nameof(item));
             return BaseGet(GetElementKey(item)) != null;
         }
         #endregion
 
         /// <summary>
-        ///   Gets the configuration property.
+        /// Overrides the base add method to link parents.
         /// </summary>
-        /// <typeparam name="T">The property type.</typeparam>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <returns>The specified property, attribute or child element.</returns>
-        protected T GetProperty<T>(string propertyName)
+        /// <param name="element">The element.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="element"/> is <see langword="null" />.</exception>
+        /// <exception cref="ConfigurationErrorsException">The element is of the wrong type.</exception>
+        protected override void BaseAdd(System.Configuration.ConfigurationElement element)
         {
-            return (T)base[propertyName];
-        }
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+            TValue value = element as TValue;
+            if (value == null)
+                throw new ConfigurationErrorsException(
+                    string.Format(
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        Resources.ConfigurationElement_Init_Invalid_Configuration_Property_Type,
+                        element.GetType()));
 
-        /// <summary>
-        ///   Sets the configuration property to the specified value.
-        /// </summary>
-        /// <typeparam name="T">The property type.</typeparam>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <param name="value">The value to set the property.</param>
-        protected void SetProperty<T>(string propertyName, T value)
-        {
-            base[propertyName] = value;
+            TKey key = GetElementKey(value);
+            lock (_children)
+            {
+                ((IInternalConfigurationElement)value).Parent = this;
+                _children.Add(value);
+                base.BaseAdd(element);
+            }
+            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
         }
 
         /// <summary>
@@ -227,9 +283,8 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         /// <returns>A new <see cref="System.Configuration.ConfigurationElement"/>.</returns>
         protected override System.Configuration.ConfigurationElement CreateNewElement()
-        {
-            return new TValue();
-        }
+            // ReSharper disable once AssignNullToNotNullAttribute
+            => ConfigurationElement.Create<TValue>();
 
         /// <summary>
         ///   Gets the element key for a specified configuration element when overridden in a derived class.
@@ -240,10 +295,7 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>
         ///   An <see cref="object"/> that acts as the key for the specified <see cref="System.Configuration.ConfigurationElement"/>.
         /// </returns>
-        protected override sealed object GetElementKey(System.Configuration.ConfigurationElement element)
-        {
-            return GetElementKey((TValue)element);
-        }
+        protected override sealed object GetElementKey(System.Configuration.ConfigurationElement element) => GetElementKey((TValue)element);
 
         /// <summary>
         ///   Gets the element key.
@@ -267,7 +319,19 @@ namespace WebApplications.Utilities.Configuration
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void Remove([NotNull] TKey key)
         {
-            BaseRemove(key);
+            lock (_children)
+            {
+                TValue value = (TValue)BaseGet(key);
+                if (value == null)
+                    return;
+
+                ((IInternalConfigurationElement)value).Parent = null;
+                _children.Remove(value);
+
+                BaseRemove(key);
+            }
+
+            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
         }
 
         /// <summary>
@@ -282,7 +346,7 @@ namespace WebApplications.Utilities.Configuration
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void Remove([NotNull] TValue value)
         {
-            BaseRemove(GetElementKey(value));
+            Remove(GetElementKey(value));
         }
 
         /// <summary>
@@ -301,7 +365,20 @@ namespace WebApplications.Utilities.Configuration
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void RemoveAt(int index)
         {
-            BaseRemoveAt(index);
+            TKey key;
+            lock (_children)
+            {
+                TValue value = (TValue)BaseGet(index);
+                if (value == null)
+                    return;
+
+                key = GetElementKey(value);
+                ((IInternalConfigurationElement)value).Parent = null;
+                _children.Remove(value);
+
+                BaseRemoveAt(index);
+            }
+            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
         }
 
         /// <summary>
@@ -322,5 +399,8 @@ namespace WebApplications.Utilities.Configuration
         {
             return (TKey)BaseGetKey(index);
         }
+
+        /// <inheritdoc />
+        public IConfigurationElement Section => Parent?.Section;
     }
 }

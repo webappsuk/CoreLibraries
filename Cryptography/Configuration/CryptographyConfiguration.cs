@@ -25,7 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Configuration;
+using System.Security.Cryptography;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
@@ -52,24 +54,39 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         }
 
         /// <summary>
-        /// Used to initialize a default set of values for the <see cref="CryptographyConfiguration"/> object.
-        /// </summary>
-        protected override void InitializeDefault()
-        {
-            // ReSharper disable ConstantNullCoalescingCondition
-            Providers = Providers ?? new ProviderCollection();
-            // ReSharper restore ConstantNullCoalescingCondition
-            base.InitializeDefault();
-        }
-
-        /// <summary>
-        /// Get's the provider with the specified identity.
+        /// Gets the provider with the specified identity.
         /// </summary>
         /// <param name="providerId">The provider identifier.</param>
         /// <returns>A <see cref="CryptographyProvider"/>.</returns>
-        public CryptographyProvider Provider(string providerId)
+        [CanBeNull]
+        public CryptographyProvider GetProvider([NotNull] string providerId) => Providers[providerId]?.GetProvider();
+
+        /// <summary>
+        /// Gets the provider with the specified key, or creates one and saves it to the configuration.
+        /// </summary>
+        /// <param name="providerId">The provider identifier.</param>
+        /// <param name="addFunc">The add function.</param>
+        /// <returns>A <see cref="CryptographyProvider"/>.</returns>
+        /// <exception cref="CryptographicException">The <paramref name="addFunc"/> returns null.</exception>
+        /// <exception cref="Exception">The <paramref name="addFunc"/> throws an exception.</exception>
+        /// <exception cref="ArgumentException">Invalid <paramref name="providerId"/> supplied.</exception>
+        [NotNull]
+        public CryptographyProvider GetOrAddProvider([NotNull] string providerId, [NotNull] Func<CryptographyProvider> addFunc)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrWhiteSpace(providerId))
+                throw new ArgumentException(Resources.CryptographyConfiguration_GetOrAddProvider_Invalid_Provider_ID, nameof(providerId));
+
+            // ReSharper disable ExceptionNotDocumented
+            CryptographyProvider provider = Providers[providerId]?.GetProvider();
+            if (provider != null) return provider;
+
+            provider = addFunc();
+            if (provider == null)
+                throw new CryptographicException(Resources.CryptographyConfiguration_GetOrAddProvider_Add_Returned_Null);
+
+            provider.SaveToConfiguration(providerId, this);
+            // ReSharper restore ExceptionNotDocumented
+            return provider;
         }
     }
 }

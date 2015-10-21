@@ -531,4 +531,10 @@
   <data name="SimplifiedTypeNameConverter_ConvertFrom_Unknown_Type" xml:space="preserve">
     <value>The '{0}' type was not found.</value>
   </data>
+  <data name="ConfigurationSection_Save_No_Configuration" xml:space="preserve">
+    <value>The current configuration section is not associated with a configuration.</value>
+  </data>
+  <data name="ConfigurationElement_Init_Invalid_Configuration_Property_Type" xml:space="preserve">
+    <value>The Utilities configuration system cannot be mixed with non-extended configuration elements.  The '{0}' type does not descend from one of the enhanced configuration element types.</value>
+  </data>
 </root>

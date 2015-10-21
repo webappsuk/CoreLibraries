@@ -109,13 +109,7 @@ namespace WebApplications.Utilities.Database.Configuration
         [ItemNotNull]
         public LoadBalancedConnectionCollection Connections
         {
-            get
-            {
-                LoadBalancedConnectionCollection connections = GetProperty<LoadBalancedConnectionCollection>("connections");
-                Debug.Assert(connections != null);
-                connections.Database = this;
-                return connections;
-            }
+            get { return GetProperty<LoadBalancedConnectionCollection>("connections"); }
             set { SetProperty("connections", value); }
         }
 
@@ -139,23 +133,7 @@ namespace WebApplications.Utilities.Database.Configuration
             get { return GetProperty<ProgramCollection>("programs"); }
             set { SetProperty("programs", value); }
         }
-
-        /// <summary>
-        ///   Used to initialize a default set of values for the <see cref="System.Configuration.ConfigurationElement"/> object.
-        /// </summary>
-        /// <remarks>
-        ///   Called to set the internal state to appropriate default values.
-        /// </remarks>
-        protected override void InitializeDefault()
-        {
-            // ReSharper disable ConstantNullCoalescingCondition
-            Connections = Connections ?? new LoadBalancedConnectionCollection { Database = this };
-            Programs = Programs ?? new ProgramCollection();
-            // ReSharper restore ConstantNullCoalescingCondition
-
-            base.InitializeDefault();
-        }
-
+        
         /// <summary>
         /// Gets the <see cref="WebApplications.Utilities.Database.SqlProgram" /> with the specified name and parameters,
         /// respecting configured options.

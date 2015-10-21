@@ -115,11 +115,47 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The supplied function did not return a CryptographyProvider.
+        /// </summary>
+        internal static string CryptographyConfiguration_GetOrAddProvider_Add_Returned_Null {
+            get {
+                return ResourceManager.GetString("CryptographyConfiguration_GetOrAddProvider_Add_Returned_Null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid provider ID supplied..
+        /// </summary>
+        internal static string CryptographyConfiguration_GetOrAddProvider_Invalid_Provider_ID {
+            get {
+                return ResourceManager.GetString("CryptographyConfiguration_GetOrAddProvider_Invalid_Provider_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown, or unsupported, cryptographic provider &apos;{0}&apos;..
         /// </summary>
         internal static string CryptographyProvider_Create_Unknown_Provider {
             get {
                 return ResourceManager.GetString("CryptographyProvider_Create_Unknown_Provider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot persist the current cryptography provider to the configuration as no configuration could be found..
+        /// </summary>
+        internal static string CryptographyProvider_SaveToConfiguration_No_Configuration {
+            get {
+                return ResourceManager.GetString("CryptographyProvider_SaveToConfiguration_No_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot persist the current cryptography provider to the configuration as it doesn&apos;t have an existing id and no id was specified..
+        /// </summary>
+        internal static string CryptographyProvider_SaveToConfiguration_No_ID {
+            get {
+                return ResourceManager.GetString("CryptographyProvider_SaveToConfiguration_No_ID", resourceCulture);
             }
         }
         

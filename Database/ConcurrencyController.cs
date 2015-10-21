@@ -66,7 +66,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
-        public static void OnConfigChanged(
+        public static void OnActiveConfigChanged(
             [NotNull] object sender,
             [NotNull] ConfigurationSection<DatabasesConfiguration>.ConfigurationChangedEventArgs args)
         {

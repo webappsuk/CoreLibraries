@@ -408,7 +408,7 @@ namespace WebApplications.Utilities.Logging
             _defaultMemoryLogger = new MemoryLogger("Default memory logger", TimeSpan.FromMinutes(1));
             _loggers[_defaultMemoryLogger] = new LoggerInfo(false, typeof(MemoryLogger));
 
-            ConfigurationSection<LoggingConfiguration>.Changed += (o, e) => LoadConfiguration();
+            ConfigurationSection<LoggingConfiguration>.ActiveChanged += (o, e) => LoadConfiguration();
 
             // Flush logs on domain unload and unhandled exceptions.
             AppDomain.CurrentDomain.DomainUnload += (s, e) => CleanUp();

@@ -45,7 +45,11 @@ namespace WebApplications.Utilities.Database.Configuration
     [PublicAPI]
     public class LoadBalancedConnectionElement : ConfigurationElement
     {
-        internal DatabaseElement Database;
+        /// <summary>
+        /// Gets the associated database.
+        /// </summary>
+        /// <value>The database.</value>
+        internal DatabaseElement Database => Parent?.Parent as DatabaseElement;
 
         /// <summary>
         ///   Gets or sets the identifier for a load balanced connection.
@@ -132,21 +136,6 @@ namespace WebApplications.Utilities.Database.Configuration
                 if (value == null) throw new ArgumentNullException("value");
                 SetProperty("", value);
             }
-        }
-
-        /// <summary>
-        ///   Used to initialize a default set of values for the <see cref="ConnectionCollection"/> object.
-        /// </summary>
-        /// <remarks>
-        ///   Called to set the internal state to appropriate default values.
-        /// </remarks>
-        protected override void InitializeDefault()
-        {
-            // ReSharper disable ConstantNullCoalescingCondition
-            Connections = Connections ?? new ConnectionCollection();
-            // ReSharper restore ConstantNullCoalescingCondition
-
-            base.InitializeDefault();
         }
 
         /// <summary>

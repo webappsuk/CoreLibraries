@@ -142,11 +142,29 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Utilities configuration system cannot be mixed with non-extended configuration elements.  The &apos;{0}&apos; type does not descend from one of the enhanced configuration element types..
+        /// </summary>
+        internal static string ConfigurationElement_Init_Invalid_Configuration_Property_Type {
+            get {
+                return ResourceManager.GetString("ConfigurationElement_Init_Invalid_Configuration_Property_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot set a configuration element collection using a key &apos;{0}&apos; that does not match the configuration element&apos;s key &apos;{1}&apos;..
         /// </summary>
         internal static string ConfigurationElementCollection_SetElement_KeyMismatch {
             get {
                 return ResourceManager.GetString("ConfigurationElementCollection_SetElement_KeyMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current configuration section is not associated with a configuration..
+        /// </summary>
+        internal static string ConfigurationSection_Save_No_Configuration {
+            get {
+                return ResourceManager.GetString("ConfigurationSection_Save_No_Configuration", resourceCulture);
             }
         }
         

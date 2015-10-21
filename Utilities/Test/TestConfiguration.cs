@@ -58,6 +58,7 @@ namespace WebApplications.Utilities.Test
             };
             */
             TestConfigurationSection section = new TestConfigurationSection();
+            var propertyValues = section.PropertyValues;
             string a = section.String;
             string b = section.String2;
 
@@ -107,7 +108,7 @@ namespace WebApplications.Utilities.Test
 
             // Detect changes
             EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
-            ConfigurationSection<TestConfigurationSection>.Changed += (o, e) =>
+            ConfigurationSection<TestConfigurationSection>.ActiveChanged += (o, e) =>
             {
                 Assert.IsNotNull(o);
                 Assert.IsNotNull(e);
@@ -124,7 +125,7 @@ namespace WebApplications.Utilities.Test
 
             // Update the custom node.
             TestConfigurationSection.Active.Custom = custom;
-            TestConfigurationSection.Active.CurrentConfiguration?.Save();
+            TestConfigurationSection.Active.Save();
             
             Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
 
@@ -141,7 +142,7 @@ namespace WebApplications.Utilities.Test
 
             // Update the custom node.
             TestConfigurationSection.Active.Custom = custom;
-            TestConfigurationSection.Active.CurrentConfiguration?.Save();
+            TestConfigurationSection.Active.Save();
 
             Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
             custom = TestConfigurationSection.Active.Custom;
@@ -211,7 +212,7 @@ namespace WebApplications.Utilities.Test
     /// </summary>
     /// <remarks></remarks>
     [UsedImplicitly]
-    public class TestConfigurationSection : XmlConfigurationSection<TestConfigurationSection>
+    public class TestConfigurationSection : ConfigurationSection<TestConfigurationSection>
     {
         /// <summary>
         /// Gets or sets the name.

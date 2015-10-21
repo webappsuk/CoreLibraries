@@ -41,8 +41,14 @@
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
     <Compile Include="Caching\WeakSingleton.cs" />
-    <Compile Include="Configuration\XmlConfigurationElement.cs" />
-    <Compile Include="Configuration\XmlConfigurationSection.cs" />
+    <Compile Include="Configuration\ConfigurationElement - Common.cs" />
+    <Compile Include="Configuration\IConfigurationElement.cs" />
+    <Compile Include="Configuration\IInternalConfigurationElement.cs" />
+    <Compile Include="Configuration\Propogate Common Configuration Element Code.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Propogate Common Configuration Element Code.tt</DependentUpon>
+    </Compile>
     <Compile Include="Converters\DurationConverter.cs" />
     <Compile Include="Converters\InstantConverter.cs" />
     <Compile Include="Converters\LocalDateTimeConverter.cs" />
@@ -354,6 +360,12 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Funcs.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\Propogate Common Configuration Element Code.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Propogate Common Configuration Element Code.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
