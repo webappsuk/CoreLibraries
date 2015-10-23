@@ -537,4 +537,7 @@
   <data name="ConfigurationElement_Init_Invalid_Configuration_Property_Type" xml:space="preserve">
     <value>The Utilities configuration system cannot be mixed with non-extended configuration elements.  The '{0}' type does not descend from one of the enhanced configuration element types.</value>
   </data>
+  <data name="BufferedAction_BufferedAction_Invalid_Duration" xml:space="preserve">
+    <value>The specified duration must be greater than zero.</value>
+  </data>
 </root>

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
@@ -47,5 +48,12 @@ namespace WebApplications.Utilities.Configuration
         /// <value>The file path.</value>
         [CanBeNull]
         string FilePath { get; }
+
+        /// <summary>
+        /// Gets all the associated configuration file paths.
+        /// </summary>
+        /// <value>The file path.</value>
+        [NotNull]
+        IReadOnlyCollection<string> FilePaths { get; }
     }
 }

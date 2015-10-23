@@ -57,8 +57,8 @@ namespace WebApplications.Utilities.Test
                 Assert.IsTrue(e.NewConfiguration.IsActive);
             };
             */
-            TestConfigurationSection section = new TestConfigurationSection();
-            var propertyValues = section.PropertyValues;
+            TestConfigurationSection section = TestConfigurationSection.Create();
+            IReadOnlyDictionary<string, object> propertyValues = section.PropertyValues;
             string a = section.String;
             string b = section.String2;
 
@@ -112,13 +112,6 @@ namespace WebApplications.Utilities.Test
             {
                 Assert.IsNotNull(o);
                 Assert.IsNotNull(e);
-                Assert.IsNotNull(e.OldConfiguration);
-                Assert.IsNotNull(e.NewConfiguration);
-                Assert.AreEqual(
-                    e.NewConfiguration,
-                    TestConfigurationSection.
-                        Active);
-                Assert.IsTrue(e.NewConfiguration.IsActive);
                 Trace.WriteLine("Configuration changed.");
                 ewh.Set();
             };
@@ -127,7 +120,7 @@ namespace WebApplications.Utilities.Test
             TestConfigurationSection.Active.Custom = custom;
             TestConfigurationSection.Active.Save();
             
-            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
+            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(2)), "Configuration changed event did not fire.");
 
             custom = TestConfigurationSection.Active.Custom;
             Assert.AreEqual("custom", custom.Name.LocalName);

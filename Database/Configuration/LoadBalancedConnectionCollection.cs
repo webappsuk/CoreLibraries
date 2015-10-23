@@ -28,7 +28,6 @@
 using System.Configuration;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
-using ConfigurationElement = System.Configuration.ConfigurationElement;
 
 namespace WebApplications.Utilities.Database.Configuration
 {
@@ -79,75 +78,6 @@ namespace WebApplications.Utilities.Database.Configuration
         protected override string GetElementKey(LoadBalancedConnectionElement element)
         {
             return element.Id;
-        }
-
-        /// <summary>
-        /// Adds a configuration element to the <see cref="T:System.Configuration.ConfigurationElementCollection" />.
-        /// </summary>
-        /// <param name="element">The <see cref="T:System.Configuration.ConfigurationElement" /> to add.</param>
-        protected override void BaseAdd(ConfigurationElement element)
-        {
-            LoadBalancedConnectionElement connectionElement = element as LoadBalancedConnectionElement;
-            if (connectionElement != null) connectionElement.Database = Database;
-            base.BaseAdd(element);
-        }
-
-        /// <summary>
-        /// Adds a configuration element to the configuration element collection.
-        /// </summary>
-        /// <param name="index">The index location at which to add the specified <see cref="T:System.Configuration.ConfigurationElement" />.</param>
-        /// <param name="element">The <see cref="T:System.Configuration.ConfigurationElement" /> to add.</param>
-        protected override void BaseAdd(int index, ConfigurationElement element)
-        {
-            LoadBalancedConnectionElement connectionElement = element as LoadBalancedConnectionElement;
-            if (connectionElement != null) connectionElement.Database = Database;
-            base.BaseAdd(index, element);
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="LoadBalancedConnectionElement"/> at the specified index.
-        /// </summary>
-        /// <value>
-        /// The <see cref="LoadBalancedConnectionElement"/>.
-        /// </value>
-        /// <param name="index">The index.</param>
-        /// <returns></returns>
-        public override LoadBalancedConnectionElement this[int index]
-        {
-            get
-            {
-                LoadBalancedConnectionElement element = base[index];
-                if (element != null) element.Database = Database;
-                return element;
-            }
-            set
-            {
-                if (value != null) value.Database = Database;
-                base[index] = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="LoadBalancedConnectionElement"/> with the specified key.
-        /// </summary>
-        /// <value>
-        /// The <see cref="LoadBalancedConnectionElement"/>.
-        /// </value>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-        public override LoadBalancedConnectionElement this[string key]
-        {
-            get
-            {
-                LoadBalancedConnectionElement element = base[key];
-                if (element != null) element.Database = Database;
-                return element;
-            }
-            set
-            {
-                if (value != null) value.Database = Database;
-                base[key] = value;
-            }
         }
     }
 }

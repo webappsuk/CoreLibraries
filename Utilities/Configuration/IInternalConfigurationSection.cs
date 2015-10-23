@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
 {
@@ -34,16 +33,5 @@ namespace WebApplications.Utilities.Configuration
     /// </summary>
     internal interface IInternalConfigurationSection : IConfigurationSection, IInternalConfigurationElement
     {
-        /// <summary>
-        /// Watches the specified configuration element.
-        /// </summary>
-        /// <param name="element">The configuration element.</param>
-        void Watch([NotNull] IInternalConfigurationElement element);
-
-        /// <summary>
-        /// Removes the watch on a specified configuration element.
-        /// </summary>
-        /// <param name="element">The configuration element.</param>
-        void UnWatch([NotNull] IInternalConfigurationElement element);
     }
 }

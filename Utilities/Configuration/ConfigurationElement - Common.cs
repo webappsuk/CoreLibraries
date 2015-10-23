@@ -56,11 +56,6 @@ namespace WebApplications.Utilities.Configuration
         private bool _isModified;
 
         /// <summary>
-        /// The parent.
-        /// </summary>
-        private IInternalConfigurationElement _parent;
-
-        /// <summary>
         /// The children.
         /// </summary>
         [NotNull]
@@ -72,16 +67,23 @@ namespace WebApplications.Utilities.Configuration
         [CanBeNull]
         private IReadOnlyCollection<ConfigurationProperty> _properties;
 
+        private IInternalConfigurationElement _parent;
+
+        /// <summary>
+        /// Called when initializing.
+        /// </summary>
+        partial void OnInit();
+
         /// <summary>
         /// Initializes this instance.
         /// </summary>
         /// <exception cref="ConfigurationErrorsException">Invalid property type.</exception>
         protected override void Init()
         {
-            List<IInternalConfigurationElement> children = new List<IInternalConfigurationElement>();
+            base.Init();
             // ReSharper disable once PossibleNullReferenceException
             // ReSharper disable once AssignNullToNotNullAttribute
-            foreach (ConfigurationProperty property in Properties.Where(p => p.Type.DescendsFrom(typeof(ConfigurationElement))))
+            foreach (ConfigurationProperty property in Properties.Where(p => p.Type.DescendsFrom(typeof(System.Configuration.ConfigurationElement))))
             {
                 Debug.Assert(property.Type != null);
                 if (!property.Type.ImplementsInterface(typeof(IInternalConfigurationElement)))
@@ -94,31 +96,16 @@ namespace WebApplications.Utilities.Configuration
 
                 // Get the value or create a new element, if this is an element type that is not yet created.
                 // ReSharper disable once ArrangeStaticMemberQualifier
-                object value = this[property.Name] ?? ConfigurationElement.Create(property.Type);
-                if (value != null) children.Add((IInternalConfigurationElement)value);
+                IInternalConfigurationElement value =
+                    (IInternalConfigurationElement)(this[property.Name] ?? ConfigurationElement.Create(property.Type));
+
+                if (value == null) continue;
+
+                value.Parent = this;
+                value.PropertyName = property.Name;
+                _children.Add(value);
             }
-
-            if (children.Count > 0)
-                lock (_children)
-                {
-                    foreach (IInternalConfigurationElement child in children)
-                    {
-                        Debug.Assert(child != null);
-                        child.Parent = this;
-                        _children.Add(child);
-                    }
-                }
-
-            base.Init();
-        }
-
-        /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
-        {
-            // TODO: Something special each time!
-            // Propagate to parent
-            _parent?.OnChanged(sender, propertyName);
-            _isModified = true;
+            OnInit();
         }
 
         /// <inheritdoc />
@@ -129,13 +116,23 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <inheritdoc />
-        public IConfigurationElement Parent => _parent;
+        public IConfigurationElement Parent => ((IInternalConfigurationElement)this).Parent;
+
+        /// <inheritdoc />
+        public IConfigurationSection Section => ((IInternalConfigurationElement)this).Section;
+
+        /// <inheritdoc />
+        string IInternalConfigurationElement.PropertyName { get; set; }
+
+        /// <inheritdoc />
+        public string PropertyName => ((IInternalConfigurationElement)this).PropertyName;
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConfigurationElement> Children
         {
             get
             {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 // ReSharper disable ExceptionNotDocumentedOptional, ExceptionNotDocumented
                 lock (_children)
                     return _children.Cast<IConfigurationElement>().ToArray();
@@ -173,17 +170,26 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <returns>System.Object.</returns>
+        /// <exception cref="ObjectDisposedException" accessor="get">The current section <see cref="IsDisposed">is disposed</see>.</exception>
+        /// <exception cref="ObjectDisposedException" accessor="set">The current section <see cref="IsDisposed">is disposed</see>.</exception>
         /// <exception cref="ArgumentNullException" accessor="get"><paramref name="propertyName"/> is <see langword="null" /> or empty.</exception>
         /// <exception cref="ArgumentNullException" accessor="set"><paramref name="propertyName"/> is <see langword="null" /> or empty.</exception>
         private new object this[string propertyName]
         {
             get
             {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
+
                 if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
-                return base[propertyName];
+                object value = base[propertyName];
+                IInternalConfigurationElement ice = value as IInternalConfigurationElement;
+                if (ice != null)
+                    ice.PropertyName = propertyName;
+                return value;
             }
             set
             {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
 
                 lock (_children)
@@ -196,6 +202,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Remove(ice);
                         ice.Parent = null;
+                        ice.PropertyName = null;
                     }
 
                     ice = value as IInternalConfigurationElement;
@@ -203,6 +210,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Add(ice);
                         ice.Parent = this;
+                        ice.PropertyName = propertyName;
                     }
 
                     base[propertyName] = value;
@@ -220,31 +228,63 @@ namespace WebApplications.Utilities.Configuration
         [NotNull]
         // ReSharper disable ExceptionNotDocumentedOptional, ExceptionNotDocumented
         protected new IReadOnlyCollection<ConfigurationProperty> Properties
-            => _properties ??
-               (_properties =
-                   base.Properties == null || base.Properties.Count < 1
-                       ? Array<ConfigurationProperty>.Empty
-                       : base.Properties.Cast<ConfigurationProperty>().ToArray());
+        {
+            get
+            {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
+                return _properties ??
+                       (_properties =
+                           base.Properties == null || base.Properties.Count < 1
+                               ? Array<ConfigurationProperty>.Empty
+                               : base.Properties.Cast<ConfigurationProperty>().ToArray());
+            }
+        }
+
         // ReSharper restore ExceptionNotDocumentedOptional, ExceptionNotDocumented
 
         /// <summary>
         /// Gets the keys.
         /// </summary>
         /// <value>The keys.</value>
+        /// <exception cref="ObjectDisposedException" accessor="get">The current section <see cref="IsDisposed">is disposed</see>.</exception>
         // ReSharper disable PossibleNullReferenceException
-        public IEnumerable<string> Keys => Properties.Select(p => p.Name);
+        public IEnumerable<string> Keys
+        {
+            get
+            {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
+                return Properties.Select(p => p.Name);
+            }
+        }
+
         /// <summary>
         /// Gets the values.
         /// </summary>
         /// <value>The values.</value>
-        public IEnumerable<object> Values => Properties.Select(p => this[p.Name]);
+        /// <exception cref="ObjectDisposedException" accessor="get">The current section <see cref="IsDisposed">is disposed</see>.</exception>
+        public IEnumerable<object> Values
+        {
+            get
+            {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
+                return Properties.Select(p => this[p.Name]);
+            }
+        }
 
         /// <summary>
         /// Gets the property values.
         /// </summary>
         /// <value>The property values.</value>
+        /// <exception cref="ObjectDisposedException" accessor="get">The current section <see cref="IsDisposed">is disposed</see>.</exception>
         public IReadOnlyDictionary<string, object> PropertyValues
-            => Properties.ToDictionary(p => p.Name, p => this[p.Name]);
+        {
+            get
+            {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
+                return Properties.ToDictionary(p => p.Name, p => this[p.Name]);
+            }
+        }
+
         // ReSharper restore PossibleNullReferenceException
 
         /// <summary>
@@ -255,9 +295,11 @@ namespace WebApplications.Utilities.Configuration
         /// <remarks><para>This is a clone of the child element, modifying it will have no effect on the configuration.</para>
         /// <para>To update the configuration, use <see cref="SetElement"/></para></remarks>
         /// <exception cref="ArgumentNullException"><paramref name="elementName"/> is <see langword="null" />.</exception>
+        /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
         [CanBeNull]
         protected XElement GetElement([NotNull] XName elementName)
         {
+            if (IsDisposed) throw new ObjectDisposedException(ToString());
             if (elementName == null) throw new ArgumentNullException(nameof(elementName));
             string elementStr;
             lock (_elements)
@@ -276,8 +318,10 @@ namespace WebApplications.Utilities.Configuration
         /// <exception cref="ArgumentNullException"><paramref name="element"/> is <see langword="null" />.</exception>
         /// <exception cref="ConfigurationErrorsException">The <paramref name="element">element's</paramref> <see cref="XElement.Name">name</see> doesn't match the specified <paramref name="elementName">element name</paramref>.</exception>
         /// <exception cref="ConfigurationErrorsException">The configuration is read only.</exception>
+        /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
         protected void SetElement([NotNull] XName elementName, [NotNull] XElement element)
         {
+            if (IsDisposed) throw new ObjectDisposedException(ToString());
             if (elementName == null) throw new ArgumentNullException(nameof(elementName));
             if (element == null) throw new ArgumentNullException(nameof(element));
             // ReSharper disable AssignNullToNotNullAttribute
@@ -289,7 +333,7 @@ namespace WebApplications.Utilities.Configuration
                 throw new ConfigurationErrorsException(Resources.XmlConfigurationSection_SetElement_ReadOnly);
 
             string elementStr = element.ToString(SaveOptions.DisableFormatting);
-            
+
             lock (_elements)
             {
                 string original;
@@ -380,6 +424,7 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return _elements.Keys.ToArray();
             }
@@ -390,6 +435,7 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return _elements.Values
                             .Select(e => XElement.Parse(e, LoadOptions.PreserveWhitespace))
@@ -403,6 +449,7 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return _elements
                         .ToDictionary(
@@ -418,6 +465,7 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
+                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return new Dictionary<XName, string>(_elements);
             }

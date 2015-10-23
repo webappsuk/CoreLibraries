@@ -25,14 +25,14 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
+using NodaTime.TimeZones;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using NodaTime;
-using NodaTime.TimeZones;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
@@ -215,14 +215,11 @@ namespace WebApplications.Utilities
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
         internal static void OnActiveUtilityConfigurationChanged(
-            [NotNull] object sender,
+            [NotNull] UtilityConfiguration sender,
             [NotNull] ConfigurationSection<UtilityConfiguration>.ConfigurationChangedEventArgs e)
         {
-            if (_isFromConfig &&
-                !string.Equals(
-                    e.NewConfiguration.TimeZoneDB,
-                    e.OldConfiguration.TimeZoneDB,
-                    StringComparison.InvariantCulture))
+            // TODO REVIEW!
+            if (_isFromConfig)
                 SetDateTimeZoneProvider();
         }
 

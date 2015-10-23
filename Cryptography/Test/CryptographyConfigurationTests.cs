@@ -60,10 +60,6 @@ namespace WebApplications.Utilities.Cryptography.Test
             {
                 Assert.IsNotNull(o);
                 Assert.IsNotNull(e);
-                Assert.IsNotNull(e.OldConfiguration);
-                Assert.IsNotNull(e.NewConfiguration);
-                Assert.AreEqual(e.NewConfiguration, CryptographyConfiguration.Active);
-                Assert.IsTrue(e.NewConfiguration.IsActive);
                 ewh.Set();
             };
 

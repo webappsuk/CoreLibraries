@@ -97,6 +97,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified duration must be greater than zero..
+        /// </summary>
+        internal static string BufferedAction_BufferedAction_Invalid_Duration {
+            get {
+                return ResourceManager.GetString("BufferedAction_BufferedAction_Invalid_Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The cache expiry must be at least 1s..
         /// </summary>
         internal static string CachingQueue_ExpiryTooShort {

@@ -37,7 +37,7 @@ namespace WebApplications.Utilities.Threading
     /// Buffers calls to an action.
     /// </summary>
     [PublicAPI]
-    public class BufferedAction
+    public class BufferedAction : IDisposable
     {
         /// <summary>
         /// The asynchronous action to run.
@@ -114,6 +114,38 @@ namespace WebApplications.Utilities.Threading
                 if (_buffer == null)
                     _buffer = new ActionBuffer(this);
                 _buffer.Add(arguments);
+            }
+        }
+
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the specified instance.
+        /// </summary>
+        /// <param name="disposing">Whether this is disposing or finalizing.</param>
+        /// <remarks>
+        /// <para><paramref name="disposing"/> indicates whether the method was invoked from the 
+        /// <see cref="IDisposable.Dispose"/> implementation or from the finalizer. The implementation should check the
+        /// parameter before  accessing other reference objects. Such objects should  only be accessed when the method 
+        /// is called from the <see cref="IDisposable.Dispose"/> implementation (when the <paramref name="disposing"/> 
+        /// parameter is equal to <see langword="true"/>). If the method is invoked from the finalizer
+        /// (disposing is false), other objects should not be accessed. The reason is that objects are finalized in an 
+        /// unpredictable order and so they, or any of their dependencies, might already have been finalized.</para>
+        /// </remarks>
+        protected void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+            lock (_action)
+            {
+                ActionBuffer buffer = Interlocked.Exchange(ref _buffer, null);
+                buffer?.Dispose();
             }
         }
 

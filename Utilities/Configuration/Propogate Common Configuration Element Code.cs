@@ -57,11 +57,6 @@ namespace WebApplications.Utilities.Configuration
         private bool _isModified;
 
         /// <summary>
-        /// The parent.
-        /// </summary>
-        private IInternalConfigurationElement _parent;
-
-        /// <summary>
         /// The children.
         /// </summary>
         [NotNull]
@@ -73,16 +68,22 @@ namespace WebApplications.Utilities.Configuration
         [CanBeNull]
         private IReadOnlyCollection<ConfigurationProperty> _properties;
 
+        private IInternalConfigurationElement _parent;
+
+        /// <summary>
+        /// Called when initializing.
+        /// </summary>
+        partial void OnInit();
+
         /// <summary>
         /// Initializes this instance.
         /// </summary>
         /// <exception cref="ConfigurationErrorsException">Invalid property type.</exception>
         protected override void Init()
         {
-            List<IInternalConfigurationElement> children = new List<IInternalConfigurationElement>();
             // ReSharper disable once PossibleNullReferenceException
             // ReSharper disable once AssignNullToNotNullAttribute
-            foreach (ConfigurationProperty property in Properties.Where(p => p.Type.DescendsFrom(typeof(ConfigurationElement))))
+            foreach (ConfigurationProperty property in Properties.Where(p => p.Type.DescendsFrom(typeof(System.Configuration.ConfigurationElement))))
             {
                 Debug.Assert(property.Type != null);
                 if (!property.Type.ImplementsInterface(typeof(IInternalConfigurationElement)))
@@ -95,31 +96,17 @@ namespace WebApplications.Utilities.Configuration
 
                 // Get the value or create a new element, if this is an element type that is not yet created.
                 // ReSharper disable once ArrangeStaticMemberQualifier
-                object value = this[property.Name] ?? ConfigurationElement.Create(property.Type);
-                if (value != null) children.Add((IInternalConfigurationElement)value);
+                IInternalConfigurationElement value =
+                    (IInternalConfigurationElement)(this[property.Name] ?? ConfigurationElement.Create(property.Type));
+
+                if (value == null) continue;
+
+                value.Parent = this;
+                value.PropertyName = property.Name;
+                _children.Add(value);
             }
-
-            if (children.Count > 0)
-                lock (_children)
-                {
-                    foreach (IInternalConfigurationElement child in children)
-                    {
-                        Debug.Assert(child != null);
-                        child.Parent = this;
-                        _children.Add(child);
-                    }
-                }
-
+            OnInit();
             base.Init();
-        }
-
-        /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
-        {
-            // TODO: Something special each time!
-            // Propagate to parent
-            _parent?.OnChanged(sender, propertyName);
-            _isModified = true;
         }
 
         /// <inheritdoc />
@@ -130,7 +117,16 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <inheritdoc />
-        public IConfigurationElement Parent => _parent;
+        public IConfigurationElement Parent => ((IInternalConfigurationElement)this).Parent;
+
+        /// <inheritdoc />
+        public IConfigurationSection Section => ((IInternalConfigurationElement)this).Section;
+
+        /// <inheritdoc />
+        string IInternalConfigurationElement.PropertyName { get; set; }
+
+        /// <inheritdoc />
+        public string PropertyName => ((IInternalConfigurationElement)this).PropertyName;
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConfigurationElement> Children
@@ -181,7 +177,11 @@ namespace WebApplications.Utilities.Configuration
             get
             {
                 if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
-                return base[propertyName];
+                object value = base[propertyName];
+                IInternalConfigurationElement ice = value as IInternalConfigurationElement;
+                if (ice != null)
+                    ice.PropertyName = propertyName;
+                return value;
             }
             set
             {
@@ -197,6 +197,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Remove(ice);
                         ice.Parent = null;
+                        ice.PropertyName = null;
                     }
 
                     ice = value as IInternalConfigurationElement;
@@ -204,6 +205,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Add(ice);
                         ice.Parent = this;
+                        ice.PropertyName = propertyName;
                     }
 
                     base[propertyName] = value;
@@ -483,11 +485,6 @@ namespace WebApplications.Utilities.Configuration
         private bool _isModified;
 
         /// <summary>
-        /// The parent.
-        /// </summary>
-        private IInternalConfigurationElement _parent;
-
-        /// <summary>
         /// The children.
         /// </summary>
         [NotNull]
@@ -499,16 +496,22 @@ namespace WebApplications.Utilities.Configuration
         [CanBeNull]
         private IReadOnlyCollection<ConfigurationProperty> _properties;
 
+        private IInternalConfigurationElement _parent;
+
+        /// <summary>
+        /// Called when initializing.
+        /// </summary>
+        partial void OnInit();
+
         /// <summary>
         /// Initializes this instance.
         /// </summary>
         /// <exception cref="ConfigurationErrorsException">Invalid property type.</exception>
         protected override void Init()
         {
-            List<IInternalConfigurationElement> children = new List<IInternalConfigurationElement>();
             // ReSharper disable once PossibleNullReferenceException
             // ReSharper disable once AssignNullToNotNullAttribute
-            foreach (ConfigurationProperty property in Properties.Where(p => p.Type.DescendsFrom(typeof(ConfigurationElement))))
+            foreach (ConfigurationProperty property in Properties.Where(p => p.Type.DescendsFrom(typeof(System.Configuration.ConfigurationElement))))
             {
                 Debug.Assert(property.Type != null);
                 if (!property.Type.ImplementsInterface(typeof(IInternalConfigurationElement)))
@@ -521,31 +524,17 @@ namespace WebApplications.Utilities.Configuration
 
                 // Get the value or create a new element, if this is an element type that is not yet created.
                 // ReSharper disable once ArrangeStaticMemberQualifier
-                object value = this[property.Name] ?? ConfigurationElement.Create(property.Type);
-                if (value != null) children.Add((IInternalConfigurationElement)value);
+                IInternalConfigurationElement value =
+                    (IInternalConfigurationElement)(this[property.Name] ?? ConfigurationElement.Create(property.Type));
+
+                if (value == null) continue;
+
+                value.Parent = this;
+                value.PropertyName = property.Name;
+                _children.Add(value);
             }
-
-            if (children.Count > 0)
-                lock (_children)
-                {
-                    foreach (IInternalConfigurationElement child in children)
-                    {
-                        Debug.Assert(child != null);
-                        child.Parent = this;
-                        _children.Add(child);
-                    }
-                }
-
+            OnInit();
             base.Init();
-        }
-
-        /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
-        {
-            // TODO: Something special each time!
-            // Propagate to parent
-            _parent?.OnChanged(sender, propertyName);
-            _isModified = true;
         }
 
         /// <inheritdoc />
@@ -556,7 +545,16 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <inheritdoc />
-        public IConfigurationElement Parent => _parent;
+        public IConfigurationElement Parent => ((IInternalConfigurationElement)this).Parent;
+
+        /// <inheritdoc />
+        public IConfigurationSection Section => ((IInternalConfigurationElement)this).Section;
+
+        /// <inheritdoc />
+        string IInternalConfigurationElement.PropertyName { get; set; }
+
+        /// <inheritdoc />
+        public string PropertyName => ((IInternalConfigurationElement)this).PropertyName;
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConfigurationElement> Children
@@ -607,7 +605,11 @@ namespace WebApplications.Utilities.Configuration
             get
             {
                 if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
-                return base[propertyName];
+                object value = base[propertyName];
+                IInternalConfigurationElement ice = value as IInternalConfigurationElement;
+                if (ice != null)
+                    ice.PropertyName = propertyName;
+                return value;
             }
             set
             {
@@ -623,6 +625,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Remove(ice);
                         ice.Parent = null;
+                        ice.PropertyName = null;
                     }
 
                     ice = value as IInternalConfigurationElement;
@@ -630,6 +633,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Add(ice);
                         ice.Parent = this;
+                        ice.PropertyName = propertyName;
                     }
 
                     base[propertyName] = value;

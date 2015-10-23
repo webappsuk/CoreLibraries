@@ -26,9 +26,9 @@
 #endregion
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
+using System.Threading;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -37,63 +37,131 @@ namespace WebApplications.Utilities.Configuration
     /// <summary>
     /// Watches for changes to the configuration file for the application.
     /// </summary>
-    public static class ConfigurationFileWatcher
+    internal class ConfigurationFileWatcher : IDisposable
     {
-        private static readonly FileSystemWatcher _configWatcher;
-
+        /// <summary>
+        /// The file system watchers.
+        /// </summary>
         [NotNull]
-        private static readonly AsyncDebouncedAction _onChangedAction =
-            new AsyncDebouncedAction(ConfigFileChangedHandler);
+        private static readonly Dictionary<string, ConfigurationFileWatcher> _watchers
+            = new Dictionary<string, ConfigurationFileWatcher>();
 
         /// <summary>
-        /// Occurs when the configuration file changes on disk.
+        /// The sections interested in the file.
         /// </summary>
-        public static event EventHandler Changed;
+        [NotNull, ItemNotNull]
+        private readonly HashSet<IInternalConfigurationSection> _sections =
+            new HashCollection<IInternalConfigurationSection>();
 
-        static ConfigurationFileWatcher()
+        /// <summary>
+        /// The file system watcher.
+        /// </summary>
+        private FileSystemWatcher _watcher;
+
+        /// <summary>
+        /// The event action that buffers events.
+        /// </summary>
+        private BufferedAction _eventAction;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationFileWatcher"/> class.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        private ConfigurationFileWatcher([NotNull] string path)
         {
-            // TODO Watch machine/user configs
-
-            string configPath = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-            if (!File.Exists(configPath))
-                return;
-
-            string dir = Path.GetDirectoryName(configPath);
-            string file = Path.GetFileName(configPath);
-
-            Debug.Assert(dir != null);
-            Debug.Assert(file != null);
-
-            _configWatcher = new FileSystemWatcher(dir, file);
-            _configWatcher.Changed += OnConfigFileChanged;
-            _configWatcher.EnableRaisingEvents = true;
+            _eventAction = new BufferedAction(WatcherOnChanged, 100);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _watcher = new FileSystemWatcher(Path.GetDirectoryName(path), Path.GetFileName(path));
+            _watcher.Changed += (s, e) => _eventAction.Run();
+            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size;
+            _watcher.EnableRaisingEvents = true;
         }
 
         /// <summary>
-        /// Called when the configuration file changes.
+        /// Fired when a watcher is changed.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="FileSystemEventArgs"/> instance containing the event data.</param>
-        private static void OnConfigFileChanged(object sender, FileSystemEventArgs e)
+        /// <param name="arguments">The arguments.</param>
+        private void WatcherOnChanged(object[][] arguments)
         {
-#pragma warning disable 4014
-            _onChangedAction.Run();
-#pragma warning restore 4014
+            lock (_sections)
+                foreach (IInternalConfigurationSection section in _sections)
+                    section.OnChanged(section, string.Empty);
+        }
+        
+        /// <summary>
+        /// Watches the specified <paramref name="section"/>.
+        /// </summary>
+        /// <param name="section">The section.</param>
+        public static void Watch([NotNull] IInternalConfigurationSection section)
+        {
+            string path = section.FilePath;
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+            lock (_watchers)
+            {
+                ConfigurationFileWatcher watcher;
+                if (!_watchers.TryGetValue(path, out watcher))
+                    watcher = _watchers[path] = new ConfigurationFileWatcher(path);
+                // ReSharper disable once PossibleNullReferenceException
+                lock (watcher._sections)
+                    watcher._sections.Add(section);
+            }
         }
 
         /// <summary>
-        /// Called when the configuration file changes.
+        /// Removes any watch on the specified <paramref name="section"/>.
         /// </summary>
-        /// <remarks>The event could be fired multiple times for a single change. To prevent unnessacary refreshes, we wait for 100ms after a change before we fire the handler.</remarks>
-        private static async Task ConfigFileChangedHandler()
+        /// <param name="section">The section.</param>
+        public static void UnWatch([NotNull] IInternalConfigurationSection section)
         {
-            Debug.Assert(_configWatcher != null);
+            string path = section.FilePath;
+            if (string.IsNullOrWhiteSpace(path)) return;
+            lock (_watchers)
+            {
+                ConfigurationFileWatcher watcher;
+                if (!_watchers.TryGetValue(path, out watcher)) return;
 
-            // ReSharper disable once PossibleNullReferenceException
-            await Task.Delay(100).ConfigureAwait(false);
+                // ReSharper disable once PossibleNullReferenceException
+                lock (watcher._sections)
+                {
+                    watcher._sections.Remove(section);
+                    if (watcher._sections.Count > 0) return;
+                    watcher.Dispose();
+                }
+            }
+        }
 
-            EventHandler handler = Changed;
-            handler?.Invoke(_configWatcher, EventArgs.Empty);
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the specified instance.
+        /// </summary>
+        /// <param name="disposing">Whether this is disposing or finalizing.</param>
+        /// <remarks>
+        /// <para><paramref name="disposing"/> indicates whether the method was invoked from the 
+        /// <see cref="IDisposable.Dispose"/> implementation or from the finalizer. The implementation should check the
+        /// parameter before  accessing other reference objects. Such objects should  only be accessed when the method 
+        /// is called from the <see cref="IDisposable.Dispose"/> implementation (when the <paramref name="disposing"/> 
+        /// parameter is equal to <see langword="true"/>). If the method is invoked from the finalizer
+        /// (disposing is false), other objects should not be accessed. The reason is that objects are finalized in an 
+        /// unpredictable order and so they, or any of their dependencies, might already have been finalized.</para>
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            // ReSharper disable ExceptionNotDocumented
+            if (!disposing) return;
+
+            FileSystemWatcher watcher = Interlocked.Exchange(ref _watcher, null);
+            watcher?.Dispose();
+            BufferedAction action = Interlocked.Exchange(ref _eventAction, null);
+            action?.Dispose();
+            // ReSharper restore ExceptionNotDocumented
         }
     }
 }

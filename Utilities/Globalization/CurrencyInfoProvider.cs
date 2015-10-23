@@ -197,14 +197,11 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
         internal static void OnActiveUtilityConfigurationChanged(
-            [NotNull] object sender,
+            [NotNull] UtilityConfiguration sender,
             [NotNull] UtilityConfiguration.ConfigurationChangedEventArgs e)
         {
-            if (_isFromConfig &&
-                !string.Equals(
-                    e.NewConfiguration.ISO4217,
-                    e.OldConfiguration.ISO4217,
-                    StringComparison.InvariantCulture))
+            // TODO Review
+            if (_isFromConfig)
                 SetCurrentProvider();
         }
 

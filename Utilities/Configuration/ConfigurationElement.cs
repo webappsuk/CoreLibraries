@@ -26,7 +26,9 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -42,6 +44,61 @@ namespace WebApplications.Utilities.Configuration
     [PublicAPI]
     public abstract partial class ConfigurationElement : System.Configuration.ConfigurationElement, IInternalConfigurationElement
     {
+
+        #region Get files from a configuration
+        // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+        /// <summary>
+        /// The <see cref="FieldInfo"/> corresponding to <c>System.Configuration.BaseConfigurationRecord._configRecord</c>.
+        /// </summary>[NotNull]
+        [NotNull]
+        private static readonly FieldInfo _configRecordField =
+            ExtendedType.Get(typeof(System.Configuration.Configuration))
+                .GetField("_configRecord");
+
+        [NotNull]
+        private static readonly PropertyInfo _configStreamInfoProperty =
+            ExtendedType.Get("System.Configuration.BaseConfigurationRecord, System.Configuration")
+                .GetProperty("ConfigStreamInfo");
+
+        [NotNull]
+        private static readonly PropertyInfo _streamInfosProperty =
+            ExtendedType.Get(
+                "System.Configuration.BaseConfigurationRecord+ConfigRecordStreamInfo, System.Configuration")
+                .GetProperty("StreamInfos");
+
+        [NotNull]
+        private static readonly PropertyInfo _dictionaryValues =
+            ExtendedType.Get(typeof(HybridDictionary))
+                .GetProperty("Values");
+
+        [NotNull]
+        private static ExtendedType _streamInfoExtendedType =
+            ExtendedType.Get("System.Configuration.StreamInfo, System.Configuration");
+
+        [NotNull]
+        private static readonly FieldInfo _streamNameField =
+            _streamInfoExtendedType
+                .GetField("_streamName");
+
+        [NotNull]
+        private static readonly MethodInfo _iCollectionCopyToMethod =
+            ExtendedType.Get(typeof(ICollection))
+            .GetMethod("CopyTo", typeof(Array), typeof(int), TypeSearch.Void);
+
+        [NotNull]
+        private static readonly PropertyInfo _iCollectionCountProperty =
+            ExtendedType.Get(typeof(ICollection))
+                .GetProperty("Count");
+
+        /// <summary>
+        /// Gets the associated configuration file paths.
+        /// </summary>
+        [NotNull]
+        internal static readonly Func<System.Configuration.Configuration, IReadOnlyCollection<string>>
+            GetConfigFilePaths;
+        #endregion
+
+        #region Create Elements
         // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
         /// <summary>
         /// The <see cref="MethodInfo"/> corresponding to <see cref="IInternalConfigurationElement.Initialize"/>.
@@ -94,6 +151,65 @@ namespace WebApplications.Utilities.Configuration
                                     result)).Compile();
                         })?.Invoke();
         // ReSharper restore ExceptionNotDocumented
+        #endregion
+
+        /// <summary>
+        /// Initializes static members of the <see cref="ConfigurationElement" /> class.
+        /// </summary>
+        static ConfigurationElement()
+        {
+            ParameterExpression configuration = Expression.Parameter(typeof(System.Configuration.Configuration), "configuration");
+            ParameterExpression streamInfos = Expression.Parameter(typeof(ICollection), "streamInfos");
+            ParameterExpression index = Expression.Parameter(typeof(int), "index");
+            ParameterExpression resultArray = Expression.Parameter(typeof(string[]), "result");
+
+            GetConfigFilePaths = Expression
+                .Lambda<Func<System.Configuration.Configuration, IReadOnlyCollection<string>>>(
+                    Expression.Convert(
+                        Expression.Block(
+                            typeof(string[]),
+                            new[] { streamInfos, index, resultArray },
+                            // Get the StreamInfos HybridDictionary's values
+                            Expression.Assign(
+                                streamInfos,
+                                Expression.Property(
+                                    Expression.Property(
+                                        Expression.Property(
+                                            Expression.Field(configuration, _configRecordField),
+                                            _configStreamInfoProperty),
+                                        _streamInfosProperty),
+                                    _dictionaryValues)),
+
+                            // Create string[] of same size as results
+                            Expression.Assign(
+                                resultArray,
+                                Expression.NewArrayBounds(
+                                    typeof(string),
+                                    Expression.Property(
+                                        streamInfos,
+                                        _iCollectionCountProperty))),
+
+                            // Initialize index
+                            Expression.Assign(index, Expression.Constant(0)),
+
+                            // Copy names into new array
+                            Expression.Convert(streamInfos, typeof(IEnumerable))
+                                .ForEach(
+                                    item =>
+                                        Expression.Block(
+                                            Expression.Assign(
+                                                Expression.ArrayAccess(resultArray, index),
+                                                Expression.Field(
+                                                    Expression.Convert(item, _streamInfoExtendedType.Type),
+                                                    _streamNameField)),
+                                            Expression.Assign(index, Expression.Increment(index)))),
+
+                            // Return result array
+                            resultArray),
+                        typeof(IReadOnlyCollection<string>)),
+                    configuration)
+                .Compile();
+        }
 
         /// <summary>
         /// Creates an element of the specified type.
@@ -106,6 +222,19 @@ namespace WebApplications.Utilities.Configuration
             => (T)Create(typeof(T));
 
         /// <inheritdoc />
-        public IConfigurationElement Section => Parent?.Section;
+        IInternalConfigurationSection IInternalConfigurationElement.Section => _parent?.Section;
+
+        /// <inheritdoc />
+        public bool IsDisposed => Section?.IsDisposed ?? false;
+
+        /// <inheritdoc />
+        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
+        {
+            // Propagate to parent
+            ((IInternalConfigurationElement)this).Parent?.OnChanged(
+                sender,
+                $"{PropertyName}.{propertyName}");
+            _isModified = true;
+        }
     }
 }

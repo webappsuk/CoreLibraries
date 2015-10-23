@@ -67,10 +67,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="sender">The sender.</param>
         /// <param name="args">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs"/> instance containing the event data.</param>
         public static void OnActiveConfigChanged(
-            [NotNull] object sender,
+            [NotNull] DatabasesConfiguration sender,
             [NotNull] ConfigurationSection<DatabasesConfiguration>.ConfigurationChangedEventArgs args)
         {
-            UpdateSemaphores(args.NewConfiguration);
+            UpdateSemaphores(sender);
         }
 
         /// <summary>

@@ -53,29 +53,40 @@ namespace WebApplications.Utilities.Configuration
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual TValue this[[NotNull] TKey key]
         {
-            get { return (TValue)BaseGet(key); }
+            get
+            {
+                TValue value = (TValue)BaseGet(key);
+                if (value != null)
+                    ((IInternalConfigurationElement)value).PropertyName = $"[{key}]";
+                return value;
+            }
             set
             {
+                string elementName = $"[{key}]";
                 lock (_children)
                 {
                     TValue original = (TValue)BaseGet(key);
                     if (Equals(original, value)) return;
 
-                    if (original != null && _children.Contains(original))
+                    IInternalConfigurationElement ice = original;
+
+                    if (ice != null)
                     {
                         _children.Remove(original);
-                        ((IInternalConfigurationElement)original).Parent = null;
+                        ice.Parent = null;
+                        ice.PropertyName = null;
                     }
 
-                    if (value != null)
+                    ice = value;
+                    if (ice != null)
                     {
-
-                        _children.Add(value);
-                        ((IInternalConfigurationElement)value).Parent = this;
+                        _children.Add(ice);
+                        ice.Parent = this;
+                        ice.PropertyName = elementName;
                         base.BaseAdd(value);
                     }
                 }
-                ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
+                ((IInternalConfigurationElement)this).OnChanged(this, elementName);
             }
         }
 
@@ -92,7 +103,14 @@ namespace WebApplications.Utilities.Configuration
         public virtual TValue this[int index]
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return (TValue)BaseGet(index); }
+            get
+            {
+
+                TValue value = (TValue)BaseGet(index);
+                if (value != null && value.PropertyName == null)
+                    ((IInternalConfigurationElement)value).PropertyName = $"[{GetElementKey(value)}]";
+                return value;
+            }
             set
             {
                 if (value == null)
@@ -100,28 +118,32 @@ namespace WebApplications.Utilities.Configuration
 
                 TKey originalKey;
                 TKey newKey = GetElementKey(value);
+                string newElementName = $"[{newKey}]";
                 lock (_children)
                 {
-                    TValue original = (TValue)BaseGet(index);
-                    if (Equals(original, value)) return;
+                    IInternalConfigurationElement ice = (IInternalConfigurationElement)BaseGet(index);
+                    if (Equals(ice, value)) return;
 
                     // Cannot have null values
-                    Debug.Assert(original != null);
-                    originalKey = GetElementKey(original);
+                    Debug.Assert(ice != null);
+                    originalKey = GetElementKey((TValue)ice);
                     BaseRemoveAt(index);
 
-                    if (_children.Contains(original))
+                    if (_children.Contains(ice))
                     {
-                        _children.Remove(original);
-                        ((IInternalConfigurationElement)original).Parent = null;
+                        _children.Remove(ice);
+                        ice.Parent = null;
+                        ice.PropertyName = null;
                     }
 
-                    _children.Add(value);
-                    ((IInternalConfigurationElement)value).Parent = this;
+                    ice = value;
+                    _children.Add(ice);
+                    ice.Parent = this;
+                    ice.PropertyName = newElementName;
                     base.BaseAdd(index, value);
                 }
                 ((IInternalConfigurationElement)this).OnChanged(this, $"[{originalKey}]");
-                ((IInternalConfigurationElement)this).OnChanged(this, $"[{newKey}]");
+                ((IInternalConfigurationElement)this).OnChanged(this, newElementName);
             }
         }
 
@@ -136,7 +158,12 @@ namespace WebApplications.Utilities.Configuration
         {
             IEnumerator enumerator = base.GetEnumerator();
             while (enumerator.MoveNext())
+            {
+                TValue value = (TValue) enumerator.Current;
+                if (value != null && value.PropertyName == null)
+                    ((IInternalConfigurationElement)value).PropertyName = $"[{GetElementKey(value)}]";
                 yield return (TValue)enumerator.Current;
+            }
         }
 
         /// <summary>
@@ -192,8 +219,10 @@ namespace WebApplications.Utilities.Configuration
                     found = false;
                 else
                 {
-                    ((IInternalConfigurationElement)value).Parent = null;
-                    _children.Remove(value);
+                    IInternalConfigurationElement ice = value;
+                    ice.Parent = null;
+                    ice.PropertyName = null;
+                    _children.Remove(ice);
                     BaseRemove(item);
                     found = true;
                 }
@@ -229,6 +258,7 @@ namespace WebApplications.Utilities.Configuration
                     Debug.Assert(element != null);
                     _children.Remove(element);
                     element.Parent = null;
+                    element.PropertyName = null;
                 }
                 BaseClear();
             }
@@ -269,13 +299,16 @@ namespace WebApplications.Utilities.Configuration
                         element.GetType()));
 
             TKey key = GetElementKey(value);
+            string elementName = $"[{key}]";
+            IInternalConfigurationElement ice = value;
             lock (_children)
             {
-                ((IInternalConfigurationElement)value).Parent = this;
-                _children.Add(value);
+                ice.Parent = this;
+                ice.PropertyName = elementName;
+                _children.Add(ice);
                 base.BaseAdd(element);
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
+            ((IInternalConfigurationElement)this).OnChanged(this, elementName);
         }
 
         /// <summary>
@@ -295,7 +328,8 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>
         ///   An <see cref="object"/> that acts as the key for the specified <see cref="System.Configuration.ConfigurationElement"/>.
         /// </returns>
-        protected override sealed object GetElementKey(System.Configuration.ConfigurationElement element) => GetElementKey((TValue)element);
+        protected override sealed object GetElementKey(System.Configuration.ConfigurationElement element)
+            => GetElementKey((TValue)element);
 
         /// <summary>
         ///   Gets the element key.
@@ -321,13 +355,13 @@ namespace WebApplications.Utilities.Configuration
         {
             lock (_children)
             {
-                TValue value = (TValue)BaseGet(key);
-                if (value == null)
+                IInternalConfigurationElement ice = (IInternalConfigurationElement)BaseGet(key);
+                if (ice == null)
                     return;
 
-                ((IInternalConfigurationElement)value).Parent = null;
-                _children.Remove(value);
-
+                ice.Parent = null;
+                ice.PropertyName = null;
+                _children.Remove(ice);
                 BaseRemove(key);
             }
 
@@ -368,15 +402,16 @@ namespace WebApplications.Utilities.Configuration
             TKey key;
             lock (_children)
             {
-                TValue value = (TValue)BaseGet(index);
-                if (value == null)
+                IInternalConfigurationElement ice = (IInternalConfigurationElement)BaseGet(index);
+                if (ice == null)
                     return;
 
-                key = GetElementKey(value);
-                ((IInternalConfigurationElement)value).Parent = null;
-                _children.Remove(value);
+                key = GetElementKey((TValue)ice);
+                _children.Remove(ice);
+                ice.Parent = null;
+                ice.PropertyName = null;
 
-                BaseRemoveAt(index);
+                BaseRemove(ice);
             }
             ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
         }
@@ -401,6 +436,19 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <inheritdoc />
-        public IConfigurationElement Section => Parent?.Section;
+        IInternalConfigurationSection IInternalConfigurationElement.Section => _parent?.Section;
+
+        /// <inheritdoc />
+        public bool IsDisposed => Section?.IsDisposed ?? false;
+
+        /// <inheritdoc />
+        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
+        {
+            // Propagate to parent
+            ((IInternalConfigurationElement)this).Parent?.OnChanged(
+                sender,
+                $"{PropertyName ?? string.Empty}{propertyName}");
+            _isModified = true;
+        }
     }
 }
