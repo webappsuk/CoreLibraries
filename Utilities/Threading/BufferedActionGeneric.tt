@@ -1,0 +1,138 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="System.Text" #> 
+<#
+int maxParameters = 35;
+#>#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using NodaTime;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using WebApplications.Utilities.Annotations;
+
+namespace WebApplications.Utilities.Threading
+{
+<# 
+            StringBuilder typeParams = new StringBuilder();
+            StringBuilder typeComments = new StringBuilder();
+            StringBuilder arguments = new StringBuilder();
+            StringBuilder paramComments = new StringBuilder();
+            StringBuilder args = new StringBuilder();
+            StringBuilder parameters = new StringBuilder();
+            for (int i = 1; i <= maxParameters; i++)
+            {
+                typeParams.Append(String.Format("{0}T{1}", i > 1 ? ", " : String.Empty, i));
+                typeComments.Append(
+                    String.Format("{0}    /// <typeparam name=\"T{1}\">The type of argument {1}.</typeparam>",
+                                  Environment.NewLine,
+                                  i));
+                arguments.Append(String.Format("{0}(T{1})a[{2}]", i > 1 ? ", " : String.Empty, i, i-1));
+                paramComments.Append(
+                    String.Format("{0}        /// <param name=\"arg{1}\">Argument {1}.</param>",
+                                  Environment.NewLine,
+                                  i));
+                args.Append(String.Format("{0}T{1} arg{1}", i > 1 ? ", " : String.Empty, i));
+                parameters.Append(String.Format("{0}arg{1}", i > 1 ? ", " : String.Empty, i));
+    #>
+
+    /// <summary>
+    /// Buffers calls to an action.
+    /// </summary><#= typeComments #>
+    [PublicAPI]
+    public class BufferedAction<<#= typeParams #>> : BufferedAction
+    {
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BufferedAction" /> class.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        public BufferedAction(
+            [NotNull] Action<IEnumerable<<#= typeParams #>>> action,
+            Duration duration)
+            : this(action, (long) duration.TotalMilliseconds())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BufferedAction" /> class.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        public BufferedAction(
+            [NotNull] Action<IEnumerable<<#= typeParams #>>> action,
+            TimeSpan duration)
+            : this(action, (long) duration.TotalMilliseconds)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BufferedAction" /> class.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
+        public BufferedAction(
+            [NotNull] Action<IEnumerable<<#= typeParams #>>> action,
+            long duration)
+<# if (i<2) { #>
+            : base(args => action(args.Select(a => <#= arguments #>)), duration)<# } else {#>
+            : base(args => action(args.Select(a => ExtendedTuple.Create(<#= arguments #>)).AsTupleEnumerable()), duration)
+<# } #>
+        { }
+        // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
+        
+        /// <summary>
+        /// Buffers a call to the underlying action.
+        /// </summary><#= paramComments #>
+        public void Run(<#= args #>)
+        {
+            Run(new object[] { <#= parameters #> });
+        }
+    }
+<# 
+}
+#>
+}
+ 
+<#+
+  // Insert any template procedures here
+#>
