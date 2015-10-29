@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -44,6 +45,7 @@ namespace WebApplications.Utilities.Configuration
     /// Provides extended functionality for <see cref="System.Configuration.ConfigurationSection" />.
     /// Allows easy configuration retrieval.
     /// </summary>
+    /// <typeparam name="T"></typeparam>
     [PublicAPI]
     public abstract partial class ConfigurationSection<T> : ConfigurationSection, IInternalConfigurationSection
         where T : ConfigurationSection<T>, IConfigurationElement, new()
@@ -132,7 +134,14 @@ namespace WebApplications.Utilities.Configuration
 
             // This will get set during initialization
             FilePaths = Array<string>.Empty;
+            ((IInternalConfigurationElement)this).PropertyName = $"<{SectionName}>";
         }
+
+        /// <summary>
+        /// Lock for controlling access to the active configuration.
+        /// </summary>
+        [NotNull]
+        private static object _activeLock = new object();
 
         /// <summary>
         ///   Holds the currently active configuration section.
@@ -184,12 +193,19 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
+                // Get without lock
                 T active = _active;
-                if (active != null)
-                    active.Changed -= OnActiveChanged;
+                if (active != null && !active.IsDisposed) return active;
 
-                if (active == null || active.IsDisposed)
+                lock (_activeLock)
                 {
+                    // Check again
+                    active = _active;
+                    if (active != null && !active.IsDisposed) return active;
+
+                    if (active != null)
+                        active.Changed -= OnActiveChanged;
+
                     _active = active = GetActiveConfiguration();
                     active.Changed += OnActiveChanged;
                 }
@@ -199,11 +215,16 @@ namespace WebApplications.Utilities.Configuration
             {
                 T active = _active;
                 if (Equals(active, value)) return;
-                if (value.IsDisposed) throw new ObjectDisposedException(typeof(T).ToString());
-                if (active != null)
-                    active.Changed -= OnActiveChanged;
-                active = value;
-                active.Changed += OnActiveChanged;
+
+                lock (_activeLock)
+                {
+                    if (Equals(active, value)) return;
+                    if (value.IsDisposed) throw new ObjectDisposedException(typeof(T).ToString());
+                    if (active != null)
+                        active.Changed -= OnActiveChanged;
+                    active = value;
+                    active.Changed += OnActiveChanged;
+                }
             }
         }
 
@@ -214,6 +235,7 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="e">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs" /> instance containing the event data.</param>
         private static void OnActiveChanged([NotNull] T sender, [NotNull] ConfigurationChangedEventArgs e)
         {
+            Trace.WriteLine($"Active changed: {e}");
             ActiveChanged?.Invoke(sender, e);
         }
 
@@ -356,15 +378,13 @@ namespace WebApplications.Utilities.Configuration
         /// <inheritdoc />
         IInternalConfigurationSection IInternalConfigurationElement.Section => this;
 
-        /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
+        /// <summary>
+        /// Called when the OnChange event is called.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        partial void DoChanged(IInternalConfigurationElement sender, string propertyName)
         {
-            // Propagate to parent.
-            ((IInternalConfigurationElement)this).Parent?.OnChanged(
-                sender,
-                $"{PropertyName}.{propertyName}");
-
-            _isModified = true;
             _changeAction?.Run(sender, propertyName);
         }
 
@@ -404,7 +424,7 @@ namespace WebApplications.Utilities.Configuration
                 {
                     if (count < 2 || !set.Contains(root))
                         FilePaths = set.ToArray();
-                    else 
+                    else
                     {
                         // Ensure root is always first
                         set.Remove(root);
@@ -487,6 +507,13 @@ namespace WebApplications.Utilities.Configuration
 
             /// <inheritdoc />
             public IEnumerable<string> this[IConfigurationElement key] => _changes[key];
+
+            /// <inheritdoc />
+            public override string ToString()
+                => "Changes: " +
+                   string.Join(
+                       ", ",
+                       _changes.SelectMany(g => g.Select(c => ConfigurationElement.GetFullPath(g.Key, c))));
         }
         #endregion
     }

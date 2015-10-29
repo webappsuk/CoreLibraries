@@ -125,6 +125,10 @@ namespace WebApplications.Utilities.Configuration
         string IInternalConfigurationElement.PropertyName { get; set; }
 
         /// <inheritdoc />
+        // ReSharper disable once ArrangeStaticMemberQualifier
+        public string FullPath => IsDisposed ? "*DISPOSED*" : ConfigurationElement.GetFullPath(Parent, PropertyName);
+
+        /// <inheritdoc />
         public string PropertyName => ((IInternalConfigurationElement)this).PropertyName;
 
         /// <inheritdoc />
@@ -145,6 +149,22 @@ namespace WebApplications.Utilities.Configuration
         {
             Init();
         }
+
+        /// <inheritdoc />
+        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
+        {
+            // Propagate to parent.
+            ((IInternalConfigurationElement)this).Parent?.OnChanged(sender, propertyName);
+            _isModified = true;
+            DoChanged(sender, propertyName);
+        }
+
+        /// <summary>
+        /// Called when the OnChange event is called.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        partial void DoChanged(IInternalConfigurationElement sender, string propertyName);
 
         /// <summary>
         ///   Gets the configuration property.
@@ -470,5 +490,8 @@ namespace WebApplications.Utilities.Configuration
                     return new Dictionary<XName, string>(_elements);
             }
         }
+
+        /// <inheritdoc />
+        public override string ToString() => FullPath;
     }
 }

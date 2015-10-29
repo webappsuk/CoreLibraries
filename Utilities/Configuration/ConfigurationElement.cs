@@ -221,20 +221,28 @@ namespace WebApplications.Utilities.Configuration
             where T : IConfigurationElement, new()
             => (T)Create(typeof(T));
 
+        /// <summary>
+        /// Gets the full path.
+        /// </summary>
+        /// <param name="parent">The parent.</param>
+        /// <param name="property">The property.</param>
+        /// <returns>The full path.</returns>
+        [NotNull]
+        internal static string GetFullPath([CanBeNull] IConfigurationElement parent, [CanBeNull] string property)
+        {
+            if (string.IsNullOrWhiteSpace(property))
+                property = ".*";
+
+            if (parent == null) return property;
+            if (char.IsLetterOrDigit(property[0])) property = $".{property}";
+
+            return $"{parent.FullPath}{property}";
+        }
+
         /// <inheritdoc />
         IInternalConfigurationSection IInternalConfigurationElement.Section => _parent?.Section;
 
         /// <inheritdoc />
         public bool IsDisposed => Section?.IsDisposed ?? false;
-
-        /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
-        {
-            // Propagate to parent
-            ((IInternalConfigurationElement)this).Parent?.OnChanged(
-                sender,
-                $"{PropertyName}.{propertyName}");
-            _isModified = true;
-        }
     }
 }

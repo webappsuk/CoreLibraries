@@ -8,13 +8,12 @@ namespace WebApplications.Utilities.Configuration
     /// <summary>
     /// Interface for exposing configuration hierarchy.
     /// </summary>
-    /// <typeparam name="T">The <see cref="Section"/> type.</typeparam>
     [PublicAPI]
     // ReSharper disable once TypeParameterCanBeVariant
     public interface IConfigurationElement
     {
         /// <summary>
-        /// Gets the curretn section.
+        /// Gets the current section.
         /// </summary>
         /// <value>The section.</value>
         IConfigurationSection Section { get; }
@@ -32,6 +31,13 @@ namespace WebApplications.Utilities.Configuration
         /// <value>The name of the element.</value>
         [CanBeNull]
         string PropertyName { get; }
+
+        /// <summary>
+        /// Gets the full path to the current element.
+        /// </summary>
+        /// <value>The full path of the element.</value>
+        [NotNull]
+        string FullPath { get; }
 
         /// <summary>
         /// Gets the children.

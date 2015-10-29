@@ -440,15 +440,5 @@ namespace WebApplications.Utilities.Configuration
 
         /// <inheritdoc />
         public bool IsDisposed => Section?.IsDisposed ?? false;
-
-        /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
-        {
-            // Propagate to parent
-            ((IInternalConfigurationElement)this).Parent?.OnChanged(
-                sender,
-                $"{PropertyName ?? string.Empty}{propertyName}");
-            _isModified = true;
-        }
     }
 }
