@@ -53,9 +53,8 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         /// Called when this element, or a child element is changed.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="propertyName">Name of the property.</param>
-        void OnChanged([NotNull] IInternalConfigurationElement sender, [CanBeNull] string propertyName);
+        /// <param name="fullPath">The full path.</param>
+        void OnChanged([NotNull] string fullPath);
 
         /// <summary>
         /// Initializes this instance.

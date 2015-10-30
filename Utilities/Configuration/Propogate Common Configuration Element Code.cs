@@ -127,10 +127,10 @@ namespace WebApplications.Utilities.Configuration
 
         /// <inheritdoc />
         // ReSharper disable once ArrangeStaticMemberQualifier
-        public string FullPath => IsDisposed ? "*DISPOSED*" : ConfigurationElement.GetFullPath(Parent, PropertyName);
+        public string FullPath => Parent.GetFullPath(ConfigurationElementName);
 
         /// <inheritdoc />
-        public string PropertyName => ((IInternalConfigurationElement)this).PropertyName;
+        public string ConfigurationElementName => ((IInternalConfigurationElement)this).PropertyName;
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConfigurationElement> Children
@@ -152,20 +152,22 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
+        void IInternalConfigurationElement.OnChanged(string fullPath)
         {
+            // Don't raise events on disposed elements.
+            if (IsDisposed) return;
+
             // Propagate to parent.
-            ((IInternalConfigurationElement)this).Parent?.OnChanged(sender, propertyName);
+            ((IInternalConfigurationElement)this).Parent?.OnChanged(fullPath);
             _isModified = true;
-            DoChanged(sender, propertyName);
+            DoChanged(fullPath);
         }
 
         /// <summary>
         /// Called when the OnChange event is called.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="propertyName">Name of the property.</param>
-        partial void DoChanged(IInternalConfigurationElement sender, string propertyName);
+        /// <param name="fullPath">The full path.</param>
+        partial void DoChanged([NotNull] string fullPath);
 
         /// <summary>
         ///   Gets the configuration property.
@@ -238,7 +240,7 @@ namespace WebApplications.Utilities.Configuration
                 }
 
                 // Notify change handler
-                ((IInternalConfigurationElement)this).OnChanged(this, propertyName);
+                ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath(propertyName));
             }
         }
 
@@ -362,7 +364,7 @@ namespace WebApplications.Utilities.Configuration
                 _isModified = true;
                 _elements[element.Name] = elementStr;
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, $"<{elementName}>");
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"<{elementName}>"));
         }
 
         /// <inheritdoc />
@@ -429,7 +431,7 @@ namespace WebApplications.Utilities.Configuration
                 _elements.Clear();
                 _isModified = false;
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, "<>");
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath("<>"));
         }
 
         /// <inheritdoc />
@@ -624,10 +626,10 @@ namespace WebApplications.Utilities.Configuration
 
         /// <inheritdoc />
         // ReSharper disable once ArrangeStaticMemberQualifier
-        public string FullPath => IsDisposed ? "*DISPOSED*" : ConfigurationElement.GetFullPath(Parent, PropertyName);
+        public string FullPath => Parent.GetFullPath(ConfigurationElementName);
 
         /// <inheritdoc />
-        public string PropertyName => ((IInternalConfigurationElement)this).PropertyName;
+        public string ConfigurationElementName => ((IInternalConfigurationElement)this).PropertyName;
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConfigurationElement> Children
@@ -649,20 +651,22 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <inheritdoc />
-        void IInternalConfigurationElement.OnChanged(IInternalConfigurationElement sender, string propertyName)
+        void IInternalConfigurationElement.OnChanged(string fullPath)
         {
+            // Don't raise events on disposed elements.
+            if (IsDisposed) return;
+
             // Propagate to parent.
-            ((IInternalConfigurationElement)this).Parent?.OnChanged(sender, propertyName);
+            ((IInternalConfigurationElement)this).Parent?.OnChanged(fullPath);
             _isModified = true;
-            DoChanged(sender, propertyName);
+            DoChanged(fullPath);
         }
 
         /// <summary>
         /// Called when the OnChange event is called.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="propertyName">Name of the property.</param>
-        partial void DoChanged(IInternalConfigurationElement sender, string propertyName);
+        /// <param name="fullPath">The full path.</param>
+        partial void DoChanged([NotNull] string fullPath);
 
         /// <summary>
         ///   Gets the configuration property.
@@ -735,7 +739,7 @@ namespace WebApplications.Utilities.Configuration
                 }
 
                 // Notify change handler
-                ((IInternalConfigurationElement)this).OnChanged(this, propertyName);
+                ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath(propertyName));
             }
         }
 
@@ -859,7 +863,7 @@ namespace WebApplications.Utilities.Configuration
                 _isModified = true;
                 _elements[element.Name] = elementStr;
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, $"<{elementName}>");
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"<{elementName}>"));
         }
 
         /// <inheritdoc />
@@ -926,7 +930,7 @@ namespace WebApplications.Utilities.Configuration
                 _elements.Clear();
                 _isModified = false;
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, "<>");
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath("<>"));
         }
 
         /// <inheritdoc />

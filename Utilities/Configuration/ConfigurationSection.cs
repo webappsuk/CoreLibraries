@@ -29,7 +29,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -50,11 +49,16 @@ namespace WebApplications.Utilities.Configuration
     public abstract partial class ConfigurationSection<T> : ConfigurationSection, IInternalConfigurationSection
         where T : ConfigurationSection<T>, IConfigurationElement, new()
     {
+        /// <summary>
+        /// The time in milliseconds that events are buffered for.
+        /// </summary>
+        public const int EventBufferMs = 250;
+
         #region Delegates
         /// <summary>
         /// Handles changes in configuration.
         /// </summary>
-        /// <param name="sender">The sender (the original configuration).</param>
+        /// <param name="sender">The sender (the configuration section).</param>
         /// <param name="e">The <see cref="ConfigurationChangedEventArgs" /> instance containing the event data.</param>
         public delegate void ConfigurationChangedEventHandler(
             [NotNull] T sender,
@@ -66,13 +70,30 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         /// The change action buffers all changes so that configuration changes don't fire too frequently.
         /// </summary>
-        private BufferedAction<IInternalConfigurationElement, string> _changeAction;
+        [NotNull]
+        // ReSharper disable once StaticMemberInGenericType
+        private static BufferedAction<string> _activeChangeAction;
+
+        /// <summary>
+        /// The change action buffers all changes so that configuration changes don't fire too frequently.
+        /// </summary>
+        private BufferedAction<string> _changeAction;
 
         /// <summary>
         /// Initializes static members of the <see cref="ConfigurationSection{T}" /> class.
         /// </summary>
         static ConfigurationSection()
         {
+            _activeChangeAction =
+                new BufferedAction<string>(
+                    // ReSharper disable EventExceptionNotDocumented, AssignNullToNotNullAttribute
+                    changes =>
+                    {
+                        T active = Active;
+                        ActiveChanged?.Invoke(Active, new ConfigurationChangedEventArgs(active, changes));
+                    },
+                    // ReSharper restore EventExceptionNotDocumented, AssignNullToNotNullAttribute
+                    EventBufferMs);
 
             // Try to find attribute
             ConfigurationSectionAttribute attribute =
@@ -127,10 +148,10 @@ namespace WebApplications.Utilities.Configuration
         {
             // Set up change buffer
             _changeAction =
-                new BufferedAction<IInternalConfigurationElement, string>(
+                new BufferedAction<string>(
                     // ReSharper disable once EventExceptionNotDocumented, AssignNullToNotNullAttribute
-                    changes => Changed?.Invoke((T)this, new ConfigurationChangedEventArgs(changes)),
-                    400);
+                    changes => Changed?.Invoke((T)this, new ConfigurationChangedEventArgs((T)this, changes)),
+                    EventBufferMs);
 
             // This will get set during initialization
             FilePaths = Array<string>.Empty;
@@ -141,6 +162,7 @@ namespace WebApplications.Utilities.Configuration
         /// Lock for controlling access to the active configuration.
         /// </summary>
         [NotNull]
+        // ReSharper disable once StaticMemberInGenericType
         private static object _activeLock = new object();
 
         /// <summary>
@@ -177,6 +199,7 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>For example: 'MyClassConfigurationSection' will have a name of 'myClass'.</para>
         /// </remarks>
         [NotNull]
+        // ReSharper disable once StaticMemberInGenericType
         public static readonly string SectionName;
 
         /// <summary>
@@ -203,13 +226,8 @@ namespace WebApplications.Utilities.Configuration
                     active = _active;
                     if (active != null && !active.IsDisposed) return active;
 
-                    if (active != null)
-                        active.Changed -= OnActiveChanged;
-
-                    _active = active = GetActiveConfiguration();
-                    active.Changed += OnActiveChanged;
+                    return _active = GetActiveConfiguration();
                 }
-                return active;
             }
             set
             {
@@ -218,25 +236,12 @@ namespace WebApplications.Utilities.Configuration
 
                 lock (_activeLock)
                 {
+                    active = _active;
                     if (Equals(active, value)) return;
                     if (value.IsDisposed) throw new ObjectDisposedException(typeof(T).ToString());
-                    if (active != null)
-                        active.Changed -= OnActiveChanged;
-                    active = value;
-                    active.Changed += OnActiveChanged;
+                    _active = value;
                 }
             }
-        }
-
-        /// <summary>
-        /// Handles the <see cref="E:ActiveChanged" /> event.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="ConfigurationSection{T}.ConfigurationChangedEventArgs" /> instance containing the event data.</param>
-        private static void OnActiveChanged([NotNull] T sender, [NotNull] ConfigurationChangedEventArgs e)
-        {
-            Trace.WriteLine($"Active changed: {e}");
-            ActiveChanged?.Invoke(sender, e);
         }
 
         /// <summary>
@@ -285,6 +290,10 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>T.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="configuration"/> is <see langword="null" />.</exception>
         /// <exception cref="ConfigurationErrorsException">Error during initialization.</exception>
+        /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive). </exception>
+        /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
         [NotNull]
         public static T GetOrAdd([NotNull] System.Configuration.Configuration configuration)
         {
@@ -306,6 +315,7 @@ namespace WebApplications.Utilities.Configuration
             return section;
         }
 
+#pragma warning disable 618
         /// <summary>
         /// Loads the configuration section from the specified file.
         /// </summary>
@@ -313,6 +323,10 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>A new configuration section.</returns>
         /// <remarks><para>If the file does not exist, it will try to create one.</para></remarks>
         /// <exception cref="ConfigurationErrorsException">Error during initialization.</exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission. </exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive). </exception>
+        /// <exception cref="ArgumentException"><paramref name="filename" /> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="F:System.IO.Path.InvalidPathChars" />. </exception>
         [NotNull]
         public static T LoadOrCreate([NotNull] string filename)
         {
@@ -337,11 +351,15 @@ namespace WebApplications.Utilities.Configuration
         /// <returns>A new saved configuration section.</returns>
         /// <exception cref="ConfigurationErrorsException">The current section is not associated with a configuration.</exception>
         /// <remarks>After saving a configuration section it is disposed, so you must use the returned section.</remarks>
+        /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive). </exception>
+        /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
         [NotNull]
         public T Save(ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified, bool forceSaveAll = false)
             // ReSharper disable once AssignNullToNotNullAttribute
             => SaveAs(FilePath, saveMode, forceSaveAll);
-
+        
         /// <summary>
         /// Saves as.
         /// </summary>
@@ -353,8 +371,12 @@ namespace WebApplications.Utilities.Configuration
         /// <exception cref="ConfigurationErrorsException">The current section is not associated with a configuration.</exception>
         /// <remarks>After saving a configuration section it is disposed, so you must use the returned section.</remarks>
         /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive). </exception>
+        /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="ArgumentException"><paramref name="filename" /> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="F:System.IO.Path.InvalidPathChars" />.</exception>
         [NotNull]
-        public T SaveAs(
+         public T SaveAs(
             [NotNull] string filename,
             ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified,
             bool forceSaveAll = false)
@@ -365,15 +387,23 @@ namespace WebApplications.Utilities.Configuration
             if (string.IsNullOrWhiteSpace(filename) || configuration == null)
                 throw new ConfigurationErrorsException(Resources.ConfigurationSection_Save_No_Configuration);
 
+            // If this is the active configuration, ensure it is unloaded, this will make it impossible the file
+            // save event will be raised against the active configuration.
+            // ReSharper disable once ExceptionNotDocumented
+            Interlocked.CompareExchange(ref _active, null, (T)this);
+
             if (string.Equals(filename, configuration.FilePath))
                 configuration.Save(saveMode, forceSaveAll);
             else
                 configuration.SaveAs(filename, saveMode, forceSaveAll);
             ConfigurationManager.RefreshSection(SectionName);
+
+            // We dispose as any saved configuration must be reloaded before being used again.
             Dispose();
 
             return LoadOrCreate(filename);
         }
+#pragma warning restore 618
 
         /// <inheritdoc />
         IInternalConfigurationSection IInternalConfigurationElement.Section => this;
@@ -381,11 +411,14 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         /// Called when the OnChange event is called.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="propertyName">Name of the property.</param>
-        partial void DoChanged(IInternalConfigurationElement sender, string propertyName)
+        /// <param name="fullPath">The full path.</param>
+        partial void DoChanged(string fullPath)
         {
-            _changeAction?.Run(sender, propertyName);
+            _changeAction?.Run(fullPath);
+
+            // Check to see if we're the active configuration.
+            if (IsActive)
+                _activeChangeAction.Run(fullPath);
         }
 
         /// <inheritdoc />
@@ -413,7 +446,7 @@ namespace WebApplications.Utilities.Configuration
                 // Sanitize paths
                 HashSet<string> set = new HashSet<string>(
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    ConfigurationElement.GetConfigFilePaths(CurrentConfiguration)
+                    CurrentConfiguration.GetConfigFilePaths()
                         .Where(p => p != null)
                         .Select(Path.GetFullPath)
                         .Where(File.Exists));
@@ -460,13 +493,17 @@ namespace WebApplications.Utilities.Configuration
         /// (disposing is false), other objects should not be accessed. The reason is that objects are finalized in an 
         /// unpredictable order and so they, or any of their dependencies, might already have been finalized.</para>
         /// </remarks>
+        // ReSharper disable once VirtualMemberNeverOverriden.Global
         protected virtual void Dispose(bool disposing)
         {
             IsDisposed = true;
+            // ReSharper disable once ExceptionNotDocumented
+            // If we're disposing the active configuration section, we want to reload the active configuration.
+            Interlocked.CompareExchange(ref _active, null, (T)this);
             if (!disposing) return;
             ConfigurationFileWatcher.UnWatch(this);
             // ReSharper disable once ExceptionNotDocumented
-            BufferedAction<IInternalConfigurationElement, string> action = Interlocked.Exchange(ref _changeAction, null);
+            BufferedAction<string> action = Interlocked.Exchange(ref _changeAction, null);
             action?.Dispose();
         }
 
@@ -475,45 +512,48 @@ namespace WebApplications.Utilities.Configuration
         /// Information about the configuration changed event.
         /// </summary>
         [PublicAPI]
-        public class ConfigurationChangedEventArgs : EventArgs, ILookup<IConfigurationElement, string>
+        public class ConfigurationChangedEventArgs : EventArgs, IReadOnlyCollection<string>
         {
+            /// <summary>
+            /// The section.
+            /// </summary>
+            [NotNull]
+            public readonly T Section;
+
             /// <summary>
             /// The changes.
             /// </summary>
             [NotNull]
-            private ILookup<IConfigurationElement, string> _changes;
+            private IReadOnlyCollection<string> _changes;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs" /> class.
             /// </summary>
+            /// <param name="section">The section.</param>
             /// <param name="changes">The changes.</param>
             internal ConfigurationChangedEventArgs(
-                [NotNull] [ItemNotNull] IEnumerable<IInternalConfigurationElement, string> changes)
+                [NotNull] T section,
+                [NotNull] [ItemNotNull] IEnumerable<string> changes)
             {
-                _changes = changes.ToLookup(t => (IConfigurationElement)t.Item1, t => t.Item2);
+                Section = section;
+                _changes = changes.ToArray();
             }
 
             /// <inheritdoc />
-            public IEnumerator<IGrouping<IConfigurationElement, string>> GetEnumerator() => _changes.GetEnumerator();
+            public IEnumerator<string> GetEnumerator() => _changes.GetEnumerator();
 
             /// <inheritdoc />
             IEnumerator IEnumerable.GetEnumerator() => _changes.GetEnumerator();
 
             /// <inheritdoc />
-            public bool Contains(IConfigurationElement key) => _changes.Contains(key);
+            public bool Contains(string fullPath) => _changes.Contains(fullPath);
 
             /// <inheritdoc />
             public int Count => _changes.Count;
 
             /// <inheritdoc />
-            public IEnumerable<string> this[IConfigurationElement key] => _changes[key];
-
-            /// <inheritdoc />
             public override string ToString()
-                => "Changes: " +
-                   string.Join(
-                       ", ",
-                       _changes.SelectMany(g => g.Select(c => ConfigurationElement.GetFullPath(g.Key, c))));
+                => "Changes: " + string.Join(", ", _changes);
         }
         #endregion
     }

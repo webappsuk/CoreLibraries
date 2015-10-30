@@ -37,7 +37,7 @@ namespace WebApplications.Utilities.Configuration
     /// <summary>
     /// Watches for changes to the configuration file for the application.
     /// </summary>
-    internal class ConfigurationFileWatcher : IDisposable
+    internal sealed class ConfigurationFileWatcher : IDisposable
     {
         /// <summary>
         /// The file system watchers.
@@ -64,12 +64,19 @@ namespace WebApplications.Utilities.Configuration
         private BufferedAction _eventAction;
 
         /// <summary>
+        /// The path being watched.
+        /// </summary>
+        [NotNull]
+        private readonly string _path;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationFileWatcher"/> class.
         /// </summary>
         /// <param name="path">The path.</param>
         private ConfigurationFileWatcher([NotNull] string path)
         {
             _eventAction = new BufferedAction(WatcherOnChanged, 100);
+            _path = path;
             // ReSharper disable once AssignNullToNotNullAttribute
             _watcher = new FileSystemWatcher(Path.GetDirectoryName(path), Path.GetFileName(path));
             _watcher.Changed += (s, e) => _eventAction.Run();
@@ -83,9 +90,10 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="arguments">The arguments.</param>
         private void WatcherOnChanged(object[][] arguments)
         {
+            string name = $"->{_path}";
             lock (_sections)
                 foreach (IInternalConfigurationSection section in _sections)
-                    section.OnChanged(section, string.Empty);
+                    section.OnChanged(section.GetFullPath(name));
         }
         
         /// <summary>
@@ -135,28 +143,7 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Disposes the specified instance.
-        /// </summary>
-        /// <param name="disposing">Whether this is disposing or finalizing.</param>
-        /// <remarks>
-        /// <para><paramref name="disposing"/> indicates whether the method was invoked from the 
-        /// <see cref="IDisposable.Dispose"/> implementation or from the finalizer. The implementation should check the
-        /// parameter before  accessing other reference objects. Such objects should  only be accessed when the method 
-        /// is called from the <see cref="IDisposable.Dispose"/> implementation (when the <paramref name="disposing"/> 
-        /// parameter is equal to <see langword="true"/>). If the method is invoked from the finalizer
-        /// (disposing is false), other objects should not be accessed. The reason is that objects are finalized in an 
-        /// unpredictable order and so they, or any of their dependencies, might already have been finalized.</para>
-        /// </remarks>
-        protected virtual void Dispose(bool disposing)
-        {
             // ReSharper disable ExceptionNotDocumented
-            if (!disposing) return;
-
             FileSystemWatcher watcher = Interlocked.Exchange(ref _watcher, null);
             watcher?.Dispose();
             BufferedAction action = Interlocked.Exchange(ref _eventAction, null);

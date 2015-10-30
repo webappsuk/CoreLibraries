@@ -26,11 +26,11 @@ namespace WebApplications.Utilities.Configuration
         IConfigurationElement Parent { get; }
 
         /// <summary>
-        /// Gets the name of the current element.
+        /// Gets the name of the current configuration element.
         /// </summary>
         /// <value>The name of the element.</value>
-        [CanBeNull]
-        string PropertyName { get; }
+        [NotNull]
+        string ConfigurationElementName { get; }
 
         /// <summary>
         /// Gets the full path to the current element.

@@ -101,6 +101,7 @@ namespace WebApplications.Utilities.Threading
                     Resources.BufferedAction_BufferedAction_Invalid_Duration);
 
             _action = action;
+            Duration = duration;
         }
 
         /// <summary>

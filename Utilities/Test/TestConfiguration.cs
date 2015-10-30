@@ -32,6 +32,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
 using System.Xml.Linq;
+using WebApplications.Testing;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 
@@ -87,11 +88,27 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestCustomXElement()
         {
+            // Detect changes
+            EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
+            ConfigurationSection<TestConfigurationSection>.ActiveChanged += (o, e) =>
+            {
+                Assert.IsNotNull(o);
+                Assert.IsNotNull(e);
+                Assert.IsTrue(e.Contains("<test><custom>"));
+                Assert.IsTrue(e.Contains("<test>.string"));
+                Assert.IsTrue(e.Contains("<test>.string2"));
+                Trace.WriteLine($"Active Configuration {e}");
+                ewh.Set();
+            };
+
             XElement custom = TestConfigurationSection.Active.Custom;
             Assert.IsNotNull(custom);
             XElement custom2 = TestConfigurationSection.Active.Custom;
             Assert.IsNotNull(custom2);
             Assert.AreNotSame(custom, custom2, "Get element should retrieve fresh XElement objects to prevent corruption.");
+
+            string str1 = TestConfigurationSection.Active.String;
+            string str2 = TestConfigurationSection.Active.String2;
 
             string cStr = custom.ToString(SaveOptions.DisableFormatting);
             string cStr2 = custom2.ToString(SaveOptions.DisableFormatting);
@@ -106,27 +123,23 @@ namespace WebApplications.Utilities.Test
             custom.Element("B").Value = "2";
             custom.Element("C").Value = "3";
 
-            // Detect changes
-            EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
-            ConfigurationSection<TestConfigurationSection>.ActiveChanged += (o, e) =>
-            {
-                Assert.IsNotNull(o);
-                Assert.IsNotNull(e);
-                Trace.WriteLine("Configuration changed.");
-                ewh.Set();
-            };
-
             // Update the custom node.
             TestConfigurationSection.Active.Custom = custom;
+            string str1Random = Tester.RandomString() ?? string.Empty;
+            string str2Random = Tester.RandomString() ?? string.Empty;
+            TestConfigurationSection.Active.String = str1Random;
+            TestConfigurationSection.Active.String2 = str2Random;
             TestConfigurationSection.Active.Save();
-            
-            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(2)), "Configuration changed event did not fire.");
+
+            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
 
             custom = TestConfigurationSection.Active.Custom;
             Assert.AreEqual("custom", custom.Name.LocalName);
             Assert.AreEqual("1", custom.Element("A").Value);
             Assert.AreEqual("2", custom.Element("B").Value);
             Assert.AreEqual("3", custom.Element("C").Value);
+            Assert.AreEqual(str1Random, TestConfigurationSection.Active.String);
+            Assert.AreEqual(str2Random, TestConfigurationSection.Active.String2);
 
             // Revert
             custom.Element("A").Value = "A";
@@ -135,6 +148,8 @@ namespace WebApplications.Utilities.Test
 
             // Update the custom node.
             TestConfigurationSection.Active.Custom = custom;
+            TestConfigurationSection.Active.String = str1;
+            TestConfigurationSection.Active.String2 = str2;
             TestConfigurationSection.Active.Save();
 
             Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
@@ -143,6 +158,8 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual("A", custom.Element("A").Value);
             Assert.AreEqual("B", custom.Element("B").Value);
             Assert.AreEqual("C", custom.Element("C").Value);
+            Assert.AreEqual(str1, TestConfigurationSection.Active.String);
+            Assert.AreEqual(str2, TestConfigurationSection.Active.String2);
         }
     }
 
@@ -249,7 +266,7 @@ namespace WebApplications.Utilities.Test
         /// <value>The constructors.</value>
         /// <remarks></remarks>
         [ConfigurationProperty("constructors", IsRequired = false, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof (TestObjectConstructorCollection),
+        [ConfigurationCollection(typeof(TestObjectConstructorCollection),
             AddItemName = "add",
             ClearItemsName = "clear",
             RemoveItemName = "remove")]

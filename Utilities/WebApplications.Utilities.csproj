@@ -42,6 +42,7 @@
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
     <Compile Include="Caching\WeakSingleton.cs" />
     <Compile Include="Configuration\ConfigurationElement - Common.cs" />
+    <Compile Include="ConfigurationElementExtensions.cs" />
     <Compile Include="Configuration\IConfigurationElement.cs" />
     <Compile Include="Configuration\IConfigurationSection.cs" />
     <Compile Include="Configuration\IInternalConfigurationElement.cs" />

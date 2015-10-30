@@ -86,7 +86,7 @@ namespace WebApplications.Utilities.Configuration
                         base.BaseAdd(value);
                     }
                 }
-                ((IInternalConfigurationElement)this).OnChanged(this, elementName);
+                ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath(elementName));
             }
         }
 
@@ -107,7 +107,7 @@ namespace WebApplications.Utilities.Configuration
             {
 
                 TValue value = (TValue)BaseGet(index);
-                if (value != null && value.PropertyName == null)
+                if (value != null && value.ConfigurationElementName == null)
                     ((IInternalConfigurationElement)value).PropertyName = $"[{GetElementKey(value)}]";
                 return value;
             }
@@ -142,8 +142,8 @@ namespace WebApplications.Utilities.Configuration
                     ice.PropertyName = newElementName;
                     base.BaseAdd(index, value);
                 }
-                ((IInternalConfigurationElement)this).OnChanged(this, $"[{originalKey}]");
-                ((IInternalConfigurationElement)this).OnChanged(this, newElementName);
+                ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"[{originalKey}]"));
+                ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath(newElementName));
             }
         }
 
@@ -160,7 +160,7 @@ namespace WebApplications.Utilities.Configuration
             while (enumerator.MoveNext())
             {
                 TValue value = (TValue) enumerator.Current;
-                if (value != null && value.PropertyName == null)
+                if (value != null && value.ConfigurationElementName == null)
                     ((IInternalConfigurationElement)value).PropertyName = $"[{GetElementKey(value)}]";
                 yield return (TValue)enumerator.Current;
             }
@@ -228,7 +228,7 @@ namespace WebApplications.Utilities.Configuration
                 }
             }
 
-            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"[{key}]"));
             return found;
         }
 
@@ -262,7 +262,7 @@ namespace WebApplications.Utilities.Configuration
                 }
                 BaseClear();
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, string.Empty);
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath(".*"));
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace WebApplications.Utilities.Configuration
                 _children.Add(ice);
                 base.BaseAdd(element);
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, elementName);
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath(elementName));
         }
 
         /// <summary>
@@ -365,7 +365,7 @@ namespace WebApplications.Utilities.Configuration
                 BaseRemove(key);
             }
 
-            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"[{key}]"));
         }
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace WebApplications.Utilities.Configuration
 
                 BaseRemove(ice);
             }
-            ((IInternalConfigurationElement)this).OnChanged(this, $"[{key}]");
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"[{key}]"));
         }
 
         /// <summary>
