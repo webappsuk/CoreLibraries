@@ -302,7 +302,7 @@ namespace WebApplications.Utilities
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
         public static void AppendEnglish([NotNull] this StringBuilder builder, double number)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             using (StringWriter writer = new StringWriter(builder))
                 WriteEnglish(writer, number);
         }
@@ -315,7 +315,7 @@ namespace WebApplications.Utilities
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
         public static void AppendEnglish([NotNull] this StringBuilder builder, int number)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             using (StringWriter writer = new StringWriter(builder))
                 WriteEnglish(writer, number);
         }
@@ -328,7 +328,7 @@ namespace WebApplications.Utilities
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
         public static void AppendEnglish([NotNull] this StringBuilder builder, long number)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             using (StringWriter writer = new StringWriter(builder))
                 WriteEnglish(writer, number);
         }
@@ -341,7 +341,7 @@ namespace WebApplications.Utilities
         /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
         public static void WriteEnglish([NotNull] this TextWriter writer, double number)
         {
-            if (writer == null) throw new ArgumentNullException("writer");
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
             WriteEnglish(writer, (long)number);
 
             if (number < 0)
@@ -376,7 +376,7 @@ namespace WebApplications.Utilities
         /// <param name="number">The number.</param>
         public static void WriteEnglish([NotNull] this TextWriter writer, long number)
         {
-            if (writer == null) throw new ArgumentNullException("writer");
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
             bool start = true;
             if (number < 0)
             {
@@ -495,7 +495,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Func<object, object, bool> GetTypeEqualityFunction([NotNull] this Type type)
         {
-            if (type == null) throw new ArgumentNullException("type");
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return _equalityFunctions.GetOrAdd(
@@ -665,7 +665,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Dictionary<string, string> ToDictionary([NotNull] this NameValueCollection collection)
         {
-            if (collection == null) throw new ArgumentNullException("collection");
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
 
             Dictionary<string, string> d = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
             foreach (string name in collection)
@@ -686,7 +686,7 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<KeyValuePair<TKey, TValue>> source,
             [CanBeNull] IEqualityComparer<TKey> comparer = null)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             Dictionary<TKey, TValue> d = new Dictionary<TKey, TValue>(comparer);
 
@@ -723,7 +723,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static StringBuilder AppendJSON([NotNull] this StringBuilder stringBuilder, [CanBeNull] string input)
         {
-            if (stringBuilder == null) throw new ArgumentNullException("stringBuilder");
+            if (stringBuilder == null) throw new ArgumentNullException(nameof(stringBuilder));
 
             if (input == null)
             {
@@ -809,7 +809,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexLower(this byte[] value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
             char[] chars = new char[value.Length << 1];
             for (int i = 0, j = 0; i < value.Length; i++)
             {
@@ -841,7 +841,7 @@ namespace WebApplications.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToHexUpper([NotNull] this byte[] value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
             char[] chars = new char[value.Length << 1];
             for (int i = 0, j = 0; i < value.Length; i++)
             {
@@ -903,8 +903,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            if (integers == null) throw new ArgumentNullException("integers");
-            if (getObject == null) throw new ArgumentNullException("getObject");
+            if (integers == null) throw new ArgumentNullException(nameof(integers));
+            if (getObject == null) throw new ArgumentNullException(nameof(getObject));
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -952,8 +952,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            if (integers == null) throw new ArgumentNullException("integers");
-            if (getObject == null) throw new ArgumentNullException("getObject");
+            if (integers == null) throw new ArgumentNullException(nameof(integers));
+            if (getObject == null) throw new ArgumentNullException(nameof(getObject));
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -1000,8 +1000,8 @@ namespace WebApplications.Utilities
             [CanBeNull] char[] splitChars = null,
             bool executeImmediately = false)
         {
-            if (integers == null) throw new ArgumentNullException("integers");
-            if (getObject == null) throw new ArgumentNullException("getObject");
+            if (integers == null) throw new ArgumentNullException(nameof(integers));
+            if (getObject == null) throw new ArgumentNullException(nameof(getObject));
 
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
@@ -1049,7 +1049,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static string XmlEscape([NotNull] this object raw)
         {
-            if (raw == null) throw new ArgumentNullException("raw");
+            if (raw == null) throw new ArgumentNullException(nameof(raw));
             return raw.ToString().XmlEscape();
         }
 
@@ -1122,11 +1122,11 @@ namespace WebApplications.Utilities
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (assembly == null)
                     // ReSharper disable HeuristicUnreachableCode
-                    throw new ArgumentNullException("assembly");
+                    throw new ArgumentNullException(nameof(assembly));
                 // ReSharper restore HeuristicUnreachableCode
 
                 if (string.IsNullOrWhiteSpace(filename))
-                    throw new ArgumentNullException("filename");
+                    throw new ArgumentNullException(nameof(filename));
 
                 using (Stream stream = assembly.GetManifestResourceStream(filename))
                 {
@@ -1181,11 +1181,11 @@ namespace WebApplications.Utilities
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (assembly == null)
                     // ReSharper disable HeuristicUnreachableCode
-                    throw new ArgumentNullException("assembly");
+                    throw new ArgumentNullException(nameof(assembly));
                 // ReSharper restore HeuristicUnreachableCode
 
                 if (string.IsNullOrWhiteSpace(filename))
-                    throw new ArgumentNullException("filename");
+                    throw new ArgumentNullException(nameof(filename));
 
                 using (Stream stream = assembly.GetManifestResourceStream(filename))
                 {
@@ -1263,7 +1263,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static string StripHTML([NotNull] this string input)
         {
-            if (input == null) throw new ArgumentNullException("input");
+            if (input == null) throw new ArgumentNullException(nameof(input));
             // TODO: a) make more efficient b) question purpose/usage c) support CDATA?
             int depthCounter = 0;
             StringBuilder builder = new StringBuilder(input.Length);
@@ -1306,12 +1306,12 @@ namespace WebApplications.Utilities
             [CanBeNull] string ellipsisString = "...",
             int ellipsisLength = -1)
         {
-            if (maxLength < 1) throw new ArgumentOutOfRangeException("maxLength");
+            if (maxLength < 1) throw new ArgumentOutOfRangeException(nameof(maxLength));
             if ((options & TruncateOptions.IncludeEllipsis) == TruncateOptions.IncludeEllipsis &&
                 maxLength <= ((ellipsisString != null && ellipsisLength < 0) ? ellipsisString.Length : ellipsisLength))
-                throw new ArgumentOutOfRangeException("maxLength");
+                throw new ArgumentOutOfRangeException(nameof(maxLength));
             if (ellipsisLength < 0 &&
-                ellipsisString == null) throw new ArgumentNullException("ellipsisString");
+                ellipsisString == null) throw new ArgumentNullException(nameof(ellipsisString));
 
             if (string.IsNullOrEmpty(valueToTruncate) ||
                 valueToTruncate.Length <= maxLength)
@@ -1416,7 +1416,7 @@ namespace WebApplications.Utilities
         /// <param name="str">The string.</param>
         public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (string.IsNullOrEmpty(str)) return;
             int i = 0;
             bool escaped = false;
@@ -1534,7 +1534,7 @@ namespace WebApplications.Utilities
         /// <param name="str">The string.</param>
         public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
-            if (builder == null) throw new ArgumentNullException("builder");
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (string.IsNullOrEmpty(str)) return;
             int i = 0;
             while (i < str.Length)
@@ -1624,7 +1624,7 @@ namespace WebApplications.Utilities
         [Obsolete("Consider using TPL or Async.")]
         public static T Unwrap<T>([NotNull] this IAsyncResult result)
         {
-            if (result == null) throw new ArgumentNullException("result");
+            if (result == null) throw new ArgumentNullException(nameof(result));
             return ApmWrap<T>.Unwrap(ref result);
         }
 
@@ -1639,7 +1639,7 @@ namespace WebApplications.Utilities
         [Obsolete("Consider using TPL or Async.")]
         public static T Unwrap<T>([NotNull] this IAsyncResult result, out IAsyncResult unwrappedResult)
         {
-            if (result == null) throw new ArgumentNullException("result");
+            if (result == null) throw new ArgumentNullException(nameof(result));
             unwrappedResult = result;
             return ApmWrap<T>.Unwrap(ref unwrappedResult);
         }
@@ -1660,7 +1660,7 @@ namespace WebApplications.Utilities
             [CanBeNull] T data,
             [CanBeNull] SynchronizationContext syncContext = null)
         {
-            if (callback == null) throw new ArgumentNullException("callback");
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
         }
 
@@ -1675,8 +1675,8 @@ namespace WebApplications.Utilities
         [NotNull]
         public static T[][] Split<T>([NotNull] this T[] array, [NotNull] params int[] indices)
         {
-            if (array == null) throw new ArgumentNullException("array");
-            if (indices == null) throw new ArgumentNullException("indices");
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (indices == null) throw new ArgumentNullException(nameof(indices));
 
             int length = array.Length;
 
@@ -1725,8 +1725,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            if (elements == null) throw new ArgumentNullException("elements");
-            if (separator == null) throw new ArgumentNullException("separator");
+            if (elements == null) throw new ArgumentNullException(nameof(elements));
+            if (separator == null) throw new ArgumentNullException(nameof(separator));
 
             return string.Join(separator, elements);
         }
@@ -1742,8 +1742,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            if (elements == null) throw new ArgumentNullException("elements");
-            if (separator == null) throw new ArgumentNullException("separator");
+            if (elements == null) throw new ArgumentNullException(nameof(elements));
+            if (separator == null) throw new ArgumentNullException(nameof(separator));
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1770,8 +1770,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            if (elements == null) throw new ArgumentNullException("elements");
-            if (separator == null) throw new ArgumentNullException("separator");
+            if (elements == null) throw new ArgumentNullException(nameof(elements));
+            if (separator == null) throw new ArgumentNullException(nameof(separator));
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1798,8 +1798,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<string> elements,
             [NotNull] string separator = "")
         {
-            if (elements == null) throw new ArgumentNullException("elements");
-            if (separator == null) throw new ArgumentNullException("separator");
+            if (elements == null) throw new ArgumentNullException(nameof(elements));
+            if (separator == null) throw new ArgumentNullException(nameof(separator));
 
             StringBuilder builder = new StringBuilder();
             bool any = false;
@@ -1823,7 +1823,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static IEnumerable<string> SplitLines([NotNull] this string input)
         {
-            if (input == null) throw new ArgumentNullException("input");
+            if (input == null) throw new ArgumentNullException(nameof(input));
             return _lineSplitter.Split(input);
         }
 
@@ -1835,7 +1835,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static string LowerCaseFirstLetter([NotNull] this string input)
         {
-            if (input == null) throw new ArgumentNullException("input");
+            if (input == null) throw new ArgumentNullException(nameof(input));
             if (input.Length < 1 ||
                 char.IsLower(input[0])) return input;
             return char.ToLower(input[0]) + input.Substring(1);
@@ -1924,7 +1924,7 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [CanBeNull] IEqualityComparer<T> equalityComparer = null)
         {
-            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
             IReadOnlyCollection<T> collection = enumerable.Enumerate();
             return collection.Count == collection.Distinct(equalityComparer ?? EqualityComparer<T>.Default).Count();
         }
@@ -1945,8 +1945,8 @@ namespace WebApplications.Utilities
             [NotNull] TKey key,
             [CanBeNull] TValue value)
         {
-            if (dict == null) throw new ArgumentNullException("dict");
-            if (ReferenceEquals(key, null)) throw new ArgumentNullException("key");
+            if (dict == null) throw new ArgumentNullException(nameof(dict));
+            if (ReferenceEquals(key, null)) throw new ArgumentNullException(nameof(key));
             TValue val;
             if (!dict.TryGetValue(key, out val))
                 dict.Add(key, val = value);
@@ -1969,9 +1969,9 @@ namespace WebApplications.Utilities
             [NotNull] TKey key,
             [NotNull] [InstantHandle] Func<TKey, TValue> valueFactory)
         {
-            if (dict == null) throw new ArgumentNullException("dict");
-            if (ReferenceEquals(key, null)) throw new ArgumentNullException("key");
-            if (valueFactory == null) throw new ArgumentNullException("valueFactory");
+            if (dict == null) throw new ArgumentNullException(nameof(dict));
+            if (ReferenceEquals(key, null)) throw new ArgumentNullException(nameof(key));
+            if (valueFactory == null) throw new ArgumentNullException(nameof(valueFactory));
             TValue val;
             if (!dict.TryGetValue(key, out val))
                 dict.Add(key, val = valueFactory(key));
@@ -2065,7 +2065,7 @@ namespace WebApplications.Utilities
             [CanBeNull] [InstantHandle] this IEnumerable<T> values,
             [NotNull] [InstantHandle] Func<T, double> selector)
         {
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
             if (values == null) return 0;
 
             double[] array = values.Select(selector).ToArray();
@@ -2104,8 +2104,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
 
             return source.MaxBy(selector, Comparer<TKey>.Default);
         }
@@ -2132,8 +2132,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
 
             return source.MaxByOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2163,9 +2163,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2210,9 +2210,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2254,8 +2254,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
 
             return source.MinBy(selector, Comparer<TKey>.Default);
         }
@@ -2282,8 +2282,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
 
             return source.MinByOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2313,9 +2313,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2360,9 +2360,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2401,8 +2401,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
 
             return source.MaxOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2430,9 +2430,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2468,8 +2468,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<TSource> source,
             [NotNull] [InstantHandle] Func<TSource, TKey> selector)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
 
             return source.MinOrDefault(selector, Comparer<TKey>.Default);
         }
@@ -2498,9 +2498,9 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] Func<TSource, TKey> selector,
             [NotNull] IComparer<TKey> comparer)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (selector == null) throw new ArgumentNullException("selector");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
@@ -2528,12 +2528,12 @@ namespace WebApplications.Utilities
         public static T Min<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             source = source.Enumerate();
             if (!source.Any())
-                throw new ArgumentException(Resources.UtilityExtensions_SourceEmpty, "source");
+                throw new ArgumentException(Resources.UtilityExtensions_SourceEmpty, nameof(source));
 
             T value = default(T);
             if (ReferenceEquals(value, null))
@@ -2571,12 +2571,12 @@ namespace WebApplications.Utilities
         public static T Max<T>([NotNull] [InstantHandle] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             source = source.Enumerate();
             if (!source.Any())
-                throw new ArgumentException(Resources.UtilityExtensions_SourceEmpty, "source");
+                throw new ArgumentException(Resources.UtilityExtensions_SourceEmpty, nameof(source));
 
             T value = default(T);
             if (ReferenceEquals(value, null))
@@ -2622,7 +2622,7 @@ namespace WebApplications.Utilities
             [NotNull] IEnumerable<TSource> second,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
-            if (second == null) throw new ArgumentNullException("second");
+            if (second == null) throw new ArgumentNullException(nameof(second));
             return UnionSingleIterator(first, second, comparer ?? EqualityComparer<TSource>.Default);
         }
 
@@ -2656,7 +2656,7 @@ namespace WebApplications.Utilities
             [CanBeNull] TSource last,
             [CanBeNull] IEqualityComparer<TSource> comparer = null)
         {
-            if (first == null) throw new ArgumentNullException("first");
+            if (first == null) throw new ArgumentNullException(nameof(first));
             return UnionSingleIterator(first, last, comparer ?? EqualityComparer<TSource>.Default);
         }
 
@@ -2688,7 +2688,7 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource first)
         {
-            if (sequence == null) throw new ArgumentNullException("sequence");
+            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
 
             return PrependIterator(sequence, first);
         }
@@ -2708,7 +2708,7 @@ namespace WebApplications.Utilities
             [CanBeNull] this TSource first,
             [NotNull] IEnumerable<TSource> sequence)
         {
-            if (sequence == null) throw new ArgumentNullException("sequence");
+            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
 
             return PrependIterator(sequence, first);
         }
@@ -2739,7 +2739,7 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<TSource> sequence,
             [CanBeNull] TSource last)
         {
-            if (sequence == null) throw new ArgumentNullException("sequence");
+            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
 
 
             return AppendIterator(sequence, last);
@@ -2760,7 +2760,7 @@ namespace WebApplications.Utilities
             [CanBeNull] this TSource last,
             [NotNull] IEnumerable<TSource> sequence)
         {
-            if (sequence == null) throw new ArgumentNullException("sequence");
+            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
 
             return AppendIterator(sequence, last);
         }
@@ -2789,8 +2789,8 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<TSource> first,
             [NotNull] params TSource[] second)
         {
-            if (first == null) throw new ArgumentNullException("first");
-            if (second == null) throw new ArgumentNullException("second");
+            if (first == null) throw new ArgumentNullException(nameof(first));
+            if (second == null) throw new ArgumentNullException(nameof(second));
             return ConcatIterator(first, second);
         }
 
@@ -2814,8 +2814,8 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true"/> if the sequence has at least <paramref name="count"/> items, otherwise <see langword="false"/>.</returns>
         public static bool HasAtLeast<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, int count)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (count < 1) throw new ArgumentOutOfRangeException("count");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (count < 1) throw new ArgumentOutOfRangeException(nameof(count));
 
             ICollection<TSource> collection1 = source as ICollection<TSource>;
             if (collection1 != null)
@@ -2847,7 +2847,7 @@ namespace WebApplications.Utilities
             int count,
             [NotNull] [InstantHandle] Func<TSource, bool> predicate)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
             if (count < 1) throw new ArgumentOutOfRangeException("count");
             if (predicate == null) throw new ArgumentNullException("predicate");
 
@@ -3227,8 +3227,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependants)
         {
-            if (enumerable == null) throw new ArgumentNullException("enumerable");
-            if (getDependants == null) throw new ArgumentNullException("getDependants");
+            if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
+            if (getDependants == null) throw new ArgumentNullException(nameof(getDependants));
 
             enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
@@ -3261,8 +3261,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, IEnumerable<T>> getDependencies)
         {
-            if (enumerable == null) throw new ArgumentNullException("enumerable");
-            if (getDependencies == null) throw new ArgumentNullException("getDependencies");
+            if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
+            if (getDependencies == null) throw new ArgumentNullException(nameof(getDependencies));
 
             enumerable = enumerable.Enumerate();
             // Create a dictionary of dependencies.
@@ -3384,7 +3384,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static SemanticVersion SemanticVersion([NotNull] this Assembly assembly)
         {
-            if (assembly == null) throw new ArgumentNullException("assembly");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
             // Get the assembly version.
             Version version = assembly.GetName().Version;
@@ -3427,7 +3427,7 @@ namespace WebApplications.Utilities
             [NotNull] this Type elementType,
             [CanBeNull] [InstantHandle] IEnumerable values = null)
         {
-            if (elementType == null) throw new ArgumentNullException("elementType");
+            if (elementType == null) throw new ArgumentNullException(nameof(elementType));
             // ReSharper disable once AssignNullToNotNullAttribute, PossibleNullReferenceException
             return _hashCollectionCreators.GetOrAdd(
                 elementType,
@@ -3491,7 +3491,7 @@ namespace WebApplications.Utilities
         [CanBeNull]
         public static T Choose<T>([NotNull] [InstantHandle] this IEnumerable<T> enumerable)
         {
-            if (enumerable == null) throw new ArgumentNullException("enumerable");
+            if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
 
             IList<T> list = enumerable as IList<T> ?? enumerable.ToArray();
             return list.Count > 0
@@ -3512,8 +3512,8 @@ namespace WebApplications.Utilities
             [NotNull] [InstantHandle] this IEnumerable<T> enumerable,
             [NotNull] [InstantHandle] Func<T, double> getWeightFunc)
         {
-            if (enumerable == null) throw new ArgumentNullException("enumerable");
-            if (getWeightFunc == null) throw new ArgumentNullException("getWeightFunc");
+            if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
+            if (getWeightFunc == null) throw new ArgumentNullException(nameof(getWeightFunc));
             // Get the weights total weight whilst building a list to prevent multiple enumerations.
             double totalWeight = 0D;
             List<T, double> list = new List<T, double>();
@@ -3609,7 +3609,7 @@ namespace WebApplications.Utilities
             [NotNull] Func<Exception, TException> convert)
             where TException : Exception
         {
-            if (convert == null) throw new ArgumentNullException("convert");
+            if (convert == null) throw new ArgumentNullException(nameof(convert));
 
             if (exception == null) yield break;
 
@@ -3725,7 +3725,7 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
         public static bool TryPop<T>([NotNull] this Stack<T> stack, out T value)
         {
-            if (stack == null) throw new ArgumentNullException("stack");
+            if (stack == null) throw new ArgumentNullException(nameof(stack));
             if (stack.Count < 1)
             {
                 value = default(T);
@@ -3745,7 +3745,7 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true"/> if the stack was not empty; otherwise <see langword="false"/>.</returns>
         public static bool TryPeek<T>([NotNull] this Stack<T> stack, out T value)
         {
-            if (stack == null) throw new ArgumentNullException("stack");
+            if (stack == null) throw new ArgumentNullException(nameof(stack));
             if (stack.Count < 1)
             {
                 value = default(T);
@@ -3765,7 +3765,7 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
         public static bool TryDequeue<T>([NotNull] this Queue<T> queue, out T value)
         {
-            if (queue == null) throw new ArgumentNullException("queue");
+            if (queue == null) throw new ArgumentNullException(nameof(queue));
             if (queue.Count < 1)
             {
                 value = default(T);
@@ -3785,7 +3785,7 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true"/> if the queue was not empty; otherwise <see langword="false"/>.</returns>
         public static bool TryPeek<T>([NotNull] this Queue<T> queue, out T value)
         {
-            if (queue == null) throw new ArgumentNullException("queue");
+            if (queue == null) throw new ArgumentNullException(nameof(queue));
             if (queue.Count < 1)
             {
                 value = default(T);
@@ -3806,8 +3806,8 @@ namespace WebApplications.Utilities
         [NotNull]
         public static IEnumerable<T> Do<T>([NotNull] this IEnumerable<T> sequence, [NotNull] Action<T> action)
         {
-            if (sequence == null) throw new ArgumentNullException("sequence");
-            if (action == null) throw new ArgumentNullException("action");
+            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
+            if (action == null) throw new ArgumentNullException(nameof(action));
 
             return DoEnumerator(sequence, action);
         }
@@ -3836,8 +3836,8 @@ namespace WebApplications.Utilities
             [NotNull] this IEnumerable<T1> enumerable1,
             [NotNull] IEnumerable<T2> enumerable2)
         {
-            if (enumerable1 == null) throw new ArgumentNullException("enumerable1");
-            if (enumerable2 == null) throw new ArgumentNullException("enumerable2");
+            if (enumerable1 == null) throw new ArgumentNullException(nameof(enumerable1));
+            if (enumerable2 == null) throw new ArgumentNullException(nameof(enumerable2));
             return CrossIterator(enumerable1, enumerable2);
         }
 
@@ -3884,9 +3884,9 @@ namespace WebApplications.Utilities
         [NotNull]
         public static IEnumerable<T> SkipTake<T>([NotNull] this IEnumerable<T> source, int skipCount, int takeCount)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (skipCount < 0) throw new ArgumentOutOfRangeException("skipCount");
-            if (takeCount < 1) throw new ArgumentOutOfRangeException("takeCount");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (skipCount < 0) throw new ArgumentOutOfRangeException(nameof(skipCount));
+            if (takeCount < 1) throw new ArgumentOutOfRangeException(nameof(takeCount));
 
             return SkipTakeIterator(source, skipCount, takeCount);
         }
@@ -3934,9 +3934,9 @@ namespace WebApplications.Utilities
             int takeCount,
             bool includeFirst = true)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (skipPredicate == null) throw new ArgumentNullException("skipPredicate");
-            if (takeCount < 1) throw new ArgumentOutOfRangeException("takeCount");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (skipPredicate == null) throw new ArgumentNullException(nameof(skipPredicate));
+            if (takeCount < 1) throw new ArgumentOutOfRangeException(nameof(takeCount));
 
             return SkipWhileTakeIterator(source, skipPredicate, takeCount, includeFirst);
         }
@@ -3991,9 +3991,9 @@ namespace WebApplications.Utilities
             int takeCount,
             bool includeFirst = true)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (skipPredicate == null) throw new ArgumentNullException("skipPredicate");
-            if (takeCount < 0) throw new ArgumentOutOfRangeException("takeCount");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (skipPredicate == null) throw new ArgumentNullException(nameof(skipPredicate));
+            if (takeCount < 0) throw new ArgumentOutOfRangeException(nameof(takeCount));
 
             return SkipWhileTakeLastIterator(source, skipPredicate, takeCount, includeFirst);
         }
@@ -4342,7 +4342,7 @@ namespace WebApplications.Utilities
             [CanBeNull] T value,
             [CanBeNull] IEqualityComparer<T> comparer = null)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             if (comparer == null) comparer = EqualityComparer<T>.Default;
 
@@ -4375,8 +4375,8 @@ namespace WebApplications.Utilities
             [CanBeNull] T value,
             [NotNull] [InstantHandle] EqualityComparison<T> equals)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (equals == null) throw new ArgumentNullException("equals");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (equals == null) throw new ArgumentNullException(nameof(@equals));
 
             int index = 0;
 
@@ -4407,7 +4407,7 @@ namespace WebApplications.Utilities
             [CanBeNull] T value,
             [CanBeNull] IEqualityComparer<T> comparer = null)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             if (comparer == null) comparer = EqualityComparer<T>.Default;
 
@@ -4441,8 +4441,8 @@ namespace WebApplications.Utilities
             [CanBeNull] T value,
             [NotNull] [InstantHandle] EqualityComparison<T> equals)
         {
-            if (source == null) throw new ArgumentNullException("source");
-            if (equals == null) throw new ArgumentNullException("equals");
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (equals == null) throw new ArgumentNullException(nameof(@equals));
 
             int result = -1;
             int index = 0;
@@ -4469,10 +4469,10 @@ namespace WebApplications.Utilities
         /// <exception cref="T:System.ArgumentNullException"><paramref name="collection" /> or <paramref name="sequence" /> is null.</exception>
         public static void AddRange<T>([NotNull] this ICollection<T> collection, [NotNull] IEnumerable<T> sequence)
         {
-            if (collection == null) throw new ArgumentNullException("collection");
-            if (sequence == null) throw new ArgumentNullException("sequence");
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
 
-            List<T> list = collection as List<T>;
+            IList<T> list = collection as IList<T>;
             if (list != null)
             {
                 list.AddRange(sequence);
@@ -4484,6 +4484,48 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Tries to remove the first item from the <paramref name="collection" /> matched by the <paramref name="predicate" />.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="removed">The item removed (if any).</param>
+        /// <returns><see langword="true" /> if an item was removed; otherwise <see langword="null" /></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="predicate"/> is <see langword="null" />.</exception>
+        public static bool TryRemove<T>([NotNull] this ICollection<T> collection, [NotNull] Func<T, bool> predicate, out T removed)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+            IList<T> list = collection as IList<T>;
+            if (list != null)
+            {
+                int index = 0;
+                for (; index < list.Count; index++)
+                {
+                    removed = list[index];
+                    if (!predicate(removed)) continue;
+
+                    list.RemoveAt(index);
+                    return true;
+                }
+                removed = default(T);
+                return false;
+            }
+
+            bool found = false;
+            removed = default(T);
+            foreach (T item in collection)
+            {
+                if (!predicate(item)) continue;
+                found = true;
+                removed = item;
+                break;
+            }
+            return found && collection.Remove(removed);
+        }
+
+        /// <summary>
         /// Gets a generic version of the <see cref="IEqualityComparer" />.
         /// </summary>
         /// <typeparam name="T">The type of object to compare.</typeparam>
@@ -4492,7 +4534,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static IEqualityComparer<T> ToGenericComparer<T>([NotNull] this IEqualityComparer comparer)
         {
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             return comparer as IEqualityComparer<T> ?? new WrappedEqualityComparer<T>(comparer);
         }
 
@@ -4505,7 +4547,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static IComparer<T> ToGenericComparer<T>([NotNull] this IComparer comparer)
         {
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             return comparer as IComparer<T> ?? new WrappedComparer<T>(comparer);
         }
 

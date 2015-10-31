@@ -540,4 +540,7 @@
   <data name="BufferedAction_BufferedAction_Invalid_Duration" xml:space="preserve">
     <value>The specified duration must be greater than zero.</value>
   </data>
+  <data name="ConstructorConfigurationElement_GetConstructor_Missing_Type" xml:space="preserve">
+    <value>Cannot create an instance of the object as no type was specified.</value>
+  </data>
 </root>

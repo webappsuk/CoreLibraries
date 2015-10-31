@@ -108,7 +108,7 @@ namespace WebApplications.Utilities
         #endregion
 
         /// <summary>
-        /// Initializes static members of the <see cref="ConfigurationElement" /> class.
+        /// Initializes static members of the <see cref="Utilities.Configuration.ConfigurationElement" /> class.
         /// </summary>
         static ConfigurationElementExtensions()
         {
@@ -174,20 +174,15 @@ namespace WebApplications.Utilities
         [NotNull]
         public static string GetFullPath([CanBeNull] this IConfigurationElement parent, [CanBeNull] string configurationElementName)
         {
-            if (string.IsNullOrWhiteSpace(configurationElementName))
-                configurationElementName = ".*";
+            if (string.IsNullOrEmpty(configurationElementName))
+                configurationElementName = "?";
+
             // Short cut
             if (parent == null) return configurationElementName;
 
-            do
-            {
-                if (char.IsLetterOrDigit(configurationElementName[0]))
-                    configurationElementName = "." + configurationElementName;
-                configurationElementName = parent.ConfigurationElementName + configurationElementName;
-                parent = parent.Parent;
-            } while (parent != null);
-
-            return configurationElementName;
+            if (char.IsLetterOrDigit(configurationElementName[0]))
+                configurationElementName = "." + configurationElementName;
+            return parent.FullPath + configurationElementName;
         }
 
     }

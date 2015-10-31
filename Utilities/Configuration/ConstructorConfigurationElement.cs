@@ -48,7 +48,6 @@ namespace WebApplications.Utilities.Configuration
         ///   Gets or sets the type of the element.
         /// </summary>
         /// <value>The type of the object to construct.</value>
-        /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         [ConfigurationProperty("type", IsRequired = true)]
         [TypeConverter(typeof(SimplifiedTypeNameConverter))]
         [NotNull]
@@ -67,7 +66,6 @@ namespace WebApplications.Utilities.Configuration
         ///   The <see cref="WebApplications.Utilities.Configuration.ParameterCollection"/>,
         ///   which is all of the child elements within the parameters element in the configuration file.
         /// </value>
-        /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
         [ConfigurationProperty("parameters", IsRequired = false, IsDefaultCollection = true)]
         [ConfigurationCollection(typeof(ParameterCollection),
             AddItemName = "add",
@@ -91,6 +89,14 @@ namespace WebApplications.Utilities.Configuration
         ///   Instead you should use <see cref="GetConstructor{T}"/> where possible and store the resultant
         ///   <see cref="Func{TResult}"/>, which can then be called repeatedly to create new instances.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">
+        ///   <para>The configuration system found multiple potential constructor matches.</para>
+        ///   <para>-or-</para>
+        ///   <para>The configuration system couldn't find a constructor with the relevant parameters.</para>
+        ///   <para>-or-</para>
+        ///   <para>The configuration system cannot assign the created type to the return type.</para>
+        /// </exception>
+        /// <exception cref="ConfigurationErrorsException">The required type property is not set.</exception>
         [NotNull]
         public T GetInstance<T>()
         {
@@ -116,18 +122,21 @@ namespace WebApplications.Utilities.Configuration
         ///   <para>-or-</para>
         ///   <para>The configuration system cannot assign the created type to the return type.</para>
         /// </exception>
+        /// <exception cref="ConfigurationErrorsException">The required type property is not set.</exception>
         [NotNull]
         public Func<T> GetConstructor<T>()
         {
             Type instanceType = Type;
+            if (instanceType == null)
+                throw new ConfigurationErrorsException(Resources.ConstructorConfigurationElement_GetConstructor_Missing_Type);
 
             // Build dictionary of parameters from property.
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            Dictionary<string, PInfo> parameters = Properties
-                .Cast<ConfigurationProperty>()
-                .Select(property => new PInfo(property, this[property]))
-                .ToDictionary(info => info.Name);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, HeapView.SlowDelegateCreation
+            Dictionary<string, PInfo> parameters =
+                Properties
+                    .Select(property => new PInfo(property, this[property]))
+                    .ToDictionary(info => info.Name);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, HeapView.SlowDelegateCreation
 
             // Overwrite with elements in parameters collection.
             foreach (ParameterElement element in Parameters)
@@ -158,7 +167,7 @@ namespace WebApplications.Utilities.Configuration
             ParameterInfo[] parameterInfos = null;
             foreach (
                 ConstructorInfo c in
-                    Type.GetConstructors(
+                    instanceType.GetConstructors(
                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
                         BindingFlags.CreateInstance))
             {
@@ -177,11 +186,11 @@ namespace WebApplications.Utilities.Configuration
                 {
                     Debug.Assert(pi != null);
 
-                    // We can ignore retvals.
+                    // We can ignore return values.
                     if (pi.IsRetval)
                         continue;
 
-                    // If we encounter an output or reference value, we will not be able to use the constructer, and so must exclude it
+                    // If we encounter an output or reference value, we will not be able to use the constructor, and so must exclude it
                     if (pi.IsOut ||
                         pi.ParameterType.IsByRef)
                     {
@@ -253,14 +262,14 @@ namespace WebApplications.Utilities.Configuration
                     string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ConstructorConfigurationElement_GetConstructor_ConstructorIsAmbiguous,
-                        Type));
+                        instanceType));
 
             if (constructor == null)
                 throw new InvalidOperationException(
                     string.Format(
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.ConstructorConfigurationElement_GetConstructor_CannotFindConstructor,
-                        Type));
+                        instanceType));
 
             List<Expression> arguments = new List<Expression>();
             foreach (ParameterInfo p in parameterInfos)

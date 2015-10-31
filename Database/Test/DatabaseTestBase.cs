@@ -101,7 +101,8 @@ namespace WebApplications.Utilities.Database.Test
         protected static string CreateConnectionString(string databaseName)
         {
             return
-                String.Format(@"Data Source=(localdb)\v11.0;AttachDbFilename=|DataDirectory|\{0}.mdf;Integrated Security=True;Connect Timeout=30;", databaseName);
+                $@"Data Source=(localdb)\v11.0;AttachDbFilename=|DataDirectory|\{databaseName
+                    }.mdf;Integrated Security=True;Connect Timeout=30;";
         }
 
         public TestContext TestContext { get; set; }
@@ -109,7 +110,7 @@ namespace WebApplications.Utilities.Database.Test
         [TestInitialize]
         public void TestInitialize()
         {
-            Trace.WriteLine(String.Format("Begin test: {0}", TestContext.TestName));
+            Trace.WriteLine($"Begin test: {TestContext.TestName}");
             GC.Collect();
             GC.WaitForPendingFinalizers();
             _testStartTicks = Stopwatch.GetTimestamp();
@@ -119,8 +120,8 @@ namespace WebApplications.Utilities.Database.Test
         public void TestCleanup()
         {
             _testEndTicks = Stopwatch.GetTimestamp();
-            Trace.WriteLine(String.Format("Ending test: {0}, time taken {1}ms", TestContext.TestName,
-                (_testEndTicks - _testStartTicks) / TimeSpan.TicksPerMillisecond));
+            Trace.WriteLine(
+                $"Ending test: {TestContext.TestName}, time taken {(_testEndTicks - _testStartTicks) / TimeSpan.TicksPerMillisecond}ms");
             Log.Flush().Wait();
         }
     }

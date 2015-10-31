@@ -100,5 +100,13 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         /// <value><see langword="true" /> if this instance is disposed; otherwise, <see langword="false" />.</value>
         bool IsDisposed { get; }
+
+        /// <summary>
+        /// Tries to get the value from the <paramref name="fullPath">full path</paramref>.
+        /// </summary>
+        /// <param name="fullPath">The full path.</param>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if found, <see langword="false" /> otherwise.</returns>
+        bool TryGetValue(string fullPath, out object value);
     }
 }

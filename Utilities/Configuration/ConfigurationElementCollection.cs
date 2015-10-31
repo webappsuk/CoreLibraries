@@ -57,7 +57,7 @@ namespace WebApplications.Utilities.Configuration
             {
                 TValue value = (TValue)BaseGet(key);
                 if (value != null)
-                    ((IInternalConfigurationElement)value).PropertyName = $"[{key}]";
+                    ((IInternalConfigurationElement)value).ConfigurationElementName = $"[{key}]";
                 return value;
             }
             set
@@ -74,7 +74,6 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Remove(original);
                         ice.Parent = null;
-                        ice.PropertyName = null;
                     }
 
                     ice = value;
@@ -82,7 +81,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Add(ice);
                         ice.Parent = this;
-                        ice.PropertyName = elementName;
+                        ice.ConfigurationElementName = elementName;
                         base.BaseAdd(value);
                     }
                 }
@@ -108,7 +107,7 @@ namespace WebApplications.Utilities.Configuration
 
                 TValue value = (TValue)BaseGet(index);
                 if (value != null && value.ConfigurationElementName == null)
-                    ((IInternalConfigurationElement)value).PropertyName = $"[{GetElementKey(value)}]";
+                    ((IInternalConfigurationElement)value).ConfigurationElementName = $"[{GetElementKey(value)}]";
                 return value;
             }
             set
@@ -133,13 +132,12 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Remove(ice);
                         ice.Parent = null;
-                        ice.PropertyName = null;
                     }
 
                     ice = value;
                     _children.Add(ice);
                     ice.Parent = this;
-                    ice.PropertyName = newElementName;
+                    ice.ConfigurationElementName = newElementName;
                     base.BaseAdd(index, value);
                 }
                 ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"[{originalKey}]"));
@@ -161,7 +159,7 @@ namespace WebApplications.Utilities.Configuration
             {
                 TValue value = (TValue) enumerator.Current;
                 if (value != null && value.ConfigurationElementName == null)
-                    ((IInternalConfigurationElement)value).PropertyName = $"[{GetElementKey(value)}]";
+                    ((IInternalConfigurationElement)value).ConfigurationElementName = $"[{GetElementKey(value)}]";
                 yield return (TValue)enumerator.Current;
             }
         }
@@ -221,7 +219,6 @@ namespace WebApplications.Utilities.Configuration
                 {
                     IInternalConfigurationElement ice = value;
                     ice.Parent = null;
-                    ice.PropertyName = null;
                     _children.Remove(ice);
                     BaseRemove(item);
                     found = true;
@@ -258,7 +255,6 @@ namespace WebApplications.Utilities.Configuration
                     Debug.Assert(element != null);
                     _children.Remove(element);
                     element.Parent = null;
-                    element.PropertyName = null;
                 }
                 BaseClear();
             }
@@ -304,7 +300,7 @@ namespace WebApplications.Utilities.Configuration
             lock (_children)
             {
                 ice.Parent = this;
-                ice.PropertyName = elementName;
+                ice.ConfigurationElementName = elementName;
                 _children.Add(ice);
                 base.BaseAdd(element);
             }
@@ -360,7 +356,6 @@ namespace WebApplications.Utilities.Configuration
                     return;
 
                 ice.Parent = null;
-                ice.PropertyName = null;
                 _children.Remove(ice);
                 BaseRemove(key);
             }
@@ -409,7 +404,6 @@ namespace WebApplications.Utilities.Configuration
                 key = GetElementKey((TValue)ice);
                 _children.Remove(ice);
                 ice.Parent = null;
-                ice.PropertyName = null;
 
                 BaseRemove(ice);
             }

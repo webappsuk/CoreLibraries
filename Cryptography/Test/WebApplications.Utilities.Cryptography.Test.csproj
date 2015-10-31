@@ -46,7 +46,7 @@
   <ItemGroup>
     <Content Include="cryptography.config">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="App.config">
       <SubType>Designer</SubType>

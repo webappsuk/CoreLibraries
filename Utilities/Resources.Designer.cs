@@ -205,6 +205,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create an instance of the object as no type was specified..
+        /// </summary>
+        internal static string ConstructorConfigurationElement_GetConstructor_Missing_Type {
+            get {
+                return ResourceManager.GetString("ConstructorConfigurationElement_GetConstructor_Missing_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot close the ContextStack cleaner region on thread &apos;{0}&apos; as it was created on thread &apos;{1}&apos;..
         /// </summary>
         internal static string ContextStack_Dispose_CannotCloseCleanerRegion {

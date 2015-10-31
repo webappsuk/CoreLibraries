@@ -103,6 +103,7 @@
     <Compile Include="TestTaskExtensions.cs" />
     <Compile Include="TestWeak.cs" />
     <Compile Include="Enumerations\TriStateTests.cs" />
+    <Compile Include="TestXObjectExtensions.cs" />
     <Compile Include="TupleExtensionsTests.cs" />
     <Compile Include="UtilitiesTestBase.cs" />
   </ItemGroup>
@@ -132,6 +133,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="test.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>

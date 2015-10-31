@@ -68,6 +68,7 @@ namespace WebApplications.Utilities.Configuration
         private IReadOnlyCollection<ConfigurationProperty> _properties;
 
         private IInternalConfigurationElement _parent;
+        private string _configurationElementName;
 
         /// <summary>
         /// Called when initializing.
@@ -102,7 +103,7 @@ namespace WebApplications.Utilities.Configuration
                 if (value == null) continue;
 
                 value.Parent = this;
-                value.PropertyName = property.Name;
+                value.ConfigurationElementName = property.Name;
                 _children.Add(value);
             }
             OnInit();
@@ -112,7 +113,12 @@ namespace WebApplications.Utilities.Configuration
         IInternalConfigurationElement IInternalConfigurationElement.Parent
         {
             get { return _parent; }
-            set { _parent = value; }
+            set
+            {
+                if (_parent == value) return;
+                _parent = value;
+                FullPath = value.GetFullPath(_configurationElementName);
+            }
         }
 
         /// <inheritdoc />
@@ -122,14 +128,23 @@ namespace WebApplications.Utilities.Configuration
         public IConfigurationSection Section => ((IInternalConfigurationElement)this).Section;
 
         /// <inheritdoc />
-        string IInternalConfigurationElement.PropertyName { get; set; }
+        string IInternalConfigurationElement.ConfigurationElementName
+        {
+            get { return _configurationElementName; }
+            set
+            {
+                if (string.Equals(_configurationElementName, value)) return;
+                _configurationElementName = value;
+                FullPath = Parent.GetFullPath(value);
+            }
+        }
 
         /// <inheritdoc />
         // ReSharper disable once ArrangeStaticMemberQualifier
-        public string FullPath => Parent.GetFullPath(ConfigurationElementName);
+        public string FullPath { get; private set; }
 
         /// <inheritdoc />
-        public string ConfigurationElementName => ((IInternalConfigurationElement)this).PropertyName;
+        public string ConfigurationElementName => ((IInternalConfigurationElement)this).ConfigurationElementName;
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConfigurationElement> Children
@@ -206,7 +221,7 @@ namespace WebApplications.Utilities.Configuration
                 object value = base[propertyName];
                 IInternalConfigurationElement ice = value as IInternalConfigurationElement;
                 if (ice != null)
-                    ice.PropertyName = propertyName;
+                    ice.ConfigurationElementName = propertyName;
                 return value;
             }
             set
@@ -224,7 +239,6 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Remove(ice);
                         ice.Parent = null;
-                        ice.PropertyName = null;
                     }
 
                     ice = value as IInternalConfigurationElement;
@@ -232,7 +246,7 @@ namespace WebApplications.Utilities.Configuration
                     {
                         _children.Add(ice);
                         ice.Parent = this;
-                        ice.PropertyName = propertyName;
+                        ice.ConfigurationElementName = propertyName;
                     }
 
                     base[propertyName] = value;
@@ -480,6 +494,12 @@ namespace WebApplications.Utilities.Configuration
                         );
 
             }
+        }
+
+        /// <inheritdoc />
+        public virtual bool TryGetValue(string fullPath, out object value)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />

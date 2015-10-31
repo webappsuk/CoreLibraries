@@ -74,6 +74,6 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         /// <value>The name of the element.</value>
         [CanBeNull]
-        new string PropertyName { get; set; }
+        new string ConfigurationElementName { get; set; }
     }
 }

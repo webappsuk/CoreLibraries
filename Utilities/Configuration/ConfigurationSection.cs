@@ -144,6 +144,7 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationSection{T}" /> class.
         /// </summary>
+        /// <exception cref="ConfigurationErrorsException">The selected value conflicts with a value that is already defined.</exception>
         protected ConfigurationSection()
         {
             // Set up change buffer
@@ -155,7 +156,10 @@ namespace WebApplications.Utilities.Configuration
 
             // This will get set during initialization
             FilePaths = Array<string>.Empty;
-            ((IInternalConfigurationElement)this).PropertyName = $"<{SectionName}>";
+            ((IInternalConfigurationElement)this).ConfigurationElementName = $"<{SectionName}>";
+
+            // As our system supports change notification, we can default the restart on external changes to false.
+            SectionInformation.RestartOnExternalChanges = false;
         }
 
         /// <summary>
@@ -554,6 +558,13 @@ namespace WebApplications.Utilities.Configuration
             /// <inheritdoc />
             public override string ToString()
                 => "Changes: " + string.Join(", ", _changes);
+
+            /// <summary>
+            /// Checks whether the <paramref name="path"/> was affected by a change.
+            /// </summary>
+            /// <param name="path">The path.</param>
+            /// <returns><see langword="true"/> if the <paramref name="path"/> starts with any of the changed paths; otherwise <see langword="false"/>.</returns>
+            public bool WasChanged([NotNull] string path) => !string.IsNullOrWhiteSpace(path) || _changes.Any(path.StartsWith);
         }
         #endregion
     }

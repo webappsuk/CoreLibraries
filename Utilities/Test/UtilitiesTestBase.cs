@@ -25,9 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Diagnostics;
 using WebApplications.Testing;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Test
 {
@@ -38,5 +40,27 @@ namespace WebApplications.Utilities.Test
     public class UtilitiesTestBase : TestBase
     {
         protected static readonly Random Random = Tester.RandomGenerator;
+
+        private double _testStartTicks, _testEndTicks;
+
+        [NotNull]
+        public TestContext TestContext { get; set; }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Trace.WriteLine($"Begin test: {TestContext.TestName}");
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            _testStartTicks = Stopwatch.GetTimestamp();
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            _testEndTicks = Stopwatch.GetTimestamp();
+            Trace.WriteLine(
+                $"Ending test: {TestContext.TestName}, time taken {(_testEndTicks - _testStartTicks) / TimeSpan.TicksPerMillisecond}ms");
+        }
     }
 }

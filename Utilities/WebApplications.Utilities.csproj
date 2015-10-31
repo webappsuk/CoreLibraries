@@ -304,6 +304,8 @@
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="ExtendedTuple.cs" />
     <Compile Include="ValueComparer.cs" />
+    <Compile Include="XObjectComparisonOptions.cs" />
+    <Compile Include="XObjectExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

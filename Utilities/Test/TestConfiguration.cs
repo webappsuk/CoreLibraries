@@ -29,8 +29,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using WebApplications.Testing;
 using WebApplications.Utilities.Annotations;
@@ -39,68 +41,102 @@ using WebApplications.Utilities.Configuration;
 namespace WebApplications.Utilities.Test
 {
     [TestClass]
-    public class TestConfiguration
+    [DeploymentItem("test.config")]
+    public class TestConfiguration : UtilitiesTestBase
     {
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            ManualResetEvent waitHandle = new ManualResetEvent(false);
+            Queue<TestConfigurationSection.ConfigurationChangedEventArgs> changes =
+                new Queue<TestConfigurationSection.ConfigurationChangedEventArgs>();
+            TestConfigurationSection.ActiveChanged += (s, e) =>
+            {
+                lock (changes)
+                {
+                    changes.Enqueue(e);
+                    waitHandle.Set();
+                }
+            };
+
+            context.Properties["ChangeWaitHandle"] = waitHandle;
+            context.Properties["Changes"] = changes;
+        }
+
+        public IReadOnlyCollection<TestConfigurationSection.ConfigurationChangedEventArgs> AllChanges
+        {
+            get
+            {
+                Queue<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> changes =
+                    (Queue<TestConfigurationSection.ConfigurationChangedEventArgs>)
+                        TestContext.Properties["Changes"];
+
+                lock (changes)
+                    return changes.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Waits for changes, and returns alls changes since the wait started.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>All changes.</returns>
+        public async Task<IReadOnlyCollection<TestConfigurationSection.ConfigurationChangedEventArgs>> WaitForChanges(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ManualResetEvent waitHandle = (ManualResetEvent)TestContext.Properties["ChangeWaitHandle"];
+            Queue<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> changes =
+                (Queue<TestConfigurationSection.ConfigurationChangedEventArgs>)
+                    TestContext.Properties["Changes"];
+
+            int count;
+            lock (changes)
+            {
+                count = changes.Count;
+                waitHandle.Reset();
+            }
+            await waitHandle.ToTask(cancellationToken).ConfigureAwait(false);
+            lock (changes)
+                return changes.Skip(count).ToArray();
+        }
+
         [TestMethod]
         public void TestConstructor()
         {
-            /*
-            ConfigurationSection<TestConfigurationSection>.Changed += (o, e) =>
+            using (TestConfigurationSection section = TestConfigurationSection.Create())
             {
-                Assert.IsNotNull(o);
-                Assert.IsNotNull(e);
-                Assert.IsNotNull(e.OldConfiguration);
-                Assert.IsNotNull(e.NewConfiguration);
-                Assert.AreEqual(
-                    e.NewConfiguration,
-                    TestConfigurationSection.
-                        Active);
-                Assert.IsTrue(e.NewConfiguration.IsActive);
-            };
-            */
-            TestConfigurationSection section = TestConfigurationSection.Create();
-            IReadOnlyDictionary<string, object> propertyValues = section.PropertyValues;
-            string a = section.String;
-            string b = section.String2;
+                Assert.IsNotNull(section);
 
-            TestConfigurationSection configuration = TestConfigurationSection.Active;
-            if (configuration.IsReadOnly())
-                configuration = new TestConfigurationSection();
-            configuration.String2 = "Another string";
-            /*string name = configuration.Constructors.First().Name;
-            configuration.Constructors.Remove(name);
-             */
-            //TestConfigurationSection.Active = configuration;
-            Assert.IsNotNull(configuration);
-            foreach (TestObjectConstructor constructor in configuration.Constructors)
-            {
-                TestObject obj = constructor.GetInstance<TestObject>();
-                Assert.IsNotNull(obj);
+                // This tests that we can populate with top level properties (rather than parameters collection).
+                Tuple<string, string, int>[] parameters = Enumerable.Range(0, 10)
+                    .Select(
+                        i =>
+                            new Tuple<string, string, int>(
+                            Tester.RandomString(minLength: 1),
+                            Tester.RandomString(nullProbability: 0.3),
+                            i))
+                    .ToArray();
+                foreach (Tuple<string, string, int> tuple in parameters)
+                    section.Constructors.Add(new TestObjectConstructor(tuple.Item1, tuple.Item2, tuple.Item3));
+
+                Assert.AreEqual(parameters.Length, section.Constructors.Count);
+
+                int c = 0;
+                foreach (TestObjectConstructor constructor in section.Constructors)
+                {
+                    TestObject obj = constructor.GetInstance<TestObject>();
+                    Assert.IsNotNull(obj);
+
+                    Tuple<string, string, int> tuple = parameters[c++];
+                    Assert.AreEqual(tuple.Item1, obj.Name);
+                    Assert.AreEqual(tuple.Item2, constructor.Value);
+                    Assert.AreEqual(tuple.Item3, obj.AttribParam);
+                }
             }
         }
 
         [TestMethod]
-        public void TestString()
+        public async Task TestChangeNotificationAndSave()
         {
-            Assert.AreEqual("A Test String", TestConfigurationSection.Active.String);
-        }
-
-        [TestMethod]
-        public void TestCustomXElement()
-        {
-            // Detect changes
-            EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
-            ConfigurationSection<TestConfigurationSection>.ActiveChanged += (o, e) =>
-            {
-                Assert.IsNotNull(o);
-                Assert.IsNotNull(e);
-                Assert.IsTrue(e.Contains("<test><custom>"));
-                Assert.IsTrue(e.Contains("<test>.string"));
-                Assert.IsTrue(e.Contains("<test>.string2"));
-                Trace.WriteLine($"Active Configuration {e}");
-                ewh.Set();
-            };
-
             XElement custom = TestConfigurationSection.Active.Custom;
             Assert.IsNotNull(custom);
             XElement custom2 = TestConfigurationSection.Active.Custom;
@@ -131,8 +167,18 @@ namespace WebApplications.Utilities.Test
             TestConfigurationSection.Active.String2 = str2Random;
             TestConfigurationSection.Active.Save();
 
-            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
-
+            // Check for changes
+            IReadOnlyCollection<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> changes =
+                await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
+            Assert.IsNotNull(changes);
+            Assert.AreEqual(1, changes.Count);
+            ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs change = changes.First();
+            Assert.IsNotNull(change);
+            Assert.IsTrue(change.WasChanged("<test>"));
+            Assert.IsTrue(change.Contains("<test><custom>"));
+            Assert.IsTrue(change.Contains("<test>.string"));
+            Assert.IsTrue(change.Contains("<test>.string2"));
+            
             custom = TestConfigurationSection.Active.Custom;
             Assert.AreEqual("custom", custom.Name.LocalName);
             Assert.AreEqual("1", custom.Element("A").Value);
@@ -152,7 +198,18 @@ namespace WebApplications.Utilities.Test
             TestConfigurationSection.Active.String2 = str2;
             TestConfigurationSection.Active.Save();
 
-            Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
+            // Check for changes
+            changes = await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
+
+            Assert.IsNotNull(changes);
+            Assert.AreEqual(1, changes.Count);
+            change = changes.First();
+            Assert.IsNotNull(change);
+            Assert.IsTrue(change.WasChanged("<test>"));
+            Assert.IsTrue(change.Contains("<test><custom>"));
+            Assert.IsTrue(change.Contains("<test>.string"));
+            Assert.IsTrue(change.Contains("<test>.string2"));
+
             custom = TestConfigurationSection.Active.Custom;
             Assert.AreEqual("custom", custom.Name.LocalName);
             Assert.AreEqual("A", custom.Element("A").Value);
@@ -160,6 +217,36 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual("C", custom.Element("C").Value);
             Assert.AreEqual(str1, TestConfigurationSection.Active.String);
             Assert.AreEqual(str2, TestConfigurationSection.Active.String2);
+        }
+
+        [TestMethod]
+        public void TestFileChangeNotification()
+        {
+            // Get the test config file path.
+            string filePath =
+                TestConfigurationSection.Active.FilePaths
+                    .SingleOrDefault(
+                        p => string.Equals(
+                            Path.GetFileName(p),
+                            "test.config",
+                            StringComparison.CurrentCultureIgnoreCase));
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(filePath));
+            Assert.IsTrue(File.Exists(filePath));
+
+            // Load config file directly (we load into string so we can recreate at end of the test.
+            string original = File.ReadAllText(filePath);
+
+            // Parse it and modify
+            XDocument document = XDocument.Parse(original);
+            XElement testElement = document.Element("test");
+            Assert.IsNotNull(testElement);
+
+            XElement customElement = testElement.Element("custom");
+            Tuple<XObject, XObject> difference = customElement.DeepEquals(
+                TestConfigurationSection.Active.Custom,
+                XObjectComparisonOptions.Semantic);
+            Assert.IsNull(difference, $"{difference?.Item1} : {difference?.Item2}");
         }
     }
 
@@ -179,10 +266,12 @@ namespace WebApplications.Utilities.Test
         public readonly TestEnum E1;
         public readonly TestEnum E2;
         public readonly TestEnum E3;
+        public readonly string StrValue;
 
-        public TestObject(string name)
+        public TestObject(string name, int attribParam = 4)
         {
             Name = name;
+            AttribParam = attribParam;
         }
 
         public TestObject(string name, TimeSpan timeSpan)
@@ -329,6 +418,27 @@ namespace WebApplications.Utilities.Test
         {
             get { return GetProperty<int>("attribParam"); }
             set { SetProperty("attribParam", value); }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestObjectConstructor"/> class.
+        /// </summary>
+        public TestObjectConstructor()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestObjectConstructor"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="attribParam">The attribute parameter.</param>
+        public TestObjectConstructor([NotNull] string name, [NotNull]  string value = "VALUE", int attribParam = -1)
+        {
+            Type = typeof(TestObject);
+            Name = name;
+            Value = value;
+            AttribParam = attribParam;
         }
     }
 }
