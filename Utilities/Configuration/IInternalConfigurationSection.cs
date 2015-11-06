@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
 {
@@ -33,5 +34,10 @@ namespace WebApplications.Utilities.Configuration
     /// </summary>
     internal interface IInternalConfigurationSection : IConfigurationSection, IInternalConfigurationElement
     {
+        /// <summary>
+        /// Called when an associated file is changed for this section.
+        /// </summary>
+        /// <param name="fullPath">The full path.</param>
+        void OnFileChanged([NotNull] string fullPath);
     }
 }

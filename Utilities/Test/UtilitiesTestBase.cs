@@ -40,9 +40,7 @@ namespace WebApplications.Utilities.Test
     public class UtilitiesTestBase : TestBase
     {
         protected static readonly Random Random = Tester.RandomGenerator;
-
-        private double _testStartTicks, _testEndTicks;
-
+        
         [NotNull]
         public TestContext TestContext { get; set; }
 
@@ -52,15 +50,24 @@ namespace WebApplications.Utilities.Test
             Trace.WriteLine($"Begin test: {TestContext.TestName}");
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            _testStartTicks = Stopwatch.GetTimestamp();
+            TestContext.Properties["StartTicks"] = Stopwatch.GetTimestamp();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            _testEndTicks = Stopwatch.GetTimestamp();
-            Trace.WriteLine(
-                $"Ending test: {TestContext.TestName}, time taken {(_testEndTicks - _testStartTicks) / TimeSpan.TicksPerMillisecond}ms");
+            long et = Stopwatch.GetTimestamp();
+
+            object tso = TestContext.Properties["StartTicks"];
+            string time;
+            if (!(tso is long))
+                time = "no timing information found!";
+            else
+            {
+                long ms = (et - (long)tso) / TimeSpan.TicksPerMillisecond;
+                time = $"time taken {ms}ms.";
+            }
+            Trace.WriteLine($"Ending test: {TestContext.TestName}, {time}");
         }
     }
 }

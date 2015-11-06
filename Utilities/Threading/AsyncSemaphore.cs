@@ -61,10 +61,7 @@ namespace WebApplications.Utilities.Threading
         /// <value>
         /// The current count.
         /// </value>
-        public int CurrentCount
-        {
-            get { return _currentCount; }
-        }
+        public int CurrentCount => _currentCount;
 
         private int _maxCount;
 
@@ -80,7 +77,7 @@ namespace WebApplications.Utilities.Threading
             get { return _maxCount; }
             set
             {
-                if (value < 1) throw new ArgumentOutOfRangeException("value");
+                if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
                 lock (_waiters)
                 {
                     _maxCount = value;
@@ -108,7 +105,7 @@ namespace WebApplications.Utilities.Threading
         /// <exception cref="ArgumentOutOfRangeException">The count is less than one.</exception>
         public AsyncSemaphore(int initialCount = 1)
         {
-            if (initialCount < 1) throw new ArgumentOutOfRangeException("initialCount");
+            if (initialCount < 1) throw new ArgumentOutOfRangeException(nameof(initialCount));
             _maxCount = initialCount;
             _currentCount = 0;
             _releaser = new Releaser(this);
@@ -134,13 +131,13 @@ namespace WebApplications.Utilities.Threading
                 }
 
                 TaskCompletionSource<IDisposable> waiter = new TaskCompletionSource<IDisposable>();
-                token.Register(waiter.SetCanceled);
-
-                if (token.IsCancellationRequested) waiter.TrySetCanceled();
-                else _waiters.Enqueue(waiter);
-
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return waiter.Task;
+                if (token.IsCancellationRequested)
+                {
+                    waiter.TrySetCanceled();
+                    return waiter.Task;
+                }
+                _waiters.Enqueue(waiter);
+                return waiter.Task.WithCancellation(token);
             }
         }
 
@@ -252,8 +249,7 @@ namespace WebApplications.Utilities.Threading
             /// </summary>
             public void Dispose()
             {
-                if (_semaphore != null)
-                    _semaphore.Release();
+                _semaphore?.Release();
             }
         }
 

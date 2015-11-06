@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -37,6 +38,7 @@ using System.Xml.Linq;
 using WebApplications.Testing;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Test
 {
@@ -44,36 +46,28 @@ namespace WebApplications.Utilities.Test
     [DeploymentItem("test.config")]
     public class TestConfiguration : UtilitiesTestBase
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        [NotNull]
+        private static readonly List<TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs>> _waiters
+            = new List<TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs>>();
+
+
+        [NotNull]
+        private static readonly AsyncLock _configFileLock = new AsyncLock();
+
+        static TestConfiguration()
         {
-            ManualResetEvent waitHandle = new ManualResetEvent(false);
-            Queue<TestConfigurationSection.ConfigurationChangedEventArgs> changes =
-                new Queue<TestConfigurationSection.ConfigurationChangedEventArgs>();
             TestConfigurationSection.ActiveChanged += (s, e) =>
             {
-                lock (changes)
+                Trace.WriteLine($"Active configuration {e}");
+                lock (_waiters)
                 {
-                    changes.Enqueue(e);
-                    waitHandle.Set();
+                    foreach (TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs> tcs in _waiters)
+                        tcs.TrySetResult(e);
+                    _waiters.Clear();
                 }
             };
-
-            context.Properties["ChangeWaitHandle"] = waitHandle;
-            context.Properties["Changes"] = changes;
-        }
-
-        public IReadOnlyCollection<TestConfigurationSection.ConfigurationChangedEventArgs> AllChanges
-        {
-            get
-            {
-                Queue<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> changes =
-                    (Queue<TestConfigurationSection.ConfigurationChangedEventArgs>)
-                        TestContext.Properties["Changes"];
-
-                lock (changes)
-                    return changes.ToArray();
-            }
+            TestConfigurationSection.ConfigurationLoadError +=
+                (e) => Trace.WriteLine($"Error occurred whilst loading {e.SectionName}.\r\n{e.Exception}");
         }
 
         /// <summary>
@@ -81,22 +75,14 @@ namespace WebApplications.Utilities.Test
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>All changes.</returns>
-        public async Task<IReadOnlyCollection<TestConfigurationSection.ConfigurationChangedEventArgs>> WaitForChanges(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<TestConfigurationSection.ConfigurationChangedEventArgs> WaitForChanges(CancellationToken cancellationToken = default(CancellationToken))
         {
-            ManualResetEvent waitHandle = (ManualResetEvent)TestContext.Properties["ChangeWaitHandle"];
-            Queue<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> changes =
-                (Queue<TestConfigurationSection.ConfigurationChangedEventArgs>)
-                    TestContext.Properties["Changes"];
+            TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs> tcs =
+                new TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs>();
 
-            int count;
-            lock (changes)
-            {
-                count = changes.Count;
-                waitHandle.Reset();
-            }
-            await waitHandle.ToTask(cancellationToken).ConfigureAwait(false);
-            lock (changes)
-                return changes.Skip(count).ToArray();
+            lock (_waiters)
+                _waiters.Add(tcs);
+            return tcs.Task.WithCancellation(cancellationToken);
         }
 
         [TestMethod]
@@ -137,116 +123,152 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public async Task TestChangeNotificationAndSave()
         {
-            XElement custom = TestConfigurationSection.Active.Custom;
-            Assert.IsNotNull(custom);
-            XElement custom2 = TestConfigurationSection.Active.Custom;
-            Assert.IsNotNull(custom2);
-            Assert.AreNotSame(custom, custom2, "Get element should retrieve fresh XElement objects to prevent corruption.");
+            // Prevent multiple tests accessing the app config.
+            using (await _configFileLock.LockAsync())
+            {
 
-            string str1 = TestConfigurationSection.Active.String;
-            string str2 = TestConfigurationSection.Active.String2;
+                XElement custom = TestConfigurationSection.Active.Custom;
+                Assert.IsNotNull(custom);
+                XElement custom2 = TestConfigurationSection.Active.Custom;
+                Assert.IsNotNull(custom2);
+                Assert.AreNotSame(
+                    custom,
+                    custom2,
+                    "Get element should retrieve fresh XElement objects to prevent corruption.");
 
-            string cStr = custom.ToString(SaveOptions.DisableFormatting);
-            string cStr2 = custom2.ToString(SaveOptions.DisableFormatting);
-            Assert.AreEqual(cStr, cStr2);
-            Assert.AreEqual("custom", custom.Name.LocalName);
-            Assert.AreEqual("A", custom.Element("A").Value);
-            Assert.AreEqual("B", custom.Element("B").Value);
-            Assert.AreEqual("C", custom.Element("C").Value);
+                // Get original values.
+                string str1 = TestConfigurationSection.Active.String;
+                string str2 = TestConfigurationSection.Active.String2;
+                string cStr = custom.ToString(SaveOptions.DisableFormatting);
+                Assert.AreEqual(cStr, custom2.ToString(SaveOptions.DisableFormatting));
+                Assert.AreEqual("custom", custom.Name.LocalName);
 
-            // Modify
-            custom.Element("A").Value = "1";
-            custom.Element("B").Value = "2";
-            custom.Element("C").Value = "3";
+                // Generate random values
+                string str1Random = Tester.RandomString() ?? string.Empty;
+                string str2Random = Tester.RandomString() ?? string.Empty;
 
-            // Update the custom node.
-            TestConfigurationSection.Active.Custom = custom;
-            string str1Random = Tester.RandomString() ?? string.Empty;
-            string str2Random = Tester.RandomString() ?? string.Empty;
-            TestConfigurationSection.Active.String = str1Random;
-            TestConfigurationSection.Active.String2 = str2Random;
-            TestConfigurationSection.Active.Save();
+                // Update the custom node.
+                XNamespace ns = custom.Name.Namespace;
+                TestConfigurationSection.Active.Custom = new XElement(
+                    ns + "custom",
+                    new XElement(ns + "string1", str1Random),
+                    new XElement(ns + "string2", str2Random));
 
-            // Check for changes
-            IReadOnlyCollection<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> changes =
-                await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
-            Assert.IsNotNull(changes);
-            Assert.AreEqual(1, changes.Count);
-            ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs change = changes.First();
-            Assert.IsNotNull(change);
-            Assert.IsTrue(change.WasChanged("<test>"));
-            Assert.IsTrue(change.Contains("<test><custom>"));
-            Assert.IsTrue(change.Contains("<test>.string"));
-            Assert.IsTrue(change.Contains("<test>.string2"));
-            
-            custom = TestConfigurationSection.Active.Custom;
-            Assert.AreEqual("custom", custom.Name.LocalName);
-            Assert.AreEqual("1", custom.Element("A").Value);
-            Assert.AreEqual("2", custom.Element("B").Value);
-            Assert.AreEqual("3", custom.Element("C").Value);
-            Assert.AreEqual(str1Random, TestConfigurationSection.Active.String);
-            Assert.AreEqual(str2Random, TestConfigurationSection.Active.String2);
+                TestConfigurationSection.Active.String = str1Random;
+                TestConfigurationSection.Active.String2 = str2Random;
+                TestConfigurationSection.Active.Save();
 
-            // Revert
-            custom.Element("A").Value = "A";
-            custom.Element("B").Value = "B";
-            custom.Element("C").Value = "C";
+                // Check for changes
+                TestConfigurationSection.ConfigurationChangedEventArgs change =
+                    await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
+                Assert.IsNotNull(change);
+                Assert.IsTrue(change.WasChanged("<test>"));
+                Assert.IsTrue(change.Contains("<test><custom>"));
+                Assert.IsTrue(change.Contains("<test>.string"));
+                Assert.IsTrue(change.Contains("<test>.string2"));
 
-            // Update the custom node.
-            TestConfigurationSection.Active.Custom = custom;
-            TestConfigurationSection.Active.String = str1;
-            TestConfigurationSection.Active.String2 = str2;
-            TestConfigurationSection.Active.Save();
+                custom = TestConfigurationSection.Active.Custom;
+                Assert.IsNotNull(custom);
+                Assert.AreEqual("custom", custom.Name.LocalName);
+                Assert.AreEqual(str1Random, custom.Element("string1")?.Value);
+                Assert.AreEqual(str2Random, custom.Element("string2")?.Value);
+                Assert.AreEqual(str1Random, TestConfigurationSection.Active.String);
+                Assert.AreEqual(str2Random, TestConfigurationSection.Active.String2);
 
-            // Check for changes
-            changes = await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
+                // Revert
 
-            Assert.IsNotNull(changes);
-            Assert.AreEqual(1, changes.Count);
-            change = changes.First();
-            Assert.IsNotNull(change);
-            Assert.IsTrue(change.WasChanged("<test>"));
-            Assert.IsTrue(change.Contains("<test><custom>"));
-            Assert.IsTrue(change.Contains("<test>.string"));
-            Assert.IsTrue(change.Contains("<test>.string2"));
+                // Update the custom node.
+                TestConfigurationSection.Active.Custom = XElement.Parse(cStr, LoadOptions.PreserveWhitespace);
+                TestConfigurationSection.Active.String = str1;
+                TestConfigurationSection.Active.String2 = str2;
+                TestConfigurationSection.Active.Save();
 
-            custom = TestConfigurationSection.Active.Custom;
-            Assert.AreEqual("custom", custom.Name.LocalName);
-            Assert.AreEqual("A", custom.Element("A").Value);
-            Assert.AreEqual("B", custom.Element("B").Value);
-            Assert.AreEqual("C", custom.Element("C").Value);
-            Assert.AreEqual(str1, TestConfigurationSection.Active.String);
-            Assert.AreEqual(str2, TestConfigurationSection.Active.String2);
+                // Check for changeschange =
+                change = await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
+                Assert.IsNotNull(change);
+                Assert.IsTrue(change.WasChanged("<test>"));
+                Assert.IsTrue(change.Contains("<test><custom>"));
+                Assert.IsTrue(change.Contains("<test>.string"));
+                Assert.IsTrue(change.Contains("<test>.string2"));
+
+                custom = TestConfigurationSection.Active.Custom;
+                Assert.IsNotNull(change);
+                Assert.AreEqual("custom", custom.Name.LocalName);
+                Assert.AreEqual(cStr, custom.ToString(SaveOptions.DisableFormatting));
+                Assert.AreEqual(str1, TestConfigurationSection.Active.String);
+                Assert.AreEqual(str2, TestConfigurationSection.Active.String2);
+            }
         }
 
         [TestMethod]
-        public void TestFileChangeNotification()
+        public async Task TestFileChangeNotification()
         {
-            // Get the test config file path.
-            string filePath =
-                TestConfigurationSection.Active.FilePaths
-                    .SingleOrDefault(
-                        p => string.Equals(
-                            Path.GetFileName(p),
-                            "test.config",
-                            StringComparison.CurrentCultureIgnoreCase));
+            // Prevent multiple tests accessing the app config.
+            using (await _configFileLock.LockAsync())
+            {
+                // Get the test config file path.
+                string filePath =
+                    TestConfigurationSection.Active.FilePaths
+                        .SingleOrDefault(
+                            p => string.Equals(
+                                Path.GetFileName(p),
+                                "test.config",
+                                StringComparison.CurrentCultureIgnoreCase));
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(filePath));
-            Assert.IsTrue(File.Exists(filePath));
+                Trace.WriteLine($"Configuration file: '{filePath}'");
 
-            // Load config file directly (we load into string so we can recreate at end of the test.
-            string original = File.ReadAllText(filePath);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(filePath));
+                Assert.IsTrue(File.Exists(filePath));
 
-            // Parse it and modify
-            XDocument document = XDocument.Parse(original);
-            XElement testElement = document.Element("test");
-            Assert.IsNotNull(testElement);
+                // Load config file directly (we load into string so we can recreate at end of the test.
+                string original = File.ReadAllText(filePath);
 
-            XElement customElement = testElement.Element("custom");
-            Tuple<XObject, XObject> difference = customElement.DeepEquals(
-                TestConfigurationSection.Active.Custom,
-                XObjectComparisonOptions.Semantic);
-            Assert.IsNull(difference, $"{difference?.Item1} : {difference?.Item2}");
+                // Parse it and modify
+                XDocument document = XDocument.Parse(original);
+                XElement testElement = document.Element("test");
+                Assert.IsNotNull(testElement);
+
+                XElement customElement = testElement.Element("custom");
+                Tuple<XObject, XObject> difference = customElement.DeepEquals(
+                    TestConfigurationSection.Active.Custom,
+                    XObjectComparisonOptions.Semantic);
+                Assert.IsNull(difference, $"{difference?.Item1} : {difference?.Item2}");
+
+                // Modify
+                string str1Random = Tester.RandomString() ?? string.Empty;
+                string str2Random = Tester.RandomString() ?? string.Empty;
+
+                // Update the custom node.
+                customElement.RemoveAll();
+                XNamespace ns = customElement.Name.Namespace;
+                customElement.Add(
+                    new XElement(ns + "string1", str1Random),
+                    new XElement(ns + "string2", str2Random));
+
+                // Save file
+                document.Save(filePath);
+
+                // Check for changes
+                TestConfigurationSection.ConfigurationChangedEventArgs change =
+                    await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
+                Assert.IsNotNull(change);
+                Assert.IsTrue(change.Contains("<test>"));
+                Assert.IsTrue(change.WasChanged("<test><custom>"));
+
+                XElement activeCustom = TestConfigurationSection.Active.Custom;
+                Assert.IsNotNull(activeCustom);
+                Assert.AreEqual("custom", activeCustom.Name.LocalName);
+                Assert.AreEqual(str1Random, activeCustom.Element("string1")?.Value);
+                Assert.AreEqual(str2Random, activeCustom.Element("string2")?.Value);
+
+                // Revert
+                File.WriteAllText(filePath, original);
+
+                change = await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
+                Assert.IsNotNull(change);
+                Assert.IsTrue(change.Contains("<test>"));
+                Assert.IsTrue(change.WasChanged("<test><custom>"));
+            }
         }
     }
 

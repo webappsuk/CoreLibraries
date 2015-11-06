@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
@@ -67,7 +68,8 @@ namespace WebApplications.Utilities.Configuration
         /// The path being watched.
         /// </summary>
         [NotNull]
-        private readonly string _path;
+        [PublicAPI]
+        public readonly string Path;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationFileWatcher"/> class.
@@ -76,9 +78,11 @@ namespace WebApplications.Utilities.Configuration
         private ConfigurationFileWatcher([NotNull] string path)
         {
             _eventAction = new BufferedAction(WatcherOnChanged, 100);
-            _path = path;
+            Path = path;
+            if (!File.Exists(path)) return;
+
             // ReSharper disable once AssignNullToNotNullAttribute
-            _watcher = new FileSystemWatcher(Path.GetDirectoryName(path), Path.GetFileName(path));
+            _watcher = new FileSystemWatcher(System.IO.Path.GetDirectoryName(path), System.IO.Path.GetFileName(path));
             _watcher.Changed += (s, e) => _eventAction.Run();
             _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size;
             _watcher.EnableRaisingEvents = true;
@@ -90,28 +94,36 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="arguments">The arguments.</param>
         private void WatcherOnChanged(object[][] arguments)
         {
-            string name = $"->{_path}";
+            IInternalConfigurationSection[] sections;
             lock (_sections)
-                foreach (IInternalConfigurationSection section in _sections)
-                    section.OnChanged(section.GetFullPath(name));
+                sections = _sections.ToArray();
+            
+            foreach (IInternalConfigurationSection section in sections)
+                section.OnFileChanged(Path);
         }
-        
+
         /// <summary>
         /// Watches the specified <paramref name="section"/>.
         /// </summary>
         /// <param name="section">The section.</param>
         public static void Watch([NotNull] IInternalConfigurationSection section)
         {
-            string path = section.FilePath;
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+            string[] paths = section.FilePaths
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .ToArray();
+            if (paths.Length < 1) return;
             lock (_watchers)
             {
-                ConfigurationFileWatcher watcher;
-                if (!_watchers.TryGetValue(path, out watcher))
-                    watcher = _watchers[path] = new ConfigurationFileWatcher(path);
-                // ReSharper disable once PossibleNullReferenceException
-                lock (watcher._sections)
-                    watcher._sections.Add(section);
+                foreach (string path in paths)
+                {
+                    ConfigurationFileWatcher watcher;
+                    // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+                    if (!_watchers.TryGetValue(path, out watcher))
+                        watcher = _watchers[path] = new ConfigurationFileWatcher(path);
+                    lock (watcher._sections)
+                        watcher._sections.Add(section);
+                    // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
+                }
             }
         }
 
@@ -121,19 +133,25 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="section">The section.</param>
         public static void UnWatch([NotNull] IInternalConfigurationSection section)
         {
-            string path = section.FilePath;
-            if (string.IsNullOrWhiteSpace(path)) return;
+            string[] paths = section.FilePaths
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .ToArray();
+            if (paths.Length < 1) return;
             lock (_watchers)
             {
-                ConfigurationFileWatcher watcher;
-                if (!_watchers.TryGetValue(path, out watcher)) return;
-
-                // ReSharper disable once PossibleNullReferenceException
-                lock (watcher._sections)
+                foreach (string path in paths)
                 {
-                    watcher._sections.Remove(section);
-                    if (watcher._sections.Count > 0) return;
-                    watcher.Dispose();
+                    ConfigurationFileWatcher watcher;
+                    // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+                    if (!_watchers.TryGetValue(path, out watcher)) continue;
+
+                    lock (watcher._sections)
+                    {
+                        watcher._sections.Remove(section);
+                        if (watcher._sections.Count > 0) continue;
+                        watcher.Dispose();
+                    }
+                    // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
                 }
             }
         }
@@ -150,5 +168,8 @@ namespace WebApplications.Utilities.Configuration
             action?.Dispose();
             // ReSharper restore ExceptionNotDocumented
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Path;
     }
 }

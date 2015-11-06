@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,7 +34,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -874,8 +874,7 @@ namespace WebApplications.Utilities
             if (handle == null) throw new ArgumentNullException("handle");
 
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-            if (token.CanBeCanceled)
-                token.Register(tcs.SetCanceled);
+            CancellationTokenRegistration cancellationRegistration = token.Register(() => tcs.TrySetCanceled());
 
             object localVariableInitLock = new object();
             lock (localVariableInitLock)
@@ -886,7 +885,8 @@ namespace WebApplications.Utilities
                     handle,
                     (state, timedOut) =>
                     {
-                        tcs.SetResult(null);
+                        cancellationRegistration.Dispose();
+                        tcs.TrySetResult(null);
 
                         // We take a lock here to make sure the outer method has completed setting the local variable callbackHandle.
                         lock (localVariableInitLock)

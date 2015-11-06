@@ -29,8 +29,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Web;
 using System.Web.Configuration;
@@ -63,6 +65,12 @@ namespace WebApplications.Utilities.Configuration
         public delegate void ConfigurationChangedEventHandler(
             [NotNull] T sender,
             [NotNull] ConfigurationChangedEventArgs e);
+
+        /// <summary>
+        /// Handles load errors.
+        /// </summary>
+        /// <param name="e">The <see cref="ConfigurationLoadEventArgs" /> instance containing the event data.</param>
+        public delegate void ConfigurationLoadErrorEventHandler([NotNull] ConfigurationLoadEventArgs e);
         #endregion
 
         // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
@@ -89,8 +97,16 @@ namespace WebApplications.Utilities.Configuration
                     // ReSharper disable EventExceptionNotDocumented, AssignNullToNotNullAttribute
                     changes =>
                     {
-                        T active = Active;
-                        ActiveChanged?.Invoke(Active, new ConfigurationChangedEventArgs(active, changes));
+                        try
+                        {
+                            T active = Active;
+                            ActiveChanged?.Invoke(active, new ConfigurationChangedEventArgs(active, changes));
+                        }
+                        // ReSharper disable once CatchAllClause
+                        catch
+                        {
+                            // ignored
+                        }
                     },
                     // ReSharper restore EventExceptionNotDocumented, AssignNullToNotNullAttribute
                     EventBufferMs);
@@ -206,6 +222,7 @@ namespace WebApplications.Utilities.Configuration
         // ReSharper disable once StaticMemberInGenericType
         public static readonly string SectionName;
 
+        // ReSharper disable ExceptionNotThrown
         /// <summary>
         ///   Gets or sets the active configuration.
         /// </summary>
@@ -215,6 +232,9 @@ namespace WebApplications.Utilities.Configuration
         /// </remarks>
         /// <exception cref="ObjectDisposedException" accessor="set">You cannot set the active configuration section to
         /// a <see cref="IsDisposed">disposed</see> section.</exception>
+        /// <exception cref="ConfigurationErrorsException" accessor="get">Error during initialization.</exception>
+        /// <exception cref="UnauthorizedAccessException" accessor="get">The caller does not have the required permission. </exception>
+        /// <exception cref="IOException" accessor="get">An I/O error occurs. </exception>
         [NotNull]
         public static T Active
         {
@@ -230,7 +250,12 @@ namespace WebApplications.Utilities.Configuration
                     active = _active;
                     if (active != null && !active.IsDisposed) return active;
 
-                    return _active = GetActiveConfiguration();
+                    // ReSharper disable ExceptionNotDocumented
+                    return _active = GetOrAdd(
+                        HttpContext.Current == null
+                            ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+                            : WebConfigurationManager.OpenWebConfiguration(null));
+                    // ReSharper restore ExceptionNotDocumented
                 }
             }
             set
@@ -247,6 +272,7 @@ namespace WebApplications.Utilities.Configuration
                 }
             }
         }
+        // ReSharper restore ExceptionNotThrown
 
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance is the active configuration.
@@ -274,18 +300,14 @@ namespace WebApplications.Utilities.Configuration
         public static event ConfigurationChangedEventHandler ActiveChanged;
 
         /// <summary>
+        /// Occurs when an error is thrown loading a configuration.
+        /// </summary>
+        public static event ConfigurationLoadErrorEventHandler ConfigurationLoadError;
+
+        /// <summary>
         ///   Occurs when the <see cref="Active"/> ConfigurationSection is changed on disk.
         /// </summary>
         public event ConfigurationChangedEventHandler Changed;
-
-        /// <summary>
-        ///   Gets the active configuration.
-        /// </summary>
-        [NotNull]
-        private static T GetActiveConfiguration() => GetOrAdd(
-            HttpContext.Current == null
-                ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-                : WebConfigurationManager.OpenWebConfiguration(null));
 
         /// <summary>
         /// Gets the section from the specified configuration, or adds it.
@@ -304,7 +326,25 @@ namespace WebApplications.Utilities.Configuration
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
             // Get the section.
-            T section = configuration.GetSection(SectionName) as T;
+            T section;
+            try
+            {
+                section = configuration.GetSection(SectionName) as T;
+            }
+            // ReSharper disable once CatchAllClause
+            catch (Exception e)
+            {
+                // Intercept exception to throw
+                ExceptionDispatchInfo edi = ExceptionDispatchInfo.Capture(e);
+                // ReSharper disable once AssignNullToNotNullAttribute, EventExceptionNotDocumented
+                ConfigurationLoadError?.Invoke(new ConfigurationLoadEventArgs(SectionName, edi));
+
+                // ReSharper disable once ExceptionNotDocumented
+                // ReSharper disable once ThrowingSystemException
+                throw;
+            }
+
+            // Return if found.
             if (section != null) return section;
 
             // Create new configuration and set it as the active one.
@@ -363,7 +403,7 @@ namespace WebApplications.Utilities.Configuration
         public T Save(ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified, bool forceSaveAll = false)
             // ReSharper disable once AssignNullToNotNullAttribute
             => SaveAs(FilePath, saveMode, forceSaveAll);
-        
+
         /// <summary>
         /// Saves as.
         /// </summary>
@@ -380,7 +420,7 @@ namespace WebApplications.Utilities.Configuration
         /// <exception cref="IOException">An I/O error occurs. </exception>
         /// <exception cref="ArgumentException"><paramref name="filename" /> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <see cref="F:System.IO.Path.InvalidPathChars" />.</exception>
         [NotNull]
-         public T SaveAs(
+        public T SaveAs(
             [NotNull] string filename,
             ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified,
             bool forceSaveAll = false)
@@ -394,23 +434,62 @@ namespace WebApplications.Utilities.Configuration
             // If this is the active configuration, ensure it is unloaded, this will make it impossible the file
             // save event will be raised against the active configuration.
             // ReSharper disable once ExceptionNotDocumented
-            Interlocked.CompareExchange(ref _active, null, (T)this);
+            bool wasActive = ReferenceEquals(Interlocked.CompareExchange(ref _active, null, (T)this), this);
 
             if (string.Equals(filename, configuration.FilePath))
                 configuration.Save(saveMode, forceSaveAll);
             else
                 configuration.SaveAs(filename, saveMode, forceSaveAll);
+
+            // Tell the configuration manager to refresh the section.
             ConfigurationManager.RefreshSection(SectionName);
 
             // We dispose as any saved configuration must be reloaded before being used again.
             Dispose();
 
-            return LoadOrCreate(filename);
+            T config = LoadOrCreate(filename);
+            if (wasActive)
+                Active = config;
+
+            return config;
         }
 #pragma warning restore 618
 
         /// <inheritdoc />
         IInternalConfigurationSection IInternalConfigurationElement.Section => this;
+
+        /// <inheritdoc />
+        void IInternalConfigurationSection.OnFileChanged(string fullPath)
+        {
+            if (IsDisposed)
+            {
+                Trace.WriteLine($"#{InstanceNumber} - Config file '{fullPath}' changed for disposed {SectionName} section.");
+                return;
+            }
+
+            // Raise change event.
+            ((IInternalConfigurationElement)this).OnChanged(FullPath);
+
+            // If this is the active configuration, ensure it is unloaded, this will make it impossible the file
+            // save event will be raised against the active configuration.
+            // ReSharper disable once ExceptionNotDocumented
+            bool wasActive = ReferenceEquals(Interlocked.CompareExchange(ref _active, null, (T)this), this);
+
+            // Tell the configuration manager to refresh the section.
+            ConfigurationManager.RefreshSection(SectionName);
+
+            // We need to dispose this section, as it's no longer active.
+            Dispose();
+
+            if (wasActive)
+            {
+                // ReSharper disable once UnusedVariable
+                T active = Active;
+                Trace.WriteLine($"#{InstanceNumber} - Config file '{fullPath}' changed for active {SectionName} section. - new Active instance #{active.InstanceNumber}");
+            }
+            else
+                Trace.WriteLine($"#{InstanceNumber} - Config file '{fullPath}' changed for inactive {SectionName} section.");
+        }
 
         /// <summary>
         /// Called when the OnChange event is called.
@@ -421,7 +500,7 @@ namespace WebApplications.Utilities.Configuration
             _changeAction?.Run(fullPath);
 
             // Check to see if we're the active configuration.
-            if (IsActive)
+            if (ReferenceEquals(this, _active))
                 _activeChangeAction.Run(fullPath);
         }
 
@@ -505,13 +584,18 @@ namespace WebApplications.Utilities.Configuration
             // If we're disposing the active configuration section, we want to reload the active configuration.
             Interlocked.CompareExchange(ref _active, null, (T)this);
             if (!disposing) return;
+            Trace.WriteLine($"Disposing {InstanceNumber}");
             ConfigurationFileWatcher.UnWatch(this);
             // ReSharper disable once ExceptionNotDocumented
             BufferedAction<string> action = Interlocked.Exchange(ref _changeAction, null);
             action?.Dispose();
         }
 
-        #region Nested type: ConfigurationChangedEventArgs
+#if DEBUG
+        public static int InstanceCount;
+        public readonly int InstanceNumber = InstanceCount++;
+#endif
+
         /// <summary>
         /// Information about the configuration changed event.
         /// </summary>
@@ -566,6 +650,47 @@ namespace WebApplications.Utilities.Configuration
             /// <returns><see langword="true"/> if the <paramref name="path"/> starts with any of the changed paths; otherwise <see langword="false"/>.</returns>
             public bool WasChanged([NotNull] string path) => !string.IsNullOrWhiteSpace(path) || _changes.Any(path.StartsWith);
         }
-        #endregion
+
+        /// <summary>
+        /// Information about exceptions raised when loading a configuration.
+        /// </summary>
+        public class ConfigurationLoadEventArgs : EventArgs
+        {
+            /// <summary>
+            /// The section name.
+            /// </summary>
+            [NotNull]
+            public readonly string SectionName;
+
+            /// <summary>
+            /// The exception dispatch information.
+            /// </summary>
+            [NotNull]
+            private readonly ExceptionDispatchInfo _exceptionDispatchInfo;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ConfigurationSection{T}.ConfigurationLoadEventArgs" /> class.
+            /// </summary>
+            /// <param name="sectionName">Name of the section.</param>
+            /// <param name="exceptionDispatchInfo">The exception dispatch information.</param>
+            internal ConfigurationLoadEventArgs(
+                            [NotNull]string sectionName,
+                            [NotNull]ExceptionDispatchInfo exceptionDispatchInfo)
+            {
+                SectionName = sectionName;
+                _exceptionDispatchInfo = exceptionDispatchInfo;
+            }
+
+            /// <summary>
+            /// Gets the exception.
+            /// </summary>
+            /// <value>The exception.</value>
+            public Exception Exception => _exceptionDispatchInfo.SourceException;
+
+            /// <summary>
+            /// Throws the exception again.
+            /// </summary>
+            public void Throw() => _exceptionDispatchInfo.Throw();
+        }
     }
 }

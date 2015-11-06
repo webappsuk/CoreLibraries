@@ -904,7 +904,7 @@ namespace WebApplications.Testing
                 minLength = 0;
             int length = RandomGenerator.Next(maxLength - minLength) + minLength;
             if (length < 1)
-                return String.Empty;
+                return string.Empty;
 
             if (!unicode)
             {
