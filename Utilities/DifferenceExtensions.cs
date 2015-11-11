@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Difference;
@@ -39,13 +40,62 @@ namespace WebApplications.Utilities
     public static class DifferenceExtensions
     {
         /// <summary>
+        /// Find the differences between two strings, by line, and then by character.
+        /// </summary>
+        /// <param name="a">The '<see cref="Source.A"/>' string.</param>
+        /// <param name="b">The '<see cref="Source.B"/>' string.</param>
+        /// <param name="comparer">The comparer to compare items in each collection.</param>
+        /// <returns>Returns the <see cref="LineDifferences"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
+        /// <remarks>
+        /// <para> 
+        /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
+        /// (http://www.xmailserver.org/diff2.pdf) Algorithmica Vol. 1 No. 2, 1986, p 251.  
+        /// </para>
+        /// </remarks>
+        [NotNull]
+        [ItemNotNull]
+        public static LineDifferences DiffLines(
+            [NotNull] this string a,
+            [NotNull] string b,
+            TextOptions options = TextOptions.Default,
+            IEqualityComparer<char> comparer = null)
+            => new LineDifferences(a, b, options, comparer);
+
+        /// <summary>
+        /// Find the differences between two strings.
+        /// </summary>
+        /// <param name="a">The '<see cref="Source.A"/>' string.</param>
+        /// <param name="b">The '<see cref="Source.B"/>' string.</param>
+        /// <param name="comparer">The character comparer.</param>
+        /// <returns>Returns the <see cref="StringDifferences"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
+        /// <remarks>
+        /// <para> 
+        /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
+        /// (http://www.xmailserver.org/diff2.pdf) Algorithmica Vol. 1 No. 2, 1986, p 251.  
+        /// </para>
+        /// </remarks>
+        [NotNull]
+        [ItemNotNull]
+        public static StringDifferences Diff(
+            [NotNull] this string a,
+            [NotNull] string b,
+            IEqualityComparer<char> comparer = null)
+            => new StringDifferences(a, b, comparer);
+
+        /// <summary>
         /// Find the differences between two collections.
         /// </summary>
         /// <typeparam name="T">The item type.</typeparam>
-        /// <param name="a">The first collection.</param>
-        /// <param name="b">The second collection</param>
+        /// <param name="a">The '<see cref="Source.A"/>' collection.</param>
+        /// <param name="b">The '<see cref="Source.B"/>' collection.</param>
         /// <param name="comparer">The comparer to compare items in each collection.</param>
-        /// <returns>Returns a read only list of <see cref="Chunk{T}">chunks</see>.</returns>
+        /// <returns>Returns the <see cref="Differences{T}"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
         /// <remarks>
         /// <para> 
         /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
@@ -64,14 +114,16 @@ namespace WebApplications.Utilities
         /// Find the differences between two collections.
         /// </summary>
         /// <typeparam name="T">The item type.</typeparam>
-        /// <param name="a">The first collection.</param>
+        /// <param name="a">The '<see cref="Source.A"/>' collection.</param>
         /// <param name="offsetA">The offset to the start of a window in the first collection.</param>
         /// <param name="lengthA">The length of the window in the first collection.</param>
-        /// <param name="b">The second collection</param>
+        /// <param name="b">The '<see cref="Source.B"/>' collection.</param>
         /// <param name="offsetB">The offset to the start of a window in the second collection.</param>
         /// <param name="lengthB">The length of the window in the second collection.</param>
         /// <param name="comparer">The comparer to compare items in each collection.</param>
-        /// <returns>Returns a read only list of <see cref="Chunk{T}">chunks</see>.</returns>
+        /// <returns>Returns the <see cref="Differences{T}"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
         /// <remarks>
         /// <para> 
         /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers

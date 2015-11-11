@@ -71,7 +71,10 @@
     <Compile Include="DifferenceExtensions.cs" />
     <Compile Include="Difference\Differences.cs" />
     <Compile Include="Difference\IChunk.cs" />
+    <Compile Include="Difference\LineDifferences.cs" />
     <Compile Include="Difference\Source.cs" />
+    <Compile Include="Difference\StringChunk.cs" />
+    <Compile Include="Difference\StringDifferences.cs" />
     <Compile Include="Difference\TextOptions.cs" />
     <Compile Include="Funcs.cs">
       <AutoGen>True</AutoGen>
