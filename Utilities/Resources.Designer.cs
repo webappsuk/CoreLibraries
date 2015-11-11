@@ -133,6 +133,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified parameters are not comparable..
+        /// </summary>
+        internal static string CharComparer_Compare_Invalid_Arguments {
+            get {
+                return ResourceManager.GetString("CharComparer_Compare_Invalid_Arguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name cannot be null or whitespace.
         /// </summary>
         internal static string ColorHelper_SetName_NameNullOrWhitespace {
@@ -147,6 +156,15 @@ namespace WebApplications.Utilities {
         internal static string CombGuid_InvalidDateTime_TooEarly {
             get {
                 return ResourceManager.GetString("CombGuid_InvalidDateTime_TooEarly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The objects cannot be compared..
+        /// </summary>
+        internal static string ComparerBuilder_Compare_Incomparable {
+            get {
+                return ResourceManager.GetString("ComparerBuilder_Compare_Incomparable", resourceCulture);
             }
         }
         
@@ -1308,6 +1326,15 @@ namespace WebApplications.Utilities {
         internal static string WeakConcurrentDictionary_KeyIsNull {
             get {
                 return ResourceManager.GetString("WeakConcurrentDictionary_KeyIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The data must not be readonly - consider using ReadOnlyWindow&lt;T&gt; instead..
+        /// </summary>
+        internal static string Window_Window_ReadOnly_Data {
+            get {
+                return ResourceManager.GetString("Window_Window_ReadOnly_Data", resourceCulture);
             }
         }
         

@@ -41,8 +41,9 @@
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
     <Compile Include="Caching\WeakSingleton.cs" />
+    <Compile Include="CharComparer.cs" />
     <Compile Include="Configuration\ConfigurationElement - Common.cs" />
-    <Compile Include="ConfigurationElementExtensions.cs" />
+    <Compile Include="ConfigurationExtensions.cs" />
     <Compile Include="Configuration\IConfigurationElement.cs" />
     <Compile Include="Configuration\IConfigurationSection.cs" />
     <Compile Include="Configuration\IInternalConfigurationElement.cs" />
@@ -66,6 +67,12 @@
     </Compile>
     <Compile Include="Configuration\Validators\DurationValidator.cs" />
     <Compile Include="Configuration\Validators\DurationValidatorAttribute.cs" />
+    <Compile Include="Difference\Chunk.cs" />
+    <Compile Include="DifferenceExtensions.cs" />
+    <Compile Include="Difference\Differences.cs" />
+    <Compile Include="Difference\IChunk.cs" />
+    <Compile Include="Difference\Source.cs" />
+    <Compile Include="Difference\TextOptions.cs" />
     <Compile Include="Funcs.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -304,6 +311,8 @@
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="ExtendedTuple.cs" />
     <Compile Include="ValueComparer.cs" />
+    <Compile Include="ReadOnlyWindow.cs" />
+    <Compile Include="Window.cs" />
     <Compile Include="XObjectComparisonOptions.cs" />
     <Compile Include="XObjectExtensions.cs" />
   </ItemGroup>

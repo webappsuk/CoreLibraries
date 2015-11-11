@@ -160,29 +160,20 @@ namespace WebApplications.Utilities
         /// Gets the length.
         /// </summary>
         /// <value>The length.</value>
-        public int Length
-        {
-            get { return _data.Length; }
-        }
+        public int Length => _data.Length;
 
         /// <summary>
         /// Gets the long length.
         /// </summary>
         /// <value>The length.</value>
-        public long LongLength
-        {
-            get { return _data.LongLength; }
-        }
+        public long LongLength => _data.LongLength;
 
         /// <summary>
         /// Allows retrieval of the bytes from the byte array.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public byte this[int index]
-        {
-            get { return _data[index]; }
-        }
+        public byte this[int index] => _data[index];
 
         #region IEquatable<byte[]> Members
         /// <summary>
@@ -258,10 +249,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>A long hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table, provides better seperation that the standard
         /// integer hash code.</returns>
-        public long HashCode
-        {
-            get { return _hash; }
-        }
+        public long HashCode => _hash;
 
         /// <summary>
         /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.

@@ -93,6 +93,7 @@
     <Compile Include="TestCacheDictionary.cs" />
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestCulture.cs" />
+    <Compile Include="TestDifference.cs" />
     <Compile Include="TestExtendedEnum.cs" />
     <Compile Include="TestHashCollection.cs" />
     <Compile Include="TestHashing.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="TestTaskExtensions.cs" />
     <Compile Include="TestWeak.cs" />
     <Compile Include="Enumerations\TriStateTests.cs" />
+    <Compile Include="TestWindow.cs" />
     <Compile Include="TestXObjectExtensions.cs" />
     <Compile Include="TupleExtensionsTests.cs" />
     <Compile Include="UtilitiesTestBase.cs" />

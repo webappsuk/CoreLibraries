@@ -543,4 +543,13 @@
   <data name="ConstructorConfigurationElement_GetConstructor_Missing_Type" xml:space="preserve">
     <value>Cannot create an instance of the object as no type was specified.</value>
   </data>
+  <data name="CharComparer_Compare_Invalid_Arguments" xml:space="preserve">
+    <value>The specified parameters are not comparable.</value>
+  </data>
+  <data name="Window_Window_ReadOnly_Data" xml:space="preserve">
+    <value>The data must not be readonly - consider using ReadOnlyWindow&lt;T&gt; instead.</value>
+  </data>
+  <data name="ComparerBuilder_Compare_Incomparable" xml:space="preserve">
+    <value>The objects cannot be compared.</value>
+  </data>
 </root>

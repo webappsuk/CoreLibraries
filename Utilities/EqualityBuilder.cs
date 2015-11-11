@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using WebApplications.Utilities.Annotations;
 
@@ -69,40 +70,102 @@ namespace WebApplications.Utilities
         ///   <para>The hash code generator.</para>
         ///   <para>By default <see cref="System.Object.GetHashCode"/> will be used.</para>
         /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="equalityComparer"/> is <see langword="null" />.</exception>
         public EqualityBuilder([NotNull] Func<T, T, bool> equalityComparer, Func<T, int> hashCodeGenerator = null)
         {
-            if (equalityComparer == null) throw new ArgumentNullException("equalityComparer");
+            if (equalityComparer == null) throw new ArgumentNullException(nameof(equalityComparer));
 
             EqualsFunction = equalityComparer;
             GetHashCodeFunction = hashCodeGenerator ?? DefaultGetHashCodeFunction;
         }
 
+        /// <inheritdoc/>
+        // ReSharper disable once EventExceptionNotDocumented
+        public override bool Equals(T x, T y) => EqualsFunction(x, y);
+
+        /// <inheritdoc/>
+        // ReSharper disable once EventExceptionNotDocumented
+        public override int GetHashCode(T obj) => GetHashCodeFunction(obj);
+    }
+
+
+    /// <summary>
+    /// Allows you to define customized equality comparers using lambda functions.
+    /// (http://msdn.microsoft.com/en-us/library/bb397687.aspx)
+    /// </summary>
+    /// <typeparam name="T1">The type of the first operand.</typeparam>
+    /// <typeparam name="T2">The type of the second operand.</typeparam>
+    /// <seealso cref="T:System.IEqualityComparer" />
+    [PublicAPI]
+    public class EqualityBuilder<T1, T2> : IEqualityComparer
+    {
         /// <summary>
-        ///   Determines whether the two specified <see cref="object"/>s are equal.
+        ///   Stores the default GetHashCode function call <see cref="System.Object.GetHashCode"/> for the <typeparamref name="T1"/> type.
         /// </summary>
-        /// <param name="x">The first object of type <typeparamref name="T"/> to compare.</param>
-        /// <param name="y">The second object of type <typeparamref name="T"/> to compare.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the specified objects are equal; otherwise returns <see langword="false"/>.
-        /// </returns>
-        public override bool Equals(T x, T y)
-        {
-            return EqualsFunction(x, y);
-        }
+        [NotNull]
+        // ReSharper disable PossibleNullReferenceException - Let it throw
+        public static readonly Func<T1, int> DefaultGetHashCodeFunction1 = o => o.GetHashCode();
 
         /// <summary>
-        ///   Returns a hash code for the specified <see cref="object"/>.
+        ///   Stores the default GetHashCode function call <see cref="System.Object.GetHashCode"/> for the <typeparamref name="T2"/> type.
         /// </summary>
-        /// <param name="obj">The <see cref="object"/> to get a hash code for.</param>
-        /// <returns>
-        ///   A hash code for the specified <paramref name="obj"/>.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">
-        ///   <paramref name="obj"/> is a reference type and <paramref name="obj"/> is a <see langword="null"/>.
-        /// </exception>
-        public override int GetHashCode(T obj)
+        [NotNull]
+        // ReSharper disable PossibleNullReferenceException - Let it throw
+        public static readonly Func<T2, int> DefaultGetHashCodeFunction2 = o => o.GetHashCode();
+
+        // ReSharper restore PossibleNullReferenceException
+
+        /// <summary>
+        ///   The function used to calculate equality between two <see cref="object"/>s.
+        /// </summary>
+        [NotNull]
+        public readonly Func<T1, T2, bool> EqualsFunction;
+
+        /// <summary>
+        ///   The function used to generate a hash code for the <typeparamref name="T1"/> type.
+        /// </summary>
+        [NotNull]
+        public readonly Func<T1, int> GetHashCodeFunction1;
+
+        /// <summary>
+        ///   The function used to generate a hash code for the <typeparamref name="T2"/> type.
+        /// </summary>
+        [NotNull]
+        public readonly Func<T2, int> GetHashCodeFunction2;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EqualityBuilder&lt;T1,T2&gt;" /> class.
+        /// </summary>
+        /// <param name="equalityComparer">The equality comparer.</param>
+        /// <param name="hashCodeGenerator1">The hash code generator for the <typeparamref name="T1" /> type.</param>
+        /// <param name="hashCodeGenerator2">The hash code generator for the <typeparamref name="T2" /> type.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="equalityComparer" /> is <see langword="null" />.</exception>
+        public EqualityBuilder(
+            [NotNull] Func<T1, T2, bool> equalityComparer,
+            Func<T1, int> hashCodeGenerator1 = null,
+            Func<T2, int> hashCodeGenerator2 = null)
         {
-            return GetHashCodeFunction(obj);
+            if (equalityComparer == null) throw new ArgumentNullException(nameof(equalityComparer));
+
+            EqualsFunction = equalityComparer;
+            GetHashCodeFunction1 = hashCodeGenerator1 ?? DefaultGetHashCodeFunction1;
+            GetHashCodeFunction2 = hashCodeGenerator2 ?? DefaultGetHashCodeFunction2;
         }
+
+        // ReSharper disable EventExceptionNotDocumented
+        /// <inheritdoc />
+        public new bool Equals(object x, object y) =>
+            x is T1
+                ? y is T2 && EqualsFunction((T1)x, (T2)y)
+                : x is T2 && y is T1 && EqualsFunction((T1)y, (T2)x);
+
+        /// <inheritdoc />
+        public int GetHashCode(object obj)
+        {
+            if (obj is T1) return GetHashCodeFunction1((T1)obj);
+            if (obj is T2) return GetHashCodeFunction2((T2)obj);
+            return obj.GetHashCode();
+        }
+        // ReSharper restore EventExceptionNotDocumented
     }
 }

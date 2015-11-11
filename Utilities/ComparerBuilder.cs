@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using WebApplications.Utilities.Annotations;
 
@@ -58,34 +59,75 @@ namespace WebApplications.Utilities
         ///   <para>The hash code generator.</para>
         ///   <para>By default <see cref="System.Object.GetHashCode"/> will be used.</para>
         /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null" />.</exception>
         public ComparerBuilder(
             [NotNull] Func<T, T, int> comparer,
-            Func<T, T, bool> equalityComparer = null,
-            Func<T, int> hashCodeGenerator = null)
+            [CanBeNull] Func<T, T, bool> equalityComparer = null,
+            [CanBeNull] Func<T, int> hashCodeGenerator = null)
+            // ReSharper disable once EventExceptionNotDocumented
             : base(equalityComparer ?? ((a, b) => comparer(a, b) == 0), hashCodeGenerator)
         {
-            if (comparer == null) throw new ArgumentNullException("comparer");
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             CompareFunction = comparer;
         }
 
-        #region IComparer<T> Members
+        /// <inheritdoc/>
+        // ReSharper disable once EventExceptionNotDocumented
+        public int Compare(T x, T y) => CompareFunction(x, y);
+    }
+
+    /// <summary>
+    /// Allows you to define generic comparers using lambda functions.
+    /// (http://msdn.microsoft.com/en-us/library/bb397687.aspx)
+    /// </summary>
+    /// <typeparam name="T1">The type of the first operand.</typeparam>
+    /// <typeparam name="T2">The type of the second operand.</typeparam>
+    /// <seealso cref="T:System.Collections.IComparer" />
+    public class ComparerBuilder<T1, T2> : EqualityBuilder<T1, T2>, IComparer
+    {
         /// <summary>
-        ///   Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        ///   The function used to provide comparisons.
         /// </summary>
-        /// <param name="x">The first object of type <typeparamref name="T"/> to compare.</param>
-        /// <param name="y">The second object of type <typeparamref name="T"/> to compare.</param>
-        /// <returns>
-        ///   <para>A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>:</para>
-        ///   <list type="bullet">
-        ///     <item><description>Value less than zero: <paramref name="x"/> is less than <paramref name="y"/>.</description></item>
-        ///     <item><description>Zero: <paramref name="x"/> equals <paramref name="y"/>.</description></item>
-        ///     <item><description>Value greater than zero: <paramref name="x"/> is greater than <paramref name="y"/>.</description></item>
-        ///   </list>
-        /// </returns>
-        public int Compare(T x, T y)
+        [NotNull]
+        public readonly Func<T1, T2, int> CompareFunction;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComparerBuilder{T1, T2}"/> class.
+        /// </summary>
+        /// <param name="comparer">The comparer.</param>
+        /// <param name="equalityComparer">The equality comparer.</param>
+        /// <param name="hashCodeGenerator1">The hash code generator1.</param>
+        /// <param name="hashCodeGenerator2">The hash code generator2.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="comparer"/> is <see langword="null" />.</exception>
+        public ComparerBuilder(
+            [NotNull] Func<T1, T2, int> comparer,
+            [CanBeNull] Func<T1, T2, bool> equalityComparer = null,
+            [CanBeNull] Func<T1, int> hashCodeGenerator1 = null,
+            [CanBeNull] Func<T2, int> hashCodeGenerator2 = null)
+            // ReSharper disable once EventExceptionNotDocumented
+            : base(equalityComparer ?? ((a, b) => comparer(a, b) == 0), hashCodeGenerator1, hashCodeGenerator2)
         {
-            return CompareFunction(x, y);
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+            CompareFunction = comparer;
         }
-        #endregion
+
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">The objects cannot be compared.</exception>
+        public int Compare(object x, object y)
+        {
+            // ReSharper disable EventExceptionNotDocumented
+            if (x is T1 && y is T2)
+                return CompareFunction((T1)x, (T2)y);
+            if (y is T1 && x is T2)
+                return -CompareFunction((T1)y, (T2)x);
+            // ReSharper restore EventExceptionNotDocumented
+            IComparable c = x as IComparable;
+            if (c != null)
+                return c.CompareTo(y);
+            c = y as IComparable;
+            if (c != null)
+                return c.CompareTo(x);
+            throw new InvalidOperationException(Resources.ComparerBuilder_Compare_Incomparable);
+        }
     }
 }
