@@ -30,7 +30,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Difference
@@ -43,36 +42,31 @@ namespace WebApplications.Utilities.Difference
     public class Differences<T> : IReadOnlyList<Chunk<T>>
     {
         /// <summary>
-        /// The equality comparer for comparing items.
+        /// The 'A' list.
         /// </summary>
         [NotNull]
-        public readonly IEqualityComparer<T> EqualityComparer;
+        public readonly ReadOnlyWindow<T> A;
 
         /// <summary>
-        /// The '<see cref="Source.A"/>' collection.
+        /// The 'B' list.
         /// </summary>
         [NotNull]
-        public readonly IReadOnlyList<T> A;
-
-        /// <summary>
-        /// The '<see cref="Source.B"/>' collection.
-        /// </summary>
-        [NotNull]
-        public readonly IReadOnlyList<T> B;
+        public readonly ReadOnlyWindow<T> B;
 
         /// <summary>
         /// The chunks lazy evaluator.
         /// </summary>
         [NotNull]
-        private readonly Lazy<IReadOnlyList<Chunk<T>>> _chunks;
+        [ItemNotNull]
+        private readonly IReadOnlyList<Chunk<T>> _chunks;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Differences{T}" /> class.
         /// </summary>
-        /// <param name="a">The '<see cref="Source.A" />' collection.</param>
+        /// <param name="a">The "A" list.</param>
         /// <param name="offsetA">The offset to the start of a window in the first collection.</param>
         /// <param name="lengthA">The length of the window in the first collection.</param>
-        /// <param name="b">The '<see cref="Source.B" />' collection</param>
+        /// <param name="b">The "B" list.</param>
         /// <param name="offsetB">The offset to the start of a window in the second collection.</param>
         /// <param name="lengthB">The length of the window in the second collection.</param>
         /// <param name="comparer">The comparer to compare items in each collection.</param>
@@ -89,32 +83,15 @@ namespace WebApplications.Utilities.Difference
         {
             if (a == null) throw new ArgumentNullException(nameof(a));
             if (b == null) throw new ArgumentNullException(nameof(b));
+            if (comparer == null) comparer = EqualityComparer<T>.Default;
             A = new ReadOnlyWindow<T>(a, offsetA, lengthA);
             B = new ReadOnlyWindow<T>(b, offsetB, lengthB);
-            EqualityComparer = comparer ?? EqualityComparer<T>.Default;
-            _chunks = new Lazy<IReadOnlyList<Chunk<T>>>(
-                () => GetChunks(A,B),
-                LazyThreadSafetyMode.ExecutionAndPublication);
-        }
 
-        /// <summary>
-        /// This is the divide-and-conquer implementation of the longest common-subsequence (LCS) algorithm.  Unlike the
-        /// original algorithm we do not modify the underlying collections, but instead manipulate the upper and lower
-        /// bounds as we go.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Influenced by Matthias Hertel, see http://www.mathertel.de.
-        /// From http://www.codeproject.com/Articles/13326/An-O-ND-Difference-Algorithm-for-C
-        /// </para>
-        /// </remarks>
-        private IReadOnlyList<Chunk<T>> GetChunks([NotNull] IReadOnlyList<T> a, [NotNull] IReadOnlyList<T> b)
-        {
             List<Chunk<T>> chunks = new List<Chunk<T>>();
-            bool[] modificationsA = new bool[a.Count];
-            bool[] modificationsB = new bool[b.Count];
+            bool[] modificationsA = new bool[A.Count];
+            bool[] modificationsB = new bool[B.Count];
 
-            int max = a.Count + b.Count + 1;
+            int max = A.Count + B.Count + 1;
             int vectorSize = 2 * max + 2;
             // Vector for the (0,0) to (x,y) search
             int[] downVector = new int[vectorSize];
@@ -122,7 +99,7 @@ namespace WebApplications.Utilities.Difference
             int[] upVector = new int[vectorSize];
 
             Stack<int, int, int, int> stack = new Stack<int, int, int, int>();
-            stack.Push(0, a.Count, 0, b.Count);
+            stack.Push(0, A.Count, 0, B.Count);
 
             int lowerA;
             int upperA;
@@ -131,14 +108,14 @@ namespace WebApplications.Utilities.Difference
             while (stack.TryPop(out lowerA, out upperA, out lowerB, out upperB))
             {
                 // Skip equal lines at start of chunk
-                while (lowerA < upperA && lowerB < upperB && EqualityComparer.Equals(a[lowerA], b[lowerB]))
+                while (lowerA < upperA && lowerB < upperB && comparer.Equals(A[lowerA], B[lowerB]))
                 {
                     lowerA++;
                     lowerB++;
                 }
 
                 // Skip equal lines at end of the chunk.
-                while (lowerA < upperA && lowerB < upperB && EqualityComparer.Equals(a[upperA - 1], b[upperB - 1]))
+                while (lowerA < upperA && lowerB < upperB && comparer.Equals(A[upperA - 1], B[upperB - 1]))
                 {
                     --upperA;
                     --upperB;
@@ -218,7 +195,7 @@ namespace WebApplications.Utilities.Difference
                         // Find the end of the furthest reaching forward D-path in diagonal k.
                         while ((x < upperA) &&
                                (y < upperB) &&
-                               (EqualityComparer.Equals(a[x], b[y])))
+                               (comparer.Equals(A[x], B[y])))
                         {
                             x++;
                             y++;
@@ -264,7 +241,7 @@ namespace WebApplications.Utilities.Difference
 
                         while ((x > lowerA) &&
                                (y > lowerB) &&
-                               (EqualityComparer.Equals(a[x - 1], b[y - 1])))
+                               (comparer.Equals(A[x - 1], B[y - 1])))
                         {
                             x--;
                             y--;
@@ -298,11 +275,11 @@ namespace WebApplications.Utilities.Difference
             int itemB = 0;
             int startA = 0;
             int startB = 0;
-            while (itemA < a.Count || itemB < b.Count)
+            while (itemA < A.Count || itemB < B.Count)
             {
                 // Scan through unchanged items.
-                if ((itemA < a.Count) && (!modificationsA[itemA])
-                    && (itemB < b.Count) && (!modificationsB[itemB]))
+                if ((itemA < A.Count) && (!modificationsA[itemA])
+                    && (itemB < B.Count) && (!modificationsB[itemB]))
                 {
                     itemA++;
                     itemB++;
@@ -314,25 +291,28 @@ namespace WebApplications.Utilities.Difference
                 {
                     // The length of A & B should be identical!
                     Debug.Assert(itemB - startB == itemA - startA);
-                    chunks.Add(new Chunk<T>(Source.Both, a, startA, itemA - startA));
+                    chunks.Add(
+                        new Chunk<T>(
+                            A.GetSubset(startA, itemA - startA),
+                            B.GetSubset(startB, itemB - startB)));
                 }
 
                 startA = itemA;
                 startB = itemB;
 
-                while (itemA < a.Count &&
-                       (itemB >= b.Count || modificationsA[itemA]))
+                while (itemA < A.Count &&
+                       (itemB >= B.Count || modificationsA[itemA]))
                     itemA++;
 
                 if (itemA > startA)
-                    chunks.Add(new Chunk<T>(Source.A, a, startA, itemA - startA));
+                    chunks.Add(new Chunk<T>(A.GetSubset(startA, itemA - startA), null));
 
-                while (itemB < b.Count &&
-                       (itemA >= a.Count || modificationsB[itemB]))
+                while (itemB < B.Count &&
+                       (itemA >= A.Count || modificationsB[itemB]))
                     itemB++;
 
                 if (itemB > startB)
-                    chunks.Add(new Chunk<T>(Source.B, b, startB, itemB - startB));
+                    chunks.Add(new Chunk<T>(null, B.GetSubset(startB, itemB - startB)));
 
                 startA = itemA;
                 startB = itemB;
@@ -343,60 +323,59 @@ namespace WebApplications.Utilities.Difference
             {
                 // The length of A & B should be identical!
                 Debug.Assert(itemB - startB == itemA - startA);
-                chunks.Add(new Chunk<T>(Source.Both, a, startA, itemA - startA));
+                chunks.Add(
+                    new Chunk<T>(
+                        A.GetSubset(startA, itemA - startA),
+                        B.GetSubset(startB, itemB - startB)));
             }
             
-            return chunks;
+            _chunks = chunks;
         }
-
-        // ReSharper disable PossibleNullReferenceException, ExceptionNotDocumented
+        
         /// <inheritdoc />
         [ItemNotNull]
-        public IEnumerator<Chunk<T>> GetEnumerator() => _chunks.Value.GetEnumerator();
-
-        /// <inheritdoc />
-        [ItemNotNull]
-        IEnumerator IEnumerable.GetEnumerator() => _chunks.Value.GetEnumerator();
+        public IEnumerator<Chunk<T>> GetEnumerator() => _chunks.GetEnumerator();
 
         /// <inheritdoc />
         [ItemNotNull]
-        public int Count => _chunks.Value.Count;
+        IEnumerator IEnumerable.GetEnumerator() => _chunks.GetEnumerator();
+
+        /// <inheritdoc />
+        [ItemNotNull]
+        public int Count => _chunks.Count;
 
         /// <inheritdoc />
         [NotNull]
         [ItemNotNull]
         // ReSharper disable once AssignNullToNotNullAttribute
-        public Chunk<T> this[int index] => _chunks.Value[index];
+        public Chunk<T> this[int index] => _chunks[index];
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents the differences.
         /// </summary>
-        /// <param name="sep">The item separator.</param>
         /// <returns>A <see cref="System.String" /> that represents the differences.</returns>
-        [NotNull]
-        public string ToString(string sep)
+        public override string ToString()
         {
             // TODO Cache and make use of FormatBuilder
             StringBuilder builder = new StringBuilder();
-            foreach (Chunk<T> difference in _chunks.Value)
+            foreach (Chunk<T> chunk in _chunks)
             {
-                switch (difference.Source)
-                {
-                    case Source.A:
-                        builder.Append("A    : ");
-                        break;
-                    case Source.B:
-                        builder.Append("B    : ");
-                        break;
-                    case Source.Both:
-                        builder.Append("Both : ");
-                        break;
-                }
-                builder.Append(string.Join(sep, difference));
+                ReadOnlyWindow<T> window = chunk.B;
+                if (!chunk.AreEqual)
+                    if (chunk.A == null)
+                        builder.Append("+ ");
+                    else
+                    {
+                        builder.Append("- ");
+                        window = chunk.A;
+                    }
+                else
+                    builder.Append("  ");
+                // ReSharper disable once AssignNullToNotNullAttribute
+                builder.Append(string.Join(",", window));
                 builder.Append(Environment.NewLine);
             }
             return builder.ToString();
         }
-        // ReSharper restore PossibleNullReferenceException, ExceptionNotDocumented
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Difference
@@ -14,25 +13,20 @@ namespace WebApplications.Utilities.Difference
     public class LineDifferences : IReadOnlyList<LineChunk>
     {
         /// <summary>
-        /// The chunks lazy evaluator.
+        /// The chunks.
         /// </summary>
         [NotNull]
-        private readonly Lazy<IReadOnlyList<LineChunk>> _chunks;
+        [ItemNotNull]
+        private readonly IReadOnlyList<LineChunk> _chunks;
 
         /// <summary>
-        /// The equality comparer.
-        /// </summary>
-        [NotNull]
-        public readonly IEqualityComparer<char> EqualityComparer;
-
-        /// <summary>
-        /// The '<see cref="Source.A"/>' string.
+        /// The 'A' string.
         /// </summary>
         [NotNull]
         public readonly string A;
 
         /// <summary>
-        /// The '<see cref="Source.B"/>' string.
+        /// The 'B' string.
         /// </summary>
         [NotNull]
         public readonly string B;
@@ -57,34 +51,26 @@ namespace WebApplications.Utilities.Difference
             A = a;
             B = b;
             if (comparer == null) comparer = CharComparer.CurrentCulture;
-            EqualityComparer = comparer;
-
-            _chunks = new Lazy<IReadOnlyList<LineChunk>>(
-                () =>
-                {
-                    throw new NotImplementedException();
-                },
-                LazyThreadSafetyMode.ExecutionAndPublication);
+            throw new NotImplementedException();
         }
-
-        // ReSharper disable PossibleNullReferenceException, ExceptionNotDocumented
+        
         /// <inheritdoc />
         [ItemNotNull]
-        public IEnumerator<LineChunk> GetEnumerator() => _chunks.Value.GetEnumerator();
-
-        /// <inheritdoc />
-        [ItemNotNull]
-        IEnumerator IEnumerable.GetEnumerator() => _chunks.Value.GetEnumerator();
+        public IEnumerator<LineChunk> GetEnumerator() => _chunks.GetEnumerator();
 
         /// <inheritdoc />
         [ItemNotNull]
-        public int Count => _chunks.Value.Count;
+        IEnumerator IEnumerable.GetEnumerator() => _chunks.GetEnumerator();
+
+        /// <inheritdoc />
+        [ItemNotNull]
+        public int Count => _chunks.Count;
 
         /// <inheritdoc />
         [NotNull]
         [ItemNotNull]
         // ReSharper disable once AssignNullToNotNullAttribute
-        public LineChunk this[int index] => _chunks.Value[index];
+        public LineChunk this[int index] => _chunks[index];
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents the differences.
@@ -96,21 +82,21 @@ namespace WebApplications.Utilities.Difference
         {
             // TODO Cache and make use of FormatBuilder, allow side-by-side comparison.
             StringBuilder builder = new StringBuilder();
-            foreach (LineChunk difference in _chunks.Value)
+            foreach (LineChunk chunk in _chunks)
             {
-                switch (difference.Source)
-                {
-                    case Source.A:
-                        builder.Append("- ");
-                        break;
-                    case Source.B:
+                string s = chunk.B;
+                if (!chunk.AreEqual)
+                    if (chunk.A == null)
                         builder.Append("+ ");
-                        break;
-                    case Source.Both:
-                        builder.Append("  ");
-                        break;
-                }
-                builder.Append(difference.Chunk);
+                    else
+                    {
+                        builder.Append("- ");
+                        s = chunk.A;
+                    }
+                else
+                    builder.Append("  ");
+                // ReSharper disable once AssignNullToNotNullAttribute
+                builder.Append(s);
                 builder.Append(Environment.NewLine);
             }
             return builder.ToString();

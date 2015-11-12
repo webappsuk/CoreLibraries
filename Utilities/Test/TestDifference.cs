@@ -46,22 +46,23 @@ namespace WebApplications.Utilities.Test
         /// Allows the building of the expected result of a difference operation.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        private class DiffResult<T> : IReadOnlyList<KeyValuePair<Source, IEnumerable<T>>>
+        private class DiffResult<T> : IReadOnlyList<KeyValuePair<IEnumerable<T>, IEnumerable<T>>>
         {
             /// <summary>
             /// The underlying chunks.
             /// </summary>
             [NotNull]
-            private readonly List<KeyValuePair<Source, IEnumerable<T>>> _chunks =
-                new List<KeyValuePair<Source, IEnumerable<T>>>();
+            private readonly List<KeyValuePair<IEnumerable<T>, IEnumerable<T>>> _chunks =
+                new List<KeyValuePair<IEnumerable<T>, IEnumerable<T>>>();
 
             /// <summary>
             /// Adds a chunk to both.
             /// </summary>
-            /// <param name="enumeration">The enumeration.</param>
-            public void AddBoth([NotNull] IEnumerable<T> enumeration)
-                            => _chunks.Add(
-                                new KeyValuePair<Source, IEnumerable<T>>(Source.Both, enumeration));
+            /// <param name="enumerationA">The "A" enumeration.</param>
+            /// <param name="enumerationB">The "B" enumeration.</param>
+            public void AddBoth([NotNull] IEnumerable<T> enumerationA, IEnumerable<T> enumerationB = null)
+                => _chunks.Add(
+                    new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(enumerationA, enumerationB ?? enumerationA));
 
             /// <summary>
             /// Adds a chunk to both.
@@ -69,7 +70,7 @@ namespace WebApplications.Utilities.Test
             /// <param name="array">The array.</param>
             public void AddBoth([NotNull] params T[] array)
                             => _chunks.Add(
-                                new KeyValuePair<Source, IEnumerable<T>>(Source.Both, array));
+                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(array, array));
 
             /// <summary>
             /// Adds a chunk to A.
@@ -77,7 +78,7 @@ namespace WebApplications.Utilities.Test
             /// <param name="enumeration">The enumeration.</param>
             public void AddA([NotNull] IEnumerable<T> enumeration)
                             => _chunks.Add(
-                                new KeyValuePair<Source, IEnumerable<T>>(Source.A, enumeration));
+                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(enumeration, null));
 
             /// <summary>
             /// Adds a chunk to A.
@@ -85,7 +86,7 @@ namespace WebApplications.Utilities.Test
             /// <param name="array">The array.</param>
             public void AddA([NotNull] params T[] array)
                             => _chunks.Add(
-                                new KeyValuePair<Source, IEnumerable<T>>(Source.A, array));
+                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(array, null));
 
             /// <summary>
             /// Adds a chunk to B.
@@ -93,7 +94,7 @@ namespace WebApplications.Utilities.Test
             /// <param name="enumeration">The enumeration.</param>
             public void AddB([NotNull] IEnumerable<T> enumeration)
                             => _chunks.Add(
-                                new KeyValuePair<Source, IEnumerable<T>>(Source.B, enumeration));
+                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(null, enumeration));
 
             /// <summary>
             /// Adds a chunk to B.
@@ -101,10 +102,10 @@ namespace WebApplications.Utilities.Test
             /// <param name="array">The array.</param>
             public void AddB([NotNull] params T[] array)
                             => _chunks.Add(
-                                new KeyValuePair<Source, IEnumerable<T>>(Source.B, array));
+                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(null, array));
 
             /// <inheritdoc/>
-            public IEnumerator<KeyValuePair<Source, IEnumerable<T>>> GetEnumerator()
+            public IEnumerator<KeyValuePair<IEnumerable<T>, IEnumerable<T>>> GetEnumerator()
                             => _chunks.GetEnumerator();
 
             /// <inheritdoc/>
@@ -115,7 +116,7 @@ namespace WebApplications.Utilities.Test
             public int Count => _chunks.Count;
 
             /// <inheritdoc/>
-            public KeyValuePair<Source, IEnumerable<T>> this[int index] => _chunks[index];
+            public KeyValuePair<IEnumerable<T>, IEnumerable<T>> this[int index] => _chunks[index];
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace WebApplications.Utilities.Test
             Assert.IsNotNull(b, "The 'B' collection cannot be null.");
             Assert.IsNotNull(expectedResult, "The expected result cannot be null.");
 
-            KeyValuePair<Source, IEnumerable<T>>[] er = expectedResult.ToArray();
+            KeyValuePair<IEnumerable<T>, IEnumerable<T>>[] er = expectedResult.ToArray();
             CollectionAssert.AllItemsAreNotNull(er, "Expected result contains null.");
 
             Differences<T> actualResult = a.Diff(b, comparer);
@@ -147,31 +148,73 @@ namespace WebApplications.Utilities.Test
             Chunk<T>[] ar = actualResult.ToArray();
             CollectionAssert.AllItemsAreNotNull(ar, "Actual result contains null.");
 
-            Trace.WriteLine($"Chunks:\r\n{actualResult.ToString(",")}");
+            Trace.WriteLine($"Chunks:\r\n{actualResult}");
 
             Assert.AreEqual(er.Length, ar.Length, $"{ar.Length} actual results returned instead of the expected {er.Length}.");
             for (int i = 0; i < er.Length; i++)
             {
-                KeyValuePair<Source, IEnumerable<T>> eri = er[i];
+                KeyValuePair<IEnumerable<T>, IEnumerable<T>> eri = er[i];
                 Chunk<T> ari = ar[i];
-                Assert.AreEqual(
-                    eri.Key,
-                    ari.Source,
-                    $"The actual source '{ari.Source}' of the #{i} difference did not match the expected source '{eri.Key}'.");
+                Assert.IsNotNull(ari, $"The actual chunk of the #{i} difference was null.");
 
-                T[] eria = eri.Value.ToArray();
-                T[] aria = ari.ToArray();
-                Assert.AreEqual(
-                    eria.Length,
-                    aria.Length,
-                    $"The actual chunk length '{aria.Length}' of the #{i} difference did not match the expected chunk length '{eria.Length}.");
-                for (int j = 0; j < eria.Length; j++)
+                if (ari.A == null)
+                    Assert.IsNull(
+                        eri.Key,
+                        $"The actual chunk A of the #{i} difference was null, when the expected chunk A is not null.");
+                else
                 {
-                    T eriaj = eria[j];
-                    T ariaj = aria[j];
-                    Assert.IsTrue(
-                        comparer.Equals(eriaj, ariaj),
-                        $"The #{j} item '{ariaj}' of the #{i} difference did not match the expected item '{eriaj}.");
+                    Assert.IsNotNull(
+                        eri.Key,
+                        $"The actual chunk A of the #{i} difference was not null, when the expected chunk A is null.");
+
+                    IEnumerator<T> eriae = eri.Key.GetEnumerator();
+                    IEnumerator<T> ariae = ari.A.GetEnumerator();
+
+                    int j = 0;
+                    while (eriae.MoveNext())
+                    {
+                        Assert.IsTrue(
+                            ariae.MoveNext(),
+                            $"The actual chunk A of the #{i} difference only had {j} items, whilst more were expected.");
+
+                        Assert.IsTrue(
+                            comparer.Equals(eriae.Current, ariae.Current),
+                            $"The #{j} item '{ariae.Current}' of the A #{i} difference did not match the expected item '{eriae.Current}'.");
+                        j++;
+                    }
+                    Assert.IsFalse(
+                        ariae.MoveNext(),
+                        $"The actual chunk A of the #{i} difference has more than the {j} expected items.");
+                }
+
+                if (ari.B == null)
+                    Assert.IsNull(
+                        eri.Value,
+                        $"The actual chunk B of the #{i} difference was null, when the expected chunk B is not null.");
+                else
+                {
+                    Assert.IsNotNull(
+                        eri.Value,
+                        $"The actual chunk B of the #{i} difference was not null, when the expected chunk B is null.");
+
+                    IEnumerator<T> eribe = eri.Value.GetEnumerator();
+                    IEnumerator<T> aribe = ari.B.GetEnumerator();
+
+                    int j = 0;
+                    while (eribe.MoveNext())
+                    {
+                        Assert.IsTrue(
+                            aribe.MoveNext(),
+                            $"The actual chunk B of the #{i} difference only had {j} items, whilst more were expected.");
+
+                        Assert.IsTrue(
+                            comparer.Equals(eribe.Current, aribe.Current),
+                            $"The #{j} item '{aribe.Current}' of the B #{i} difference did not match the expected item '{eribe.Current}'.");
+                        j++;
+                    }
+                    Assert.IsFalse(
+                        aribe.MoveNext(),
+                        $"The actual chunk B of the #{i} difference has more than the {j} expected items.");
                 }
             }
         }

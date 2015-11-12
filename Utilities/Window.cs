@@ -37,6 +37,7 @@ namespace WebApplications.Utilities
     /// Holds a window on existing data.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
+    /// <seealso cref="ReadOnlyWindow{T}"/>
     [PublicAPI]
     public class Window<T> : IList<T>, IList
     {
@@ -309,15 +310,25 @@ namespace WebApplications.Utilities
         /// <returns>A subset <see cref="Window{T}"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offset" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="length" /> is out of range.</exception>
+        [NotNull]
         public Window<T> GetSubset(int offset, int length)
         {
             if (offset == 0 && length == Data.Count - _delta) return this;
 
-            if (offset < (AllowExpansion ? -Offset : 0) ||
-                offset >= (AllowExpansion ? Data.Count - Offset : Data.Count - _delta))
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (length < 0 || (length + offset >= (AllowExpansion ? Data.Count - Offset : Data.Count - _delta)))
-                throw new ArgumentOutOfRangeException(nameof(length));
+            if (AllowExpansion)
+            {
+                if (offset < -Offset)
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                if (length > Data.Count - offset)
+                    throw new ArgumentOutOfRangeException(nameof(length));
+            }
+            else
+            {
+                if (offset < 0)
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                if (length > Data.Count - _delta)
+                    throw new ArgumentOutOfRangeException(nameof(length));
+            }
 
             return new Window<T>(Data, Offset + offset, length, AllowExpansion);
         }

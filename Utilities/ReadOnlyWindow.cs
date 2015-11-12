@@ -159,15 +159,25 @@ namespace WebApplications.Utilities
         /// <returns>A subset <see cref="ReadOnlyWindow{T}"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offset" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="length" /> is out of range.</exception>
+        [NotNull]
         public ReadOnlyWindow<T> GetSubset(int offset, int length)
         {
-            if (offset == 0 && length == Count) return this;
+            if (offset == 0 && length == Data.Count - _delta) return this;
 
-            if (offset < (AllowExpansion ? -Offset : 0) ||
-                offset >= (AllowExpansion ? Data.Count - Offset : Count))
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            if (length < 0 || (length + offset >= (AllowExpansion ? Data.Count - Offset : Count)))
-                throw new ArgumentOutOfRangeException(nameof(length));
+            if (AllowExpansion)
+            {
+                if (offset < -Offset)
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                if (length > Data.Count - offset)
+                    throw new ArgumentOutOfRangeException(nameof(length));
+            }
+            else
+            {
+                if (offset < 0)
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                if (length > Data.Count - _delta)
+                    throw new ArgumentOutOfRangeException(nameof(length));
+            }
 
             return new ReadOnlyWindow<T>(Data, Offset + offset, length, AllowExpansion);
         }

@@ -30,7 +30,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Difference
@@ -43,25 +42,20 @@ namespace WebApplications.Utilities.Difference
     public class StringDifferences : IReadOnlyList<StringChunk>
     {
         /// <summary>
-        /// The chunks lazy initializer.
+        /// The chunks.
         /// </summary>
         [NotNull]
-        private readonly Lazy<IReadOnlyList<StringChunk>> _chunks;
-
+        [ItemNotNull]
+        private readonly IReadOnlyList<StringChunk> _chunks;
+        
         /// <summary>
-        /// The equality comparer.
-        /// </summary>
-        [NotNull]
-        public readonly IEqualityComparer<char> EqualityComparer;
-
-        /// <summary>
-        /// The '<see cref="Source.A"/>' string.
+        /// The 'A' string.
         /// </summary>
         [NotNull]
         public readonly string A;
 
         /// <summary>
-        /// The '<see cref="Source.B"/>' string.
+        /// The 'B' string.
         /// </summary>
         [NotNull]
         public readonly string B;
@@ -69,8 +63,8 @@ namespace WebApplications.Utilities.Difference
         /// <summary>
         /// Initializes a new instance of the <see cref="StringDifferences" /> class.
         /// </summary>
-        /// <param name="a">The '<see cref="Source.A"/>' string.</param>
-        /// <param name="b">The '<see cref="Source.B"/>' string.</param>
+        /// <param name="a">The 'A' string.</param>
+        /// <param name="b">The 'B' string.</param>
         /// <param name="comparer">The character comparer.</param>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
@@ -86,62 +80,56 @@ namespace WebApplications.Utilities.Difference
             A = a;
             B = b;
             if (comparer == null) comparer = CharComparer.CurrentCulture;
-            EqualityComparer = comparer;
 
-            _chunks = new Lazy<IReadOnlyList<StringChunk>>(
-                () => a.ToCharArray().Diff(b.ToCharArray(), comparer)
-                    .Select(c => new StringChunk(c)).ToArray(),
-                LazyThreadSafetyMode.ExecutionAndPublication);
+            _chunks = a.ToCharArray()
+                .Diff(b.ToCharArray(), comparer)
+                .Select(c => new StringChunk(c)).ToArray();
         }
-
-        // ReSharper disable PossibleNullReferenceException, ExceptionNotDocumented
+        
         /// <inheritdoc />
         [ItemNotNull]
-        public IEnumerator<StringChunk> GetEnumerator() => _chunks.Value.GetEnumerator();
-
-        /// <inheritdoc />
-        [ItemNotNull]
-        IEnumerator IEnumerable.GetEnumerator() => _chunks.Value.GetEnumerator();
+        public IEnumerator<StringChunk> GetEnumerator() => _chunks.GetEnumerator();
 
         /// <inheritdoc />
         [ItemNotNull]
-        public int Count => _chunks.Value.Count;
+        IEnumerator IEnumerable.GetEnumerator() => _chunks.GetEnumerator();
+
+        /// <inheritdoc />
+        [ItemNotNull]
+        public int Count => _chunks.Count;
 
         /// <inheritdoc />
         [NotNull]
         [ItemNotNull]
         // ReSharper disable once AssignNullToNotNullAttribute
-        public StringChunk this[int index] => _chunks.Value[index];
+        public StringChunk this[int index] => _chunks[index];
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents the differences.
         /// </summary>
-        /// <param name="sep">The item separator.</param>
         /// <returns>A <see cref="System.String" /> that represents the differences.</returns>
-        [NotNull]
-        public string ToString(string sep)
+        public override string ToString()
         {
             // TODO Cache and make use of FormatBuilder
             StringBuilder builder = new StringBuilder();
-            foreach (StringChunk difference in _chunks.Value)
+            foreach (StringChunk chunk in _chunks)
             {
-                switch (difference.Source)
-                {
-                    case Source.A:
-                        builder.Append("A    : ");
-                        break;
-                    case Source.B:
-                        builder.Append("B    : ");
-                        break;
-                    case Source.Both:
-                        builder.Append("Both : ");
-                        break;
-                }
-                builder.Append(difference.Chunk);
+                string s = chunk.B;
+                if (!chunk.AreEqual)
+                    if (chunk.A == null)
+                        builder.Append("+ ");
+                    else
+                    {
+                        builder.Append("- ");
+                        s = chunk.A;
+                    }
+                else
+                    builder.Append("  ");
+                // ReSharper disable once AssignNullToNotNullAttribute
+                builder.Append(s);
                 builder.Append(Environment.NewLine);
             }
             return builder.ToString();
         }
-        // ReSharper restore PossibleNullReferenceException, ExceptionNotDocumented
     }
 }

@@ -84,7 +84,7 @@ namespace WebApplications.Utilities.Test
                 _waiters.Add(tcs);
             return tcs.Task.WithCancellation(cancellationToken);
         }
-
+        
         [TestMethod]
         public void TestConstructor()
         {
@@ -126,7 +126,7 @@ namespace WebApplications.Utilities.Test
             // Prevent multiple tests accessing the app config.
             using (await _configFileLock.LockAsync())
             {
-
+                Assert.IsTrue(TestConfigurationSection.Active.HasFile);
                 XElement custom = TestConfigurationSection.Active.Custom;
                 Assert.IsNotNull(custom);
                 XElement custom2 = TestConfigurationSection.Active.Custom;
@@ -168,7 +168,7 @@ namespace WebApplications.Utilities.Test
                 Assert.IsTrue(change.Contains("<test>.string2"));
 
                 custom = TestConfigurationSection.Active.Custom;
-                Assert.IsNotNull(custom);
+                Assert.IsNotNull(custom, $"#{TestConfigurationSection.Active.InstanceNumber} custom was null.");
                 Assert.AreEqual("custom", custom.Name.LocalName);
                 Assert.AreEqual(str1Random, custom.Element("string1")?.Value);
                 Assert.AreEqual(str2Random, custom.Element("string2")?.Value);
@@ -207,13 +207,7 @@ namespace WebApplications.Utilities.Test
             using (await _configFileLock.LockAsync())
             {
                 // Get the test config file path.
-                string filePath =
-                    TestConfigurationSection.Active.FilePaths
-                        .SingleOrDefault(
-                            p => string.Equals(
-                                Path.GetFileName(p),
-                                "test.config",
-                                StringComparison.CurrentCultureIgnoreCase));
+                string filePath = TestConfigurationSection.Active.FilePath;
 
                 Trace.WriteLine($"Configuration file: '{filePath}'");
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Difference
@@ -8,26 +7,42 @@ namespace WebApplications.Utilities.Difference
     /// Gets a chunk of comparison.
     /// </summary>
     [PublicAPI]
-    public class Chunk<T> : ReadOnlyWindow<T>, IChunk<T>
+    public class Chunk<T>
     {
         /// <summary>
-        /// The source of the chunk.
+        /// <see langword="true"/> if <see cref="A"/> and <see cref="B"/> are considered equal.
         /// </summary>
-        public Source Source { get; }
+        public bool AreEqual => A != null && B != null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Chunk{T}"/> class.
+        /// The "A" list, if any.
         /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="data">The data.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="length">The length.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offset" /> is out of range.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="length" /> is out of range.</exception>
-        internal Chunk(Source source, [NotNull] [ItemNotNull] IReadOnlyList<T> data, int offset, int length)
-            : base(data, offset, length, false)
+        [CanBeNull]
+        public readonly ReadOnlyWindow<T> A;
+
+
+        /// <summary>
+        /// The "B" list, if any.
+        /// </summary>
+        [CanBeNull]
+        public readonly ReadOnlyWindow<T> B;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Chunk{T}" /> class.
+        /// </summary>
+        /// <param name="a">The "A" list.</param>
+        /// <param name="b">The "B" list.</param>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" /> and
+        /// <paramref name="b" /> is <see langword="null" /> (only one can be <see langword="null" /> at a time.</exception>
+        internal Chunk(
+            [CanBeNull] ReadOnlyWindow<T> a,
+            [CanBeNull] ReadOnlyWindow<T> b)
         {
-            Source = source;
+            if (a == null && b == null)
+                throw new ArgumentNullException(nameof(a));
+            A = a;
+            B = b;
         }
     }
 }
