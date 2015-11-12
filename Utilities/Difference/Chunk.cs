@@ -7,6 +7,7 @@ namespace WebApplications.Utilities.Difference
     /// Gets a chunk of comparison.
     /// </summary>
     [PublicAPI]
+    [Serializable]
     public class Chunk<T>
     {
         /// <summary>

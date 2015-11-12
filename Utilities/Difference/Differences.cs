@@ -39,6 +39,7 @@ namespace WebApplications.Utilities.Difference
     /// </summary>
     /// <typeparam name="T">The items type.</typeparam>
     [PublicAPI]
+    [Serializable]
     public class Differences<T> : IReadOnlyList<Chunk<T>>
     {
         /// <summary>

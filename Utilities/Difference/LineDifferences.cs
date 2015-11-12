@@ -10,6 +10,7 @@ namespace WebApplications.Utilities.Difference
     /// A set of differences between lines of text.
     /// </summary>
     [PublicAPI]
+    [Serializable]
     public class LineDifferences : IReadOnlyList<LineChunk>
     {
         /// <summary>
@@ -104,6 +105,7 @@ namespace WebApplications.Utilities.Difference
         // ReSharper restore PossibleNullReferenceException, ExceptionNotDocumented
     }
 
+    [Serializable]
     public class LineChunk : StringChunk
     {
         internal LineChunk([NotNull] Chunk<char> charChunk)

@@ -37,8 +37,11 @@ namespace WebApplications.Utilities
     /// Holds a window on existing data.
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
+    /// <seealso cref="IList{T}"/>
+    /// <seealso cref="IList"/>
     /// <seealso cref="ReadOnlyWindow{T}"/>
     [PublicAPI]
+    [Serializable]
     public class Window<T> : IList<T>, IList
     {
         /// <summary>

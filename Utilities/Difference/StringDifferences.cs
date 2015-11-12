@@ -39,6 +39,7 @@ namespace WebApplications.Utilities.Difference
     /// </summary>
     /// <seealso cref="Differences{T}"/>
     [PublicAPI]
+    [Serializable]
     public class StringDifferences : IReadOnlyList<StringChunk>
     {
         /// <summary>

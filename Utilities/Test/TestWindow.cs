@@ -26,6 +26,7 @@
 #endregion
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -218,6 +219,22 @@ namespace WebApplications.Utilities.Test
 
             window.Add(1);
 
+        }
+
+        [TestMethod]
+        public void TestReadOnlyMapWithOverlap()
+        {
+            List<int> list = new List<int> { 1, 2, 3, 4 };
+            IReadOnlyList<int> map = new ReadOnlyMap<int>
+            {
+                new ReadOnlyWindow<int>(list, 1, 1),
+                new ReadOnlyWindow<int>(list, 0, 3)
+            };
+
+            Assert.AreEqual(4, map.Count);
+            CollectionAssert.AreEqual(new[] { 2, 1, 2, 3 }, (ICollection) map);
+            Assert.AreEqual(2, map[0]);
+            Assert.AreEqual(1, map[1]);
         }
     }
 }
