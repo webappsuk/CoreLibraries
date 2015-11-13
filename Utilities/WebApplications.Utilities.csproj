@@ -70,7 +70,6 @@
     <Compile Include="Difference\Chunk.cs" />
     <Compile Include="DifferenceExtensions.cs" />
     <Compile Include="Difference\Differences.cs" />
-    <Compile Include="Difference\LineDifferences.cs" />
     <Compile Include="Difference\StringChunk.cs" />
     <Compile Include="Difference\StringDifferences.cs" />
     <Compile Include="Difference\TextOptions.cs" />
@@ -160,7 +159,9 @@
     <Compile Include="IReadOnlyLookup.cs" />
     <Compile Include="Array.cs" />
     <Compile Include="KeyValuePair.cs" />
+    <Compile Include="Mapping.cs" />
     <Compile Include="ReadOnlyMap.cs" />
+    <Compile Include="ReadOnlyOffsetMap.cs" />
     <Compile Include="Threading\BufferedAction.cs" />
     <Compile Include="Threading\BufferedActionGeneric.cs">
       <DependentUpon>BufferedActionGeneric.tt</DependentUpon>

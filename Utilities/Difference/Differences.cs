@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using WebApplications.Utilities.Annotations;
 
@@ -62,6 +63,12 @@ namespace WebApplications.Utilities.Difference
         private readonly IReadOnlyList<Chunk<T>> _chunks;
 
         /// <summary>
+        /// Whether <see cref="A"/> and <see cref="B"/> are consider equal.
+        /// </summary>
+        /// <value>The are equal.</value>
+        public bool AreEqual => _chunks.All(c => c.AreEqual);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Differences{T}" /> class.
         /// </summary>
         /// <param name="a">The "A" list.</param>
@@ -73,6 +80,12 @@ namespace WebApplications.Utilities.Difference
         /// <param name="comparer">The comparer to compare items in each collection.</param>
         /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="comparer" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetA" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthA" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetB" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthB" /> is out of range.</exception>
+        /// <exception cref="Exception">The <paramref name="comparer"/> throws an exception.</exception>
         internal Differences(
             [NotNull] IReadOnlyList<T> a,
             int offsetA,
@@ -80,11 +93,11 @@ namespace WebApplications.Utilities.Difference
             [NotNull] IReadOnlyList<T> b,
             int offsetB,
             int lengthB,
-            IEqualityComparer<T> comparer = null)
+            [NotNull] Func<T, T, bool> comparer)
         {
             if (a == null) throw new ArgumentNullException(nameof(a));
             if (b == null) throw new ArgumentNullException(nameof(b));
-            if (comparer == null) comparer = EqualityComparer<T>.Default;
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             A = new ReadOnlyWindow<T>(a, offsetA, lengthA);
             B = new ReadOnlyWindow<T>(b, offsetB, lengthB);
 
@@ -109,14 +122,14 @@ namespace WebApplications.Utilities.Difference
             while (stack.TryPop(out lowerA, out upperA, out lowerB, out upperB))
             {
                 // Skip equal lines at start of chunk
-                while (lowerA < upperA && lowerB < upperB && comparer.Equals(A[lowerA], B[lowerB]))
+                while (lowerA < upperA && lowerB < upperB && comparer(A[lowerA], B[lowerB]))
                 {
                     lowerA++;
                     lowerB++;
                 }
 
                 // Skip equal lines at end of the chunk.
-                while (lowerA < upperA && lowerB < upperB && comparer.Equals(A[upperA - 1], B[upperB - 1]))
+                while (lowerA < upperA && lowerB < upperB && comparer(A[upperA - 1], B[upperB - 1]))
                 {
                     --upperA;
                     --upperB;
@@ -196,7 +209,7 @@ namespace WebApplications.Utilities.Difference
                         // Find the end of the furthest reaching forward D-path in diagonal k.
                         while ((x < upperA) &&
                                (y < upperB) &&
-                               (comparer.Equals(A[x], B[y])))
+                               (comparer(A[x], B[y])))
                         {
                             x++;
                             y++;
@@ -242,7 +255,7 @@ namespace WebApplications.Utilities.Difference
 
                         while ((x > lowerA) &&
                                (y > lowerB) &&
-                               (comparer.Equals(A[x - 1], B[y - 1])))
+                               (comparer(A[x - 1], B[y - 1])))
                         {
                             x--;
                             y--;

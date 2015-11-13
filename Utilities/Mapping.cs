@@ -28,45 +28,39 @@
 using System;
 using WebApplications.Utilities.Annotations;
 
-namespace WebApplications.Utilities.Difference
+namespace WebApplications.Utilities
 {
     /// <summary>
-    /// Options for comparing text.
+    /// A mapping on the underlying data.
     /// </summary>
-    [Flags]
     [PublicAPI]
-    public enum TextOptions
+    public struct Mapping
     {
         /// <summary>
-        /// No options.
+        /// The offset in the underlying data.
         /// </summary>
-        None = 0,
+        public readonly int Offset;
 
         /// <summary>
-        /// Trims white space from the start and end of lines.
+        /// The length.
         /// </summary>
-        Trim = 1 << 0,
+        public readonly int Length;
 
         /// <summary>
-        /// Normalizes line endings.
+        /// Initializes a new instance of the <see cref="Mapping"/> struct.
         /// </summary>
-        NormalizeLineEndings = 1 << 1,
-
-        /// <summary>
-        /// Collapses all white space (so will also <see cref="NormalizeLineEndings"/>, word boundaries are still
-        /// considered significant.
-        /// </summary>
-        CollapseWhiteSpace = NormalizeLineEndings | 1 << 2,
-
-        /// <summary>
-        /// Ignores all white space (so will also <see cref="CollapseWhiteSpace"/>, <see cref="NormalizeLineEndings"/>
-        /// and <see cref="Trim"/>), this has the effect of ignoring word boundaries.
-        /// </summary>
-        IgnoreWhiteSpace = Trim | NormalizeLineEndings | CollapseWhiteSpace | 1 << 3,
-
-        /// <summary>
-        /// The default options (equivalent to <see cref="NormalizeLineEndings"/>.
-        /// </summary>
-        Default = NormalizeLineEndings
+        /// <param name="offset">The offset.</param>
+        /// <param name="length">The length.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> is less than zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        public Mapping(int offset, int length)
+        {
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            Offset = offset;
+            Length = length;
+        }
     }
 }

@@ -393,5 +393,26 @@ namespace WebApplications.Utilities.Test
             result.AddBoth(5);
             TestDiff(a, b, result);
         }
+
+        [TestMethod]
+        public void TestStringDifferenceIgnore1()
+        {
+            StringDifferences differences = "Test   difference".Diff("Test Difference", TextOptions.IgnoreWhiteSpace, CharComparer.CurrentCultureIgnoreCase);
+            Assert.IsTrue(differences.AreEqual);
+        }
+
+        [TestMethod]
+        public void TestStringDifference2()
+        {
+            StringDifferences differences = "Test  a difference".Diff("Test Difference", TextOptions.None, CharComparer.CurrentCultureIgnoreCase);
+            Assert.IsFalse(differences.AreEqual);
+        }
+
+        [TestMethod]
+        public void TestStringDifference3()
+        {
+            StringDifferences differences = "Test  a difference ".Diff("Test Difference  ", TextOptions.IgnoreWhiteSpace, CharComparer.CurrentCultureIgnoreCase);
+            Assert.IsFalse(differences.AreEqual);
+        }
     }
 }

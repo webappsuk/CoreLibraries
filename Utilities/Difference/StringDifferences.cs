@@ -62,29 +62,64 @@ namespace WebApplications.Utilities.Difference
         public readonly string B;
 
         /// <summary>
+        /// Whether <see cref="A"/> and <see cref="B"/> are consider equal.
+        /// </summary>
+        /// <value>The are equal.</value>
+        public bool AreEqual => _chunks.All(c => c.AreEqual);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StringDifferences" /> class.
         /// </summary>
         /// <param name="a">The 'A' string.</param>
+        /// <param name="offsetA">The offset to the start of a window in the first string.</param>
+        /// <param name="lengthA">The length of the window in the first string.</param>
         /// <param name="b">The 'B' string.</param>
+        /// <param name="offsetB">The offset to the start of a window in the second string.</param>
+        /// <param name="lengthB">The length of the window in the second string.</param>
+        /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The character comparer.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// </exception>
         /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="comparer" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetA" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthA" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetB" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthB" /> is out of range.</exception>
+        /// <exception cref="Exception">The <paramref name="comparer" /> throws an exception.</exception>
         internal StringDifferences(
             [NotNull] string a,
+            int offsetA,
+            int lengthA,
             [NotNull] string b,
-            IEqualityComparer<char> comparer = null)
+            int offsetB,
+            int lengthB,
+            TextOptions textOptions,
+            [NotNull] Func<char, char, bool> comparer)
         {
             if (a == null) throw new ArgumentNullException(nameof(a));
             if (b == null) throw new ArgumentNullException(nameof(b));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             A = a;
             B = b;
-            if (comparer == null) comparer = CharComparer.CurrentCulture;
 
-            _chunks = a.ToCharArray()
-                .Diff(b.ToCharArray(), comparer)
-                .Select(c => new StringChunk(c)).ToArray();
+            if (textOptions != TextOptions.None)
+            {
+                // Wrap the comparer with an additional check to handle special characters.
+                Func<char, char, bool> oc = comparer;
+                if (textOptions.HasFlag(TextOptions.IgnoreWhiteSpace))
+                    // Ignore white space - treat all whitespace as the same (note this will handle line endings too).
+                    comparer = (x, y) => char.IsWhiteSpace(x) ? char.IsWhiteSpace(y) : oc(x, y);
+                else if (textOptions.HasFlag(TextOptions.NormalizeLineEndings))
+                // Just normalize line endings - treat '\r' and '\n\ as the same
+                    comparer = (x, y) => x == '\r' || x == '\n' ? y == '\r' || y == '\n' : oc(x, y);
+            }
+
+            // Map strings based on text options
+            ReadOnlyOffsetMap<char> aMap = a.ToMappedCharArray(textOptions);
+            ReadOnlyOffsetMap<char> bMap = b.ToMappedCharArray(textOptions);
+            _chunks = aMap.Diff(bMap, comparer)
+                // TODO Track back to underlying mappings here...
+                .Select(c => new StringChunk(a, aMap, b, bMap, c)).ToArray();
         }
         
         /// <inheritdoc />

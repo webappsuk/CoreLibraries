@@ -39,6 +39,8 @@ namespace WebApplications.Utilities
     /// <seealso cref="IReadOnlyList{T}"/>
     /// <seealso cref="ICollection"/>
     /// <seealso cref="Window{T}"/>
+    /// <seealso cref="ReadOnlyMap{T}"/>
+    /// <seealso cref="ReadOnlyOffsetMap{T}"/>
     [PublicAPI]
     [Serializable]
     public class ReadOnlyWindow<T> : IReadOnlyList<T>, ICollection

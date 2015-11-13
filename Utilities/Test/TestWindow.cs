@@ -218,21 +218,38 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(1, window.Offset); // Note the offset is beyond the end of the underlying data
 
             window.Add(1);
-
         }
 
         [TestMethod]
         public void TestReadOnlyMapWithOverlap()
         {
             List<int> list = new List<int> { 1, 2, 3, 4 };
+            List<int> list2 = new List<int> { 5, 6, 7 };
             IReadOnlyList<int> map = new ReadOnlyMap<int>
             {
                 new ReadOnlyWindow<int>(list, 1, 1),
-                new ReadOnlyWindow<int>(list, 0, 3)
+                new ReadOnlyWindow<int>(list, 0, 3),
+                new ReadOnlyWindow<int>(list2, 1, 1)
+            };
+
+            Assert.AreEqual(5, map.Count);
+            CollectionAssert.AreEqual(new[] { 2, 1, 2, 3, 6 }, (ICollection)map);
+            Assert.AreEqual(2, map[0]);
+            Assert.AreEqual(1, map[1]);
+        }
+
+        [TestMethod]
+        public void TestReadOnlyOffsetMapWithOverlap()
+        {
+            List<int> list = new List<int> { 1, 2, 3, 4 };
+            IReadOnlyList<int> map = new ReadOnlyOffsetMap<int>(list)
+            {
+                new Mapping(1, 1),
+                new Mapping(0, 3),
             };
 
             Assert.AreEqual(4, map.Count);
-            CollectionAssert.AreEqual(new[] { 2, 1, 2, 3 }, (ICollection) map);
+            CollectionAssert.AreEqual(new[] { 2, 1, 2, 3 }, (ICollection)map);
             Assert.AreEqual(2, map[0]);
             Assert.AreEqual(1, map[1]);
         }
