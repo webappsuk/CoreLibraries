@@ -403,7 +403,7 @@ namespace WebApplications.Utilities
         /// <returns>A <see cref="ReadOnlyOffsetMap{T}"/> of <see cref="char">characters</see>.</returns>
         [NotNull]
         public static StringMap ToMapped(
-            this string input,
+            [NotNull] this string input,
             TextOptions options = TextOptions.Default) => new StringMap(input, options);
     }
 }

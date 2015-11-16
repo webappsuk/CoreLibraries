@@ -43,27 +43,53 @@ namespace WebApplications.Utilities.Test
         /// <param name="expected">The expected output mapped string.</param>
         /// <param name="input">The input string.</param>
         /// <param name="options">The options.</param>
-        private static void TestMap(ref int failures, ref int successes, string expected, string input, TextOptions options)
+        private static void TestMap(
+            ref int failures,
+            ref int successes,
+            string expected,
+            string input,
+            TextOptions options)
         {
             Trace.WriteLine(new string('=', 80));
-            Trace.WriteLine($"Options:'{options}' String:'{input.Escape()}' Map:");
 
+            Assert.IsNotNull(input);
+            Assert.IsNotNull(expected);
             // Generate map
-            string output = input.ToMapped(options).Mapped;
+            StringMap map = input.ToMapped(options);
+            string output = map.Mapped;
+            Trace.WriteLine($"Options:'{options}' String:'{input.Escape()}' Map: '{output.Escape()}'");
 
-            // Display map
-            //Trace.WriteLine(output);
-            //string output = string.Concat(map.Select(m => input.Substring(m.Offset, m.Length)));
-
+            bool failed = false;
             if (!string.Equals(expected, output, StringComparison.Ordinal))
             {
-                failures++;
-                Trace.WriteLine($"FAILED - Expected a mapped string of '{expected.Escape()}' - got '{output.Escape()}'");
+                Trace.WriteLine($"FAILED - Expected a mapped string of '{expected.Escape()}'");
+                failed = true;
             }
-            else successes++;
-
+            else
+                for (int i = 0; i < map.Count; i++)
+                {
+                    char o = output[i];
+                    int j = map.GetOriginalIndex(i);
+                    if (j < 0 || j >= input.Length)
+                    {
+                        Trace.WriteLine(
+                            $"FAILED - Mapped character '{o.ToString().Escape()}' at index '{i}' has invalid mapping to index '{j}'.");
+                        failed = true;
+                        continue;
+                    }
+                    char m = input[j];
+                    if (o != m)
+                    {
+                        Trace.WriteLine(
+                            $"FAILED - Expected mapped character '{o.ToString().Escape()}' at index '{i}' to equal '{m.ToString().Escape()}' at index '{j}'.");
+                        failed = true;
+                    }
+                }
 
             Trace.WriteLine(string.Empty);
+
+            if (failed) failures++;
+            else successes++;
         }
 
         [TestMethod]
@@ -99,6 +125,7 @@ namespace WebApplications.Utilities.Test
         {
             int failures = 0;
             int successes = 0;
+
             TestMap(ref failures, ref successes, "", "", TextOptions.Trim);
             TestMap(ref failures, ref successes, "", " ", TextOptions.Trim);
             TestMap(ref failures, ref successes, "\r", "\r", TextOptions.Trim);
@@ -109,7 +136,7 @@ namespace WebApplications.Utilities.Test
             TestMap(ref failures, ref successes, "ab", " ab ", TextOptions.Trim);
             TestMap(ref failures, ref successes, "a b", "a b", TextOptions.Trim);
             TestMap(ref failures, ref successes, "a b", " a b ", TextOptions.Trim);
-            TestMap(ref failures, ref successes, "a  b", " a  b ", TextOptions.None);
+            TestMap(ref failures, ref successes, "a  b", " a  b ", TextOptions.Trim);
             TestMap(ref failures, ref successes, "a\rb", " a\rb ", TextOptions.Trim);
             TestMap(ref failures, ref successes, "a\r\nb", " a\r\nb ", TextOptions.Trim);
             TestMap(ref failures, ref successes, "\ra\r\nb\n", "\ra\r\nb\n", TextOptions.Trim);
@@ -127,6 +154,7 @@ namespace WebApplications.Utilities.Test
         {
             int failures = 0;
             int successes = 0;
+
             TestMap(ref failures, ref successes, "", "", TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, " ", " ", TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "\r", "\r", TextOptions.NormalizeLineEndings);
@@ -144,6 +172,9 @@ namespace WebApplications.Utilities.Test
             TestMap(ref failures, ref successes, "\r a \r b \n", "\r a \r\n b \n", TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "\r ab \r cd \n", "\r ab \r\n cd \n", TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "\ra b\r c d \n", "\ra b\r\n c d \n", TextOptions.NormalizeLineEndings);
+            TestMap(ref failures, ref successes, "\n\r", "\n\r", TextOptions.NormalizeLineEndings);
+            TestMap(ref failures, ref successes, "\n\r", "\n\r\n", TextOptions.NormalizeLineEndings);
+
             if (failures > 0)
                 Assert.Fail($"{failures} failures out of {failures + successes}.");
             else
@@ -155,6 +186,7 @@ namespace WebApplications.Utilities.Test
         {
             int failures = 0;
             int successes = 0;
+
             TestMap(ref failures, ref successes, "", "", TextOptions.Trim | TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "", " ", TextOptions.Trim | TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "\r", "\r", TextOptions.Trim | TextOptions.NormalizeLineEndings);
@@ -165,13 +197,38 @@ namespace WebApplications.Utilities.Test
             TestMap(ref failures, ref successes, "ab", " ab ", TextOptions.Trim | TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "a b", "a b", TextOptions.Trim | TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "a b", " a b ", TextOptions.Trim | TextOptions.NormalizeLineEndings);
-            TestMap(ref failures, ref successes, "a  b", " a  b ", TextOptions.None);
+            TestMap(ref failures, ref successes, "a  b", " a  b ", TextOptions.Trim | TextOptions.NormalizeLineEndings);
             TestMap(ref failures, ref successes, "a\rb", " a\rb ", TextOptions.Trim | TextOptions.NormalizeLineEndings);
-            TestMap(ref failures, ref successes, "a\rb", " a\r\nb ", TextOptions.Trim | TextOptions.NormalizeLineEndings);
-            TestMap(ref failures, ref successes, "\ra\rb\n", "\ra\r\nb\n", TextOptions.Trim | TextOptions.NormalizeLineEndings);
-            TestMap(ref failures, ref successes, "\ra\rb\n", "\r a \r\n b \n", TextOptions.Trim | TextOptions.NormalizeLineEndings);
-            TestMap(ref failures, ref successes, "\rab\rcd\n", "\r ab \r\n cd \n", TextOptions.Trim | TextOptions.NormalizeLineEndings);
-            TestMap(ref failures, ref successes, "\ra b\rc d\n", "\ra b\r\n c d \n", TextOptions.Trim | TextOptions.NormalizeLineEndings);
+            TestMap(
+                ref failures,
+                ref successes,
+                "a\rb",
+                " a\r\nb ",
+                TextOptions.Trim | TextOptions.NormalizeLineEndings);
+            TestMap(
+                ref failures,
+                ref successes,
+                "\ra\rb\n",
+                "\ra\r\nb\n",
+                TextOptions.Trim | TextOptions.NormalizeLineEndings);
+            TestMap(
+                ref failures,
+                ref successes,
+                "\ra\rb\n",
+                "\r a \r\n b \n",
+                TextOptions.Trim | TextOptions.NormalizeLineEndings);
+            TestMap(
+                ref failures,
+                ref successes,
+                "\rab\rcd\n",
+                "\r ab \r\n cd \n",
+                TextOptions.Trim | TextOptions.NormalizeLineEndings);
+            TestMap(
+                ref failures,
+                ref successes,
+                "\ra b\rc d\n",
+                "\ra b\r\n c d \n",
+                TextOptions.Trim | TextOptions.NormalizeLineEndings);
             if (failures > 0)
                 Assert.Fail($"{failures} failures out of {failures + successes}.");
             else
@@ -187,7 +244,7 @@ namespace WebApplications.Utilities.Test
             TestMap(ref failures, ref successes, " ", " ", TextOptions.CollapseWhiteSpace);
             TestMap(ref failures, ref successes, "\r", "\r", TextOptions.CollapseWhiteSpace);
             TestMap(ref failures, ref successes, "\r", "\r\n", TextOptions.CollapseWhiteSpace);
-            TestMap(ref failures, ref successes, "\r ", "\r\n ", TextOptions.CollapseWhiteSpace);
+            TestMap(ref failures, ref successes, "\r", "\r\n ", TextOptions.CollapseWhiteSpace);
             TestMap(ref failures, ref successes, " ", " \r\n ", TextOptions.CollapseWhiteSpace);
             TestMap(ref failures, ref successes, "a", "a", TextOptions.CollapseWhiteSpace);
             TestMap(ref failures, ref successes, " ab ", " ab ", TextOptions.CollapseWhiteSpace);
@@ -197,13 +254,22 @@ namespace WebApplications.Utilities.Test
             TestMap(ref failures, ref successes, " a\rb ", " a\rb ", TextOptions.CollapseWhiteSpace);
             TestMap(ref failures, ref successes, " a\rb ", " a\r\nb ", TextOptions.CollapseWhiteSpace);
             TestMap(ref failures, ref successes, "\ra\rb\n", "\ra\r\nb\n", TextOptions.CollapseWhiteSpace);
-            TestMap(ref failures, ref successes, "\r a \r b \n", "\r a \r\n b \n", TextOptions.CollapseWhiteSpace);
-            TestMap(ref failures, ref successes, "\rab \r cd \n", "\r ab \r\n cd \n", TextOptions.CollapseWhiteSpace);
-            TestMap(ref failures, ref successes, "\ra b\r c d \n", "\ra b\r\n c d \n", TextOptions.CollapseWhiteSpace);
+            TestMap(ref failures, ref successes, "\ra b ", "\r a \r\n b \n", TextOptions.CollapseWhiteSpace);
+            TestMap(ref failures, ref successes, "\rab cd ", "\r ab \r\n cd \n", TextOptions.CollapseWhiteSpace);
+            TestMap(ref failures, ref successes, "\ra b\rc d ", "\ra b\r\n c d \n", TextOptions.CollapseWhiteSpace);
             if (failures > 0)
                 Assert.Fail($"{failures} failures out of {failures + successes}.");
             else
                 Trace.WriteLine($"{successes} Successes");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void TestTrimCollapseWhiteSpace()
+        {
+            int failures = 0;
+            int successes = 0;
+            TestMap(ref failures, ref successes, "", "", TextOptions.CollapseWhiteSpace | TextOptions.Trim);
         }
 
         [TestMethod]
@@ -250,7 +316,7 @@ namespace WebApplications.Utilities.Test
 
             // Reverse access
             array = new char[stringMap.Count];
-            for (int i = stringMap.Count - 1; i > - 1; i--) array[i] = stringMap[i];
+            for (int i = stringMap.Count - 1; i > -1; i--) array[i] = stringMap[i];
             CollectionAssert.AreEqual(mappedArray, array);
 
             // Pseudo-random access

@@ -45,6 +45,7 @@ namespace WebApplications.Utilities.Difference
         /// <summary>
         /// Trims white space from the start and end of lines.
         /// </summary>
+        /// <remarks>Cannot be used with <see cref="CollapseWhiteSpace"/>.</remarks>
         Trim = 1 << 0,
 
         /// <summary>
@@ -56,6 +57,7 @@ namespace WebApplications.Utilities.Difference
         /// Collapses all white space (so will also <see cref="NormalizeLineEndings"/>, word boundaries are still
         /// considered significant.
         /// </summary>
+        /// <remarks>Cannot be used with <see cref="Trim"/>.</remarks>
         CollapseWhiteSpace = NormalizeLineEndings | 1 << 2,
 
         /// <summary>

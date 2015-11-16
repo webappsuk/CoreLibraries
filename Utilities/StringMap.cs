@@ -28,7 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Difference;
@@ -56,28 +56,22 @@ namespace WebApplications.Utilities
         protected readonly IReadOnlyList<int> Map;
 
         /// <summary>
-        /// The original string as a character array.
-        /// </summary>
-        [NotNull]
-        private readonly char[] _original;
-
-        /// <summary>
         /// The original string.
         /// </summary>
         [NotNull]
-        public string Original => new string(_original);
+        public readonly string Original;
 
         /// <summary>
         /// Gets the original number of characters.
         /// </summary>
         /// <value>The original number of characters.</value>
-        public int OriginalCount => _original.Length;
+        public int OriginalCount => Original.Length;
 
         /// <summary>
         /// The mapped string.
         /// </summary>
         [NotNull]
-        public string Mapped => new string(this.ToArray());
+        public readonly string Mapped;
 
         /// <summary>
         /// The text options.
@@ -85,34 +79,215 @@ namespace WebApplications.Utilities
         public readonly TextOptions Options;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StringMap"/> class.
+        /// Initializes a new instance of the <see cref="StringMap" /> class.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="options">The options.</param>
-        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="input" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="options" /> are invalid.</exception>
         internal StringMap(
             [NotNull] string input,
             TextOptions options = TextOptions.Default)
         {
-            if (input == null) throw new ArgumentNullException();
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (options == (TextOptions.Trim | TextOptions.CollapseWhiteSpace))
+                throw new ArgumentOutOfRangeException(nameof(options));
+            Original = input;
             Options = options;
             int length = input.Length;
             if (length < 1)
             {
-                _original = Array<char>.Empty;
+                Mapped = string.Empty;
                 Map = _emptyMap;
                 return;
             }
-
-            _original = input.ToCharArray();
             if (options == TextOptions.None)
             {
+                Mapped = input;
                 Map = new[] { 0, length, length };
-                Count = length;
                 return;
             }
 
-            // Create map
+            StringBuilder builder = new StringBuilder(Original.Length);
+            List<int> map = new List<int>(4);
+
+            int i = 0;
+            int offset = 0;
+            int count = 0;
+            char c;
+            bool skip;
+
+            // Logic for adding a map
+            Action<int, int> addMap = (s, e) =>
+            {
+                int len = e - s;
+                count += len;
+                map.Add(s);
+                map.Add(len);
+                map.Add(count);
+            };
+
+            // ReSharper disable EventExceptionNotDocumented
+            switch (options)
+            {
+                /* 
+                 * Simplest case is to skip all white space - this is less useful in that it effectively ignores word
+                 * boundaries.  Note this implicitly 'trims', 'normalizes line endings' and 'collapses white space' as
+                 * ALL white space is ignored.
+                 */
+                case TextOptions.IgnoreWhiteSpace:
+                    while (i < length)
+                    {
+                        c = Original[i++];
+                        if (char.IsWhiteSpace(c))
+                        {
+                            if (i - offset > 1)
+                                addMap(offset, i - 1);
+                            offset = i;
+                            continue;
+                        }
+                        builder.Append(c);
+                    }
+                    if (i - offset > 0)
+                        addMap(offset, i);
+                    break;
+                /* 
+                 * Collapse white space ignores all but the first white space character, effectively preserving the
+                 * word boundaries.  Note this implicitly 'normalizes line endings' as only the first character of
+                 * white space is preserved, so only on line ending character will be kept.
+                 * 
+                 * It makes not sense to allow this in conjunction with trim as line breaks are effectively treated the
+                 * same as any white space.
+                 */
+                case TextOptions.CollapseWhiteSpace:
+                    skip = false;
+                    while (i < length)
+                    {
+                        c = Original[i++];
+                        if (char.IsWhiteSpace(c))
+                        {
+                            if (!skip)
+                            {
+                                skip = true;
+                                builder.Append(c);
+                                continue;
+                            }
+                            if (i - offset > 1)
+                                addMap(offset, i - 1);
+                            offset = i;
+                            continue;
+                        }
+                        builder.Append(c);
+                        skip = false;
+                    }
+                    if (i - offset > 0)
+                        addMap(offset, i);
+                    break;
+
+                /*
+                 * Trim and NormalizeLineEndings both require line detection and so we treat together, they can also
+                 * be used in combination.
+                 */
+                case TextOptions.Trim:
+                case TextOptions.NormalizeLineEndings:
+                case TextOptions.Trim | TextOptions.NormalizeLineEndings:
+                    bool normalizeLineEndings = options.HasFlag(TextOptions.NormalizeLineEndings);
+                    bool trim = options.HasFlag(TextOptions.Trim);
+
+                    // Skip is used to indicate we've had the first character in a line.
+                    skip = false;
+
+                    // The index after the last non-white space character
+                    StringBuilder trailingWhiteSpace = new StringBuilder(16);
+                    while (i < length)
+                    {
+                        c = Original[i++];
+                        if (char.IsWhiteSpace(c))
+                        {
+                            bool isNewLine = c == '\n';
+                            // Detect line endings
+                            if (isNewLine || c == '\r')
+                            {
+                                if (i < 2 || !skip || !normalizeLineEndings || !isNewLine)
+                                {
+                                    if (!skip && (i - offset > 1))
+                                    {
+                                        int end = i;
+
+                                        // Trim trailing white space if any
+                                        if (trim && trailingWhiteSpace.Length > 0)
+                                        {
+                                            end -= trailingWhiteSpace.Length;
+                                            trailingWhiteSpace.Clear();
+                                        }
+                                        if (end - offset > 1)
+                                            addMap(offset, end - 1);
+                                        offset = i - 1;
+                                    }
+                                    // Preserve first line ending when normalizing or all line endings.
+                                    skip = true;
+                                    builder.Append(c);
+                                    continue;
+                                }
+                                
+                                // Skip second line ending character if == '\n'
+                                if (i - offset > 1)
+                                    addMap(offset, i - 1);
+                                offset = i;
+                                continue;
+                            }
+                            if (trim)
+                            {
+                                if (i < 2 || skip)
+                                {
+                                    skip = true;
+                                    // White space at start of line.
+                                    if (i - offset > 1)
+                                        addMap(offset, i - 1);
+                                    offset = i;
+                                    continue;
+                                }
+
+                                // Hold whitespace in temporary builder.
+                                trailingWhiteSpace.Append(c);
+                                continue;
+                            }
+                        }
+
+                        if (trailingWhiteSpace.Length > 0)
+                        {
+                            builder.Append(trailingWhiteSpace);
+                            trailingWhiteSpace.Clear();
+                        }
+                        builder.Append(c);
+                        skip = false;
+                    }
+
+                    i -= trailingWhiteSpace.Length;
+                    trailingWhiteSpace.Clear();
+
+                    if (i - offset > 0)
+                        addMap(offset, i);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(options), options, null);
+            }
+            // ReSharper restore EventExceptionNotDocumented
+
+            if (map.Count < 1)
+            {
+                Mapped = string.Empty;
+                Map = _emptyMap;
+                return;
+            }
+            // Store mapped string and the map.
+            Mapped = builder.ToString();
+            Map = map.ToArray();
+
+#if false
+    // Create map
             List<int> map = new List<int>();
             bool ignoreWhiteSpace = options.HasFlag(TextOptions.IgnoreWhiteSpace);
             bool collapseWhiteSpace = ignoreWhiteSpace || options.HasFlag(TextOptions.CollapseWhiteSpace);
@@ -141,7 +316,7 @@ namespace WebApplications.Utilities
             // ReSharper disable EventExceptionNotDocumented
             while (i < length)
             {
-                char c = _original[i++];
+                char c = Original[i++];
 
                 // Check for white space
                 if (char.IsWhiteSpace(c))
@@ -157,7 +332,7 @@ namespace WebApplications.Utilities
                     }
                     if ((c == '\r' || c == '\n') && (i < length))
                     {
-                        c = _original[i];
+                        c = Original[i];
                         if (c == '\r' || c == '\n')
                         {
                             end = trim ? lnws : i - 1;
@@ -187,27 +362,17 @@ namespace WebApplications.Utilities
             // ReSharper restore EventExceptionNotDocumented
             // Store map
             Map = map.ToArray();
+#endif
         }
 
         /// <inheritdoc />
-        public IEnumerator<char> GetEnumerator()
-        {
-            for (int m = 0; m < Map.Count;)
-            {
-                int start = Map[m++];
-                int end = start + Map[m++];
-                // Skip count
-                m++;
-                for (int i = start; i < end; i++)
-                    yield return _original[i];
-            }
-        }
+        public IEnumerator<char> GetEnumerator() => ((IEnumerable<char>)Mapped).GetEnumerator();
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<char>)this).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => Mapped.GetEnumerator();
 
         /// <inheritdoc />
-        public int Count { get; private set; }
+        public int Count => Mapped.Length;
 
         /// <summary>
         /// Gets the <see cref="char" /> at the <paramref name="index">specified index</paramref>.
@@ -215,11 +380,7 @@ namespace WebApplications.Utilities
         /// <param name="index">The index.</param>
         /// <returns>The specified <see cref="char"/>.</returns>
         /// <exception cref="IndexOutOfRangeException" accessor="get"><paramref name="index" /> is out of range.</exception>
-        /// <remarks>
-        /// <para>The indexer is optimized for sequential access (either forward or backwards) on the same thread.</para>
-        /// <para>When accessing the index randomly the mapping uses an optimized divide and conquer strategy.</para>
-        /// </remarks>
-        public char this[int index] => _original[GetOriginalIndex(index)];
+        public char this[int index] => Mapped[index];
 
 
         /// <summary>
