@@ -404,7 +404,7 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestStringDifference2()
         {
-            StringDifferences differences = "Test  a difference".Diff("Test Difference", TextOptions.None, CharComparer.CurrentCultureIgnoreCase);
+            StringDifferences differences = "Test   difference".Diff("Test Difference", TextOptions.None, CharComparer.CurrentCultureIgnoreCase);
             Assert.IsFalse(differences.AreEqual);
         }
 

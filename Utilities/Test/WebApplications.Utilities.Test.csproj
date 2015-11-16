@@ -102,7 +102,7 @@
     <Compile Include="TestRange.cs" />
     <Compile Include="Reflect\ReflectionTests.cs" />
     <Compile Include="TestTaskExtensions.cs" />
-    <Compile Include="TestToMappedCharArray.cs" />
+    <Compile Include="TestToMapped.cs" />
     <Compile Include="TestWeak.cs" />
     <Compile Include="Enumerations\TriStateTests.cs" />
     <Compile Include="TestWindow.cs" />

@@ -28,13 +28,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using WebApplications.Utilities.Difference;
 
 namespace WebApplications.Utilities.Test
 {
     [TestClass]
-    public class TestToMappedCharArray
+    public class TestToMapped
     {
         /// <summary>
         /// Tests the string mapping.
@@ -50,17 +49,11 @@ namespace WebApplications.Utilities.Test
             Trace.WriteLine($"Options:'{options}' String:'{input.Escape()}' Map:");
 
             // Generate map
-            Mapping[] map = input.ToMappedCharArray(options).ToArray();
+            string output = input.ToMapped(options).Mapped;
 
             // Display map
-            Trace.WriteLine(
-                string.Join(
-                    Environment.NewLine,
-                    map.Select(
-                        m =>
-                            $"{m.Offset,4} {m.Length,4} '{input.Substring(m.Offset, m.Length).Escape()}'")));
-
-            string output = string.Concat(map.Select(m => input.Substring(m.Offset, m.Length)));
+            //Trace.WriteLine(output);
+            //string output = string.Concat(map.Select(m => input.Substring(m.Offset, m.Length)));
 
             if (!string.Equals(expected, output, StringComparison.Ordinal))
             {
@@ -239,6 +232,36 @@ namespace WebApplications.Utilities.Test
                 Assert.Fail($"{failures} failures out of {failures + successes}.");
             else
                 Trace.WriteLine($"{successes} Successes");
+        }
+
+        [TestMethod]
+        public void TestIndexer()
+        {
+            StringMap stringMap = " Test a  difference   ".ToMapped(TextOptions.IgnoreWhiteSpace);
+            string mapped = stringMap.Mapped;
+            Assert.AreEqual(mapped.Length, stringMap.Count);
+
+            char[] mappedArray = mapped.ToCharArray();
+            char[] array = new char[stringMap.Count];
+
+            // Forward access
+            for (int i = 0; i < stringMap.Count; i++) array[i] = stringMap[i];
+            CollectionAssert.AreEqual(mappedArray, array);
+
+            // Reverse access
+            array = new char[stringMap.Count];
+            for (int i = stringMap.Count - 1; i > - 1; i--) array[i] = stringMap[i];
+            CollectionAssert.AreEqual(mappedArray, array);
+
+            // Pseudo-random access
+            array = new char[stringMap.Count];
+            for (int i = 0; i < stringMap.Count; i++)
+            {
+                // Used prime to step through array.
+                int j = (i * 7) % stringMap.Count;
+                array[j] = stringMap[j];
+            }
+            CollectionAssert.AreEqual(mappedArray, array);
         }
     }
 }

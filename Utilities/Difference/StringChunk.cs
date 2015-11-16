@@ -68,52 +68,19 @@ namespace WebApplications.Utilities.Difference
         /// Initializes a new instance of the <see cref="StringChunk" /> class.
         /// </summary>
         /// <param name="a">The original A string.</param>
-        /// <param name="aMap">The original map for A.</param>
+        /// <param name="offsetA">The offset a.</param>
         /// <param name="b">The original B string.</param>
-        /// <param name="bMap">The original map for B.</param>
-        /// <param name="charChunk">The character chunk.</param>
+        /// <param name="offsetB">The offset b.</param>
         internal StringChunk(
-            [NotNull] string a,
-            [NotNull] ReadOnlyOffsetMap<char> aMap,
-            [NotNull] string b,
-            [NotNull] ReadOnlyOffsetMap<char> bMap,
-            [NotNull] Chunk<char> charChunk)
+            [CanBeNull] string a,
+            int offsetA,
+            [CanBeNull] string b,
+            int offsetB)
         {
-            if (charChunk.A != null)
-                Map(a, aMap, charChunk.A, out A, out OffsetA);
-            else OffsetA = -1;
-
-            if (charChunk.B != null)
-                Map(b, bMap, charChunk.B, out B, out OffsetB);
-            else OffsetB = -1;
-        }
-
-        /// <summary>
-        /// Maps back to the original string.
-        /// </summary>
-        /// <param name="input">a.</param>
-        /// <param name="map">a map.</param>
-        /// <param name="window">The cc.</param>
-        /// <param name="output">The output.</param>
-        /// <param name="offset">The offset.</param>
-        private void Map(
-                    [NotNull] string input,
-                    [NotNull] ReadOnlyOffsetMap<char> map,
-                    [NotNull] ReadOnlyWindow<char> window,
-                    [NotNull] out string output,
-                    out int offset)
-        {
-            // TODO This just doesn't work as it doesn't expand properly
-            int wo = window.Offset;
-            int o = wo < 1 ? 0 : map.MapIndex(wo);
-            int l;
-            
-            int wc = window.Count;
-            if (wc < 1) l = 0;
-            else l = 1 + map.MapIndex(wo + wc - 1) - o;
-
-            output = input.Substring(o, l);
-            offset = o;
+            A = a;
+            B = b;
+            OffsetA = offsetA;
+            OffsetB = offsetB;
         }
 
         /// <inheritdoc />

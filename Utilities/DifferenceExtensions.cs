@@ -402,78 +402,8 @@ namespace WebApplications.Utilities
         /// <param name="options">The options.</param>
         /// <returns>A <see cref="ReadOnlyOffsetMap{T}"/> of <see cref="char">characters</see>.</returns>
         [NotNull]
-        public static ReadOnlyOffsetMap<char> ToMappedCharArray(
+        public static StringMap ToMapped(
             this string input,
-            TextOptions options = TextOptions.Default)
-        {
-            char[] array = input.ToCharArray();
-            int length = array.Length;
-            ReadOnlyOffsetMap<char> map = new ReadOnlyOffsetMap<char>(array);
-            if (options == TextOptions.None || length < 1)
-            {
-                map.Add(0, length);
-                return map;
-            }
-
-            bool ignoreWhiteSpace = options.HasFlag(TextOptions.IgnoreWhiteSpace);
-            bool collapseWhiteSpace = ignoreWhiteSpace || options.HasFlag(TextOptions.CollapseWhiteSpace);
-            bool normalizeLineEndings = ignoreWhiteSpace || options.HasFlag(TextOptions.NormalizeLineEndings);
-            bool trim = ignoreWhiteSpace || options.HasFlag(TextOptions.Trim);
-
-            int o = 0;
-            int l = 0;
-            int lnws = -1;
-            int i = 0;
-            int end;
-
-            while (i < length)
-            {
-                char c = array[i++];
-
-                // Check for white space
-                if (char.IsWhiteSpace(c))
-                {
-                    if (collapseWhiteSpace && (ignoreWhiteSpace || lnws < i - 2))
-                    {
-                        if (lnws - o >= 0 && lnws >= 0)
-                            map.Add(o, 1 + lnws - o);
-                        o = ignoreWhiteSpace ? i : i - 1;
-                        lnws = -1;
-                        continue;
-                    }
-                    if ((c == '\r' || c == '\n') && (i < length))
-                    {
-                        c = array[i];
-                        if (c == '\r' || c == '\n')
-                        {
-                            end = trim ? lnws : i - 1;
-                            if (end - o >= 0)
-                                map.Add(o, 1 + end - o);
-
-                            i++;
-                            o = i;
-                            lnws = -1;
-
-                            // TODO We have a line ending
-                            continue;
-                        }
-                    }
-
-                    if (trim && lnws < 0)
-                    {
-                        o = i;
-                    }
-
-                }
-                else
-                    lnws = i - 1;
-            }
-
-            end = ignoreWhiteSpace || trim ? lnws : i - 1;
-            if (end - o >= 0)
-                map.Add(o, 1 + end - o);
-
-            return map;
-        }
+            TextOptions options = TextOptions.Default) => new StringMap(input, options);
     }
 }

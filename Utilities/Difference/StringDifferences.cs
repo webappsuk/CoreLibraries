@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using WebApplications.Utilities.Annotations;
@@ -115,11 +116,65 @@ namespace WebApplications.Utilities.Difference
             }
 
             // Map strings based on text options
-            ReadOnlyOffsetMap<char> aMap = a.ToMappedCharArray(textOptions);
-            ReadOnlyOffsetMap<char> bMap = b.ToMappedCharArray(textOptions);
-            _chunks = aMap.Diff(bMap, comparer)
-                // TODO Track back to underlying mappings here...
-                .Select(c => new StringChunk(a, aMap, b, bMap, c)).ToArray();
+            StringMap aMap = a.ToMapped(textOptions);
+            StringMap bMap = b.ToMapped(textOptions);
+
+            // Perform diff on mapped string
+            Differences<char> chunks = aMap.Diff(bMap, comparer);
+
+            // Special case simple equality
+            if (chunks.Count < 2)
+            {
+                Chunk<char> chunk = chunks.Single();
+                Debug.Assert(chunk.AreEqual);
+                _chunks = new[] { new StringChunk(a, 0, b, 0) };
+            }
+
+            // To reverse the mapping we first calculate the split points in the original strings, and find
+            // the last reference to the original strings in each chunk.
+            int[] aEnds = new int[chunks.Count];
+            int[] bEnds = new int[chunks.Count];
+            int lastA = 0;
+            int lastB = 0;
+            for (int i = 0; i < chunks.Count; i++)
+            {
+                Chunk<char> chunk = chunks[i];
+                ReadOnlyWindow<char> chunkA = chunk.A;
+                ReadOnlyWindow<char> chunkB = chunk.B;
+                if (chunk.A != null)
+                {
+                    aEnds[i] = aMap.GetOriginalIndex(chunkA.Offset + chunkA.Count - 1) + 1;
+                    lastA = i;
+                }
+                else aEnds[i] = -1;
+
+                if (chunk.B != null)
+                {
+                    bEnds[i] = bMap.GetOriginalIndex(chunkB.Offset + chunkB.Count - 1) + 1;
+                    lastB = i;
+                }
+                else bEnds[i] = -1;
+            }
+            
+            // Now we're ready to build up a new chunk array based on the original strings
+            StringChunk[] stringChunks = new StringChunk[chunks.Count];
+            int aStart = 0;
+            int bStart = 0;
+            for (int i = 0; i < chunks.Count; i++)
+            {
+                int aEnd = i == lastA ? aMap.OriginalCount : aEnds[i];
+                int bEnd = i == lastB ? bMap.OriginalCount : bEnds[i];
+
+                string ac = aEnd > -1 ? a.Substring(aStart, aEnd - aStart) : null;
+                string bc = bEnd > -1 ? b.Substring(bStart, bEnd - bStart) : null;
+
+                stringChunks[i] = new StringChunk(ac, aEnd > -1 ? aStart : -1, bc, bEnd > -1 ? bStart : -1);
+
+                if (aEnd > -1) aStart = aEnd;
+                if (bEnd > -1) bStart = bEnd;
+            }
+
+            _chunks = stringChunks;
         }
         
         /// <inheritdoc />

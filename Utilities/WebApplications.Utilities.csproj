@@ -162,6 +162,7 @@
     <Compile Include="Mapping.cs" />
     <Compile Include="ReadOnlyMap.cs" />
     <Compile Include="ReadOnlyOffsetMap.cs" />
+    <Compile Include="StringMap.cs" />
     <Compile Include="Threading\BufferedAction.cs" />
     <Compile Include="Threading\BufferedActionGeneric.cs">
       <DependentUpon>BufferedActionGeneric.tt</DependentUpon>
