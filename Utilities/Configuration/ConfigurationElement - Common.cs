@@ -71,11 +71,6 @@ namespace WebApplications.Utilities.Configuration
         private string _configurationElementName;
 
         /// <summary>
-        /// Called when initializing.
-        /// </summary>
-        partial void OnInit();
-
-        /// <summary>
         /// Initializes this instance.
         /// </summary>
         /// <exception cref="ConfigurationErrorsException">Invalid property type.</exception>
@@ -106,7 +101,6 @@ namespace WebApplications.Utilities.Configuration
                 value.ConfigurationElementName = property.Name;
                 _children.Add(value);
             }
-            OnInit();
         }
 
         /// <inheritdoc />

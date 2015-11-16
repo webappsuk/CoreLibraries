@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Configuration
@@ -43,17 +42,15 @@ namespace WebApplications.Utilities.Configuration
         bool HasFile { get; }
 
         /// <summary>
-        /// Gets the associated configuration file path.
+        /// Gets the configuration file path the section was loaded from (if any); otherwise <see langword="null"/>.
         /// </summary>
         /// <value>The file path.</value>
         [CanBeNull]
         string FilePath { get; }
-
         /// <summary>
-        /// Gets all the associated configuration file paths.
+        /// Gets the line number of the configuration file path the section was loaded from (if any); otherwise -1.
         /// </summary>
-        /// <value>The file path.</value>
-        [NotNull]
-        IReadOnlyCollection<string> FilePaths { get; }
+        /// <value>The line number.</value>
+        int LineNumber { get; }
     }
 }

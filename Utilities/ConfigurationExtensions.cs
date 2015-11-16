@@ -41,9 +41,8 @@ namespace WebApplications.Utilities
     /// Extension methods for <see cref="IConfigurationElement"/>.
     /// </summary>
     [PublicAPI]
-    public static class ConfigurationElementExtensions
+    public static class ConfigurationExtensions
     {
-
         #region Get files from a configuration
         // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
         /// <summary>
@@ -106,11 +105,11 @@ namespace WebApplications.Utilities
             // ReSharper disable once EventExceptionNotDocumented
             => configuration == null ? null : _getConfigFilePaths(configuration);
         #endregion
-
+        
         /// <summary>
         /// Initializes static members of the <see cref="Utilities.Configuration.ConfigurationElement" /> class.
         /// </summary>
-        static ConfigurationElementExtensions()
+        static ConfigurationExtensions()
         {
             ParameterExpression configuration = Expression.Parameter(typeof(System.Configuration.Configuration), "configuration");
             ParameterExpression streamInfos = Expression.Parameter(typeof(ICollection), "streamInfos");

@@ -108,22 +108,18 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="section">The section.</param>
         public static void Watch([NotNull] IInternalConfigurationSection section)
         {
-            string[] paths = section.FilePaths
-                .Where(p => !string.IsNullOrWhiteSpace(p))
-                .ToArray();
-            if (paths.Length < 1) return;
+            string filePath = section.FilePath;
+            if (string.IsNullOrWhiteSpace(filePath)) return;
+
             lock (_watchers)
             {
-                foreach (string path in paths)
-                {
-                    ConfigurationFileWatcher watcher;
-                    // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
-                    if (!_watchers.TryGetValue(path, out watcher))
-                        watcher = _watchers[path] = new ConfigurationFileWatcher(path);
-                    lock (watcher._sections)
-                        watcher._sections.Add(section);
-                    // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
-                }
+                ConfigurationFileWatcher watcher;
+                // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+                if (!_watchers.TryGetValue(filePath, out watcher))
+                    watcher = _watchers[filePath] = new ConfigurationFileWatcher(filePath);
+                lock (watcher._sections)
+                    watcher._sections.Add(section);
+                // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
             }
         }
 
@@ -133,26 +129,22 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="section">The section.</param>
         public static void UnWatch([NotNull] IInternalConfigurationSection section)
         {
-            string[] paths = section.FilePaths
-                .Where(p => !string.IsNullOrWhiteSpace(p))
-                .ToArray();
-            if (paths.Length < 1) return;
+            string filePath = section.FilePath;
+            if (string.IsNullOrWhiteSpace(filePath)) return;
+
             lock (_watchers)
             {
-                foreach (string path in paths)
-                {
-                    ConfigurationFileWatcher watcher;
-                    // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
-                    if (!_watchers.TryGetValue(path, out watcher)) continue;
+                ConfigurationFileWatcher watcher;
+                // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
+                if (!_watchers.TryGetValue(filePath, out watcher)) return;
 
-                    lock (watcher._sections)
-                    {
-                        watcher._sections.Remove(section);
-                        if (watcher._sections.Count > 0) continue;
-                        watcher.Dispose();
-                    }
-                    // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
+                lock (watcher._sections)
+                {
+                    watcher._sections.Remove(section);
+                    if (watcher._sections.Count > 0) return;
+                    watcher.Dispose();
                 }
+                // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
             }
         }
 

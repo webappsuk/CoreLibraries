@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Configuration.Internal;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,6 +37,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Web;
 using System.Web.Configuration;
+using System.Xml;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
@@ -171,7 +173,7 @@ namespace WebApplications.Utilities.Configuration
                     EventBufferMs);
 
             // This will get set during initialization
-            FilePaths = Array<string>.Empty;
+            LineNumber = -1;
             ((IInternalConfigurationElement)this).ConfigurationElementName = $"<{SectionName}>";
 
             // As our system supports change notification, we can default the restart on external changes to false.
@@ -383,7 +385,10 @@ namespace WebApplications.Utilities.Configuration
                     writer.WriteLine("</configuration>");
                 }
 
-            return GetOrAdd(ConfigurationManager.OpenExeConfiguration(filename));
+            return GetOrAdd(
+                ConfigurationManager.OpenMappedExeConfiguration(
+                    new ExeConfigurationFileMap { ExeConfigFilename = filename },
+                    ConfigurationUserLevel.None));
         }
 
         /// <summary>
@@ -402,7 +407,7 @@ namespace WebApplications.Utilities.Configuration
         [NotNull]
         public T Save(ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified, bool forceSaveAll = false)
             // ReSharper disable once AssignNullToNotNullAttribute
-            => SaveAs(FilePath, saveMode, forceSaveAll);
+            => SaveAs(CurrentConfiguration?.FilePath, saveMode, forceSaveAll);
 
         /// <summary>
         /// Saves as.
@@ -462,10 +467,7 @@ namespace WebApplications.Utilities.Configuration
         void IInternalConfigurationSection.OnFileChanged(string fullPath)
         {
             if (IsDisposed)
-            {
-                Trace.WriteLine($"#{InstanceNumber} - Config file '{fullPath}' changed for disposed {SectionName} section.");
                 return;
-            }
 
             // Raise change event.
             ((IInternalConfigurationElement)this).OnChanged(FullPath);
@@ -485,10 +487,7 @@ namespace WebApplications.Utilities.Configuration
             {
                 // ReSharper disable once UnusedVariable
                 T active = Active;
-                Trace.WriteLine($"#{InstanceNumber} - Config file '{fullPath}' changed for active {SectionName} section. - new Active instance #{active.InstanceNumber}");
             }
-            else
-                Trace.WriteLine($"#{InstanceNumber} - Config file '{fullPath}' changed for inactive {SectionName} section.");
         }
 
         /// <summary>
@@ -508,52 +507,34 @@ namespace WebApplications.Utilities.Configuration
         public bool HasFile => !string.IsNullOrWhiteSpace(FilePath);
 
         /// <inheritdoc />
-        public string FilePath => FilePaths.FirstOrDefault();
+        public string FilePath { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<string> FilePaths { get; private set; }
+        public int LineNumber { get; private set; }
 
         /// <inheritdoc />
         public bool IsDisposed { get; private set; }
-
-        /// <summary>
-        /// Called when initializing.
-        /// </summary>
-        partial void OnInit()
+        
+        /// <inheritdoc />
+        protected override void DeserializeSection(XmlReader reader)
         {
-            // We set the file paths once and don't change again.
-            System.Configuration.Configuration configuration = CurrentConfiguration;
-            if (configuration != null &&
-                configuration.HasFile)
+            // Grab file info
+            IConfigErrorInfo errorInfo = reader as IConfigErrorInfo;
+            if (errorInfo != null)
             {
-                // Sanitize paths
-                HashSet<string> set = new HashSet<string>(
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    CurrentConfiguration.GetConfigFilePaths()
-                        .Where(p => p != null)
-                        .Select(Path.GetFullPath)
-                        .Where(File.Exists));
-
-                string root = Path.GetFullPath(configuration.FilePath);
-                int count = set.Count;
-                if (count > 0)
-                {
-                    if (count < 2 || !set.Contains(root))
-                        FilePaths = set.ToArray();
-                    else
-                    {
-                        // Ensure root is always first
-                        set.Remove(root);
-                        string[] fps = new string[count];
-                        fps[0] = root;
-                        set.CopyTo(fps, 1);
-                        FilePaths = fps;
-                    }
-                }
-            }
-
-            if (FilePaths.Count > 0)
+                FilePath = errorInfo.Filename;
+                LineNumber = errorInfo.LineNumber;
                 ConfigurationFileWatcher.Watch(this);
+            }
+            else
+            {
+                // Take our best guess
+                FilePath = CurrentConfiguration?.FilePath;
+                LineNumber = 0;
+                ConfigurationFileWatcher.Watch(this);
+            }
+            
+            base.DeserializeSection(reader);
         }
 
         /// <inheritdoc />
@@ -584,17 +565,11 @@ namespace WebApplications.Utilities.Configuration
             // If we're disposing the active configuration section, we want to reload the active configuration.
             Interlocked.CompareExchange(ref _active, null, (T)this);
             if (!disposing) return;
-            Trace.WriteLine($"Disposing {InstanceNumber}");
             ConfigurationFileWatcher.UnWatch(this);
             // ReSharper disable once ExceptionNotDocumented
             BufferedAction<string> action = Interlocked.Exchange(ref _changeAction, null);
             action?.Dispose();
         }
-
-#if DEBUG
-        public static int InstanceCount;
-        public readonly int InstanceNumber = InstanceCount++;
-#endif
 
         /// <summary>
         /// Information about the configuration changed event.
