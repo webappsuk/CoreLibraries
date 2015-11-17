@@ -69,11 +69,8 @@ namespace WebApplications.Utilities.Configuration
         private IReadOnlyCollection<ConfigurationProperty> _properties;
 
         private IInternalConfigurationElement _parent;
-
-        /// <summary>
-        /// Called when initializing.
-        /// </summary>
-        partial void OnInit();
+        private string _configurationElementName;
+        private bool _hasDefaultCollection ;
 
         /// <summary>
         /// Initializes this instance.
@@ -95,6 +92,8 @@ namespace WebApplications.Utilities.Configuration
                             // ReSharper restore AssignNullToNotNullAttribute
                             property.Type));
 
+                if (property.Name.Length < 1) _hasDefaultCollection = true;
+
                 // Get the value or create a new element, if this is an element type that is not yet created.
                 // ReSharper disable once ArrangeStaticMemberQualifier
                 IInternalConfigurationElement value =
@@ -106,14 +105,18 @@ namespace WebApplications.Utilities.Configuration
                 value.ConfigurationElementName = property.Name;
                 _children.Add(value);
             }
-            OnInit();
         }
 
         /// <inheritdoc />
         IInternalConfigurationElement IInternalConfigurationElement.Parent
         {
             get { return _parent; }
-            set { _parent = value; }
+            set
+            {
+                if (_parent == value) return;
+                _parent = value;
+                FullPath = value.GetFullPath(_configurationElementName);
+            }
         }
 
         /// <inheritdoc />
@@ -123,11 +126,20 @@ namespace WebApplications.Utilities.Configuration
         public IConfigurationSection Section => ((IInternalConfigurationElement)this).Section;
 
         /// <inheritdoc />
-        string IInternalConfigurationElement.ConfigurationElementName { get; set; }
+        string IInternalConfigurationElement.ConfigurationElementName
+        {
+            get { return _configurationElementName; }
+            set
+            {
+                if (string.Equals(_configurationElementName, value)) return;
+                _configurationElementName = value;
+                FullPath = Parent.GetFullPath(value);
+            }
+        }
 
         /// <inheritdoc />
         // ReSharper disable once ArrangeStaticMemberQualifier
-        public string FullPath => Parent.GetFullPath(ConfigurationElementName);
+        public string FullPath { get; private set; }
 
         /// <inheritdoc />
         public string ConfigurationElementName => ((IInternalConfigurationElement)this).ConfigurationElementName;
@@ -203,7 +215,7 @@ namespace WebApplications.Utilities.Configuration
             {
                 if (IsDisposed) throw new ObjectDisposedException(ToString());
 
-                if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
+                if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
                 object value = base[propertyName];
                 IInternalConfigurationElement ice = value as IInternalConfigurationElement;
                 if (ice != null)
@@ -213,7 +225,7 @@ namespace WebApplications.Utilities.Configuration
             set
             {
                 if (IsDisposed) throw new ObjectDisposedException(ToString());
-                if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
+                if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
 
                 lock (_children)
                 {
@@ -369,8 +381,27 @@ namespace WebApplications.Utilities.Configuration
         /// <inheritdoc />
         /// <exception cref="InvalidOperationException">The <see cref="T:System.Xml.XmlReader" /> is not positioned on a recognized node type.</exception>
         /// <exception cref="XmlException">The underlying <see cref="T:System.Xml.XmlReader" /> throws an exception.</exception>
+        bool IInternalConfigurationElement.OnDeserializeUnrecognizedElement(string elementName, XmlReader reader)
+            => OnDeserializeUnrecognizedElement(elementName, reader);
+
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">The <see cref="T:System.Xml.XmlReader" /> is not positioned on a recognized node type.</exception>
+        /// <exception cref="XmlException">The underlying <see cref="T:System.Xml.XmlReader" /> throws an exception.</exception>
         protected override bool OnDeserializeUnrecognizedElement(string elementName, XmlReader reader)
         {
+            // The base method on collections handles known elements (like add, remove, clear, <ELEMENTNAME>, etc.),
+            // On sections and elements it returns false.
+            if (base.OnDeserializeUnrecognizedElement(elementName, reader))
+                return true;
+
+            // If we have a default collection we ask it to handle it first.
+            if (_hasDefaultCollection)
+            {
+                IInternalConfigurationElement defaultCollection = base[string.Empty] as IInternalConfigurationElement;
+                if (defaultCollection != null && defaultCollection.OnDeserializeUnrecognizedElement(elementName, reader))
+                    return true;
+            }
+
             // Read the element, getting it's XName.
             XElement element = (XElement)XNode.ReadFrom(reader);
             string elementStr = element.ToString(SaveOptions.DisableFormatting);
@@ -573,11 +604,8 @@ namespace WebApplications.Utilities.Configuration
         private IReadOnlyCollection<ConfigurationProperty> _properties;
 
         private IInternalConfigurationElement _parent;
-
-        /// <summary>
-        /// Called when initializing.
-        /// </summary>
-        partial void OnInit();
+        private string _configurationElementName;
+        private bool _hasDefaultCollection ;
 
         /// <summary>
         /// Initializes this instance.
@@ -599,6 +627,8 @@ namespace WebApplications.Utilities.Configuration
                             // ReSharper restore AssignNullToNotNullAttribute
                             property.Type));
 
+                if (property.Name.Length < 1) _hasDefaultCollection = true;
+
                 // Get the value or create a new element, if this is an element type that is not yet created.
                 // ReSharper disable once ArrangeStaticMemberQualifier
                 IInternalConfigurationElement value =
@@ -610,14 +640,18 @@ namespace WebApplications.Utilities.Configuration
                 value.ConfigurationElementName = property.Name;
                 _children.Add(value);
             }
-            OnInit();
         }
 
         /// <inheritdoc />
         IInternalConfigurationElement IInternalConfigurationElement.Parent
         {
             get { return _parent; }
-            set { _parent = value; }
+            set
+            {
+                if (_parent == value) return;
+                _parent = value;
+                FullPath = value.GetFullPath(_configurationElementName);
+            }
         }
 
         /// <inheritdoc />
@@ -627,11 +661,20 @@ namespace WebApplications.Utilities.Configuration
         public IConfigurationSection Section => ((IInternalConfigurationElement)this).Section;
 
         /// <inheritdoc />
-        string IInternalConfigurationElement.ConfigurationElementName { get; set; }
+        string IInternalConfigurationElement.ConfigurationElementName
+        {
+            get { return _configurationElementName; }
+            set
+            {
+                if (string.Equals(_configurationElementName, value)) return;
+                _configurationElementName = value;
+                FullPath = Parent.GetFullPath(value);
+            }
+        }
 
         /// <inheritdoc />
         // ReSharper disable once ArrangeStaticMemberQualifier
-        public string FullPath => Parent.GetFullPath(ConfigurationElementName);
+        public string FullPath { get; private set; }
 
         /// <inheritdoc />
         public string ConfigurationElementName => ((IInternalConfigurationElement)this).ConfigurationElementName;
@@ -707,7 +750,7 @@ namespace WebApplications.Utilities.Configuration
             {
                 if (IsDisposed) throw new ObjectDisposedException(ToString());
 
-                if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
+                if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
                 object value = base[propertyName];
                 IInternalConfigurationElement ice = value as IInternalConfigurationElement;
                 if (ice != null)
@@ -717,7 +760,7 @@ namespace WebApplications.Utilities.Configuration
             set
             {
                 if (IsDisposed) throw new ObjectDisposedException(ToString());
-                if (string.IsNullOrEmpty(propertyName)) throw new ArgumentNullException(nameof(propertyName));
+                if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
 
                 lock (_children)
                 {
@@ -873,8 +916,27 @@ namespace WebApplications.Utilities.Configuration
         /// <inheritdoc />
         /// <exception cref="InvalidOperationException">The <see cref="T:System.Xml.XmlReader" /> is not positioned on a recognized node type.</exception>
         /// <exception cref="XmlException">The underlying <see cref="T:System.Xml.XmlReader" /> throws an exception.</exception>
+        bool IInternalConfigurationElement.OnDeserializeUnrecognizedElement(string elementName, XmlReader reader)
+            => OnDeserializeUnrecognizedElement(elementName, reader);
+
+        /// <inheritdoc />
+        /// <exception cref="InvalidOperationException">The <see cref="T:System.Xml.XmlReader" /> is not positioned on a recognized node type.</exception>
+        /// <exception cref="XmlException">The underlying <see cref="T:System.Xml.XmlReader" /> throws an exception.</exception>
         protected override bool OnDeserializeUnrecognizedElement(string elementName, XmlReader reader)
         {
+            // The base method on collections handles known elements (like add, remove, clear, <ELEMENTNAME>, etc.),
+            // On sections and elements it returns false.
+            if (base.OnDeserializeUnrecognizedElement(elementName, reader))
+                return true;
+
+            // If we have a default collection we ask it to handle it first.
+            if (_hasDefaultCollection)
+            {
+                IInternalConfigurationElement defaultCollection = base[string.Empty] as IInternalConfigurationElement;
+                if (defaultCollection != null && defaultCollection.OnDeserializeUnrecognizedElement(elementName, reader))
+                    return true;
+            }
+
             // Read the element, getting it's XName.
             XElement element = (XElement)XNode.ReadFrom(reader);
             string elementStr = element.ToString(SaveOptions.DisableFormatting);

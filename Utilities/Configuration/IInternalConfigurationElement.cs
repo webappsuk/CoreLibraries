@@ -26,6 +26,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -75,5 +76,13 @@ namespace WebApplications.Utilities.Configuration
         /// <value>The name of the element.</value>
         [CanBeNull]
         new string ConfigurationElementName { get; set; }
+
+        /// <summary>
+        /// Allows access to the deserialize unrecognized element protected method.
+        /// </summary>
+        /// <param name="elementName">Name of the element.</param>
+        /// <param name="reader">The reader.</param>
+        /// <returns><see langword="true" /> if handled, <see langword="false" /> otherwise.</returns>
+        bool OnDeserializeUnrecognizedElement([NotNull] string elementName, [NotNull] XmlReader reader);
     }
 }

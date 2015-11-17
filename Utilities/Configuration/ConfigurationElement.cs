@@ -42,7 +42,6 @@ namespace WebApplications.Utilities.Configuration
     [PublicAPI]
     public abstract partial class ConfigurationElement : System.Configuration.ConfigurationElement, IInternalConfigurationElement
     {
-
         #region Create Elements
         // ReSharper disable AssignNullToNotNullAttribute, PossibleNullReferenceException
         /// <summary>

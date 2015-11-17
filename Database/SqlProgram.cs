@@ -535,7 +535,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="program">The base program (stored procedure/function).</param>
         /// <param name="ignoreValidationErrors">If set to <see langword="true" /> then don't throw any parameter validation errors.</param>
-        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <paramref name="parameters" />.</para>
+        /// <param name="checkOrder"><para>If set to <see langword="true" /> then check the order of the <paramref name="parameterNames" />.</para>
         /// <para>By default this is set to <see langword="false" />.</para></param>
         /// <param name="defaultCommandTimeout"><para>The <see cref="DefaultCommandTimeout">default command timeout</see></para>
         /// <para>This is the time to wait for the command to execute.</para>

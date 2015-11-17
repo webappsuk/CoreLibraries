@@ -226,9 +226,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         {
             // This Sql Program is configured in the app.config to use TypeConstraintMode Error, so will throw error
             // if byte[] is truncated.
-            SqlProgram<byte[]> byteArrayTest = await DatabasesConfiguration.GetConfiguredSqlProgram<byte[]>("test",
-                                                                                                      "spTakeByteArrayLength10",
-                                                                                                      "@byteArrayParam");
+            SqlProgram<byte[]> byteArrayTest = await DatabasesConfiguration.GetConfiguredSqlProgram<byte[]>(
+                "test",
+                "spTakeByteArrayLength10",
+                "@byteArrayParam");
 
             byte[] testParam = new byte[11];
             Random.NextBytes(testParam);

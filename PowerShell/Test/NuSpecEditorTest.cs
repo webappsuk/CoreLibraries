@@ -25,12 +25,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.PowerShell.Test
 {
@@ -107,7 +107,9 @@ namespace WebApplications.Utilities.PowerShell.Test
             // Create editor.
             NuSpecEditor editor = new NuSpecEditor(NuSpecPath);
 
-            Assert.AreEqual(editor.LicenseUrl, "https://nuget.webappuk.com/license.htm");
+            Assert.AreEqual(
+                "https://raw.githubusercontent.com/webappsuk/CoreLibraries/master/license.md",
+                editor.LicenseUrl);
             Assert.IsFalse(editor.HasChanges, "Editor should not have registered any changes yet.");
 
             string id = editor.ID;
