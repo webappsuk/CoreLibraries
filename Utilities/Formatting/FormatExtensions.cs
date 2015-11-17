@@ -70,7 +70,10 @@ namespace WebApplications.Utilities.Formatting
         /// </returns>
         [ContractAnnotation("format:null=>null;format:notnull=>notnull")]
         [StringFormatMethod("format")]
-        public static string SafeFormat([CanBeNull] this string format, [CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] parameters)
+        public static string SafeFormat(
+            [CanBeNull] this string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] parameters)
         {
             if (format == null) return null;
             if (parameters == null || parameters.Length < 1)
@@ -115,7 +118,7 @@ namespace WebApplications.Utilities.Formatting
         // NOTE: Same implementation as the base string.Format, but throws replaced with returns.
         private static string TryFormat(string format, IFormatProvider provider, params object[] args)
         {
-            if (format == null || args == null) return null;
+            if (format == null || args == null) return format;
 
             int pos = 0;
             int len = format.Length;
@@ -125,80 +128,123 @@ namespace WebApplications.Utilities.Formatting
                 cf = (ICustomFormatter)provider.GetFormat(typeof(ICustomFormatter));
 
             StringBuilder sb = new StringBuilder(format.Length + args.Length * 10);
+            StringBuilder fb = new StringBuilder(20);
 
             while (true)
             {
+                if (fb.Length > 0)
+                {
+                    sb.Append(fb);
+                    fb.Clear();
+                }
+
                 char ch;
                 while (pos < len)
                 {
                     ch = format[pos];
 
                     pos++;
+
+                    // If we get a '}' then we treat as '}' unless we have two, in which we treat as an escape.
                     if (ch == '}')
                     {
-                        if (pos < len && format[pos] == '}') // Treat as escape character for }}
+                        if (pos < len && format[pos] == '}')
                             pos++;
-                        else
-                            return null;
                     }
-
-                    if (ch == '{')
-                    {
+                    else if (ch == '{')
                         if (pos < len && format[pos] == '{') // Treat as escape character for {{
                             pos++;
                         else
                         {
+                            // Started format section.
                             pos--;
+                            fb.Append(ch);
                             break;
                         }
-                    }
 
                     sb.Append(ch);
                 }
 
-                if (pos == len) break;
+                // If we're at the end of the line we're done.
+                if (pos >= len) break;
+
+                // Skip '{'
                 pos++;
-                if (pos == len || (ch = format[pos]) < '0' || ch > '9') return null;
+                if (pos >= len) break;
+
+                if ((ch = format[pos]) < '0' || ch > '9') continue;
 
                 int index = 0;
                 do
                 {
+                    fb.Append(ch);
                     index = index * 10 + ch - '0';
                     pos++;
-                    if (pos == len) return null;
+                    if (pos >= len) break;
                     ch = format[pos];
                 } while (ch >= '0' && ch <= '9' && index < 1000000);
 
-                if (index >= args.Length) return null;
-                while (pos < len && (ch = format[pos]) == ' ') pos++;
+                if (pos >= len) break;
+
+                if (index >= args.Length) continue;
+
+                while (pos < len && char.IsWhiteSpace(ch = format[pos]))
+                {
+                    fb.Append(ch);
+                    pos++;
+                }
+
+                if (pos >= len) break;
+
                 bool leftJustify = false;
                 int width = 0;
+                fb.Append(ch);
                 if (ch == ',')
                 {
                     pos++;
-                    while (pos < len && format[pos] == ' ') pos++;
+                    while (pos < len && char.IsWhiteSpace(ch = format[pos]))
+                    {
+                        fb.Append(ch);
+                        pos++;
+                    }
 
-                    if (pos == len) return null;
-                    ch = format[pos];
+                    if (pos >= len) break;
+
+                    fb.Append(ch);
+
                     if (ch == '-')
                     {
                         leftJustify = true;
                         pos++;
-                        if (pos == len) return null;
+                        if (pos >= len) break;
                         ch = format[pos];
+                        fb.Append(ch);
                     }
 
-                    if (ch < '0' || ch > '9') return null;
+                    if (ch < '0' || ch > '9') continue;
+
                     do
                     {
                         width = width * 10 + ch - '0';
                         pos++;
-                        if (pos == len) return null;
+                        if (pos == len) break;
                         ch = format[pos];
-                    } while (ch >= '0' && ch <= '9' && width < 1000000);
+                        fb.Append(ch);
+                    } while (ch >= '0' && ch <= '9' && width < 100000);
                 }
 
-                while (pos < len && (ch = format[pos]) == ' ') pos++;
+                if (pos >= len) break;
+
+                while (pos < len && char.IsWhiteSpace(ch = format[pos]))
+                {
+                    fb.Append(ch);
+                    pos++;
+                }
+
+                if (pos >= len) break;
+
+                fb.Append(ch);
+
                 object arg = args[index];
                 StringBuilder fmt = null;
 
@@ -207,26 +253,25 @@ namespace WebApplications.Utilities.Formatting
                     pos++;
                     while (true)
                     {
-                        if (pos == len) return null;
+                        if (pos >= len) break;
                         ch = format[pos];
+                        fb.Append(ch);
+
                         pos++;
+                        // If we get a '}' then we treat as '}' unless we have two, in which we treat as an escape.
                         if (ch == '{')
                         {
-                            if (pos < len && format[pos] == '{')  // Treat as escape character for {{
+                            if (pos < len && format[pos] == '{')
                                 pos++;
-                            else
-                                return null;
                         }
                         else if (ch == '}')
-                        {
-                            if (pos < len && format[pos] == '}')  // Treat as escape character for }}
+                            if (pos < len && format[pos] == '}') // Treat as escape character for }}
                                 pos++;
                             else
                             {
                                 pos--;
                                 break;
                             }
-                        }
 
                         if (fmt == null)
                             fmt = new StringBuilder();
@@ -234,7 +279,13 @@ namespace WebApplications.Utilities.Formatting
                     }
                 }
 
-                if (ch != '}') return null;
+                if (pos >= len) break;
+
+                if (ch != '}') continue;
+
+                // Successfully parsed the format, so we can clear the format buffer.
+                fb.Clear();
+
                 pos++;
                 string sFmt = null;
                 string s = null;
@@ -243,7 +294,14 @@ namespace WebApplications.Utilities.Formatting
                 {
                     if (fmt != null)
                         sFmt = fmt.ToString();
-                    s = cf.Format(sFmt, arg, provider);
+                    try
+                    {
+                        s = cf.Format(sFmt, arg, provider);
+                    }
+                    catch
+                    {
+                        s = null;
+                    }
                 }
 
                 if (s == null)
@@ -253,16 +311,19 @@ namespace WebApplications.Utilities.Formatting
                     if (formattableArg != null)
                     {
                         if (sFmt == null && fmt != null)
-                        {
                             sFmt = fmt.ToString();
-                        }
 
-                        s = formattableArg.ToString(sFmt, provider);
+                        try
+                        {
+                            s = formattableArg.ToString(sFmt, provider);
+                        }
+                        catch
+                        {
+                            s = arg.ToString();
+                        }
                     }
                     else if (arg != null)
-                    {
                         s = arg.ToString();
-                    }
                 }
 
                 if (s == null) s = string.Empty;
@@ -271,6 +332,9 @@ namespace WebApplications.Utilities.Formatting
                 sb.Append(s);
                 if (leftJustify && pad > 0) sb.Append(' ', pad);
             }
+
+            if (fb.Length > 0)
+                sb.Append(fb);
 
             return sb.ToString();
         }

@@ -28,8 +28,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using WebApplications.Testing;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Difference;
 
 namespace WebApplications.Utilities.Test
 {
@@ -68,6 +71,47 @@ namespace WebApplications.Utilities.Test
                 time = $"time taken {ms}ms.";
             }
             Trace.WriteLine($"Ending test: {TestContext.TestName}, {time}");
+        }
+
+        public void AssertString(string expected, string actual, string message = null, TextOptions options = TextOptions.None, StringComparer comparer = null)
+        {
+            StringBuilder builder = new StringBuilder();
+            if (expected == null)
+            {
+                if (actual != null)
+                    builder.AppendLine($"Expected null, got <{actual.Escape()}>");
+            }
+            else if (actual == null)
+                builder.AppendLine($"Expected <{expected.Escape()}>, got null");
+            else
+            {
+                StringDifferences differences = expected.Diff(
+                    actual,
+                    options,
+                    comparer ?? StringComparer.CurrentCultureIgnoreCase);
+                if (!differences.AreEqual)
+                {
+                    builder.AppendLine($"Expected <{expected}>, got <{actual}>");
+
+                    foreach (StringChunk difference in differences.Where(c => !c.AreEqual))
+                    {
+                        if (difference.A != null)
+                        builder.AppendLine(
+                            difference.B != null
+                                ? $"Expected '{difference.A.Escape()}' at Offset '{difference.OffsetA}' - got '{difference.B.Escape()}' at Offset '{difference.OffsetB}'"
+                                : $"The string '{difference.A.Escape()}' at Offset '{difference.OffsetA}' was expected.");
+                        else
+                            builder.AppendLine($"The string '{difference.B.Escape()}' at Offset '{difference.OffsetB}' was unexpected.");
+                    }
+                }
+            }
+
+            if (builder.Length < 1) return;
+
+            if (message != null)
+                builder.AppendLine(message);
+
+            Assert.Fail(builder.ToString());
         }
     }
 }

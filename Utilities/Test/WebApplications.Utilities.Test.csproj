@@ -46,6 +46,7 @@
     <Compile Include="DebuggingExtensionsTests.cs" />
     <Compile Include="Extensions\ArraySplitTests.cs" />
     <Compile Include="Extensions\EqualityFunctionsTests.cs" />
+    <Compile Include="Extensions\FormatExtensionTests.cs" />
     <Compile Include="Extensions\GetObjectsByIdTests.cs" />
     <Compile Include="Extensions\MiscellaneousExtensionsTests.cs" />
     <Compile Include="Extensions\ToJSONTests.cs" />

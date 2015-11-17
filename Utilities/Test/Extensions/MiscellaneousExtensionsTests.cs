@@ -25,6 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -33,10 +35,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Xml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using WebApplications.Testing;
-using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Test.Extensions
 {
@@ -866,68 +865,6 @@ namespace WebApplications.Utilities.Test.Extensions
                 radians.ToDegrees(),
                 1e-10,
                 "ToDegrees should convert a value in radians to the value in degrees (i.e. divide by pi/180)");
-        }
-
-        [TestMethod]
-        public void SafeFormat_NullString_ThrowsArgumentNullException()
-        {
-            int a = Random.Next();
-            int b = Random.Next(0, 256);
-            const string formatString = null;
-            string result = formatString.SafeFormat(a, b);
-            Assert.AreEqual(
-                formatString,
-                result,
-                "Passing a null format string to SafeFormat should result in a null output.");
-        }
-
-        [TestMethod]
-        public void SafeFormat_CorrectFormatString_FormatsUsingGivenParameters()
-        {
-            int a = Random.Next();
-            int b = Random.Next(0, 256);
-            const string formatString = "Test string to format with two parameters: {1:X2} and {0}";
-            Assert.AreEqual(
-                String.Format(formatString, a, b),
-                formatString.SafeFormat(a, b),
-                "SafeFormat should use the string as a format string and format using the parameters supplied as values.");
-        }
-
-        [TestMethod]
-        public void SafeFormat_CorrectFormatStringIncludingTabs_FormatsUsingGivenParametersPreservingTabs()
-        {
-            int a = Random.Next();
-            int b = Random.Next(0, 256);
-            const string formatString =
-                "Test string containing tabs\t to format with two parameters: \t {1:X2} and \t {0}";
-            Assert.AreEqual(
-                String.Format(formatString, a, b),
-                formatString.SafeFormat(a, b),
-                "SafeFormat should use the string as a format string and format using the parameters supplied as values.");
-        }
-
-        [TestMethod]
-        public void SafeFormat_IncorrectFormatParameters_ReturnFormatString()
-        {
-            int a = Random.Next();
-            int b = Random.Next(0, 256);
-            const string formatString = "Test string to format with too many parameters: {3} {1:X2} and {0}";
-            Assert.AreEqual(
-                String.Format(formatString, a, b, null, "{3}"),
-                formatString.SafeFormat(a, b),
-                "SafeFormat should silently return the string with as many fill points filled in if parameters are missing.");
-        }
-
-        [TestMethod]
-        public void SafeFormat_IncorrectFormatString_ReturnFormatString()
-        {
-            int a = Random.Next();
-            int b = Random.Next(0, 256);
-            const string formatString = "Test string to format with invalid format: {1:z} and {0}";
-            Assert.AreEqual(
-                string.Format("Test string to format with invalid format: {1} and {0}", a,b),
-                formatString.SafeFormat(a, b),
-                "SafeFormat should fall back to the default format if the format is invalid.");
         }
 
         [TestMethod]

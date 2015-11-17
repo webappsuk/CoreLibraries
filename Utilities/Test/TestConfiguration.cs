@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
-// Copyright (c) 2014, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -35,9 +34,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Difference;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Test
@@ -47,8 +48,13 @@ namespace WebApplications.Utilities.Test
     public class TestConfiguration : UtilitiesTestBase
     {
         [NotNull]
-        private static readonly List<TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs>> _waiters
-            = new List<TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs>>();
+        private static readonly
+            List<TaskCompletionSource<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs>>
+            _waiters
+                =
+                new List
+                    <TaskCompletionSource<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs>>
+                    ();
 
 
         [NotNull]
@@ -61,7 +67,10 @@ namespace WebApplications.Utilities.Test
                 Trace.WriteLine($"Active configuration {e}");
                 lock (_waiters)
                 {
-                    foreach (TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs> tcs in _waiters)
+                    foreach (
+                        TaskCompletionSource
+                            <ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> tcs in
+                            _waiters)
                         tcs.TrySetResult(e);
                     _waiters.Clear();
                 }
@@ -75,16 +84,17 @@ namespace WebApplications.Utilities.Test
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>All changes.</returns>
-        public Task<TestConfigurationSection.ConfigurationChangedEventArgs> WaitForChanges(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> WaitForChanges(
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs> tcs =
-                new TaskCompletionSource<TestConfigurationSection.ConfigurationChangedEventArgs>();
+            TaskCompletionSource<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs> tcs =
+                new TaskCompletionSource<ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs>();
 
             lock (_waiters)
                 _waiters.Add(tcs);
             return tcs.Task.WithCancellation(cancellationToken);
         }
-        
+
         [TestMethod]
         public void TestConstructor()
         {
@@ -159,7 +169,7 @@ namespace WebApplications.Utilities.Test
                 TestConfigurationSection.Active.Save();
 
                 // Check for changes
-                TestConfigurationSection.ConfigurationChangedEventArgs change =
+                ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs change =
                     await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
                 Assert.IsNotNull(change);
                 Assert.IsTrue(change.WasChanged("<test>"));
@@ -168,12 +178,18 @@ namespace WebApplications.Utilities.Test
                 Assert.IsTrue(change.Contains("<test>.string2"));
 
                 custom = TestConfigurationSection.Active.Custom;
-                Assert.IsNotNull(custom, $"#{TestConfigurationSection.Active.InstanceNumber} custom was null.");
+                Assert.IsNotNull(custom);
                 Assert.AreEqual("custom", custom.Name.LocalName);
-                Assert.AreEqual(str1Random, custom.Element("string1")?.Value);
-                Assert.AreEqual(str2Random, custom.Element("string2")?.Value);
-                Assert.AreEqual(str1Random, TestConfigurationSection.Active.String);
-                Assert.AreEqual(str2Random, TestConfigurationSection.Active.String2);
+                AssertString(str1Random, custom.Element("string1")?.Value, options: TextOptions.NormalizeLineEndings);
+                AssertString(str2Random, custom.Element("string2")?.Value, options: TextOptions.NormalizeLineEndings);
+                AssertString(
+                    str1Random,
+                    TestConfigurationSection.Active.String,
+                    options: TextOptions.NormalizeLineEndings);
+                AssertString(
+                    str2Random,
+                    TestConfigurationSection.Active.String2,
+                    options: TextOptions.NormalizeLineEndings);
 
                 // Revert
 
@@ -193,10 +209,13 @@ namespace WebApplications.Utilities.Test
 
                 custom = TestConfigurationSection.Active.Custom;
                 Assert.IsNotNull(change);
-                Assert.AreEqual("custom", custom.Name.LocalName);
-                Assert.AreEqual(cStr, custom.ToString(SaveOptions.DisableFormatting));
-                Assert.AreEqual(str1, TestConfigurationSection.Active.String);
-                Assert.AreEqual(str2, TestConfigurationSection.Active.String2);
+                AssertString("custom", custom.Name.LocalName, options: TextOptions.NormalizeLineEndings);
+                AssertString(
+                    cStr,
+                    custom.ToString(SaveOptions.DisableFormatting),
+                    options: TextOptions.NormalizeLineEndings);
+                AssertString(str1, TestConfigurationSection.Active.String, options: TextOptions.NormalizeLineEndings);
+                AssertString(str2, TestConfigurationSection.Active.String2, options: TextOptions.NormalizeLineEndings);
             }
         }
 
@@ -243,7 +262,7 @@ namespace WebApplications.Utilities.Test
                 document.Save(filePath);
 
                 // Check for changes
-                TestConfigurationSection.ConfigurationChangedEventArgs change =
+                ConfigurationSection<TestConfigurationSection>.ConfigurationChangedEventArgs change =
                     await WaitForChanges(new CancellationTokenSource(TimeSpan.FromSeconds(1)).Token);
                 Assert.IsNotNull(change);
                 Assert.IsTrue(change.Contains("<test>"));
@@ -251,9 +270,15 @@ namespace WebApplications.Utilities.Test
 
                 XElement activeCustom = TestConfigurationSection.Active.Custom;
                 Assert.IsNotNull(activeCustom);
-                Assert.AreEqual("custom", activeCustom.Name.LocalName);
-                Assert.AreEqual(str1Random, activeCustom.Element("string1")?.Value);
-                Assert.AreEqual(str2Random, activeCustom.Element("string2")?.Value);
+                AssertString("custom", activeCustom.Name.LocalName, options: TextOptions.NormalizeLineEndings);
+                AssertString(
+                    str1Random,
+                    activeCustom.Element("string1")?.Value,
+                    options: TextOptions.NormalizeLineEndings);
+                AssertString(
+                    str2Random,
+                    activeCustom.Element("string2")?.Value,
+                    options: TextOptions.NormalizeLineEndings);
 
                 // Revert
                 File.WriteAllText(filePath, original);
@@ -274,6 +299,7 @@ namespace WebApplications.Utilities.Test
             Two,
             Three
         }
+
         public readonly int AttribParam;
         public readonly int IntValue;
         public readonly string Name;
@@ -449,7 +475,7 @@ namespace WebApplications.Utilities.Test
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
         /// <param name="attribParam">The attribute parameter.</param>
-        public TestObjectConstructor([NotNull] string name, [NotNull]  string value = "VALUE", int attribParam = -1)
+        public TestObjectConstructor([NotNull] string name, [NotNull] string value = "VALUE", int attribParam = -1)
         {
             Type = typeof(TestObject);
             Name = name;
