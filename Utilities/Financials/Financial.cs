@@ -417,34 +417,30 @@ namespace WebApplications.Utilities.Financials
         {
             ExtendedCultureInfo[] cultures = CultureInfoProvider.Current.FindByCurrency(_currency).ToArray();
 
-            bool found = false;
+            CultureInfo found = null;
             foreach (ExtendedCultureInfo c in cultures)
             {
                 Debug.Assert(c != null);
 
                 if (string.Equals(culture.Name, c.Name, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    found = true;
-                    culture = c;
+                    found = c;
                     break;
                 }
 
-                if (!found &&
+                if (found == null &&
                     string.Equals(
                         culture.TwoLetterISOLanguageName,
                         c.TwoLetterISOLanguageName,
                         StringComparison.InvariantCultureIgnoreCase))
-                {
-                    found = true;
-                    culture = c;
-                }
+                    found = c;
             }
 
-            if (!found &&
+            if (found == null &&
                 cultures.Length > 0)
-                culture = cultures[0];
+                found = cultures[0];
 
-            return string.Format(culture, "{0:C}", _amount);
+            return string.Format(found, "{0:C}", _amount);
         }
 
         /// <summary>
