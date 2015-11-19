@@ -26,6 +26,7 @@
 #endregion
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,39 +47,48 @@ namespace WebApplications.Utilities.Test
         /// Allows the building of the expected result of a difference operation.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        private class DiffResult<T> : IReadOnlyList<KeyValuePair<IEnumerable<T>, IEnumerable<T>>>
+        private class DiffResult<T> : IReadOnlyList<Tuple<bool, IEnumerable<T>, IEnumerable<T>>>
         {
             /// <summary>
             /// The underlying chunks.
             /// </summary>
             [NotNull]
-            private readonly List<KeyValuePair<IEnumerable<T>, IEnumerable<T>>> _chunks =
-                new List<KeyValuePair<IEnumerable<T>, IEnumerable<T>>>();
+            private readonly List<Tuple<bool, IEnumerable<T>, IEnumerable<T>>> _chunks =
+                new List<Tuple<bool, IEnumerable<T>, IEnumerable<T>>>();
 
             /// <summary>
             /// Adds a chunk to both.
             /// </summary>
             /// <param name="enumerationA">The "A" enumeration.</param>
             /// <param name="enumerationB">The "B" enumeration.</param>
-            public void AddBoth([NotNull] IEnumerable<T> enumerationA, IEnumerable<T> enumerationB = null)
+            public void AddEqual([NotNull] IEnumerable<T> enumerationA, IEnumerable<T> enumerationB = null)
                 => _chunks.Add(
-                    new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(enumerationA, enumerationB ?? enumerationA));
+                    new Tuple<bool, IEnumerable<T>, IEnumerable<T>>(true, enumerationA, enumerationB ?? enumerationA));
 
             /// <summary>
             /// Adds a chunk to both.
             /// </summary>
             /// <param name="array">The array.</param>
-            public void AddBoth([NotNull] params T[] array)
+            public void AddEqual([NotNull] params T[] array)
                             => _chunks.Add(
-                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(array, array));
+                                new Tuple<bool, IEnumerable<T>, IEnumerable<T>>(true, array, array));
 
+            /// <summary>
+            /// Adds a chunk to both.
+            /// </summary>
+            /// <param name="enumerationA">The "A" enumeration.</param>
+            /// <param name="enumerationB">The "B" enumeration.</param>
+            public void AddNotEqual([NotNull] IEnumerable<T> enumerationA, IEnumerable<T> enumerationB = null)
+                => _chunks.Add(
+                    new Tuple<bool, IEnumerable<T>, IEnumerable<T>>(false, enumerationA, enumerationB ?? enumerationA));
+            
             /// <summary>
             /// Adds a chunk to A.
             /// </summary>
             /// <param name="enumeration">The enumeration.</param>
             public void AddA([NotNull] IEnumerable<T> enumeration)
                             => _chunks.Add(
-                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(enumeration, null));
+                                new Tuple<bool, IEnumerable<T>, IEnumerable<T>>(false, enumeration, null));
 
             /// <summary>
             /// Adds a chunk to A.
@@ -86,7 +96,7 @@ namespace WebApplications.Utilities.Test
             /// <param name="array">The array.</param>
             public void AddA([NotNull] params T[] array)
                             => _chunks.Add(
-                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(array, null));
+                                new Tuple<bool, IEnumerable<T>, IEnumerable<T>>(false, array, null));
 
             /// <summary>
             /// Adds a chunk to B.
@@ -94,7 +104,7 @@ namespace WebApplications.Utilities.Test
             /// <param name="enumeration">The enumeration.</param>
             public void AddB([NotNull] IEnumerable<T> enumeration)
                             => _chunks.Add(
-                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(null, enumeration));
+                                new Tuple<bool, IEnumerable<T>, IEnumerable<T>>(false, null, enumeration));
 
             /// <summary>
             /// Adds a chunk to B.
@@ -102,10 +112,10 @@ namespace WebApplications.Utilities.Test
             /// <param name="array">The array.</param>
             public void AddB([NotNull] params T[] array)
                             => _chunks.Add(
-                                new KeyValuePair<IEnumerable<T>, IEnumerable<T>>(null, array));
+                                new Tuple<bool, IEnumerable<T>, IEnumerable<T>>(false, null, array));
 
             /// <inheritdoc/>
-            public IEnumerator<KeyValuePair<IEnumerable<T>, IEnumerable<T>>> GetEnumerator()
+            public IEnumerator<Tuple<bool, IEnumerable<T>, IEnumerable<T>>> GetEnumerator()
                             => _chunks.GetEnumerator();
 
             /// <inheritdoc/>
@@ -116,7 +126,7 @@ namespace WebApplications.Utilities.Test
             public int Count => _chunks.Count;
 
             /// <inheritdoc/>
-            public KeyValuePair<IEnumerable<T>, IEnumerable<T>> this[int index] => _chunks[index];
+            public Tuple<bool, IEnumerable<T>, IEnumerable<T>> this[int index] => _chunks[index];
         }
 
         /// <summary>
@@ -139,7 +149,7 @@ namespace WebApplications.Utilities.Test
             Assert.IsNotNull(b, "The 'B' collection cannot be null.");
             Assert.IsNotNull(expectedResult, "The expected result cannot be null.");
 
-            KeyValuePair<IEnumerable<T>, IEnumerable<T>>[] er = expectedResult.ToArray();
+            Tuple<bool, IEnumerable<T>, IEnumerable<T>>[] er = expectedResult.ToArray();
             CollectionAssert.AllItemsAreNotNull(er, "Expected result contains null.");
 
             Differences<T> actualResult = a.Diff(b, comparer);
@@ -153,21 +163,23 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(er.Length, ar.Length, $"{ar.Length} actual results returned instead of the expected {er.Length}.");
             for (int i = 0; i < er.Length; i++)
             {
-                KeyValuePair<IEnumerable<T>, IEnumerable<T>> eri = er[i];
+                Tuple<bool, IEnumerable<T>, IEnumerable<T>> eri = er[i];
                 Chunk<T> ari = ar[i];
                 Assert.IsNotNull(ari, $"The actual chunk of the #{i} difference was null.");
 
+                Assert.AreEqual(eri.Item1, ari.AreEqual, $"The actual chunk of the #{i} difference was {(ari.AreEqual ? "equal" : "not equal")}, when the expected result was {(eri.Item1 ? "equal" : "not equal")}.");
+
                 if (ari.A == null)
                     Assert.IsNull(
-                        eri.Key,
+                        eri.Item2,
                         $"The actual chunk A of the #{i} difference was null, when the expected chunk A is not null.");
                 else
                 {
                     Assert.IsNotNull(
-                        eri.Key,
+                        eri.Item2,
                         $"The actual chunk A of the #{i} difference was not null, when the expected chunk A is null.");
 
-                    IEnumerator<T> eriae = eri.Key.GetEnumerator();
+                    IEnumerator<T> eriae = eri.Item2.GetEnumerator();
                     IEnumerator<T> ariae = ari.A.GetEnumerator();
 
                     int j = 0;
@@ -189,15 +201,15 @@ namespace WebApplications.Utilities.Test
 
                 if (ari.B == null)
                     Assert.IsNull(
-                        eri.Value,
+                        eri.Item3,
                         $"The actual chunk B of the #{i} difference was null, when the expected chunk B is not null.");
                 else
                 {
                     Assert.IsNotNull(
-                        eri.Value,
+                        eri.Item3,
                         $"The actual chunk B of the #{i} difference was not null, when the expected chunk B is null.");
 
-                    IEnumerator<T> eribe = eri.Value.GetEnumerator();
+                    IEnumerator<T> eribe = eri.Item3.GetEnumerator();
                     IEnumerator<T> aribe = ari.B.GetEnumerator();
 
                     int j = 0;
@@ -225,7 +237,7 @@ namespace WebApplications.Utilities.Test
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 3, 4, 5 };
             int[] b = { 1, 2, 3, 4, 5 };
-            result.AddBoth(a);
+            result.AddEqual(a);
             TestDiff(a, b, result);
         }
 
@@ -234,9 +246,8 @@ namespace WebApplications.Utilities.Test
         {
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 3, 4, 5 };
-            result.AddA(a);
             int[] b = { 6, 7, 8 };
-            result.AddB(b);
+            result.AddNotEqual(a, b);
             TestDiff(a, b, result);
         }
 
@@ -247,7 +258,7 @@ namespace WebApplications.Utilities.Test
             int[] a = { 1, 2, 3, 4, 5 };
             int[] b = { 2, 3, 4, 5, 6 };
             result.AddA(1);
-            result.AddBoth(2,3,4,5);
+            result.AddEqual(2,3,4,5);
             result.AddB(6);
             TestDiff(a, b, result);
         }
@@ -259,7 +270,7 @@ namespace WebApplications.Utilities.Test
             int[] a = { 1, 2, 3, 4, 5 };
             int[] b = { 2, 3, 4, 5 };
             result.AddA(1);
-            result.AddBoth(2, 3, 4, 5);
+            result.AddEqual(2, 3, 4, 5);
             TestDiff(a, b, result);
         }
 
@@ -269,7 +280,7 @@ namespace WebApplications.Utilities.Test
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 3, 4 };
             int[] b = { 1, 2, 3, 4, 5 };
-            result.AddBoth(1, 2, 3, 4);
+            result.AddEqual(1, 2, 3, 4);
             result.AddB(5);
             TestDiff(a, b, result);
         }
@@ -309,9 +320,9 @@ namespace WebApplications.Utilities.Test
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 4, 5 };
             int[] b = { 1, 2, 3, 4, 5 };
-            result.AddBoth(1,2);
+            result.AddEqual(1,2);
             result.AddB(3);
-            result.AddBoth(4, 5);
+            result.AddEqual(4, 5);
             TestDiff(a, b, result);
         }
 
@@ -321,9 +332,9 @@ namespace WebApplications.Utilities.Test
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 3, 4, 5 };
             int[] b = { 1, 2, 4, 5 };
-            result.AddBoth(1, 2);
+            result.AddEqual(1, 2);
             result.AddA(3);
-            result.AddBoth(4, 5);
+            result.AddEqual(4, 5);
             TestDiff(a, b, result);
         }
 
@@ -333,11 +344,11 @@ namespace WebApplications.Utilities.Test
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 3, 4, 5 };
             int[] b = { 1, 2, 4, 3, 5 };
-            result.AddBoth(1, 2);
+            result.AddEqual(1, 2);
             result.AddB(4);
-            result.AddBoth(3);
+            result.AddEqual(3);
             result.AddA(4);
-            result.AddBoth(5);
+            result.AddEqual(5);
             TestDiff(a, b, result);
         }
 
@@ -347,11 +358,11 @@ namespace WebApplications.Utilities.Test
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 3, 4, 5, 6 };
             int[] b = { 1, 4, 5, 2, 3, 6 };
-            result.AddBoth(1);
+            result.AddEqual(1);
             result.AddB(4, 5);
-            result.AddBoth(2, 3);
+            result.AddEqual(2, 3);
             result.AddA(4, 5);
-            result.AddBoth(6);
+            result.AddEqual(6);
             TestDiff(a, b, result);
         }
 
@@ -362,7 +373,7 @@ namespace WebApplications.Utilities.Test
             int[] a = { 2 };
             int[] b = { 1, 2, 3, 4 };
             result.AddB(1);
-            result.AddBoth(2);
+            result.AddEqual(2);
             result.AddB(3,4);
             TestDiff(a, b, result);
         }
@@ -374,7 +385,7 @@ namespace WebApplications.Utilities.Test
             int[] a = { 1, 2, 3, 4 };
             int[] b = { 2 };
             result.AddA(1);
-            result.AddBoth(2);
+            result.AddEqual(2);
             result.AddA(3, 4);
             TestDiff(a, b, result);
         }
@@ -385,12 +396,11 @@ namespace WebApplications.Utilities.Test
             DiffResult<int> result = new DiffResult<int>();
             int[] a = { 1, 2, 3, 4, 5 };
             int[] b = { 1, 2, 6, 2, 3, 7, 5 };
-            result.AddBoth(1, 2);
+            result.AddEqual(1, 2);
             result.AddB(6, 2);
-            result.AddBoth(3);
-            result.AddA(4);
-            result.AddB(7);
-            result.AddBoth(5);
+            result.AddEqual(3);
+            result.AddNotEqual(new[] { 4 }, new[] { 7 });
+            result.AddEqual(5);
             TestDiff(a, b, result);
         }
 
@@ -412,6 +422,15 @@ namespace WebApplications.Utilities.Test
         public void TestStringDifference3()
         {
             StringDifferences differences = "Test  a difference ".Diff("Test Difference  ", TextOptions.IgnoreWhiteSpace, CharComparer.CurrentCultureIgnoreCase);
+            Assert.IsFalse(differences.AreEqual);
+        }
+
+        [TestMethod]
+        public void TestStringDifference4()
+        {
+            string loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+            string loremIpsumMod = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. This bit is changed, quis nostrud exercitation ullamco this bit is added laboris nisi ut aliquip. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+            StringDifferences differences = loremIpsum.Diff(loremIpsumMod);
             Assert.IsFalse(differences.AreEqual);
         }
     }

@@ -29,9 +29,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Difference
 {
@@ -41,7 +43,7 @@ namespace WebApplications.Utilities.Difference
     /// <seealso cref="Differences{T}"/>
     [PublicAPI]
     [Serializable]
-    public class StringDifferences : IReadOnlyList<StringChunk>
+    public class StringDifferences : Writeable, IReadOnlyList<StringChunk>
     {
         /// <summary>
         /// The chunks.
@@ -126,8 +128,9 @@ namespace WebApplications.Utilities.Difference
             if (chunks.Count < 2)
             {
                 Chunk<char> chunk = chunks.Single();
-                Debug.Assert(chunk.AreEqual);
-                _chunks = new[] { new StringChunk(a, 0, b, 0) };
+                // ReSharper disable once PossibleNullReferenceException
+                _chunks = new[] { new StringChunk(chunk.AreEqual, a, 0, b, 0) };
+                return;
             }
 
             // To reverse the mapping we first calculate the split points in the original strings, and find
@@ -168,7 +171,7 @@ namespace WebApplications.Utilities.Difference
                 string ac = aEnd > -1 ? a.Substring(aStart, aEnd - aStart) : null;
                 string bc = bEnd > -1 ? b.Substring(bStart, bEnd - bStart) : null;
 
-                stringChunks[i] = new StringChunk(ac, aEnd > -1 ? aStart : -1, bc, bEnd > -1 ? bStart : -1);
+                stringChunks[i] = new StringChunk(chunks[i].AreEqual, ac, aEnd > -1 ? aStart : -1, bc, bEnd > -1 ? bStart : -1);
 
                 if (aEnd > -1) aStart = aEnd;
                 if (bEnd > -1) bStart = bEnd;
@@ -196,31 +199,25 @@ namespace WebApplications.Utilities.Difference
         public StringChunk this[int index] => _chunks[index];
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents the differences.
+        /// Writes this instance to a <paramref name="writer" />.
         /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents the differences.</returns>
-        public override string ToString()
+        /// <param name="writer">The writer.</param>
+        /// <param name="lineFormat">The format.</param>
+        public override void WriteTo(TextWriter writer, FormatBuilder lineFormat = null)
+            => WriteTo(writer, lineFormat, DifferenceExtensions.DefaultStringChunkFormat);
+
+        /// <summary>
+        /// Writes this instance to a <paramref name="writer" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="lineFormat">The format.</param>
+        /// <param name="chunkFormat">The chunk format.</param>
+        public void WriteTo(TextWriter writer, FormatBuilder lineFormat, FormatBuilder chunkFormat)
         {
-            // TODO Cache and make use of FormatBuilder
-            StringBuilder builder = new StringBuilder();
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+
             foreach (StringChunk chunk in _chunks)
-            {
-                string s = chunk.B;
-                if (!chunk.AreEqual)
-                    if (chunk.A == null)
-                        builder.Append("+ ");
-                    else
-                    {
-                        builder.Append("- ");
-                        s = chunk.A;
-                    }
-                else
-                    builder.Append("  ");
-                // ReSharper disable once AssignNullToNotNullAttribute
-                builder.Append(s);
-                builder.Append(Environment.NewLine);
-            }
-            return builder.ToString();
+                chunk.WriteTo(writer, lineFormat, chunkFormat);
         }
     }
 }

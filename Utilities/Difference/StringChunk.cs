@@ -26,7 +26,9 @@
 #endregion
 
 using System;
+using System.IO;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Difference
 {
@@ -35,12 +37,12 @@ namespace WebApplications.Utilities.Difference
     /// </summary>
     [PublicAPI]
     [Serializable]
-    public class StringChunk
+    public class StringChunk : Writeable
     {
         /// <summary>
         /// <see langword="true"/> if <see cref="A"/> and <see cref="B"/> are considered equal.
         /// </summary>
-        public bool AreEqual => A != null && B != null;
+        public readonly bool AreEqual;
 
         /// <summary>
         /// The "A" string.
@@ -72,19 +74,102 @@ namespace WebApplications.Utilities.Difference
         /// <param name="b">The original B string.</param>
         /// <param name="offsetB">The offset b.</param>
         internal StringChunk(
+            bool areEqual,
             [CanBeNull] string a,
             int offsetA,
             [CanBeNull] string b,
             int offsetB)
         {
+            AreEqual = areEqual;
             A = a;
             B = b;
             OffsetA = offsetA;
             OffsetB = offsetB;
         }
 
-        /// <inheritdoc />
-        // ReSharper disable once AssignNullToNotNullAttribute
-        public override string ToString() => B ?? A;
+        /// <summary>
+        /// Writes this instance to a <paramref name="writer"/>.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="lineFormat">The format.</param>
+        public override void WriteTo(TextWriter writer, FormatBuilder lineFormat = null)
+            => WriteTo(writer, lineFormat, DifferenceExtensions.DefaultStringChunkFormat);
+
+        /// <summary>
+        /// Writes this instance to a <paramref name="writer" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="lineFormat">The format.</param>
+        /// <param name="chunkFormat">The chunk format.</param>
+        public void WriteTo(TextWriter writer, FormatBuilder lineFormat, FormatBuilder chunkFormat)
+        {
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+
+            if (lineFormat == null)
+                lineFormat = DifferenceExtensions.DefaultLineFormat;
+            if (chunkFormat == null)
+                chunkFormat = DifferenceExtensions.DefaultStringChunkFormat;
+
+            string[] aLines = A == null
+                ? Array<string>.Empty
+                : chunkFormat.ToString(new DictionaryResolvable() { { DifferenceExtensions.ChunkTag, A } })
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            string[] bLines = B == null
+                ? Array<string>.Empty
+                : chunkFormat.ToString(new DictionaryResolvable() { { DifferenceExtensions.ChunkTag, B } })
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            int maxLen = aLines.Length < bLines.Length ? bLines.Length : aLines.Length;
+
+            string flag;
+            if (AreEqual)
+            {
+                flag = " ";
+            }
+            else if (A == null)
+            {
+                flag = "+";
+            }
+            else if (B == null)
+            {
+                flag = "-";
+            }
+            else
+            {
+                flag = "!";
+            }
+
+            // Write out lines in chunk.
+            for (int l = 0; l < maxLen; l++)
+                lineFormat.WriteTo(
+                    writer,
+                    "G",
+                    (_, c) =>
+                    {
+                        if (string.Equals(
+                            c.Tag,
+                            DifferenceExtensions.ChunkATag,
+                            StringComparison.InvariantCultureIgnoreCase))
+                            return l < aLines.Length ? aLines[l] : Resolution.Empty;
+                        if (string.Equals(
+                            c.Tag,
+                            DifferenceExtensions.ChunkBTag,
+                            StringComparison.InvariantCultureIgnoreCase))
+                            return l < bLines.Length ? bLines[l] : Resolution.Empty;
+                        if (string.Equals(
+                            c.Tag,
+                            DifferenceExtensions.FlagTag,
+                            StringComparison.InvariantCultureIgnoreCase))
+                            return flag;
+                        if (string.Equals(
+                            c.Tag,
+                            DifferenceExtensions.SeperatorTag,
+                            StringComparison.InvariantCultureIgnoreCase))
+                            return " | ";
+
+                        return Resolution.Unknown;
+                    });
+        }
     }
 }

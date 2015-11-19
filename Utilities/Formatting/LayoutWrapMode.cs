@@ -38,9 +38,9 @@ namespace WebApplications.Utilities.Formatting
     public enum LayoutWrapMode : byte
     {
         /// <summary>
-        /// Always adds a new line when wrapping lines.
+        /// Always adds a new line when wrapping lines, unless as the width of the writer.
         /// </summary>
-        [Description("Always adds a new line when wrapping lines.")]
+        [Description("Always adds a new line when wrapping lines, unless as the width of the writer.")]
         NewLine,
 
         /// <summary>
@@ -60,6 +60,14 @@ namespace WebApplications.Utilities.Formatting
         [Description(
             "Adds indent characters to the end of each line till Layout width is reached and lets the display handle wrapping."
             )]
-        PadToWrap
+        PadToWrap,
+
+        /// <summary>
+        /// Adds indent characters to the end of each line till <see cref="Layout.Width"/> is reached and then adds a new line, if necessary.
+        /// </summary>
+        [Description(
+            "Adds indent characters to the end of each line till Layout width is reached and then adds a new line, if necessary."
+            )]
+        PadToNewLine
     }
 }

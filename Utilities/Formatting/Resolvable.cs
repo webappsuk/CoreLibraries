@@ -56,28 +56,19 @@ namespace WebApplications.Utilities.Formatting
         /// Gets a value indicating whether this instance uses case sensitive tag resolution caching.
         /// </summary>
         /// <value><see langword="true" /> if this instance is case sensitive; otherwise, <see langword="false" />.</value>
-        public bool IsCaseSensitive
-        {
-            get { return _isCaseSensitive; }
-        }
+        public bool IsCaseSensitive => _isCaseSensitive;
 
         /// <summary>
         /// Gets a value indicating whether outer tags should be resolved automatically in formats.
         /// </summary>
         /// <value><see langword="true" /> if the <see cref="FormatBuilder" /> should allow outer tags when resolving formats for this instance; otherwise, <see langword="false" />.</value>
-        public bool ResolveOuterTags
-        {
-            get { return _resolveOuterTags; }
-        }
+        public bool ResolveOuterTags => _resolveOuterTags;
 
         /// <summary>
         /// Gets a value indicating whether control tags should be based to the resolver.
         /// </summary>
         /// <value><see langword="true" /> if the <see cref="FormatBuilder" /> should allow outer tags when resolving formats for this instance; otherwise, <see langword="false" />.</value>
-        public bool ResolveControls
-        {
-            get { return _resolveControls; }
-        }
+        public bool ResolveControls => _resolveControls;
 
         /// <summary>
         /// Resolves the specified tag.

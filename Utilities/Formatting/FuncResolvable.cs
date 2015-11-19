@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Formatting
             bool resolveControls = false)
             : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
-            if (resolver == null) throw new ArgumentNullException("resolver");
+            if (resolver == null) throw new ArgumentNullException(nameof(resolver));
             _resolver = resolver;
         }
 
@@ -66,9 +66,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override object Resolve(FormatWriteContext context, FormatChunk chunk)
-        {
-            return _resolver(context, chunk);
-        }
+        public override object Resolve(FormatWriteContext context, FormatChunk chunk) => _resolver(context, chunk);
     }
 }

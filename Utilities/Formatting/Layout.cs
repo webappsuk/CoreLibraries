@@ -135,51 +135,37 @@ namespace WebApplications.Utilities.Formatting
         /// Gets a value indicating whether this <see cref="Layout"/> is complete.
         /// </summary>
         /// <value><see langword="true" /> if full; otherwise, <see langword="false" />.</value>
-        public bool IsFull
-        {
-            get
-            {
-                // Confirm everything is assigned.
-                return Width.IsAssigned &&
-                       IndentSize.IsAssigned &&
-                       RightMarginSize.IsAssigned &&
-                       IndentChar.IsAssigned &&
-                       FirstLineIndentSize.IsAssigned &&
-                       TabStops.IsAssigned &&
-                       TabSize.IsAssigned &&
-                       TabChar.IsAssigned &&
-                       Alignment.IsAssigned &&
-                       SplitLength.IsAssigned &&
-                       Hyphenate.IsAssigned &&
-                       HyphenChar.IsAssigned &&
-                       WrapMode.IsAssigned;
-            }
-        }
+        public bool IsFull => Width.IsAssigned &&
+                              IndentSize.IsAssigned &&
+                              RightMarginSize.IsAssigned &&
+                              IndentChar.IsAssigned &&
+                              FirstLineIndentSize.IsAssigned &&
+                              TabStops.IsAssigned &&
+                              TabSize.IsAssigned &&
+                              TabChar.IsAssigned &&
+                              Alignment.IsAssigned &&
+                              SplitLength.IsAssigned &&
+                              Hyphenate.IsAssigned &&
+                              HyphenChar.IsAssigned &&
+                              WrapMode.IsAssigned;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Layout"/> is totally incomplete.
         /// </summary>
         /// <value><see langword="true" /> if empty; otherwise, <see langword="false" />.</value>
-        public bool IsEmpty
-        {
-            get
-            {
-                // Confirm everything is not assigned.
-                return !Width.IsAssigned &&
-                       !IndentSize.IsAssigned &&
-                       !RightMarginSize.IsAssigned &&
-                       !IndentChar.IsAssigned &&
-                       !FirstLineIndentSize.IsAssigned &&
-                       !TabStops.IsAssigned &&
-                       !TabSize.IsAssigned &&
-                       !TabChar.IsAssigned &&
-                       !Alignment.IsAssigned &&
-                       !SplitLength.IsAssigned &&
-                       !Hyphenate.IsAssigned &&
-                       !HyphenChar.IsAssigned &&
-                       !WrapMode.IsAssigned;
-            }
-        }
+        public bool IsEmpty => !Width.IsAssigned &&
+                               !IndentSize.IsAssigned &&
+                               !RightMarginSize.IsAssigned &&
+                               !IndentChar.IsAssigned &&
+                               !FirstLineIndentSize.IsAssigned &&
+                               !TabStops.IsAssigned &&
+                               !TabSize.IsAssigned &&
+                               !TabChar.IsAssigned &&
+                               !Alignment.IsAssigned &&
+                               !SplitLength.IsAssigned &&
+                               !Hyphenate.IsAssigned &&
+                               !HyphenChar.IsAssigned &&
+                               !WrapMode.IsAssigned;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Layout" /> class.

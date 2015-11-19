@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -39,7 +40,6 @@ using System.Runtime.ExceptionServices;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Configuration;
@@ -401,7 +401,7 @@ namespace WebApplications.Utilities.Logging
                 PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
 
             // Create tick action
-            _tickAction = new AsyncTimer((AsyncTimerCallback)DoFlush, dueTime: TimeHelpers.InfiniteDuration);
+            _tickAction = new AsyncTimer(DoFlush, dueTime: TimeHelpers.InfiniteDuration);
 
             // Create loggers and add default memory logger.
             _loggers = new Dictionary<ILogger, LoggerInfo>();

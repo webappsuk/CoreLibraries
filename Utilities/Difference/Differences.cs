@@ -29,9 +29,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Difference
 {
@@ -41,7 +42,7 @@ namespace WebApplications.Utilities.Difference
     /// <typeparam name="T">The items type.</typeparam>
     [PublicAPI]
     [Serializable]
-    public class Differences<T> : IReadOnlyList<Chunk<T>>
+    public class Differences<T> : Writeable, IReadOnlyList<Chunk<T>>
     {
         /// <summary>
         /// The 'A' list.
@@ -196,7 +197,7 @@ namespace WebApplications.Utilities.Difference
                             // Step down
                             x = downVector[offsetK + 1];
                         else
-                        { 
+                        {
                             // Step right
                             x = downVector[offsetK - 1] + 1;
                             if ((k < downEnd) &&
@@ -289,6 +290,8 @@ namespace WebApplications.Utilities.Difference
             int itemB = 0;
             int startA = 0;
             int startB = 0;
+            ReadOnlyWindow<T> subSetA;
+            ReadOnlyWindow<T> subSetB;
             while (itemA < A.Count || itemB < B.Count)
             {
                 // Scan through unchanged items.
@@ -305,10 +308,9 @@ namespace WebApplications.Utilities.Difference
                 {
                     // The length of A & B should be identical!
                     Debug.Assert(itemB - startB == itemA - startA);
-                    chunks.Add(
-                        new Chunk<T>(
-                            A.GetSubset(startA, itemA - startA),
-                            B.GetSubset(startB, itemB - startB)));
+                    subSetA = A.GetSubset(startA, itemA - startA);
+                    subSetB = B.GetSubset(startB, itemB - startB);
+                    chunks.Add(new Chunk<T>(true, subSetA, subSetB));
                 }
 
                 startA = itemA;
@@ -318,15 +320,14 @@ namespace WebApplications.Utilities.Difference
                        (itemB >= B.Count || modificationsA[itemA]))
                     itemA++;
 
-                if (itemA > startA)
-                    chunks.Add(new Chunk<T>(A.GetSubset(startA, itemA - startA), null));
-
                 while (itemB < B.Count &&
                        (itemA >= A.Count || modificationsB[itemB]))
                     itemB++;
 
-                if (itemB > startB)
-                    chunks.Add(new Chunk<T>(null, B.GetSubset(startB, itemB - startB)));
+                subSetA = itemA > startA ? A.GetSubset(startA, itemA - startA) : null;
+                subSetB = itemB > startB ? B.GetSubset(startB, itemB - startB) : null;
+                if (subSetA != null || subSetB != null)
+                    chunks.Add(new Chunk<T>(false, subSetA, subSetB));
 
                 startA = itemA;
                 startB = itemB;
@@ -337,15 +338,14 @@ namespace WebApplications.Utilities.Difference
             {
                 // The length of A & B should be identical!
                 Debug.Assert(itemB - startB == itemA - startA);
-                chunks.Add(
-                    new Chunk<T>(
-                        A.GetSubset(startA, itemA - startA),
-                        B.GetSubset(startB, itemB - startB)));
+                subSetA = A.GetSubset(startA, itemA - startA);
+                subSetB = B.GetSubset(startB, itemB - startB);
+                chunks.Add(new Chunk<T>(true, subSetA, subSetB));
             }
-            
+
             _chunks = chunks;
         }
-        
+
         /// <inheritdoc />
         [ItemNotNull]
         public IEnumerator<Chunk<T>> GetEnumerator() => _chunks.GetEnumerator();
@@ -365,31 +365,25 @@ namespace WebApplications.Utilities.Difference
         public Chunk<T> this[int index] => _chunks[index];
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents the differences.
+        /// Writes this instance to a <paramref name="writer" />.
         /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents the differences.</returns>
-        public override string ToString()
+        /// <param name="writer">The writer.</param>
+        /// <param name="lineFormat">The format.</param>
+        public override void WriteTo(TextWriter writer, FormatBuilder lineFormat = null)
+            => WriteTo(writer, lineFormat, DifferenceExtensions.DefaultChunkFormat);
+
+        /// <summary>
+        /// Writes this instance to a <paramref name="writer" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="lineFormat">The format.</param>
+        /// <param name="chunkFormat">The chunk format.</param>
+        public void WriteTo(TextWriter writer, FormatBuilder lineFormat, FormatBuilder chunkFormat)
         {
-            // TODO Cache and make use of FormatBuilder
-            StringBuilder builder = new StringBuilder();
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+
             foreach (Chunk<T> chunk in _chunks)
-            {
-                ReadOnlyWindow<T> window = chunk.B;
-                if (!chunk.AreEqual)
-                    if (chunk.A == null)
-                        builder.Append("+ ");
-                    else
-                    {
-                        builder.Append("- ");
-                        window = chunk.A;
-                    }
-                else
-                    builder.Append("  ");
-                // ReSharper disable once AssignNullToNotNullAttribute
-                builder.Append(string.Join(",", window));
-                builder.Append(Environment.NewLine);
-            }
-            return builder.ToString();
+                chunk.WriteTo(writer, lineFormat, chunkFormat);
         }
     }
 }

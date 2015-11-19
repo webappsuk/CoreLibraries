@@ -366,5 +366,26 @@ namespace WebApplications.Utilities.Test.Formatting
 
             Assert.AreEqual("    Text", builder.ToString(dictionary));
         }
+
+        [TestMethod]
+        public void TestAlignment()
+        {
+            Dictionary<string, object> dictionary = new Dictionary<string, object> { { "tag", "1" } };
+            FormatBuilder builder = new FormatBuilder("{tag,3}");
+            Assert.AreEqual("  1",builder.ToString(dictionary));
+            builder.Clear();
+
+            builder.AppendFormat("{tag,-3}");
+            Assert.AreEqual("1  ", builder.ToString(dictionary));
+            builder.Clear();
+
+            builder.AppendFormat("{tag,3:2{tag}}");
+            Assert.AreEqual(" 21", builder.ToString(dictionary));
+            builder.Clear();
+
+            builder.AppendFormat("{tag,-3:2{tag}}");
+            Assert.AreEqual("21 ", builder.ToString(dictionary));
+            builder.Clear();
+        }
     }
 }

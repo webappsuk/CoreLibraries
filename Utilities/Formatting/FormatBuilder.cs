@@ -1314,7 +1314,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="instance">The istance.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -3284,6 +3284,7 @@ namespace WebApplications.Utilities.Formatting
                                             chunk.ChildrenInternal.Count > 0)
                                         {
                                             // Get the chunks for the fill point.
+                                            // BUG Alignment is ignored in the scenario we have child chunks.
                                             Stack<FormatChunk> subFormatChunks = new Stack<FormatChunk>();
                                             bool hasFillPoint = false;
                                             bool hasItemsFillPoint = false;
@@ -3913,6 +3914,15 @@ namespace WebApplications.Utilities.Formatting
                                         new string(
                                             indentChar,
                                             (writerWidth < int.MaxValue ? writerWidth : layout.Width.Value) - p));
+                                    break;
+                                case LayoutWrapMode.PadToNewLine:
+                                    writer.Write(
+                                        new string(
+                                            indentChar,
+                                            (writerWidth < int.MaxValue ? writerWidth : layout.Width.Value) - p));
+                                    if (!autoWraps ||
+                                        (p < writerWidth))
+                                        writer.WriteLine();
                                     break;
                                 default:
                                     if (!autoWraps ||

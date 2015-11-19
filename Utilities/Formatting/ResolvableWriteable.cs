@@ -125,7 +125,7 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once VirtualMemberNeverOverriden.Global
         public virtual void WriteTo([NotNull] TextWriter writer, [CanBeNull] FormatBuilder format = null)
         {
-            if (writer == null) throw new ArgumentNullException("writer");
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
 
             if (format == null)
                 format = DefaultFormat;

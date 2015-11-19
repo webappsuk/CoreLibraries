@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Difference;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities
 {
@@ -39,6 +40,46 @@ namespace WebApplications.Utilities
     [PublicAPI]
     public static class DifferenceExtensions
     {
+        public const string FlagBackgroundColorName = "bgcolorFlag";
+        public const string FlagForegroundColorName = "fgcolorFlag";
+        public const string ChunkABackgroundColorName = "bgcolorChunkA";
+        public const string ChunkAForegroundColorName = "fgcolorChunkA";
+        public const string ChunkBBackgroundColorName = "bgcolorChunkB";
+        public const string ChunkBForegroundColorName = "fgcolorChunkB";
+        public const string SeperatorTag = "seperator";
+        public const string FlagTag = "flag";
+        public const string ChunkTag = "chunk";
+        public const string ChunkATag = "chunkA";
+        public const string ChunkBTag = "chunkB";
+
+        /// <summary>
+        /// The default line format, used for each line of the chunk.
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder DefaultLineFormat =
+            @"{" + FormatBuilder.BackgroundColorTag + ":" + FlagBackgroundColorName + "}{" +
+            FormatBuilder.ForegroundColorTag + ":" + FlagForegroundColorName + "}{" + FlagTag + ",3}{" +
+            FormatBuilder.ResetColorsTag + "}{" + FormatBuilder.BackgroundColorTag + ":" + ChunkABackgroundColorName +
+            "}{" + FormatBuilder.ForegroundColorTag + ":" + ChunkAForegroundColorName + "}{" + ChunkATag + ",40}{" +
+            FormatBuilder.ResetColorsTag + "}{" + SeperatorTag + "}{" + FormatBuilder.BackgroundColorTag + ":" +
+            ChunkBBackgroundColorName + "}{" + FormatBuilder.ForegroundColorTag + ":" + ChunkBForegroundColorName + "}{" +
+            ChunkBTag + ",40}{" + FormatBuilder.ResetColorsTag + "}"+Environment.NewLine;
+
+        /// <summary>
+        /// The default layout for chunks.
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder DefaultChunkFormat = new FormatBuilder(
+            new Layout(40, wrapMode: LayoutWrapMode.PadToNewLine),
+            "{" + ChunkTag + ":[{<Items>:{<Item>}}{<JOIN>:, }]}");
+        /// <summary>
+        /// The default layout for chunks.
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder DefaultStringChunkFormat = new FormatBuilder(
+            new Layout(40, wrapMode: LayoutWrapMode.PadToNewLine),
+            "{" + ChunkTag + "}");
+
         /// <summary>
         /// Find the differences between two strings.
         /// </summary>
