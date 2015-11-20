@@ -73,6 +73,7 @@
     <Compile Include="Difference\StringChunk.cs" />
     <Compile Include="Difference\StringDifferences.cs" />
     <Compile Include="Difference\TextOptions.cs" />
+    <Compile Include="Difference\TextTokenStrategy.cs" />
     <Compile Include="Formatting\Writeable.cs" />
     <Compile Include="Funcs.cs">
       <AutoGen>True</AutoGen>

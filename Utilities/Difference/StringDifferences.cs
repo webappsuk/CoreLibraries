@@ -28,10 +28,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
@@ -79,11 +77,15 @@ namespace WebApplications.Utilities.Difference
         /// <param name="b">The 'B' string.</param>
         /// <param name="offsetB">The offset to the start of a window in the second string.</param>
         /// <param name="lengthB">The length of the window in the second string.</param>
+        /// <param name="token">The token.</param>
         /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The character comparer.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="comparer" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="a" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="b" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="comparer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetA" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthA" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetB" /> is out of range.</exception>
@@ -104,7 +106,7 @@ namespace WebApplications.Utilities.Difference
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
             A = a;
             B = b;
-
+            
             if (textOptions != TextOptions.None)
             {
                 // Wrap the comparer with an additional check to handle special characters.
@@ -113,7 +115,7 @@ namespace WebApplications.Utilities.Difference
                     // Ignore white space - treat all whitespace as the same (note this will handle line endings too).
                     comparer = (x, y) => char.IsWhiteSpace(x) ? char.IsWhiteSpace(y) : oc(x, y);
                 else if (textOptions.HasFlag(TextOptions.NormalizeLineEndings))
-                // Just normalize line endings - treat '\r' and '\n\ as the same
+                    // Just normalize line endings - treat '\r' and '\n\ as the same
                     comparer = (x, y) => x == '\r' || x == '\n' ? y == '\r' || y == '\n' : oc(x, y);
             }
 
@@ -158,7 +160,7 @@ namespace WebApplications.Utilities.Difference
                 }
                 else bEnds[i] = -1;
             }
-            
+
             // Now we're ready to build up a new chunk array based on the original strings
             StringChunk[] stringChunks = new StringChunk[chunks.Count];
             int aStart = 0;
@@ -179,7 +181,71 @@ namespace WebApplications.Utilities.Difference
 
             _chunks = stringChunks;
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringDifferences" /> class.
+        /// </summary>
+        /// <param name="a">The 'A' string.</param>
+        /// <param name="offsetA">The offset to the start of a window in the first string.</param>
+        /// <param name="lengthA">The length of the window in the first string.</param>
+        /// <param name="b">The 'B' string.</param>
+        /// <param name="offsetB">The offset to the start of a window in the second string.</param>
+        /// <param name="lengthB">The length of the window in the second string.</param>
+        /// <param name="tokenStrategy">The token.</param>
+        /// <param name="textOptions">The text options.</param>
+        /// <param name="comparer">The character comparer.</param>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="a" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="b" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="comparer" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetA" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthA" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetB" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthB" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="textOptions" /> cannot be set to 
+        /// <see cref="TextOptions.IgnoreWhiteSpace"/> for any text tokenization strategy other than 
+        /// <see cref="TextTokenStrategy.Character"/> as it would prevent correct tokenization.</exception>
+        /// <exception cref="Exception">The <paramref name="comparer" /> throws an exception.</exception>
+        internal StringDifferences(
+            TextTokenStrategy tokenStrategy,
+            [NotNull] string a,
+            int offsetA,
+            int lengthA,
+            [NotNull] string b,
+            int offsetB,
+            int lengthB,
+            TextOptions textOptions,
+            [NotNull] Func<char, char, bool> comparer)
+        {
+            if (a == null) throw new ArgumentNullException(nameof(a));
+            if (b == null) throw new ArgumentNullException(nameof(b));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+            if (tokenStrategy == TextTokenStrategy.Character) throw new ArgumentOutOfRangeException(nameof(tokenStrategy), tokenStrategy, Resources.StringDifferences_StringDifferences_Character_Token_Strategy_Invalid);
+            if (textOptions.HasFlag(TextOptions.IgnoreWhiteSpace)) throw new ArgumentOutOfRangeException(nameof(textOptions), textOptions, Resources.StringDifferences_StringDifferences_IgnoreWhiteSpace_Invalid);
+            A = a;
+            B = b;
+
+            if (textOptions != TextOptions.None)
+            {
+                // Wrap the comparer with an additional check to handle special characters.
+                Func<char, char, bool> oc = comparer;
+                if (textOptions.HasFlag(TextOptions.IgnoreWhiteSpace))
+                    // Ignore white space - treat all whitespace as the same (note this will handle line endings too).
+                    comparer = (x, y) => char.IsWhiteSpace(x) ? char.IsWhiteSpace(y) : oc(x, y);
+                else if (textOptions.HasFlag(TextOptions.NormalizeLineEndings))
+                    // Just normalize line endings - treat '\r' and '\n\ as the same
+                    comparer = (x, y) => x == '\r' || x == '\n' ? y == '\r' || y == '\n' : oc(x, y);
+            }
+
+            // Map strings based on text options
+            StringMap aMap = a.ToMapped(textOptions);
+            StringMap bMap = b.ToMapped(textOptions);
+
+            throw new NotImplementedException("Only character tokenization is currently implemented.");
+        }
+
         /// <inheritdoc />
         [ItemNotNull]
         public IEnumerator<StringChunk> GetEnumerator() => _chunks.GetEnumerator();
@@ -203,8 +269,7 @@ namespace WebApplications.Utilities.Difference
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="lineFormat">The format.</param>
-        public override void WriteTo(TextWriter writer, FormatBuilder lineFormat = null)
-            => WriteTo(writer, lineFormat, DifferenceExtensions.DefaultStringChunkFormat);
+        public override void WriteTo(TextWriter writer, FormatBuilder lineFormat = null) => WriteTo(writer, lineFormat, DifferenceExtensions.DefaultStringChunkFormat);
 
         /// <summary>
         /// Writes this instance to a <paramref name="writer" />.

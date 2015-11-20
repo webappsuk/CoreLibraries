@@ -1096,6 +1096,24 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Character token strategy is not supported for this constructor..
+        /// </summary>
+        internal static string StringDifferences_StringDifferences_Character_Token_Strategy_Invalid {
+            get {
+                return ResourceManager.GetString("StringDifferences_StringDifferences_Character_Token_Strategy_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use the &apos;IgnoreWhiteSpace&apos; text option with any text tokenization strategy other than &apos;Character&apos; as it would correct prevent tokenization..
+        /// </summary>
+        internal static string StringDifferences_StringDifferences_IgnoreWhiteSpace_Invalid {
+            get {
+                return ResourceManager.GetString("StringDifferences_StringDifferences_IgnoreWhiteSpace_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Antecedent task was cancelled..
         /// </summary>
         internal static string TaskExtensions_After_AntecedentTaskCancelled {

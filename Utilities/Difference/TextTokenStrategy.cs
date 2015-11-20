@@ -25,52 +25,31 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using WebApplications.Utilities.Annotations;
-
 namespace WebApplications.Utilities.Difference
 {
     /// <summary>
-    /// Options for comparing text.
+    /// Describes the tokenization strategy for strings used by the difference engine.
     /// </summary>
-    [Flags]
-    [PublicAPI]
-    public enum TextOptions
+    public enum TextTokenStrategy
     {
         /// <summary>
-        /// No options.
+        /// Differences are calculated per character.
         /// </summary>
-        None = 0,
+        Character,
 
         /// <summary>
-        /// Trims white space from the start and end of lines.
+        /// Differences are calculated per word (based on word boundaries).
         /// </summary>
-        /// <remarks>Cannot be used with <see cref="CollapseWhiteSpace"/>.</remarks>
-        Trim = 1 << 0,
+        Word,
 
         /// <summary>
-        /// Normalizes line endings.
+        /// Differences are calculated per sentence (split on '.').
         /// </summary>
-        NormalizeLineEndings = 1 << 1,
+        Sentence,
 
         /// <summary>
-        /// Collapses all white space (so will also <see cref="NormalizeLineEndings"/>, word boundaries are still
-        /// considered significant.
+        /// Differences are calculated per line
         /// </summary>
-        /// <remarks>Cannot be used with <see cref="Trim"/>.</remarks>
-        CollapseWhiteSpace = NormalizeLineEndings | 1 << 2,
-
-        /// <summary>
-        /// Ignores all white space (so will also <see cref="CollapseWhiteSpace"/>, <see cref="NormalizeLineEndings"/>
-        /// and <see cref="Trim"/>), this has the effect of ignoring word boundaries.
-        /// </summary>
-        /// <remarks><para>This option is not valid when used in conjunction with a <see cref="TextTokenStrategy"/> other
-        /// than <see cref="TextTokenStrategy.Character"/>, as it would prevent correct tokenization.</para></remarks>
-        IgnoreWhiteSpace = Trim | NormalizeLineEndings | CollapseWhiteSpace | 1 << 3,
-
-        /// <summary>
-        /// The default options (equivalent to <see cref="NormalizeLineEndings"/>.
-        /// </summary>
-        Default = NormalizeLineEndings
+        Line
     }
 }

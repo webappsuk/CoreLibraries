@@ -27,6 +27,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Difference;
 using WebApplications.Utilities.Formatting;
@@ -63,7 +65,7 @@ namespace WebApplications.Utilities
             "}{" + FormatBuilder.ForegroundColorTag + ":" + ChunkAForegroundColorName + "}{" + ChunkATag + ",40}{" +
             FormatBuilder.ResetColorsTag + "}{" + SeperatorTag + "}{" + FormatBuilder.BackgroundColorTag + ":" +
             ChunkBBackgroundColorName + "}{" + FormatBuilder.ForegroundColorTag + ":" + ChunkBForegroundColorName + "}{" +
-            ChunkBTag + ",40}{" + FormatBuilder.ResetColorsTag + "}"+Environment.NewLine;
+            ChunkBTag + ",40}{" + FormatBuilder.ResetColorsTag + "}" + Environment.NewLine;
 
         /// <summary>
         /// The default layout for chunks.
@@ -72,6 +74,7 @@ namespace WebApplications.Utilities
         public static readonly FormatBuilder DefaultChunkFormat = new FormatBuilder(
             new Layout(40, wrapMode: LayoutWrapMode.PadToNewLine),
             "{" + ChunkTag + ":[{<Items>:{<Item>}}{<JOIN>:, }]}");
+
         /// <summary>
         /// The default layout for chunks.
         /// </summary>
@@ -85,11 +88,15 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="a">The 'A' string.</param>
         /// <param name="b">The 'B' string.</param>
+        /// <param name="tokenStrategy">The tokenization strategy.</param>
         /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The character comparer.</param>
         /// <returns>Returns the <see cref="StringDifferences" />.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="textOptions" /> cannot be set to 
+        /// <see cref="TextOptions.IgnoreWhiteSpace"/> for any text tokenization strategy other than 
+        /// <see cref="TextTokenStrategy.Character"/> as it would prevent correct tokenization.</exception>
         /// <remarks>Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
         /// (http://www.xmailserver.org/diff2.pdf) Algorithmica Vol. 1 No. 2, 1986, p 251.</remarks>
         [NotNull]
@@ -97,12 +104,24 @@ namespace WebApplications.Utilities
         public static StringDifferences Diff(
             [NotNull] this string a,
             [NotNull] string b,
+            TextTokenStrategy tokenStrategy = TextTokenStrategy.Character,
             TextOptions textOptions = TextOptions.Default,
             IEqualityComparer<char> comparer = null)
         {
             if (comparer == null) comparer = CharComparer.CurrentCulture;
             // ReSharper disable ExceptionNotDocumented
-            return new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, (x, y) => comparer.Equals(x, y));
+            return tokenStrategy == TextTokenStrategy.Character
+                ? new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, (x, y) => comparer.Equals(x, y))
+                : new StringDifferences(
+                    tokenStrategy,
+                    a,
+                    0,
+                    a.Length,
+                    b,
+                    0,
+                    b.Length,
+                    textOptions,
+                    (x, y) => comparer.Equals(x, y));
             // ReSharper restore ExceptionNotDocumented
         }
 
@@ -111,12 +130,16 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="a">The 'A' string.</param>
         /// <param name="b">The 'B' string.</param>
+        /// <param name="tokenStrategy">The tokenization strategy.</param>
         /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The character comparer.</param>
         /// <returns>Returns the <see cref="StringDifferences"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="comparer" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="textOptions" /> cannot be set to 
+        /// <see cref="TextOptions.IgnoreWhiteSpace"/> for any text tokenization strategy other than 
+        /// <see cref="TextTokenStrategy.Character"/> as it would prevent correct tokenization.</exception>
         /// <remarks>
         /// <para> 
         /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
@@ -128,6 +151,7 @@ namespace WebApplications.Utilities
         public static StringDifferences Diff(
             [NotNull] this string a,
             [NotNull] string b,
+            TextTokenStrategy tokenStrategy,
             TextOptions textOptions,
             [NotNull] StringComparer comparer)
         {
@@ -135,7 +159,18 @@ namespace WebApplications.Utilities
             CharComparer c = CharComparer.Create(comparer);
 
             // ReSharper disable ExceptionNotDocumented
-            return new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, (x, y) => c.Equals(x, y));
+            return tokenStrategy == TextTokenStrategy.Character
+                ? new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, (x, y) => c.Equals(x, y))
+                : new StringDifferences(
+                    tokenStrategy,
+                    a,
+                    0,
+                    a.Length,
+                    b,
+                    0,
+                    b.Length,
+                    textOptions,
+                    (x, y) => c.Equals(x, y));
             // ReSharper restore ExceptionNotDocumented
         }
 
@@ -144,6 +179,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="a">The 'A' string.</param>
         /// <param name="b">The 'B' string.</param>
+        /// <param name="tokenStrategy">The tokenization strategy.</param>
         /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The character comparer.</param>
         /// <returns>Returns the <see cref="StringDifferences"/>.</returns>
@@ -151,6 +187,9 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="comparer" /> is <see langword="null" />.</exception>
         /// <exception cref="Exception">The <paramref name="comparer"/> throws an exception.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="textOptions" /> cannot be set to 
+        /// <see cref="TextOptions.IgnoreWhiteSpace"/> for any text tokenization strategy other than 
+        /// <see cref="TextTokenStrategy.Character"/> as it would prevent correct tokenization.</exception>
         /// <remarks>
         /// <para> 
         /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
@@ -162,9 +201,12 @@ namespace WebApplications.Utilities
         public static StringDifferences Diff(
             [NotNull] this string a,
             [NotNull] string b,
+            TextTokenStrategy tokenStrategy,
             TextOptions textOptions,
             [NotNull] Func<char, char, bool> comparer)
-            => new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, comparer);
+            => tokenStrategy == TextTokenStrategy.Character
+                ? new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, comparer)
+                : new StringDifferences(tokenStrategy, a, 0, a.Length, b, 0, b.Length, textOptions, comparer);
 
         /// <summary>
         /// Find the differences between two strings.
@@ -175,6 +217,7 @@ namespace WebApplications.Utilities
         /// <param name="b">The 'B' collection.</param>
         /// <param name="offsetB">The offset to the start of a window in the second collection.</param>
         /// <param name="lengthB">The length of the window in the second collection.</param>
+        /// <param name="tokenStrategy">The tokenization strategy.</param>
         /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The comparer to compare items in each collection.</param>
         /// <returns>Returns the <see cref="Differences{T}"/>.</returns>
@@ -184,6 +227,9 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthA" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetB" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthB" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="textOptions" /> cannot be set to 
+        /// <see cref="TextOptions.IgnoreWhiteSpace"/> for any text tokenization strategy other than 
+        /// <see cref="TextTokenStrategy.Character"/> as it would prevent correct tokenization.</exception>
         /// <remarks>
         /// <para> 
         /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
@@ -199,20 +245,32 @@ namespace WebApplications.Utilities
             [NotNull] string b,
             int offsetB,
             int lengthB,
+            TextTokenStrategy tokenStrategy = TextTokenStrategy.Character,
             TextOptions textOptions = TextOptions.Default,
             IEqualityComparer<char> comparer = null)
         {
             if (comparer == null) comparer = EqualityComparer<char>.Default;
             // ReSharper disable ExceptionNotDocumented
-            return new StringDifferences(
-                a,
-                offsetA,
-                lengthA,
-                b,
-                offsetB,
-                lengthB,
-                textOptions,
-                (x, y) => comparer.Equals(x, y));
+            return tokenStrategy == TextTokenStrategy.Character
+                ? new StringDifferences(
+                    a,
+                    offsetA,
+                    lengthA,
+                    b,
+                    offsetB,
+                    lengthB,
+                    textOptions,
+                    (x, y) => comparer.Equals(x, y))
+                : new StringDifferences(
+                    tokenStrategy,
+                    a,
+                    offsetA,
+                    lengthA,
+                    b,
+                    offsetB,
+                    lengthB,
+                    textOptions,
+                    (x, y) => comparer.Equals(x, y));
             // ReSharper restore ExceptionNotDocumented
         }
 
@@ -225,6 +283,7 @@ namespace WebApplications.Utilities
         /// <param name="b">The 'B' collection.</param>
         /// <param name="offsetB">The offset to the start of a window in the second collection.</param>
         /// <param name="lengthB">The length of the window in the second collection.</param>
+        /// <param name="tokenStrategy">The tokenization strategy.</param>
         /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The comparer to compare items in each collection.</param>
         /// <returns>Returns the <see cref="Differences{T}"/>.</returns>
@@ -234,6 +293,9 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthA" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetB" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthB" /> is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="textOptions" /> cannot be set to 
+        /// <see cref="TextOptions.IgnoreWhiteSpace"/> for any text tokenization strategy other than 
+        /// <see cref="TextTokenStrategy.Character"/> as it would prevent correct tokenization.</exception>
         /// <remarks>
         /// <para> 
         /// Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
@@ -249,6 +311,7 @@ namespace WebApplications.Utilities
             [NotNull] string b,
             int offsetB,
             int lengthB,
+            TextTokenStrategy tokenStrategy,
             TextOptions textOptions,
             [NotNull] StringComparer comparer)
         {
@@ -256,15 +319,26 @@ namespace WebApplications.Utilities
             CharComparer c = CharComparer.Create(comparer);
 
             // ReSharper disable ExceptionNotDocumented
-            return new StringDifferences(
-                a,
-                offsetA,
-                lengthA,
-                b,
-                offsetB,
-                lengthB,
-                textOptions,
-                (x, y) => c.Equals(x, y));
+            return tokenStrategy == TextTokenStrategy.Character
+                ? new StringDifferences(
+                    a,
+                    offsetA,
+                    lengthA,
+                    b,
+                    offsetB,
+                    lengthB,
+                    textOptions,
+                    (x, y) => c.Equals(x, y))
+                : new StringDifferences(
+                    tokenStrategy,
+                    a,
+                    offsetA,
+                    lengthA,
+                    b,
+                    offsetB,
+                    lengthB,
+                    textOptions,
+                    (x, y) => c.Equals(x, y));
             // ReSharper restore ExceptionNotDocumented
         }
 
@@ -277,16 +351,22 @@ namespace WebApplications.Utilities
         /// <param name="b">The 'B' collection.</param>
         /// <param name="offsetB">The offset to the start of a window in the second collection.</param>
         /// <param name="lengthB">The length of the window in the second collection.</param>
+        /// <param name="tokenStrategy">The tokenization strategy.</param>
         /// <param name="textOptions">The text options.</param>
         /// <param name="comparer">The comparer to compare items in each collection.</param>
         /// <returns>Returns the <see cref="Differences{T}" />.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="a" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="b" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="a" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="b" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetA" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthA" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="offsetB" /> is out of range.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="lengthB" /> is out of range.</exception>
         /// <exception cref="Exception">The <paramref name="comparer" /> throws an exception.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="textOptions" /> cannot be set to 
+        /// <see cref="TextOptions.IgnoreWhiteSpace"/> for any text tokenization strategy other than 
+        /// <see cref="TextTokenStrategy.Character"/> as it would prevent correct tokenization.</exception>
         /// <remarks>Based on "An O(ND) Difference Algorithm and its Variations" by Eugene Myers
         /// (http://www.xmailserver.org/diff2.pdf) Algorithmica Vol. 1 No. 2, 1986, p 251.</remarks>
         [NotNull]
@@ -298,9 +378,22 @@ namespace WebApplications.Utilities
             [NotNull] string b,
             int offsetB,
             int lengthB,
+            TextTokenStrategy tokenStrategy,
             TextOptions textOptions,
             [NotNull] Func<char, char, bool> comparer)
-            => new StringDifferences(a, offsetA, lengthA, b, offsetB, lengthB, textOptions, comparer);
+            =>
+                tokenStrategy == TextTokenStrategy.Character
+                    ? new StringDifferences(a, offsetA, lengthA, b, offsetB, lengthB, textOptions, comparer)
+                    : new StringDifferences(
+                        tokenStrategy,
+                        a,
+                        offsetA,
+                        lengthA,
+                        b,
+                        offsetB,
+                        lengthB,
+                        textOptions,
+                        comparer);
 
         /// <summary>
         /// Find the differences between two collections.
@@ -446,5 +539,35 @@ namespace WebApplications.Utilities
         public static StringMap ToMapped(
             [NotNull] this string input,
             TextOptions options = TextOptions.Default) => new StringMap(input, options);
+
+        /// <summary>
+        /// The word categories.
+        /// </summary>
+        [NotNull]
+        private static readonly HashSet<UnicodeCategory> _wordCategories = new HashCollection<UnicodeCategory>(
+            new[]
+            {
+                UnicodeCategory.DecimalDigitNumber,
+                UnicodeCategory.UppercaseLetter,
+                UnicodeCategory.ConnectorPunctuation,
+                UnicodeCategory.LowercaseLetter,
+                UnicodeCategory.OtherLetter,
+                UnicodeCategory.TitlecaseLetter,
+                UnicodeCategory.ModifierLetter,
+                UnicodeCategory.NonSpacingMark,
+            });
+
+        /// <summary>
+        /// Determines whether the <paramref name="c">specified character</paramref> is a word character.
+        /// </summary>
+        /// <param name="c">The character.</param>
+        /// <returns><see langword="true"/> if the <paramref name="c">specified character</paramref> is a word 
+        /// character; otherwise <see langword="false"/>.</returns>
+        /// <remarks><para>This method is designed to be directly equivalent to using '\w' in a 
+        /// <see cref="Regex">regular expression</see>, but is faster for checking a single character.</para>
+        /// <para>Despite the specification at https://msdn.microsoft.com/en-us/library/20bw873z(v=vs.110).aspx#WordCharacter,
+        /// The '\w' word character also includes the <see cref="UnicodeCategory.NonSpacingMark">NonSpacingMark</see><see cref="UnicodeCategory">unicode category</see>.
+        /// </para></remarks>
+        public static bool IsWord(this char c) => _wordCategories.Contains(char.GetUnicodeCategory(c));
     }
 }

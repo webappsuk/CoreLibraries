@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Test
             Trace.WriteLine($"Ending test: {TestContext.TestName}, {time}");
         }
 
-        public void AssertString(string expected, string actual, string message = null, TextOptions options = TextOptions.None, StringComparer comparer = null)
+        public void AssertString(string expected, string actual, string message = null, TextTokenStrategy tokenStrategy = TextTokenStrategy.Character, TextOptions options = TextOptions.None, StringComparer comparer = null)
         {
             StringBuilder builder = new StringBuilder();
             if (expected == null)
@@ -87,6 +87,7 @@ namespace WebApplications.Utilities.Test
             {
                 StringDifferences differences = expected.Diff(
                     actual,
+                    tokenStrategy,
                     options,
                     comparer ?? StringComparer.CurrentCultureIgnoreCase);
                 if (!differences.AreEqual)
