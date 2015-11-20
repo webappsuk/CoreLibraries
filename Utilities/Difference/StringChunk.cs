@@ -164,7 +164,7 @@ namespace WebApplications.Utilities.Difference
                             return flag;
                         if (string.Equals(
                             c.Tag,
-                            DifferenceExtensions.SeperatorTag,
+                            DifferenceExtensions.SeparatorTag,
                             StringComparison.InvariantCultureIgnoreCase))
                             return " | ";
 

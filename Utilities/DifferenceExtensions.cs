@@ -40,17 +40,73 @@ namespace WebApplications.Utilities
     [PublicAPI]
     public static class DifferenceExtensions
     {
+        #region Formatting Tags
+        /// <summary>
+        /// The flag background color name.
+        /// </summary>
+        [NotNull]
         public const string FlagBackgroundColorName = "bgcolorFlag";
+
+        /// <summary>
+        /// The flag foreground color name.
+        /// </summary>
+        [NotNull]
         public const string FlagForegroundColorName = "fgcolorFlag";
+
+        /// <summary>
+        /// The chunk a background color name.
+        /// </summary>
+        [NotNull]
         public const string ChunkABackgroundColorName = "bgcolorChunkA";
+
+        /// <summary>
+        /// The chunk a foreground color name.
+        /// </summary>
+        [NotNull]
         public const string ChunkAForegroundColorName = "fgcolorChunkA";
+
+        /// <summary>
+        /// The chunk b background color name.
+        /// </summary>
+        [NotNull]
         public const string ChunkBBackgroundColorName = "bgcolorChunkB";
+
+        /// <summary>
+        /// The chunk b foreground color name.
+        /// </summary>
+        [NotNull]
         public const string ChunkBForegroundColorName = "fgcolorChunkB";
-        public const string SeperatorTag = "seperator";
+
+        /// <summary>
+        /// The separator tag
+        /// </summary>
+        [NotNull]
+        public const string SeparatorTag = "separator";
+
+        /// <summary>
+        /// The flag tag.
+        /// </summary>
+        [NotNull]
         public const string FlagTag = "flag";
+
+        /// <summary>
+        /// The chunk tag.
+        /// </summary>
+        [NotNull]
         public const string ChunkTag = "chunk";
+
+        /// <summary>
+        /// The chunk a tag.
+        /// </summary>
+        [NotNull]
         public const string ChunkATag = "chunkA";
+
+        /// <summary>
+        /// The chunk b tag.
+        /// </summary>
+        [NotNull]
         public const string ChunkBTag = "chunkB";
+        #endregion
 
         /// <summary>
         /// The default line format, used for each line of the chunk.
@@ -61,7 +117,7 @@ namespace WebApplications.Utilities
             FormatBuilder.ForegroundColorTag + ":" + FlagForegroundColorName + "}{" + FlagTag + ",3}{" +
             FormatBuilder.ResetColorsTag + "}{" + FormatBuilder.BackgroundColorTag + ":" + ChunkABackgroundColorName +
             "}{" + FormatBuilder.ForegroundColorTag + ":" + ChunkAForegroundColorName + "}{" + ChunkATag + ",40}{" +
-            FormatBuilder.ResetColorsTag + "}{" + SeperatorTag + "}{" + FormatBuilder.BackgroundColorTag + ":" +
+            FormatBuilder.ResetColorsTag + "}{" + SeparatorTag + "}{" + FormatBuilder.BackgroundColorTag + ":" +
             ChunkBBackgroundColorName + "}{" + FormatBuilder.ForegroundColorTag + ":" + ChunkBForegroundColorName + "}{" +
             ChunkBTag + ",40}{" + FormatBuilder.ResetColorsTag + "}"+Environment.NewLine;
 
