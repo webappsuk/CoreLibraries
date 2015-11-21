@@ -26,6 +26,7 @@
 #endregion
 
 using System.Configuration;
+using System.Threading;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
@@ -65,7 +66,11 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         public string Name
         {
             get { return GetProperty<string>("name"); }
-            set { SetProperty("name", value); }
+            set
+            {
+                SetProperty("name", value);
+                _provider = null;
+            }
         }
 
         /// <summary>
@@ -81,12 +86,29 @@ namespace WebApplications.Utilities.Cryptography.Configuration
             set { SetProperty("enabled", value); }
         }
 
+        [CanBeNull]
+        private CryptographyProvider _provider;
+
         /// <summary>
         /// Gets the <see cref="CryptographyProvider"/>.
         /// </summary>
         /// <returns>A <see cref="CryptographyProvider"/> if <see cref="IsEnabled">enabled</see>; otherwise <see langword="null"/>.</returns>
         [CanBeNull]
-        public CryptographyProvider GetProvider() => IsEnabled ? CryptographyProvider.Create(Configuration, Name) : null;
+        public CryptographyProvider GetProvider()
+        {
+            if (!IsEnabled)
+                return null;
+
+            // Create the provider and update it's ID.
+            CryptographyProvider provider = _provider;
+            if (provider == null)
+            {
+                CryptographyProvider newProvider = CryptographyProvider.Create(Configuration, Name);
+                provider = Interlocked.CompareExchange(ref _provider, newProvider, null) ?? newProvider;
+            }
+            provider.Id = Id;
+            return provider;
+        }
 
         /// <summary>
         /// Gets or sets the configuration.
@@ -96,18 +118,11 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetElement("configuration"); }
-            set { SetElement("configuration", value); }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="T:System.Configuration.ConfigurationElement" /> object is read-only.
-        /// </summary>
-        /// <returns>
-        /// true if the <see cref="T:System.Configuration.ConfigurationElement" /> object is read-only; otherwise, false.
-        /// </returns>
-        public override bool IsReadOnly()
-        {
-            return false;
+            set
+            {
+                SetElement("configuration", value);
+                _provider = null;
+            }
         }
     }
 }

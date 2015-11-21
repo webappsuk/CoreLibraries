@@ -183,4 +183,10 @@
   <data name="AsymmetricCryptographyProvider_Create_Unknown_Cryptography_Provider" xml:space="preserve">
     <value>Unknown, or unsupported, cryptographic provider '{0}'.</value>
   </data>
+  <data name="SymmetricCryptographyProvider_Create_Failed" xml:space="preserve">
+    <value>Failed to create symmetric algorithm with name '{0}'</value>
+  </data>
+  <data name="CryptographyProvider_DecryptToString_Decryption_Unsupported" xml:space="preserve">
+    <value>The cryptographic provider cannot perform decryption.</value>
+  </data>
 </root>

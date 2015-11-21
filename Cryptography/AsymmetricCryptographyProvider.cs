@@ -42,14 +42,13 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// Initializes a new instance of the <see cref="AsymmetricCryptographyProvider" /> class.
         /// </summary>
-        /// <param name="id">The identifier.</param>
         /// <param name="name">The name.</param>
-        /// <param name="configuration">The configuration (if any).</param>
+        /// <param name="configuration">The configuration.</param>
         /// <param name="preservesLength">
         ///   <see langword="true" /> if the provider preserves the length.</param>
         protected AsymmetricCryptographyProvider(
             [NotNull] string name,
-            [CanBeNull] XElement configuration = null,
+            [NotNull] XElement configuration,
             bool preservesLength = true)
             : base(name, configuration, preservesLength)
         {

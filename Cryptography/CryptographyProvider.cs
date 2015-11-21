@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <see cref="GetEncryptor"/> and/or <see cref="GetDecryptor"/> methods to perform encryption/decryption, care
         /// should be taken to observe the value of this flag, as the encrypted/decrypted stream may not be the same length as the
         /// original input stream, and may have trailing zero bytes.</para>
-        /// <para>All other encryption/decription methods respect this flag and will automatically mark the end of an
+        /// <para>All other encryption/decryption methods respect this flag and will automatically mark the end of an
         /// input stream.</para>
         /// </remarks>
         [PublicAPI]
@@ -65,15 +65,15 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// The configuration as a string.
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         private readonly string _configuration;
 
         /// <summary>
         /// The configuration <see cref="XElement"/>, if any.
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         [PublicAPI]
-        public XElement Configuration => _configuration != null ? XElement.Parse(_configuration, LoadOptions.PreserveWhitespace) : null;
+        public XElement Configuration => XElement.Parse(_configuration, LoadOptions.PreserveWhitespace);
 
         /// <summary>
         /// Whether the provider can decrypt.
@@ -102,11 +102,11 @@ namespace WebApplications.Utilities.Cryptography
         ///   <see langword="true" /> if the provider preserves the length.</param>
         protected CryptographyProvider(
             [NotNull] string name,
-            [CanBeNull] XElement configuration = null,
+            [NotNull] XElement configuration,
             bool preservesLength = true)
         {
             Name = name;
-            _configuration = configuration?.ToString(SaveOptions.DisableFormatting);
+            _configuration = configuration.ToString(SaveOptions.DisableFormatting);
             PreservesLength = preservesLength;
         }
 
@@ -193,6 +193,8 @@ namespace WebApplications.Utilities.Cryptography
                     // Add termination byte if the provider does not respect the length.
                     if (preserveLength && !PreservesLength)
                         cryptoStream.WriteByte(0xFF);
+
+                    cryptoStream.Clear();
                 }
 
                 return stream.ToArray();
@@ -223,6 +225,26 @@ namespace WebApplications.Utilities.Cryptography
 
         #region Decryption overloads
         /// <summary>
+        /// Decrypts the specified byte[] to a string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
+        /// <returns>The decrypted string.</returns>
+        /// <exception cref="CryptographicException">The cryptographic provider cannot perform decryption.</exception>
+        [PublicAPI]
+        [ContractAnnotation("input:null => null; input:notnull => notnull")]
+        public string DecryptToString(byte[] input, bool preserveLength = true)
+        {
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
+            return input == null ? null : Encoding.Unicode.GetString(Decrypt(input, preserveLength));
+        }
+
+        /// <summary>
         /// Decrypts the specified base 64 input string to a string.
         /// </summary>
         /// <param name="input">The input.</param>
@@ -236,9 +258,9 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform decryption.</exception>
         [PublicAPI]
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
-        public string DecryptFromStringToString(string input, bool preserveLength = true)
+        public string DecryptToString(string input, bool preserveLength = true)
         {
-            if (!CanDecrypt) throw new CryptographicException("The cryptographic provider cannot perform decryption.");
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
             return input == null ? null : Encoding.Unicode.GetString(Decrypt(Convert.FromBase64String(input), preserveLength));
         }
 
@@ -256,9 +278,9 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform decryption.</exception>
         [PublicAPI]
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
-        public byte[] DecryptFromString(string input, bool preserveLength = true)
+        public byte[] Decrypt(string input, bool preserveLength = true)
         {
-            if (!CanDecrypt) throw new CryptographicException("The cryptographic provider cannot perform decryption.");
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
             return input == null ? null : Decrypt(Convert.FromBase64String(input), preserveLength);
         }
 
@@ -276,7 +298,41 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns><see langword="true"/> if succeeded; otherwise <see langword="false"/>.</returns>
         [PublicAPI]
         [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
-        public bool TryDecryptFromStringToString(string input, out string output, bool preserveLength = true)
+        public bool TryDecryptToString(byte[] input, out string output, bool preserveLength = true)
+        {
+            if (input == null)
+            {
+                output = null;
+                return true;
+            }
+            try
+            {
+                output = Encoding.Unicode.GetString(Decrypt(input, preserveLength));
+                return true;
+            }
+            // ReSharper disable once CatchAllClause
+            catch (Exception)
+            {
+                output = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to decrypt the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="output">The decrypted output.</param>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
+        /// <returns><see langword="true"/> if succeeded; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
+        [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
+        public bool TryDecryptToString(string input, out string output, bool preserveLength = true)
         {
             if (input == null)
             {
@@ -310,7 +366,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns><see langword="true"/> if succeeded; otherwise <see langword="false"/>.</returns>
         [PublicAPI]
         [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
-        public bool TryDecryptFromString(string input, out byte[] output, bool preserveLength = true)
+        public bool TryDecrypt(string input, out byte[] output, bool preserveLength = true)
         {
             if (!CanDecrypt)
             {
@@ -402,12 +458,15 @@ namespace WebApplications.Utilities.Cryptography
             byte[] outputBuffer;
             using (MemoryStream stream = new MemoryStream(input))
             using (CryptoStream cryptoStream = GetDecryptionStream(stream))
-            using (MemoryStream output = new MemoryStream())
             {
-                int read;
-                while ((read = cryptoStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
-                    output.Write(inputBuffer, 0, read);
-                outputBuffer = output.ToArray();
+                using (MemoryStream output = new MemoryStream())
+                {
+                    int read;
+                    while ((read = cryptoStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
+                        output.Write(inputBuffer, 0, read);
+                    outputBuffer = output.ToArray();
+                }
+                cryptoStream.Clear();
             }
 
             if (preserveLength && !PreservesLength)
@@ -442,16 +501,15 @@ namespace WebApplications.Utilities.Cryptography
         public CryptoStream GetDecryptionStream([NotNull] Stream inputStream)
         {
             if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
-            if (!CanDecrypt) throw new CryptographicException("The cryptographic provider cannot perform decryption.");
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
             return new CryptoStream(inputStream, GetDecryptor(), CryptoStreamMode.Read);
         }
         #endregion
-        
+
         /// <summary>
         /// Creates a <see cref="CryptographyProvider" /> from a name. See https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx for details.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="args">The arguments.</param>
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
         /// <exception cref="TargetInvocationException">The algorithm described by the <paramref name="name" /> parameter was used with Federal Information Processing Standards (FIPS) mode enabled, but is not FIPS compatible.</exception>
         [NotNull]
@@ -464,7 +522,6 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="configuration">The configuration element.</param>
         /// <param name="name">The name.</param>
-        /// <param name="args">The arguments.</param>
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
         /// <exception cref="TargetInvocationException">The algorithm described by the <paramref name="name" /> parameter was used with Federal Information Processing Standards (FIPS) mode enabled, but is not FIPS compatible.</exception>
         [NotNull]
@@ -479,13 +536,13 @@ namespace WebApplications.Utilities.Cryptography
                 if (asymm != null) return AsymmetricCryptographyProvider.Create(asymm, configuration);
 
                 SymmetricAlgorithm sym = provider as SymmetricAlgorithm;
-                // TODO if (sym != null) return SymmetricCryptographyProvider.Create(sym, providerElement, configuration);
+                if (sym != null) return SymmetricCryptographyProvider.Create(name, sym, configuration);
 
                 HashAlgorithm hash = provider as HashAlgorithm;
-                // TODO if (hash != null) return HashingCryptographyProvider.Create(hash, providerElement, configuration);
+                // TODO if (hash != null) return HashingCryptographyProvider.Create(hash, configuration);
 
                 RandomNumberGenerator rnd = provider as RandomNumberGenerator;
-                // TODO if (rnd != null) return RandomCryptographyProvider.Create(rnd, providerElement, configuration);
+                // TODO if (rnd != null) return RandomCryptographyProvider.Create(rnd, configuration);
 
                 throw new CryptographicException(
                     string.Format(Resources.CryptographyProvider_Create_Unknown_Provider, name));

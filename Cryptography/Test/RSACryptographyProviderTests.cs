@@ -33,7 +33,7 @@ using WebApplications.Testing;
 namespace WebApplications.Utilities.Cryptography.Test
 {
     [TestClass]
-    public class RSACryptographyProviderTests
+    public class RSACryptographyProviderTests : CryptographyTestBase
     {
         public void TestEncryptDecrypt(int keySize, Func<int, int, int> getLengthFunc, int blocks, bool preserveLength = true)
         {
@@ -69,7 +69,7 @@ namespace WebApplications.Utilities.Cryptography.Test
             Assert.IsTrue(provider.CanEncrypt);
             Assert.IsNull(provider.Encrypt((byte[])null));
             Assert.IsTrue(provider.CanDecrypt);
-            Assert.IsNull(provider.Decrypt(null));
+            Assert.IsNull(provider.Decrypt((byte[])null));
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace WebApplications.Utilities.Cryptography.Test
             Assert.IsTrue(provider.CanEncrypt);
             Assert.IsNull(provider.Encrypt((byte[])null));
             Assert.IsTrue(provider.CanDecrypt);
-            Assert.IsNull(provider.Decrypt(null));
+            Assert.IsNull(provider.Decrypt((byte[])null));
         }
 
         [TestMethod]

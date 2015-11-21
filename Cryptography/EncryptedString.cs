@@ -173,7 +173,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (_dirty == Dirty.Unencrypted)
                 {
                     _unencrypted = !string.IsNullOrEmpty(_encrypted)
-                        ? _provider.DecryptFromStringToString(_encrypted)
+                        ? _provider.DecryptToString(_encrypted)
                         : _encrypted;
                     _dirty = Dirty.Neither;
                 }

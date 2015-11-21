@@ -151,6 +151,15 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The cryptographic provider cannot perform decryption..
+        /// </summary>
+        internal static string CryptographyProvider_DecryptToString_Decryption_Unsupported {
+            get {
+                return ResourceManager.GetString("CryptographyProvider_DecryptToString_Decryption_Unsupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot persist the current cryptography provider to the configuration as no configuration could be found..
         /// </summary>
         internal static string CryptographyProvider_SaveToConfiguration_No_Configuration {
@@ -255,6 +264,15 @@ namespace WebApplications.Utilities.Cryptography {
         internal static string SecureIdentifier_SecureIdentifier_Invalid_Byte_Array_Supplied {
             get {
                 return ResourceManager.GetString("SecureIdentifier_SecureIdentifier_Invalid_Byte_Array_Supplied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create symmetric algorithm with name &apos;{0}&apos;.
+        /// </summary>
+        internal static string SymmetricCryptographyProvider_Create_Failed {
+            get {
+                return ResourceManager.GetString("SymmetricCryptographyProvider_Create_Failed", resourceCulture);
             }
         }
     }

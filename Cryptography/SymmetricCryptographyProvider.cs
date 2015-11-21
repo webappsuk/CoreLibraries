@@ -25,6 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Security.Cryptography;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 
@@ -34,7 +36,7 @@ namespace WebApplications.Utilities.Cryptography
     /// Base class for all symmetric cryptographic providers.
     /// </summary>
     [PublicAPI]
-    public abstract class SymmetricCryptographyProvider : CryptographyProvider
+    public class SymmetricCryptographyProvider : CryptographyProvider
     {
         /// <inheritdoc />
         public override bool CanEncrypt => true;
@@ -42,19 +44,92 @@ namespace WebApplications.Utilities.Cryptography
         /// <inheritdoc />
         public override bool CanDecrypt => true;
 
+        [NotNull]
+        private readonly byte[] _keyBytes;
+
+        [NotNull]
+        private readonly byte[] _ivBytes;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SymmetricCryptographyProvider" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="configuration">The configuration (if any).</param>
-        /// <param name="preservesLength">
-        ///   <see langword="true" /> if the provider preserves the length.</param>
-        protected SymmetricCryptographyProvider(
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="keyBytes">The key bytes.</param>
+        /// <param name="ivBytes">The iv bytes.</param>
+        private SymmetricCryptographyProvider(
             [NotNull] string name,
-            [CanBeNull] XElement configuration = null,
-            bool preservesLength = true)
-            : base(name, configuration, preservesLength)
+            [NotNull] XElement configuration,
+            [NotNull] byte[] keyBytes,
+            [NotNull] byte[] ivBytes)
+            : base(name, configuration, true)
         {
+            _keyBytes = keyBytes;
+            _ivBytes = ivBytes;
+        }
+
+        /// <inheritdoc />
+        public override ICryptoTransform GetEncryptor()
+        {
+            SymmetricAlgorithm algorithm = (SymmetricAlgorithm)CryptoConfig.CreateFromName(Name);
+            if (algorithm == null) throw new InvalidOperationException(string.Format(Resources.SymmetricCryptographyProvider_Create_Failed, Name));
+            return algorithm.CreateEncryptor(_keyBytes, _ivBytes);
+        }
+
+        /// <inheritdoc />
+        public override ICryptoTransform GetDecryptor()
+        {
+            SymmetricAlgorithm algorithm = (SymmetricAlgorithm)CryptoConfig.CreateFromName(Name);
+            if (algorithm == null) throw new InvalidOperationException(string.Format(Resources.SymmetricCryptographyProvider_Create_Failed, Name));
+            return algorithm.CreateDecryptor(_keyBytes, _ivBytes);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="CryptographyProvider" /> from an <see cref="AsymmetricAlgorithm" />.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="algorithm">The algorithm.</param>
+        /// <param name="configurationElement">The optional configuration element.</param>
+        /// <returns>A <see cref="CryptographyProvider" />.</returns>
+        /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
+        [NotNull]
+        internal static SymmetricCryptographyProvider Create(
+            [NotNull] string name,
+            [NotNull] SymmetricAlgorithm algorithm,
+            [CanBeNull] XElement configurationElement = null)
+        {
+            XNamespace ns;
+            byte[] keyBytes;
+            byte[] ivBytes;
+            if (configurationElement != null)
+            {
+                ns = configurationElement.Name.Namespace;
+                string key = configurationElement.Element(ns + "Key")?.Value;
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new CryptographicException(
+                        "The expected 'Key' element was not found.");
+
+                string iv = configurationElement.Element(ns + "IV")?.Value;
+                if (string.IsNullOrWhiteSpace(iv))
+                    throw new CryptographicException(
+                        "The expected 'IV' element was not found.");
+
+                keyBytes = Convert.FromBase64String(key);
+                ivBytes = Convert.FromBase64String(iv);
+            }
+            else
+            {
+                ns = XNamespace.None;
+                keyBytes = algorithm.Key;
+                ivBytes = algorithm.IV;
+                // ReSharper disable AssignNullToNotNullAttribute
+                configurationElement = new XElement(
+                    ns + "configuration",
+                    new XElement(ns + "Key", Convert.ToBase64String(keyBytes)),
+                    new XElement(ns + "IV", Convert.ToBase64String(ivBytes)));
+            }
+
+            return new SymmetricCryptographyProvider(name, configurationElement, keyBytes, ivBytes);
         }
     }
 }

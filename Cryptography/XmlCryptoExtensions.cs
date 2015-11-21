@@ -167,7 +167,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (element.Name == "Encrypted")
                 {
                     // Decrypt the element
-                    string decryptedXmlStr = cryptoProvider.DecryptFromStringToString(element.Value);
+                    string decryptedXmlStr = cryptoProvider.DecryptToString(element.Value);
                     if (string.IsNullOrEmpty(decryptedXmlStr))
                         continue;
                     
@@ -264,7 +264,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (element.LocalName == "Encrypted")
                 {
                     // Decrypt the element
-                    string decryptedXmlStr = cryptoProvider.DecryptFromStringToString(element.InnerText);
+                    string decryptedXmlStr = cryptoProvider.DecryptToString(element.InnerText);
                     if (string.IsNullOrEmpty(decryptedXmlStr))
                         continue;
 
