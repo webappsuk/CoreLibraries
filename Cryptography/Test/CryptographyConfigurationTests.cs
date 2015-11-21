@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Xml.Linq;
+using WebApplications.Testing;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Cryptography.Configuration;
 
@@ -58,9 +59,27 @@ namespace WebApplications.Utilities.Cryptography.Test
                 "DES",
                 "3DES",
                 "RC2",
-                "Rijndael"
+                "Rijndael",
 
-                // TODO Hash & Random
+                // Hashing algorithms
+                "MD5",
+                "RIPEMD160",
+                "SHA",
+                "SHA256",
+                "SHA384",
+                "SHA512",
+
+                // Keyed hashing algorithms
+                "HMACMD5",
+                "HMACRIPEMD160",
+                "HMACSHA1",
+                "HMACSHA256",
+                "HMACSHA384",
+                "HMACSHA512",
+                "MACTripleDES"
+
+
+                // TODO Random
             };
 
             int providerCount = names.Length;
@@ -128,6 +147,23 @@ namespace WebApplications.Utilities.Cryptography.Test
                     XObjectComparisonOptions.Semantic);
 
                 Assert.IsNull(difference, $"Configurations do not match {difference?.Item1} : {difference?.Item2}");
+
+                if (reloadProvider.CanEncrypt)
+                {
+                    // Test encryption
+                    string random = Tester.RandomString(minLength: 1);
+                    string encrypted = provider.EncryptToString(random);
+                    Assert.IsNotNull(encrypted);
+                    Assert.AreNotEqual(random, encrypted);
+
+                    if (reloadProvider.CanDecrypt)
+                    {
+                        string decrypted = provider.DecryptToString(encrypted);
+                        Assert.IsNotNull(decrypted);
+                        Assert.AreEqual(random, decrypted);
+                    }
+                }
+
 
                 // Remove provider from configuration
                 configuration.Providers.Remove(key);

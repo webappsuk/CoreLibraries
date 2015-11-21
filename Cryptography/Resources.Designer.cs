@@ -153,9 +153,9 @@ namespace WebApplications.Utilities.Cryptography {
         /// <summary>
         ///   Looks up a localized string similar to The cryptographic provider cannot perform decryption..
         /// </summary>
-        internal static string CryptographyProvider_DecryptToString_Decryption_Unsupported {
+        internal static string CryptographyProvider_Decryption_Not_Supported {
             get {
-                return ResourceManager.GetString("CryptographyProvider_DecryptToString_Decryption_Unsupported", resourceCulture);
+                return ResourceManager.GetString("CryptographyProvider_Decryption_Not_Supported", resourceCulture);
             }
         }
         
@@ -205,6 +205,24 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to create hashing algorithm with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string HashingCryptographyProvider_GetEncryptor_Create_Failed {
+            get {
+                return ResourceManager.GetString("HashingCryptographyProvider_GetEncryptor_Create_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create keyed hashing algorithm with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed {
+            get {
+                return ResourceManager.GetString("KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password cannot be empty.
         /// </summary>
         internal static string PBKDF2_PasswordEmpty {
@@ -241,6 +259,15 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The cryptographic provider cannot perform encryption..
+        /// </summary>
+        internal static string RSACryptographyProvider_Encryption_Not_Supported {
+            get {
+                return ResourceManager.GetString("RSACryptographyProvider_Encryption_Not_Supported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Length cannot be less than {0} bytes as that would be too insecure..
         /// </summary>
         internal static string SecureIdentifier_Ctor_Invalid_Length_Supplied {
@@ -268,7 +295,7 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to create symmetric algorithm with name &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Failed to create symmetric algorithm with name &apos;{0}&apos;..
         /// </summary>
         internal static string SymmetricCryptographyProvider_Create_Failed {
             get {

@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
         public string EncryptToString(string input, bool preserveLength = true)
         {
-            if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
+            if (!CanEncrypt) throw new CryptographicException(Resources.RSACryptographyProvider_Encryption_Not_Supported);
             return input == null ? null : Convert.ToBase64String(Encrypt(Encoding.Unicode.GetBytes(input), preserveLength));
         }
 
@@ -165,7 +165,7 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
         public byte[] Encrypt(string input, bool preserveLength = true)
         {
-            if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
+            if (!CanEncrypt) throw new CryptographicException(Resources.RSACryptographyProvider_Encryption_Not_Supported);
             return input == null ? null : Encrypt(Encoding.Unicode.GetBytes(input), preserveLength);
         }
 
@@ -182,7 +182,7 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
         public byte[] Encrypt(byte[] input, bool preserveLength = true)
         {
-            if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
+            if (!CanEncrypt) throw new CryptographicException(Resources.RSACryptographyProvider_Encryption_Not_Supported);
             if (input == null) return null;
             using (MemoryStream stream = new MemoryStream())
             {
@@ -218,7 +218,7 @@ namespace WebApplications.Utilities.Cryptography
         public CryptoStream GetEncryptionStream([NotNull] Stream outputStream)
         {
             if (outputStream == null) throw new ArgumentNullException(nameof(outputStream));
-            if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
+            if (!CanEncrypt) throw new CryptographicException(Resources.RSACryptographyProvider_Encryption_Not_Supported);
             return new CryptoStream(outputStream, GetEncryptor(), CryptoStreamMode.Write);
         }
         #endregion
@@ -240,7 +240,7 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
         public string DecryptToString(byte[] input, bool preserveLength = true)
         {
-            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_Decryption_Not_Supported);
             return input == null ? null : Encoding.Unicode.GetString(Decrypt(input, preserveLength));
         }
 
@@ -260,7 +260,7 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
         public string DecryptToString(string input, bool preserveLength = true)
         {
-            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_Decryption_Not_Supported);
             return input == null ? null : Encoding.Unicode.GetString(Decrypt(Convert.FromBase64String(input), preserveLength));
         }
 
@@ -280,7 +280,7 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null => null; input:notnull => notnull")]
         public byte[] Decrypt(string input, bool preserveLength = true)
         {
-            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_Decryption_Not_Supported);
             return input == null ? null : Decrypt(Convert.FromBase64String(input), preserveLength);
         }
 
@@ -300,6 +300,11 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
         public bool TryDecryptToString(byte[] input, out string output, bool preserveLength = true)
         {
+            if (!CanDecrypt)
+            {
+                output = null;
+                return false;
+            }
             if (input == null)
             {
                 output = null;
@@ -334,6 +339,11 @@ namespace WebApplications.Utilities.Cryptography
         [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
         public bool TryDecryptToString(string input, out string output, bool preserveLength = true)
         {
+            if (!CanDecrypt)
+            {
+                output = null;
+                return false;
+            }
             if (input == null)
             {
                 output = null;
@@ -501,7 +511,7 @@ namespace WebApplications.Utilities.Cryptography
         public CryptoStream GetDecryptionStream([NotNull] Stream inputStream)
         {
             if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
-            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_DecryptToString_Decryption_Unsupported);
+            if (!CanDecrypt) throw new CryptographicException(Resources.CryptographyProvider_Decryption_Not_Supported);
             return new CryptoStream(inputStream, GetDecryptor(), CryptoStreamMode.Read);
         }
         #endregion
@@ -539,7 +549,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (sym != null) return SymmetricCryptographyProvider.Create(name, sym, configuration);
 
                 HashAlgorithm hash = provider as HashAlgorithm;
-                // TODO if (hash != null) return HashingCryptographyProvider.Create(hash, configuration);
+                if (hash != null) return HashingCryptographyProvider.Create(name, hash, configuration);
 
                 RandomNumberGenerator rnd = provider as RandomNumberGenerator;
                 // TODO if (rnd != null) return RandomCryptographyProvider.Create(rnd, configuration);
@@ -562,12 +572,13 @@ namespace WebApplications.Utilities.Cryptography
             [NotNull]
             private readonly Func<T, byte[], int, int, byte[]> _transformFinalBlockFunc;
 
-            private T _provider;
+            private T _algorithm;
+            private HashAlgorithm algorithm;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="CryptoTransform{T}" /> class.
             /// </summary>
-            /// <param name="provider">The provider.</param>
+            /// <param name="algorithm">The algorithm.</param>
             /// <param name="transformBlockFunc">The transform block function.</param>
             /// <param name="transformFinalBlockFunc">The transform final block function.</param>
             /// <param name="inputBlockSize">Size of the input block.</param>
@@ -575,7 +586,7 @@ namespace WebApplications.Utilities.Cryptography
             /// <param name="canTransformMultipleBlocks">The can transform multiple blocks.</param>
             /// <param name="canReuseTransform">The can reuse transform.</param>
             public CryptoTransform(
-                [NotNull] T provider,
+                [NotNull] T algorithm,
                 [NotNull] Func<T, byte[], int, int, byte[], int, int> transformBlockFunc,
                 [NotNull] Func<T, byte[], int, int, byte[]> transformFinalBlockFunc,
                 int inputBlockSize,
@@ -583,7 +594,7 @@ namespace WebApplications.Utilities.Cryptography
                 bool canTransformMultipleBlocks = false,
                 bool canReuseTransform = true)
             {
-                _provider = provider;
+                _algorithm = algorithm;
                 _transformBlockFunc = transformBlockFunc;
                 _transformFinalBlockFunc = transformFinalBlockFunc;
                 InputBlockSize = inputBlockSize;
@@ -592,11 +603,30 @@ namespace WebApplications.Utilities.Cryptography
                 CanReuseTransform = canReuseTransform;
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CryptoTransform{T}" /> class.
+            /// </summary>
+            /// <param name="algorithm">The hash algorithm.</param>
+            public CryptoTransform([NotNull]HashAlgorithm algorithm)
+            {
+                _algorithm = algorithm as T;
+                _transformBlockFunc =
+                    (_, inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset) =>
+                        algorithm.TransformBlock(inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset);
+                _transformFinalBlockFunc =
+                    (_, inputBuffer, inputOffset, inputCount) =>
+                        algorithm.TransformFinalBlock(inputBuffer, inputOffset, inputCount);
+                InputBlockSize = algorithm.InputBlockSize;
+                OutputBlockSize = algorithm.OutputBlockSize;
+                CanTransformMultipleBlocks = algorithm.CanTransformMultipleBlocks;
+                CanReuseTransform = algorithm.CanReuseTransform;
+            }
+
             /// <inheritdoc />
             public void Dispose()
             {
-                T provider = Interlocked.Exchange(ref _provider, null);
-                provider?.Dispose();
+                T algorithm = Interlocked.Exchange(ref _algorithm, null);
+                algorithm?.Dispose();
             }
 
             /// <inheritdoc />
@@ -607,17 +637,17 @@ namespace WebApplications.Utilities.Cryptography
                 byte[] outputBuffer,
                 int outputOffset)
             {
-                T provider = _provider;
-                if (provider == null) throw new ObjectDisposedException("CryptoTransform");
-                return _transformBlockFunc(provider, inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset);
+                T algorithm = _algorithm;
+                if (algorithm == null) throw new ObjectDisposedException("CryptoTransform");
+                return _transformBlockFunc(algorithm, inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset);
             }
 
             /// <inheritdoc />
             public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
             {
-                T provider = _provider;
-                if (provider == null) throw new ObjectDisposedException("CryptoTransform");
-                return _transformFinalBlockFunc(provider, inputBuffer, inputOffset, inputCount);
+                T algorithm = _algorithm;
+                if (algorithm == null) throw new ObjectDisposedException("CryptoTransform");
+                return _transformFinalBlockFunc(algorithm, inputBuffer, inputOffset, inputCount);
             }
 
             /// <inheritdoc />

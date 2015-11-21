@@ -62,7 +62,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
         /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
         [NotNull]
-        public static CryptographyProvider Create(
+        public static AsymmetricCryptographyProvider Create(
             [NotNull] AsymmetricAlgorithm algorithm,
             [CanBeNull] XElement configurationElement = null)
         {

@@ -86,6 +86,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <inheritdoc />
         public override ICryptoTransform GetEncryptor()
         {
+            if (!CanEncrypt) throw new CryptographicException(Resources.RSACryptographyProvider_Encryption_Not_Supported);
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
             provider.ImportParameters(_parameters);
             return new CryptoTransform<RSACryptoServiceProvider>(
@@ -115,11 +116,10 @@ namespace WebApplications.Utilities.Cryptography
             int outputOffset)
         {
             // As we do not support multi-block encryption the input buffer should always start at 0, and be InputBlockSize in length.
-            Debug.Assert(inputOffset == 0 && inputCount == InputBlockSize);
-            if (inputBuffer.Length > inputCount)
+            if (inputOffset > 0 || inputBuffer.Length != inputCount)
             {
                 byte[] ib = new byte[inputCount];
-                Array.Copy(inputBuffer, ib, inputCount);
+                Array.Copy(inputBuffer, inputOffset, ib, 0, inputCount);
                 inputBuffer = ib;
             }
             byte[] encrypted = provider.Encrypt(inputBuffer, false);
@@ -144,9 +144,14 @@ namespace WebApplications.Utilities.Cryptography
             int inputCount)
         {
             if (inputCount < 1) return Array<byte>.Empty;
-
+            Debug.Assert(inputCount <= InputBlockSize);
             // As we do not support multi-block encryption the input buffer should always start at 0
-            Debug.Assert(inputOffset == 0 && inputCount <= InputBlockSize);
+            if (inputOffset > 0 || inputBuffer.Length != inputCount)
+            {
+                byte[] ib = new byte[inputCount];
+                Array.Copy(inputBuffer, inputOffset, ib, 0, inputCount);
+                inputBuffer = ib;
+            }
 
             byte[] encrypted = provider.Encrypt(inputBuffer, false);
             Debug.Assert(encrypted.Length == OutputBlockSize);
@@ -185,10 +190,15 @@ namespace WebApplications.Utilities.Cryptography
             int outputOffset)
         {
             // As we do not support multi-block encryption the input buffer should always start at 0, and be OutputBlockSize in length.
-            Debug.Assert(inputOffset == 0 && inputCount == OutputBlockSize);
+            Debug.Assert(inputCount == OutputBlockSize);
+            if (inputOffset > 0 || inputBuffer.Length != inputCount)
+            {
+                byte[] ib = new byte[inputCount];
+                Array.Copy(inputBuffer, inputOffset, ib, 0, inputCount);
+                inputBuffer = ib;
+            }
             byte[] decrypted = provider.Decrypt(inputBuffer, false);
             int decryptedLength = decrypted.Length;
-            Debug.Assert(decryptedLength == InputBlockSize);
             Array.Copy(decrypted, outputBuffer, decryptedLength);
             return decryptedLength;
         }
@@ -208,10 +218,17 @@ namespace WebApplications.Utilities.Cryptography
             int inputCount)
         {
             // As we do not support multi-block encryption the input buffer should always start at 0
-            Debug.Assert(inputOffset == 0);
             if (inputCount < 1) return Array<byte>.Empty;
 
             Debug.Assert(inputCount == OutputBlockSize);
+
+            if (inputOffset > 0 || inputBuffer.Length != inputCount)
+            {
+                byte[] ib = new byte[inputCount];
+                Array.Copy(inputBuffer, inputOffset, ib, 0, inputCount);
+                inputBuffer = ib;
+            }
+
             byte[] decrypted = provider.Decrypt(inputBuffer, false);
             Debug.Assert(decrypted.Length == InputBlockSize);
             return decrypted;

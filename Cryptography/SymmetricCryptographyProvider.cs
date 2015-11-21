@@ -71,7 +71,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <inheritdoc />
         public override ICryptoTransform GetEncryptor()
         {
-            SymmetricAlgorithm algorithm = (SymmetricAlgorithm)CryptoConfig.CreateFromName(Name);
+            SymmetricAlgorithm algorithm = CryptoConfig.CreateFromName(Name) as SymmetricAlgorithm;
             if (algorithm == null) throw new InvalidOperationException(string.Format(Resources.SymmetricCryptographyProvider_Create_Failed, Name));
             return algorithm.CreateEncryptor(_keyBytes, _ivBytes);
         }

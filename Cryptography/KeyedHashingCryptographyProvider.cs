@@ -33,39 +33,38 @@ using WebApplications.Utilities.Annotations;
 namespace WebApplications.Utilities.Cryptography
 {
     /// <summary>
-    /// Base class for all hashing cryptographic providers.
+    /// Base class for all hashing cryptographic providers that have a key.
     /// </summary>
-    public class HashingCryptographyProvider : CryptographyProvider
+    public class KeyedHashingCryptographyProvider : HashingCryptographyProvider
     {
-        /// <inheritdoc />
-        public override bool CanEncrypt => true;
+        [NotNull]
+        private readonly byte[] _keyBytes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HashingCryptographyProvider" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="configuration">The configuration.</param>
-        protected HashingCryptographyProvider(
+        /// <param name="keyBytes">The key bytes.</param>
+        protected KeyedHashingCryptographyProvider(
             [NotNull] string name,
-            [NotNull] XElement configuration)
-            // We set preserves length to true, even though it's doesn't preserve length as we can't decrypt anyway.
-            : base(name, configuration, true)
+            [NotNull] XElement configuration,
+            [NotNull] byte[] keyBytes)
+            : base(name, configuration)
         {
+            _keyBytes = keyBytes;
         }
 
         /// <inheritdoc />
         public override ICryptoTransform GetEncryptor()
         {
-            HashAlgorithm algorithm = CryptoConfig.CreateFromName(Name) as HashAlgorithm;
-            if (algorithm == null) throw new InvalidOperationException(string.Format(Resources.HashingCryptographyProvider_GetEncryptor_Create_Failed, Name));
-            
-            return new CryptoTransform<HashAlgorithm>(algorithm);
-        }
+            KeyedHashAlgorithm algorithm = CryptoConfig.CreateFromName(Name) as KeyedHashAlgorithm;
+            if (algorithm == null)
+                throw new InvalidOperationException(
+                    string.Format(Resources.KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed, Name));
+            algorithm.Key = _keyBytes;
 
-        /// <inheritdoc />
-        public override ICryptoTransform GetDecryptor()
-        {
-            throw new CryptographicException(Resources.CryptographyProvider_Decryption_Not_Supported);
+            return new CryptoTransform<HashAlgorithm>(algorithm);
         }
 
         /// <summary>
@@ -77,20 +76,34 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
         /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
         [NotNull]
-        internal static HashingCryptographyProvider Create(
+        internal static KeyedHashingCryptographyProvider Create(
             [NotNull] string name,
-            [NotNull] HashAlgorithm algorithm,
+            [NotNull] KeyedHashAlgorithm algorithm,
             [CanBeNull] XElement configurationElement = null)
         {
-            // Check for keyed hashing algorithmns
-            KeyedHashAlgorithm keyed = algorithm as KeyedHashAlgorithm;
-            if (keyed != null) return KeyedHashingCryptographyProvider.Create(name, keyed, configurationElement);
+            XNamespace ns;
+            byte[] keyBytes;
+            if (configurationElement != null)
+            {
+                ns = configurationElement.Name.Namespace;
+                string key = configurationElement.Element(ns + "Key")?.Value;
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new CryptographicException(
+                        "The expected 'Key' element was not found.");
 
-            // Simple hashing algorithm, no real configuration.
-            if (configurationElement == null)
-                configurationElement = new XElement("configuration");
-
-            return new HashingCryptographyProvider(name, configurationElement);
+                keyBytes = Convert.FromBase64String(key);
+            }
+            else
+            {
+                ns = XNamespace.None;
+                keyBytes = algorithm.Key;
+                // ReSharper disable AssignNullToNotNullAttribute
+                configurationElement = new XElement(
+                    ns + "configuration",
+                    new XElement(ns + "Key", Convert.ToBase64String(keyBytes)));
+            }
+            
+            return new KeyedHashingCryptographyProvider(name, configurationElement, keyBytes);
         }
     }
 }

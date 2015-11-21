@@ -32,6 +32,7 @@
     <Compile Include="CryptographyProvider.cs" />
     <Compile Include="HashAlgorithmExtensions.cs" />
     <Compile Include="HashingCryptographyProvider.cs" />
+    <Compile Include="KeyedHashingCryptographyProvider.cs" />
     <Compile Include="PBKDF2.cs" />
     <Compile Include="RandomCryptographyProvider.cs" />
     <Compile Include="Configuration\CryptographyConfiguration.cs" />
