@@ -456,8 +456,8 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="TargetInvocationException">The algorithm described by the <paramref name="name" /> parameter was used with Federal Information Processing Standards (FIPS) mode enabled, but is not FIPS compatible.</exception>
         [NotNull]
         [PublicAPI]
-        public static CryptographyProvider Create([NotNull] string name, params object[] args)
-            => Create(null, name, args);
+        public static CryptographyProvider Create([NotNull] string name)
+            => Create(null, name);
 
         /// <summary>
         /// Creates a <see cref="CryptographyProvider" /> from a name. See https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx for details.
@@ -471,10 +471,9 @@ namespace WebApplications.Utilities.Cryptography
         [PublicAPI]
         public static CryptographyProvider Create(
             [CanBeNull] XElement configuration,
-            [NotNull] string name,
-            params object[] args)
+            [NotNull] string name)
         {
-            using (IDisposable provider = (IDisposable)CryptoConfig.CreateFromName(name, args))
+            using (IDisposable provider = (IDisposable)CryptoConfig.CreateFromName(name))
             {
                 AsymmetricAlgorithm asymm = provider as AsymmetricAlgorithm;
                 if (asymm != null) return AsymmetricCryptographyProvider.Create(asymm, configuration);

@@ -383,8 +383,8 @@ namespace WebApplications.Utilities.Cryptography
         /// <see cref="XElement">XML</see> configuration.
         /// </summary>
         /// <param name="algorithm">The algorithm.</param>
-        /// <param name="providerElement">The provider element.</param>
         /// <param name="configuration">The provider element.</param>
+        /// <returns>WebApplications.Utilities.Cryptography.RSACryptographyProvider.</returns>
         /// <exception cref="CryptographicException">The configuration was invalid.</exception>
         [NotNull]
         public static RSACryptographyProvider Create(
