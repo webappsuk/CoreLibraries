@@ -241,6 +241,15 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to create random number generator with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string RandomCryptographyProvider_GetEncryptor_Create_Failed {
+            get {
+                return ResourceManager.GetString("RandomCryptographyProvider_GetEncryptor_Create_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No enabled RSACryptographer providers were found in configuration..
         /// </summary>
         internal static string RSACryptographer_Constructor_Configuration_NoProviderFound {

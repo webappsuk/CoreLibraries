@@ -55,16 +55,17 @@ namespace WebApplications.Utilities.Cryptography
             _keyBytes = keyBytes;
         }
 
-        /// <inheritdoc />
-        public override ICryptoTransform GetEncryptor()
+        /// <summary>
+        /// Gets the algorithm.
+        /// </summary>
+        /// <returns>A <see cref="System.Security.Cryptography.HashAlgorithm"/>.</returns>
+        [NotNull]
+        protected override System.Security.Cryptography.HashAlgorithm GetAlgorithm()
         {
             KeyedHashAlgorithm algorithm = CryptoConfig.CreateFromName(Name) as KeyedHashAlgorithm;
-            if (algorithm == null)
-                throw new InvalidOperationException(
-                    string.Format(Resources.KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed, Name));
+            if (algorithm == null) throw new InvalidOperationException(string.Format(Resources.KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed, Name));
             algorithm.Key = _keyBytes;
-
-            return new CryptoTransform<HashAlgorithm>(algorithm);
+            return algorithm;
         }
 
         /// <summary>

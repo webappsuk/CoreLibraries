@@ -30,7 +30,7 @@
     <Compile Include="Configuration\ProviderCollection.cs" />
     <Compile Include="Configuration\ProviderElement.cs" />
     <Compile Include="CryptographyProvider.cs" />
-    <Compile Include="HashAlgorithmExtensions.cs" />
+    <Compile Include="CryptographyExtensions.cs" />
     <Compile Include="HashingCryptographyProvider.cs" />
     <Compile Include="KeyedHashingCryptographyProvider.cs" />
     <Compile Include="PBKDF2.cs" />

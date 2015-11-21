@@ -94,13 +94,15 @@ namespace WebApplications.Utilities.Cryptography
                 EncryptBlock,
                 EncryptFinalBlock,
                 InputBlockSize,
-                OutputBlockSize);
+                OutputBlockSize,
+                false,
+                true);
         }
 
         /// <summary>
         /// Encrypts the specified region of the input byte array and copies the resulting transform to the specified region of the output byte array.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="algorithm">The algorithm.</param>
         /// <param name="inputBuffer">The input for which to compute the transform.</param>
         /// <param name="inputOffset">The offset into the input byte array from which to begin using data.</param>
         /// <param name="inputCount">The number of bytes in the input byte array to use as data.</param>
@@ -108,7 +110,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="outputOffset">The offset into the output byte array from which to begin writing data.</param>
         /// <returns>The number of bytes written.</returns>
         private int EncryptBlock(
-            [NotNull] RSACryptoServiceProvider provider,
+            [NotNull] RSACryptoServiceProvider algorithm,
             [NotNull] byte[] inputBuffer,
             int inputOffset,
             int inputCount,
@@ -122,7 +124,7 @@ namespace WebApplications.Utilities.Cryptography
                 Array.Copy(inputBuffer, inputOffset, ib, 0, inputCount);
                 inputBuffer = ib;
             }
-            byte[] encrypted = provider.Encrypt(inputBuffer, false);
+            byte[] encrypted = algorithm.Encrypt(inputBuffer, false);
             int encryptedLength = encrypted.Length;
             Debug.Assert(encryptedLength == OutputBlockSize);
             Array.Copy(encrypted, outputBuffer, encryptedLength);
@@ -132,13 +134,13 @@ namespace WebApplications.Utilities.Cryptography
         /// <summary>
         /// Encrypts the specified region of the specified byte array.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="algorithm">The algorithm.</param>
         /// <param name="inputBuffer">The input for which to compute the transform.</param>
         /// <param name="inputOffset">The offset into the byte array from which to begin using data.</param>
         /// <param name="inputCount">The number of bytes in the byte array to use as data.</param>
         /// <returns>The computed transform.</returns>
         private byte[] EncryptFinalBlock(
-            [NotNull] RSACryptoServiceProvider provider,
+            [NotNull] RSACryptoServiceProvider algorithm,
             [NotNull] byte[] inputBuffer,
             int inputOffset,
             int inputCount)
@@ -153,7 +155,7 @@ namespace WebApplications.Utilities.Cryptography
                 inputBuffer = ib;
             }
 
-            byte[] encrypted = provider.Encrypt(inputBuffer, false);
+            byte[] encrypted = algorithm.Encrypt(inputBuffer, false);
             Debug.Assert(encrypted.Length == OutputBlockSize);
             return encrypted;
         }
@@ -168,7 +170,9 @@ namespace WebApplications.Utilities.Cryptography
                 DecryptBlock,
                 DecryptFinalBlock,
                 OutputBlockSize,
-                InputBlockSize);
+                InputBlockSize,
+                false,
+                true);
         }
 
         /// <summary>

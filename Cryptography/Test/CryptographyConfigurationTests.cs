@@ -76,10 +76,10 @@ namespace WebApplications.Utilities.Cryptography.Test
                 "HMACSHA256",
                 "HMACSHA384",
                 "HMACSHA512",
-                "MACTripleDES"
-
-
-                // TODO Random
+                "MACTripleDES",
+                
+                // Random number generator
+                "RandomNumberGenerator"
             };
 
             int providerCount = names.Length;

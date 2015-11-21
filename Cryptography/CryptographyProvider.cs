@@ -191,7 +191,7 @@ namespace WebApplications.Utilities.Cryptography
                     cryptoStream.Write(input, 0, input.Length);
 
                     // Add termination byte if the provider does not respect the length.
-                    if (preserveLength && !PreservesLength)
+                    if (preserveLength && !PreservesLength && CanDecrypt)
                         cryptoStream.WriteByte(0xFF);
 
                     cryptoStream.Clear();
@@ -548,11 +548,11 @@ namespace WebApplications.Utilities.Cryptography
                 SymmetricAlgorithm sym = provider as SymmetricAlgorithm;
                 if (sym != null) return SymmetricCryptographyProvider.Create(name, sym, configuration);
 
-                HashAlgorithm hash = provider as HashAlgorithm;
+                System.Security.Cryptography.HashAlgorithm hash = provider as System.Security.Cryptography.HashAlgorithm;
                 if (hash != null) return HashingCryptographyProvider.Create(name, hash, configuration);
 
                 RandomNumberGenerator rnd = provider as RandomNumberGenerator;
-                // TODO if (rnd != null) return RandomCryptographyProvider.Create(rnd, configuration);
+                if (rnd != null) return RandomCryptographyProvider.Create(name, rnd, configuration);
 
                 throw new CryptographicException(
                     string.Format(Resources.CryptographyProvider_Create_Unknown_Provider, name));
@@ -573,7 +573,6 @@ namespace WebApplications.Utilities.Cryptography
             private readonly Func<T, byte[], int, int, byte[]> _transformFinalBlockFunc;
 
             private T _algorithm;
-            private HashAlgorithm algorithm;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="CryptoTransform{T}" /> class.
@@ -591,8 +590,8 @@ namespace WebApplications.Utilities.Cryptography
                 [NotNull] Func<T, byte[], int, int, byte[]> transformFinalBlockFunc,
                 int inputBlockSize,
                 int outputBlockSize,
-                bool canTransformMultipleBlocks = false,
-                bool canReuseTransform = true)
+                bool canTransformMultipleBlocks,
+                bool canReuseTransform)
             {
                 _algorithm = algorithm;
                 _transformBlockFunc = transformBlockFunc;
@@ -601,25 +600,6 @@ namespace WebApplications.Utilities.Cryptography
                 OutputBlockSize = outputBlockSize;
                 CanTransformMultipleBlocks = canTransformMultipleBlocks;
                 CanReuseTransform = canReuseTransform;
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="CryptoTransform{T}" /> class.
-            /// </summary>
-            /// <param name="algorithm">The hash algorithm.</param>
-            public CryptoTransform([NotNull]HashAlgorithm algorithm)
-            {
-                _algorithm = algorithm as T;
-                _transformBlockFunc =
-                    (_, inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset) =>
-                        algorithm.TransformBlock(inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset);
-                _transformFinalBlockFunc =
-                    (_, inputBuffer, inputOffset, inputCount) =>
-                        algorithm.TransformFinalBlock(inputBuffer, inputOffset, inputCount);
-                InputBlockSize = algorithm.InputBlockSize;
-                OutputBlockSize = algorithm.OutputBlockSize;
-                CanTransformMultipleBlocks = algorithm.CanTransformMultipleBlocks;
-                CanReuseTransform = algorithm.CanReuseTransform;
             }
 
             /// <inheritdoc />
@@ -637,6 +617,7 @@ namespace WebApplications.Utilities.Cryptography
                 byte[] outputBuffer,
                 int outputOffset)
             {
+                
                 T algorithm = _algorithm;
                 if (algorithm == null) throw new ObjectDisposedException("CryptoTransform");
                 return _transformBlockFunc(algorithm, inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset);

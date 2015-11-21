@@ -198,4 +198,7 @@
   <data name="KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed" xml:space="preserve">
     <value>Failed to create keyed hashing algorithm with name '{0}'.</value>
   </data>
+  <data name="RandomCryptographyProvider_GetEncryptor_Create_Failed" xml:space="preserve">
+    <value>Failed to create random number generator with name '{0}'.</value>
+  </data>
 </root>
