@@ -210,7 +210,7 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         /// <remarks>
         ///   <para>If you do not explicitly define the section name using the <see cref="ConfigurationSectionAttribute"/>
-        ///   then  the name is calculated automatically from the type name using the following algorithm:</para>
+        ///   then the name is calculated automatically from the type name using the following algorithm:</para>
         ///   <list type="number">
         ///     <item><description>Take the type name.</description></item>
         ///     <item><description>Remove one of the following suffixes if present -
@@ -227,10 +227,6 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         ///   Gets or sets the active configuration.
         /// </summary>
-        /// <remarks>
-        ///   <para>Once set as active a configuration is marked as read only.</para>
-        ///   <para>Setting the active configuration to <see langword="null"/> will load the default configuration.</para>
-        /// </remarks>
         /// <exception cref="ObjectDisposedException" accessor="set">You cannot set the active configuration section to
         /// a <see cref="IsDisposed">disposed</see> section.</exception>
         /// <exception cref="ConfigurationErrorsException" accessor="get">Error during initialization.</exception>

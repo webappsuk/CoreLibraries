@@ -148,7 +148,6 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 // ReSharper disable ExceptionNotDocumentedOptional, ExceptionNotDocumented
                 lock (_children)
                     return _children.Cast<IConfigurationElement>().ToArray();
@@ -212,8 +211,6 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
-
                 if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
                 object value = base[propertyName];
                 IInternalConfigurationElement ice = value as IInternalConfigurationElement;
@@ -261,17 +258,11 @@ namespace WebApplications.Utilities.Configuration
         [NotNull]
         // ReSharper disable ExceptionNotDocumentedOptional, ExceptionNotDocumented
         protected new IReadOnlyCollection<ConfigurationProperty> Properties
-        {
-            get
-            {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
-                return _properties ??
-                       (_properties =
-                           base.Properties == null || base.Properties.Count < 1
-                               ? Array<ConfigurationProperty>.Empty
-                               : base.Properties.Cast<ConfigurationProperty>().ToArray());
-            }
-        }
+            => _properties ??
+               (_properties =
+                   base.Properties == null || base.Properties.Count < 1
+                       ? Array<ConfigurationProperty>.Empty
+                       : base.Properties.Cast<ConfigurationProperty>().ToArray());
 
         // ReSharper restore ExceptionNotDocumentedOptional, ExceptionNotDocumented
 
@@ -279,44 +270,20 @@ namespace WebApplications.Utilities.Configuration
         /// Gets the keys.
         /// </summary>
         /// <value>The keys.</value>
-        /// <exception cref="ObjectDisposedException" accessor="get">The current section <see cref="IsDisposed">is disposed</see>.</exception>
         // ReSharper disable PossibleNullReferenceException
-        public IEnumerable<string> Keys
-        {
-            get
-            {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
-                return Properties.Select(p => p.Name);
-            }
-        }
+        public IEnumerable<string> Keys => Properties.Select(p => p.Name);
 
         /// <summary>
         /// Gets the values.
         /// </summary>
         /// <value>The values.</value>
-        /// <exception cref="ObjectDisposedException" accessor="get">The current section <see cref="IsDisposed">is disposed</see>.</exception>
-        public IEnumerable<object> Values
-        {
-            get
-            {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
-                return Properties.Select(p => this[p.Name]);
-            }
-        }
+        public IEnumerable<object> Values => Properties.Select(p => this[p.Name]);
 
         /// <summary>
         /// Gets the property values.
         /// </summary>
         /// <value>The property values.</value>
-        /// <exception cref="ObjectDisposedException" accessor="get">The current section <see cref="IsDisposed">is disposed</see>.</exception>
-        public IReadOnlyDictionary<string, object> PropertyValues
-        {
-            get
-            {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
-                return Properties.ToDictionary(p => p.Name, p => this[p.Name]);
-            }
-        }
+        public IReadOnlyDictionary<string, object> PropertyValues => Properties.ToDictionary(p => p.Name, p => this[p.Name]);
 
         // ReSharper restore PossibleNullReferenceException
 
@@ -328,11 +295,9 @@ namespace WebApplications.Utilities.Configuration
         /// <remarks><para>This is a clone of the child element, modifying it will have no effect on the configuration.</para>
         /// <para>To update the configuration, use <see cref="SetElement"/></para></remarks>
         /// <exception cref="ArgumentNullException"><paramref name="elementName"/> is <see langword="null" />.</exception>
-        /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
         [CanBeNull]
         protected XElement GetElement([NotNull] XName elementName)
         {
-            if (IsDisposed) throw new ObjectDisposedException(ToString());
             if (elementName == null) throw new ArgumentNullException(nameof(elementName));
             string elementStr;
             lock (_elements)
@@ -476,7 +441,6 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return _elements.Keys.ToArray();
             }
@@ -487,7 +451,6 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return _elements.Values
                             .Select(e => XElement.Parse(e, LoadOptions.PreserveWhitespace))
@@ -501,7 +464,6 @@ namespace WebApplications.Utilities.Configuration
         {
             get
             {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return _elements
                         .ToDictionary(
@@ -513,17 +475,10 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <inheritdoc />
-        public virtual bool TryGetValue(string fullPath, out object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
         public Dictionary<XName, string> ElementsClone
         {
             get
             {
-                if (IsDisposed) throw new ObjectDisposedException(ToString());
                 lock (_elements)
                     return new Dictionary<XName, string>(_elements);
             }
