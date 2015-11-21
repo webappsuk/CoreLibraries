@@ -105,13 +105,15 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="data">The array to fill.</param>
         [PublicAPI]
-        public static void GetRandomBytes([NotNull] byte[] data) => RandomCryptographyProvider.GetRandomBytes(data);
+        public static void GetRandomBytes([NotNull] this byte[] data) 
+            => RandomCryptographyProvider.GetRandomBytes(data);
 
         /// <summary>
         /// Fills the byte array with non-zero random bytes.
         /// </summary>
         /// <param name="data">The array to fill.</param>
         [PublicAPI]
-        public static void GetNonZeroRandomBytes([NotNull] byte[] data) => RandomCryptographyProvider.GetNonZeroRandomBytes(data);
+        public static void GetNonZeroRandomBytes([NotNull] this byte[] data)
+            => RandomCryptographyProvider.GetNonZeroRandomBytes(data);
     }
 }

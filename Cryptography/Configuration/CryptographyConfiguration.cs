@@ -54,6 +54,18 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         }
 
         /// <summary>
+        /// Gets or sets the size of a secure identifier.
+        /// </summary>
+        /// <value>The size of the secure identifier.</value>
+        [ConfigurationProperty("secureIdentifierSize", DefaultValue = "18", IsRequired = false)]
+        [IntegerValidator(MinValue = SecureIdentifier.MinLength, MaxValue = 255)]
+        public int SecureIdentifierSize
+        {
+            get { return GetProperty<int>("secureIdentifierSize"); }
+            set { SetProperty<int>("secureIdentifierSize", value); }
+        }
+        
+        /// <summary>
         /// Gets the provider with the specified identity.
         /// </summary>
         /// <param name="providerId">The provider identifier.</param>

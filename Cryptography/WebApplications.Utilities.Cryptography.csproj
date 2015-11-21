@@ -49,9 +49,6 @@
     <Compile Include="XmlCryptoExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Keys\ConfigPrivate1.kez" />
-    <EmbeddedResource Include="Keys\ConfigPrivate2.kez" />
-    <EmbeddedResource Include="Keys\ConfigPrivate3.kez" />
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

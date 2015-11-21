@@ -201,4 +201,7 @@
   <data name="RandomCryptographyProvider_GetEncryptor_Create_Failed" xml:space="preserve">
     <value>Failed to create random number generator with name '{0}'.</value>
   </data>
+  <data name="SecureIdentifier_Parse_Invalid" xml:space="preserve">
+    <value>The secure identifier is invalid.</value>
+  </data>
 </root>

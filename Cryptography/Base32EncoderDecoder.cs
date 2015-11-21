@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Cryptography
     /// <summary>
     /// Extension methods supporting clean Base32 encoding, with custom digits (skips easily confused characters).
     /// </summary>
-    /// <remarks></remarks>
+    /// <remarks>TODO Review this to make more efficient if possible.</remarks>
     [PublicAPI]
     public static class Base32EncoderDecoder
     {
@@ -60,7 +60,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns></returns>
         /// <remarks></remarks>
         /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.UInt32.MaxValue" /> elements.</exception>
-        public static string Base32Encode(Guid guid, IEnumerable<char> digits = null)
+        public static string Base32Encode(this Guid guid, IEnumerable<char> digits = null)
         {
             return Base32Encode(guid.ToByteArray(), digits);
         }
@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns></returns>
         /// <remarks></remarks>
         /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.UInt32.MaxValue" /> elements.</exception>
-        public static string Base32Encode(byte[] bytes, IEnumerable<char> digits = null)
+        public static string Base32Encode(this byte[] bytes, IEnumerable<char> digits = null)
         {
             char[] digitsArray = digits?.ToArray() ?? _digits;
 
@@ -146,7 +146,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <remarks></remarks>
         /// <exception cref="ArgumentNullException">buffer is <see langword="null" />.</exception>
         /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.Int32.MaxValue" /> elements.</exception>
-        public static bool TryBase32DecodeGuid(string number, out Guid guid, IEnumerable<char> digits = null)
+        public static bool TryBase32DecodeGuid(this string number, out Guid guid, IEnumerable<char> digits = null)
         {
             byte[] bytes = new byte[16];
             if (!TryBase32Decode(number, bytes, digits))
@@ -168,7 +168,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <remarks></remarks>
         /// <exception cref="ArgumentNullException">buffer is <see langword="null" />.</exception>
         /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.Int32.MaxValue" /> elements.</exception>
-        public static bool TryBase32Decode(string number, [NotNull] byte[] buffer, IEnumerable<char> digits = null)
+        public static bool TryBase32Decode(this string number, [NotNull] byte[] buffer, IEnumerable<char> digits = null)
         {
             return TryBase32Decode(number, buffer, 0, digits);
         }
@@ -185,7 +185,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null" />.</exception>
         /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.Int32.MaxValue" /> elements.</exception>
         public static bool TryBase32Decode(
-            string number,
+            this string number,
             [NotNull] byte[] buffer,
             int startIndex,
             IEnumerable<char> digits = null)

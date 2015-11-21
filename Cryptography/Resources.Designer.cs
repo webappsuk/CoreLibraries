@@ -286,6 +286,15 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The secure identifier is invalid..
+        /// </summary>
+        internal static string SecureIdentifier_Parse_Invalid {
+            get {
+                return ResourceManager.GetString("SecureIdentifier_Parse_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid SecureIdentifier string supplied..
         /// </summary>
         internal static string SecureIdentifier_Parse_Invalid_SecureIdentifier_String_Supplied {
