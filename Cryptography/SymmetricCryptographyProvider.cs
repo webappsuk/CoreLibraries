@@ -27,7 +27,6 @@
 
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -47,16 +46,14 @@ namespace WebApplications.Utilities.Cryptography
         /// Initializes a new instance of the <see cref="SymmetricCryptographyProvider" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="providerElement">The provider element (if any).</param>
         /// <param name="configuration">The configuration (if any).</param>
         /// <param name="preservesLength">
         ///   <see langword="true" /> if the provider preserves the length.</param>
         protected SymmetricCryptographyProvider(
             [NotNull] string name,
-            [CanBeNull] ProviderElement providerElement = null,
             [CanBeNull] XElement configuration = null,
             bool preservesLength = true)
-            : base(name, providerElement, configuration, preservesLength)
+            : base(name, configuration, preservesLength)
         {
         }
     }

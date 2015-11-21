@@ -71,21 +71,65 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         /// <exception cref="Exception">The <paramref name="addFunc"/> throws an exception.</exception>
         /// <exception cref="ArgumentException">Invalid <paramref name="providerId"/> supplied.</exception>
         [NotNull]
-        public CryptographyProvider GetOrAddProvider([NotNull] string providerId, [NotNull] Func<CryptographyProvider> addFunc)
+        public CryptographyProvider GetOrAddProvider(
+            [NotNull] string providerId,
+            [NotNull] Func<CryptographyProvider> addFunc)
         {
             if (string.IsNullOrWhiteSpace(providerId))
-                throw new ArgumentException(Resources.CryptographyConfiguration_GetOrAddProvider_Invalid_Provider_ID, nameof(providerId));
+                throw new ArgumentException(
+                    Resources.CryptographyConfiguration_GetOrAddProvider_Invalid_Provider_ID,
+                    nameof(providerId));
 
             // ReSharper disable ExceptionNotDocumented
-            CryptographyProvider provider = Providers[providerId]?.GetProvider();
-            if (provider != null) return provider;
+            ProviderElement providerElement = Providers[providerId];
+            CryptographyProvider provider;
+            if (providerElement != null)
+            {
+                // Enable the provider if disabled.
+                if (!providerElement.IsEnabled) providerElement.IsEnabled = true;
 
+                // Try to get the provider
+                provider = providerElement.GetProvider();
+                if (provider != null)
+                {
+                    // Set the provider's ID so it knows it came from the configuration.
+                    provider.Id = providerId;
+                    return provider;
+                }
+            }
+
+            // Create a new provider
             provider = addFunc();
             if (provider == null)
-                throw new CryptographicException(Resources.CryptographyConfiguration_GetOrAddProvider_Add_Returned_Null);
+                throw new CryptographicException(
+                    Resources.CryptographyConfiguration_GetOrAddProvider_Add_Returned_Null);
 
-            provider.SaveToConfiguration(providerId, this);
-            // ReSharper restore ExceptionNotDocumented
+            // Set the provider's ID so it knows it came from the configuration.
+            provider.Id = providerId;
+            
+            if (providerElement == null)
+            {
+                providerElement = new ProviderElement
+                {
+                    Id = providerId,
+                    Name = provider.Name,
+                    Configuration = provider.Configuration,
+                    IsEnabled = true
+                };
+                Providers.Add(providerElement);
+            }
+            else
+            {
+                providerElement.Id = providerId;
+                providerElement.Name = provider.Name;
+                providerElement.Configuration = provider.Configuration;
+                providerElement.IsEnabled = true;
+            }
+
+            // Save this configuration
+            Save();
+
+            // Return the provider
             return provider;
         }
     }

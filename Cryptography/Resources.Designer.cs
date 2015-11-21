@@ -88,6 +88,15 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unknown, or unsupported, cryptographic provider &apos;{0}&apos;..
+        /// </summary>
+        internal static string AsymmetricCryptographyProvider_Create_Unknown_Cryptography_Provider {
+            get {
+                return ResourceManager.GetString("AsymmetricCryptographyProvider_Create_Unknown_Cryptography_Provider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot decrypt a node of type &apos;{0}&apos;..
         /// </summary>
         internal static string Cryptographer_Decrypt_CannotDecryptNode {

@@ -80,12 +80,13 @@ namespace WebApplications.Utilities.Cryptography.Configuration
             get { return GetProperty<bool>("enabled"); }
             set { SetProperty("enabled", value); }
         }
-        
+
         /// <summary>
         /// Gets the <see cref="CryptographyProvider"/>.
         /// </summary>
         /// <returns>A <see cref="CryptographyProvider"/> if <see cref="IsEnabled">enabled</see>; otherwise <see langword="null"/>.</returns>
-        public CryptographyProvider GetProvider() => CryptographyProvider.Create(this);
+        [CanBeNull]
+        public CryptographyProvider GetProvider() => IsEnabled ? CryptographyProvider.Create(Configuration, Name) : null;
 
         /// <summary>
         /// Gets or sets the configuration.

@@ -180,4 +180,7 @@
   <data name="CryptographyProvider_SaveToConfiguration_No_ID" xml:space="preserve">
     <value>Cannot persist the current cryptography provider to the configuration as it doesn't have an existing id and no id was specified.</value>
   </data>
+  <data name="AsymmetricCryptographyProvider_Create_Unknown_Cryptography_Provider" xml:space="preserve">
+    <value>Unknown, or unsupported, cryptographic provider '{0}'.</value>
+  </data>
 </root>

@@ -30,7 +30,6 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -64,7 +63,6 @@ namespace WebApplications.Utilities.Cryptography
         /// Initializes a new instance of the <see cref="RSACryptographyProvider" /> class from an
         /// <see cref="XElement">XML</see> configuration.
         /// </summary>
-        /// <param name="providerElement">The provider element.</param>
         /// <param name="configuration">The provider element.</param>
         /// <param name="parameters">The parameters.</param>
         /// <param name="canEncrypt">if set to <c>true</c> [can encrypt].</param>
@@ -72,13 +70,12 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="outputBlockSize">Size of the output block.</param>
         /// <exception cref="CryptographicException">Error initializing the cryptographic service provider.</exception>
         private RSACryptographyProvider(
-            [CanBeNull] ProviderElement providerElement,
             [CanBeNull] XElement configuration,
             RSAParameters parameters,
             bool canEncrypt,
             ushort inputBlockSize,
             ushort outputBlockSize)
-            : base("RSA", providerElement, configuration, false)
+            : base("RSA", configuration, false)
         {
             _parameters = parameters;
             CanEncrypt = canEncrypt;
@@ -348,7 +345,7 @@ namespace WebApplications.Utilities.Cryptography
         {
             // Generate new key.
             using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider(keySize))
-                return Create(provider, null, null);
+                return Create(provider, null);
         }
 
         /// <summary>
@@ -363,7 +360,7 @@ namespace WebApplications.Utilities.Cryptography
             using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
             {
                 provider.ImportParameters(parameters);
-                return Create(provider, null, null);
+                return Create(provider, null);
             }
         }
 
@@ -378,7 +375,7 @@ namespace WebApplications.Utilities.Cryptography
         public static RSACryptographyProvider Create([CanBeNull] XElement configuration)
         {
             using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
-                return Create(provider, null, configuration);
+                return Create(provider, configuration);
         }
 
         /// <summary>
@@ -390,14 +387,10 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="configuration">The provider element.</param>
         /// <exception cref="CryptographicException">The configuration was invalid.</exception>
         [NotNull]
-        internal static RSACryptographyProvider Create(
+        public static RSACryptographyProvider Create(
             [NotNull] RSACryptoServiceProvider algorithm,
-            [CanBeNull] ProviderElement providerElement,
             [CanBeNull] XElement configuration)
         {
-            if (providerElement != null)
-                configuration = providerElement.Configuration;
-
             RSAParameters parameters;
             if (configuration != null)
             {
@@ -417,7 +410,6 @@ namespace WebApplications.Utilities.Cryptography
             ushort inputBlockSize = (ushort)(outputBlockSize - 11);
 
             return new RSACryptographyProvider(
-                providerElement,
                 configuration,
                 parameters,
                 !algorithm.PublicOnly,

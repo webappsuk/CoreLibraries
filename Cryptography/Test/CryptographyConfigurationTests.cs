@@ -63,7 +63,17 @@ namespace WebApplications.Utilities.Cryptography.Test
                 ewh.Set();
             };
 
-            CryptographyProvider provider = configuration.GetOrAddProvider(key, () => RSACryptographyProvider.Create());
+            bool added = false;
+            CryptographyProvider provider = configuration.GetOrAddProvider(
+                key,
+                () =>
+                {
+                    added = true;
+                    return RSACryptographyProvider.Create();
+                });
+
+            Assert.IsTrue(added);
+
             // Wait for the configuration changed event to fire
             Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(5)), "Configuration changed event did not fire.");
             Assert.IsNotNull(provider);
@@ -72,9 +82,12 @@ namespace WebApplications.Utilities.Cryptography.Test
             configuration = CryptographyConfiguration.Active;
             CryptographyProvider provider2 = configuration.GetProvider(key);
             Assert.IsNotNull(provider2);
-            Assert.AreEqual(
-                provider.Configuration.ToString(SaveOptions.DisableFormatting),
-                provider2.Configuration.ToString(SaveOptions.DisableFormatting));
+
+            Tuple<XObject, XObject> difference = provider.Configuration.DeepEquals(
+                provider2.Configuration,
+                XObjectComparisonOptions.Semantic);
+
+            Assert.IsNull(difference, $"{difference?.Item1} : {difference?.Item2}");
 
             // Remove provider from configuration
             configuration.Providers.Remove(key);

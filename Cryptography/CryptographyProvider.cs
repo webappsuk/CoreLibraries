@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -34,7 +33,6 @@ using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -43,12 +41,6 @@ namespace WebApplications.Utilities.Cryptography
     /// </summary>
     public abstract class CryptographyProvider
     {
-        /// <summary>
-        /// The source provider element, if any.
-        /// </summary>
-        [CanBeNull]
-        private readonly ProviderElement _providerElement;
-
         /// <summary>
         /// <see langword="true"/> if the cryptography provider preserves length during encryption/decryption.
         /// </summary>
@@ -105,32 +97,29 @@ namespace WebApplications.Utilities.Cryptography
         /// Initializes a new instance of the <see cref="CryptographyProvider" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="providerElement">The provider element (if any).</param>
         /// <param name="configuration">The configuration (if any).</param>
         /// <param name="preservesLength">
         ///   <see langword="true" /> if the provider preserves the length.</param>
         protected CryptographyProvider(
-            string name,
-            [CanBeNull] ProviderElement providerElement = null,
+            [NotNull] string name,
             [CanBeNull] XElement configuration = null,
             bool preservesLength = true)
         {
             Name = name;
-            _providerElement = providerElement;
             _configuration = configuration?.ToString(SaveOptions.DisableFormatting);
             PreservesLength = preservesLength;
         }
 
         /// <summary>
-        /// Gets the identifier, if the provider is persisted to the configuration; otherwise <see langword="null" />.
+        /// Gets the identifier, if the provider is persisted in the configuration; otherwise <see langword="null" />.
         /// </summary>
         /// <value>The identifier.</value>
         [PublicAPI]
         [CanBeNull]
-        public string Id => _providerElement?.Id;
+        public string Id { get; internal set; }
 
         /// <summary>
-        /// Gets the crypto transform for encryption.
+        /// Gets the <see cref="ICryptoTransform"/> for encryption.
         /// </summary>
         /// <returns>An <see cref="ICryptoTransform"/>.</returns>
         [PublicAPI]
@@ -138,7 +127,7 @@ namespace WebApplications.Utilities.Cryptography
         public abstract ICryptoTransform GetEncryptor();
 
         /// <summary>
-        /// Gets the crypto transform for decryption.
+        /// Gets the <see cref="ICryptoTransform"/> for decryption.
         /// </summary>
         /// <returns>An <see cref="ICryptoTransform"/>.</returns>
         [PublicAPI]
@@ -150,37 +139,48 @@ namespace WebApplications.Utilities.Cryptography
         /// Encrypts the specified input.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="preserveLength">If <see langword="true"/> preserves the length of the input when decrypting;
+        /// otherwise, if <see langword="false"/> the length may be wrong on decryption, if the provider does not
+        /// automatically <see cref="PreservesLength">preserve length</see> itself.</param>
         /// <returns>A base 64 encoded string of the encrypted data.</returns>
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform encryption.</exception>
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public string EncryptToString(string input)
+        [PublicAPI]
+        [ContractAnnotation("input:null => null; input:notnull => notnull")]
+        public string EncryptToString(string input, bool preserveLength = true)
         {
             if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
-            return input == null ? null : Convert.ToBase64String(Encrypt(Encoding.Unicode.GetBytes(input)));
+            return input == null ? null : Convert.ToBase64String(Encrypt(Encoding.Unicode.GetBytes(input), preserveLength));
         }
 
         /// <summary>
         /// Encrypts the specified input.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="preserveLength">If <see langword="true"/> preserves the length of the input when decrypting;
+        /// otherwise, if <see langword="false"/> the length may be wrong on decryption, if the provider does not
+        /// automatically <see cref="PreservesLength">preserve length</see> itself.</param>
         /// <returns>A base 64 encoded string of the encrypted data.</returns>
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform encryption.</exception>
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public byte[] Encrypt(string input)
+        [PublicAPI]
+        [ContractAnnotation("input:null => null; input:notnull => notnull")]
+        public byte[] Encrypt(string input, bool preserveLength = true)
         {
             if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
-            return input == null ? null : Encrypt(Encoding.Unicode.GetBytes(input));
+            return input == null ? null : Encrypt(Encoding.Unicode.GetBytes(input), preserveLength);
         }
 
         /// <summary>
         /// Encrypts the specified input.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="preserveLength">If <see langword="true"/> preserves the length of the input when decrypting;
+        /// otherwise, if <see langword="false"/> the length may be wrong on decryption, if the provider does not
+        /// automatically <see cref="PreservesLength">preserve length</see> itself.</param>
         /// <returns>The encrypted data.</returns>
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform encryption.</exception>
         [PublicAPI]
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public byte[] Encrypt(byte[] input)
+        [ContractAnnotation("input:null => null; input:notnull => notnull")]
+        public byte[] Encrypt(byte[] input, bool preserveLength = true)
         {
             if (!CanEncrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
             if (input == null) return null;
@@ -191,7 +191,7 @@ namespace WebApplications.Utilities.Cryptography
                     cryptoStream.Write(input, 0, input.Length);
 
                     // Add termination byte if the provider does not respect the length.
-                    if (!PreservesLength)
+                    if (preserveLength && !PreservesLength)
                         cryptoStream.WriteByte(0xFF);
                 }
 
@@ -208,6 +208,8 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform encryption.</exception>
         /// <remarks>
         /// <para>To encrypt data, write it to the <see cref="CryptoStream"/> and read from the <paramref name="outputStream"/>.</para>
+        /// <para>When using a provider that does not <see cref="PreservesLength">preserve the length</see> you may want to consider
+        /// adding a termination byte (e.g. 0xFF) to help detect the end of the stream.</para>
         /// </remarks>
         [NotNull]
         [PublicAPI]
@@ -224,26 +226,40 @@ namespace WebApplications.Utilities.Cryptography
         /// Decrypts the specified base 64 input string to a string.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
         /// <returns>The decrypted string.</returns>
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform decryption.</exception>
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public string DecryptFromStringToString(string input)
+        [PublicAPI]
+        [ContractAnnotation("input:null => null; input:notnull => notnull")]
+        public string DecryptFromStringToString(string input, bool preserveLength = true)
         {
             if (!CanDecrypt) throw new CryptographicException("The cryptographic provider cannot perform decryption.");
-            return input == null ? null : Encoding.Unicode.GetString(Decrypt(Convert.FromBase64String(input)));
+            return input == null ? null : Encoding.Unicode.GetString(Decrypt(Convert.FromBase64String(input), preserveLength));
         }
 
         /// <summary>
         /// Decrypts the specified base 64 input string to a string.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
         /// <returns>The decrypted data.</returns>
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform decryption.</exception>
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public byte[] DecryptFromString(string input)
+        [PublicAPI]
+        [ContractAnnotation("input:null => null; input:notnull => notnull")]
+        public byte[] DecryptFromString(string input, bool preserveLength = true)
         {
             if (!CanDecrypt) throw new CryptographicException("The cryptographic provider cannot perform decryption.");
-            return input == null ? null : Decrypt(Convert.FromBase64String(input));
+            return input == null ? null : Decrypt(Convert.FromBase64String(input), preserveLength);
         }
 
         /// <summary>
@@ -251,9 +267,16 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="output">The decrypted output.</param>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
         /// <returns><see langword="true"/> if succeeded; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
         [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
-        public bool TryDecryptFromStringToString(string input, out string output)
+        public bool TryDecryptFromStringToString(string input, out string output, bool preserveLength = true)
         {
             if (input == null)
             {
@@ -262,7 +285,7 @@ namespace WebApplications.Utilities.Cryptography
             }
             try
             {
-                output = Encoding.Unicode.GetString(Decrypt(Convert.FromBase64String(input)));
+                output = Encoding.Unicode.GetString(Decrypt(Convert.FromBase64String(input), preserveLength));
                 return true;
             }
                 // ReSharper disable once CatchAllClause
@@ -278,10 +301,16 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="output">The output.</param>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
         /// <returns><see langword="true"/> if succeeded; otherwise <see langword="false"/>.</returns>
-        [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
         [PublicAPI]
-        public bool TryDecryptFromString(string input, out byte[] output)
+        [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
+        public bool TryDecryptFromString(string input, out byte[] output, bool preserveLength = true)
         {
             if (!CanDecrypt)
             {
@@ -295,7 +324,7 @@ namespace WebApplications.Utilities.Cryptography
             }
             try
             {
-                output = Decrypt(Convert.FromBase64String(input));
+                output = Decrypt(Convert.FromBase64String(input), preserveLength);
                 return true;
             }
                 // ReSharper disable once CatchAllClause
@@ -311,9 +340,16 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="output">The output.</param>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
         /// <returns><see langword="true"/> if succeeded; otherwise <see langword="false"/>.</returns>
+        [PublicAPI]
         [ContractAnnotation("input:null=>true,output:null; true<=input:notnull, output:notnull; false<=output:null")]
-        public bool TryDecrypt(byte[] input, out byte[] output)
+        public bool TryDecrypt(byte[] input, out byte[] output, bool preserveLength = true)
         {
             if (!CanDecrypt)
             {
@@ -327,7 +363,7 @@ namespace WebApplications.Utilities.Cryptography
             }
             try
             {
-                output = Decrypt(input);
+                output = Decrypt(input, preserveLength);
                 return true;
             }
                 // ReSharper disable once CatchAllClause
@@ -342,11 +378,17 @@ namespace WebApplications.Utilities.Cryptography
         /// Decrypts the specified input.
         /// </summary>
         /// <param name="input">The input.</param>
-        /// <returns>The decyrpted data.</returns>
+        /// <param name="preserveLength"><para>If <see langword="true"/>, and the provider doesn't 
+        /// <see cref="PreservesLength">preserve length</see> itself, then the output will be truncated based on the
+        /// presence of a termination byte (0xFF) followed by only zero-bytes.</para>
+        /// <para>
+        /// It is vital that this flag is set the same for encryption and decryption.
+        /// </para></param>
+        /// <returns>The decrypted data.</returns>
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform decryption.</exception>
         [PublicAPI]
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public byte[] Decrypt(byte[] input)
+        [ContractAnnotation("input:null => null; input:notnull => notnull")]
+        public byte[] Decrypt(byte[] input, bool preserveLength = true)
         {
             if (!CanDecrypt) throw new CryptographicException("The cryptographic provider cannot perform encryption.");
             if (input == null) return null;
@@ -368,13 +410,16 @@ namespace WebApplications.Utilities.Cryptography
                 outputBuffer = output.ToArray();
             }
 
-            if (!PreservesLength)
+            if (preserveLength && !PreservesLength)
             {
                 int length = outputBuffer.Length;
                 do
                 {
                 } while (outputBuffer[--length] < 1);
-                Array.Resize(ref outputBuffer, length);
+
+                // Check last byte is 0xFF
+                if (length >= 0 && outputBuffer[length] == 0xFF)
+                    Array.Resize(ref outputBuffer, length);
             }
 
             return outputBuffer;
@@ -389,8 +434,11 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="CryptographicException">The cryptographic provider cannot perform decryption.</exception>
         /// <remarks>
         /// <para>To decrypt data, write it to the <paramref name="inputStream"/> and read it from the <see cref="CryptoStream"/>.</para>
+        /// <para>When using a provider that does not <see cref="PreservesLength">preserve the length</see> you may want to consider
+        /// adding a termination byte (e.g. 0xFF) to help detect the end of the stream.</para>
         /// </remarks>
         [NotNull]
+        [PublicAPI]
         public CryptoStream GetDecryptionStream([NotNull] Stream inputStream)
         {
             if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
@@ -398,84 +446,9 @@ namespace WebApplications.Utilities.Cryptography
             return new CryptoStream(inputStream, GetDecryptor(), CryptoStreamMode.Read);
         }
         #endregion
-
+        
         /// <summary>
-        /// Saves this cryptography provider's configuration to the specified <paramref name="cryptographyConfiguration" />.
-        /// </summary>
-        /// <param name="id">The identifier; defaults to <see cref="Id" /> if not specified.</param>
-        /// <param name="cryptographyConfiguration">The cryptography configuration; default to the source configuration (if any), or the active configuration.</param>
-        /// <exception cref="ConfigurationErrorsException">Cannot persist the current cryptography provider to the configuration if no <paramref name="id" /> is supplied, and there is no <see cref="Id" />.</exception>
-        /// <exception cref="ConfigurationErrorsException">No valid configuration was found to save to.</exception>
-        public void SaveToConfiguration(
-            [CanBeNull] string id = null,
-            [CanBeNull] CryptographyConfiguration cryptographyConfiguration = null)
-        {
-            if (id == null)
-            {
-                id = Id;
-                if (id == null)
-                    throw new ConfigurationErrorsException(Resources.CryptographyProvider_SaveToConfiguration_No_ID);
-            }
-            
-            // Find the appropriate configuration and configuration section
-            System.Configuration.Configuration configuration;
-            if (cryptographyConfiguration == null)
-            {
-                configuration = _providerElement?.CurrentConfiguration ??
-                                CryptographyConfiguration.Active.CurrentConfiguration;
-                if (configuration == null)
-                    throw new ConfigurationErrorsException(
-                        Resources.CryptographyProvider_SaveToConfiguration_No_Configuration);
-
-                // Get the correct section
-                cryptographyConfiguration =
-                    configuration.GetSection(CryptographyConfiguration.SectionName) as CryptographyConfiguration;
-
-                // If not found create and add the section
-                if (cryptographyConfiguration == null)
-                {
-                    cryptographyConfiguration = CryptographyConfiguration.Create();
-                    configuration.Sections.Add(CryptographyConfiguration.SectionName, cryptographyConfiguration);
-                }
-            }
-            else
-            {
-                configuration = cryptographyConfiguration.CurrentConfiguration;
-                if (configuration == null)
-                    throw new ConfigurationErrorsException(
-                        Resources.CryptographyProvider_SaveToConfiguration_No_Configuration);
-            }
-            
-            // Check for existing provider element
-            ProviderElement providerElement = cryptographyConfiguration.Providers[id];
-            if (providerElement == null)
-            {
-                providerElement = new ProviderElement
-                {
-                    Id = id,
-                    Name = Name,
-                    Configuration = Configuration,
-                    IsEnabled = true
-                };
-                cryptographyConfiguration.Providers.Add(providerElement);
-            }
-            else
-            {
-                providerElement.Name = Name;
-                providerElement.Configuration = Configuration;
-                providerElement.IsEnabled = true;
-            }
-
-            // If this is the active configuration, then save using the active save method as it will remove the cached
-            // active configuration immediately.
-            if (ReferenceEquals(configuration, CryptographyConfiguration.Active.CurrentConfiguration))
-                CryptographyConfiguration.Active.Save();
-            else
-                configuration.Save();
-        }
-
-        /// <summary>
-        /// Creates a <see cref="CryptographyProvider" /> from a name. See <see cref="https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx" /> for details.
+        /// Creates a <see cref="CryptographyProvider" /> from a name. See https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx for details.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="args">The arguments.</param>
@@ -487,36 +460,24 @@ namespace WebApplications.Utilities.Cryptography
             => Create(null, name, args);
 
         /// <summary>
-        /// Creates a <see cref="CryptographyProvider" /> from a <see cref="_providerElement" />.
+        /// Creates a <see cref="CryptographyProvider" /> from a name. See https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx for details.
         /// </summary>
-        /// <param name="providerElement">The provider element.</param>
-        /// <returns>A <see cref="CryptographyProvider" />.</returns>
-        /// <exception cref="TargetInvocationException">The algorithm described by the <paramref name="name" /> parameter was used with Federal Information Processing Standards (FIPS) mode enabled, but is not FIPS compatible.</exception>
-        [NotNull]
-        [PublicAPI]
-        internal static CryptographyProvider Create([NotNull] ProviderElement providerElement)
-            => Create(null, providerElement.Name);
-
-        /// <summary>
-        /// Creates a <see cref="CryptographyProvider" /> from a name. See <see cref="https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx" /> for details.
-        /// </summary>
-        /// <param name="providerElement">The original provider element.</param>
+        /// <param name="configuration">The configuration element.</param>
         /// <param name="name">The name.</param>
         /// <param name="args">The arguments.</param>
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
         /// <exception cref="TargetInvocationException">The algorithm described by the <paramref name="name" /> parameter was used with Federal Information Processing Standards (FIPS) mode enabled, but is not FIPS compatible.</exception>
         [NotNull]
-        private static CryptographyProvider Create(
-            [CanBeNull] ProviderElement providerElement,
+        [PublicAPI]
+        public static CryptographyProvider Create(
+            [CanBeNull] XElement configuration,
             [NotNull] string name,
-            object[] args)
+            params object[] args)
         {
-            XElement configuration = providerElement?.Configuration;
-
             using (IDisposable provider = (IDisposable)CryptoConfig.CreateFromName(name, args))
             {
                 AsymmetricAlgorithm asymm = provider as AsymmetricAlgorithm;
-                if (asymm != null) return AsymmetricCryptographyProvider.Create(asymm, providerElement, configuration);
+                if (asymm != null) return AsymmetricCryptographyProvider.Create(asymm, configuration);
 
                 SymmetricAlgorithm sym = provider as SymmetricAlgorithm;
                 // TODO if (sym != null) return SymmetricCryptographyProvider.Create(sym, providerElement, configuration);
@@ -531,9 +492,9 @@ namespace WebApplications.Utilities.Cryptography
                     string.Format(Resources.CryptographyProvider_Create_Unknown_Provider, name));
             }
         }
-        
+
         /// <summary>
-        /// Class CryptoTransform is a base implementation of the <see cref="ICryptoTransform"/> interface.
+        /// Class <see cref="CryptoTransform{T}"/> is a base implementation of the <see cref="ICryptoTransform"/> interface.
         /// </summary>
         /// <typeparam name="T">The provider.</typeparam>
         protected sealed class CryptoTransform<T> : ICryptoTransform
@@ -550,7 +511,6 @@ namespace WebApplications.Utilities.Cryptography
             /// <summary>
             /// Initializes a new instance of the <see cref="CryptoTransform{T}" /> class.
             /// </summary>
-            /// <param name="cryptographyProvider">The cryptography provider.</param>
             /// <param name="provider">The provider.</param>
             /// <param name="transformBlockFunc">The transform block function.</param>
             /// <param name="transformFinalBlockFunc">The transform final block function.</param>
