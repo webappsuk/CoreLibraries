@@ -204,4 +204,25 @@
   <data name="SecureIdentifier_Parse_Invalid" xml:space="preserve">
     <value>The secure identifier is invalid.</value>
   </data>
+  <data name="Base32EncoderDecoder_Base32Encode_Invalid_Digits" xml:space="preserve">
+    <value>Must specify at least 32 digits for encoding.</value>
+  </data>
+  <data name="Base32EncoderDecoder_Base32DecodeGuid_Invalid" xml:space="preserve">
+    <value>Not a valid Base32 encoded Guid.</value>
+  </data>
+  <data name="Base32EncoderDecoder_Base32DecodeString_Invalid" xml:space="preserve">
+    <value>Not a valid Base32 encoded string.</value>
+  </data>
+  <data name="Base32EncoderDecoder_Base32Decode_Invalid" xml:space="preserve">
+    <value>Not a valid Base32 encoded byte array.</value>
+  </data>
+  <data name="Base32EncoderDecoder_TryBase32Decode_Duplicate_Digits" xml:space="preserve">
+    <value>The specified digits contains comparable duplicates.</value>
+  </data>
+  <data name="SecureIdentifier_LoadConfiguration_Invalid_Size" xml:space="preserve">
+    <value>The configured secure identifier size '{0}' is invalid, must be between '{1}' and 255 inclusive.</value>
+  </data>
+  <data name="SecureIdentifier_LoadConfiguration_Invalid_Digits" xml:space="preserve">
+    <value>The configured secure identifier digits are invalid, must be exactly 32 unique digits.</value>
+  </data>
 </root>

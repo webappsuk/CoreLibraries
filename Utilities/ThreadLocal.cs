@@ -42,7 +42,10 @@ namespace WebApplications.Utilities
         ///   A random number generator per thread, for thread safety.
         /// </summary>
         [NotNull]
-        private static readonly ThreadLocal<Random> _random = new ThreadLocal<Random>(() => new Random(), false);
+        private static readonly ThreadLocal<Random> _random =
+            new ThreadLocal<Random>(
+                () => new Random(unchecked(Environment.TickCount * 31 + Thread.CurrentThread.ManagedThreadId)),
+                false);
 
         /// <summary>
         /// Gets the random number generator unique to this thread..

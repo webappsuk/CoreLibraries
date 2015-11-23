@@ -57,14 +57,37 @@ namespace WebApplications.Utilities.Cryptography.Configuration
         /// Gets or sets the size of a secure identifier.
         /// </summary>
         /// <value>The size of the secure identifier.</value>
-        [ConfigurationProperty("secureIdentifierSize", DefaultValue = "18", IsRequired = false)]
+        [ConfigurationProperty("secureIdentifierSize", DefaultValue = 20, IsRequired = false)]
         [IntegerValidator(MinValue = SecureIdentifier.MinLength, MaxValue = 255)]
         public int SecureIdentifierSize
         {
             get { return GetProperty<int>("secureIdentifierSize"); }
-            set { SetProperty<int>("secureIdentifierSize", value); }
+            set { SetProperty("secureIdentifierSize", value); }
         }
-        
+
+        /// <summary>
+        /// Gets or sets the size of a secure identifier.
+        /// </summary>
+        /// <value>The size of the secure identifier.</value>
+        [ConfigurationProperty("secureIdentifierDigits", DefaultValue =null, IsRequired = false)]
+        [CanBeNull]
+        public string SecureIdentifierDigits
+        {
+            get { return GetProperty<string>("secureIdentifierDigits"); }
+            set { SetProperty("secureIdentifierDigits", value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the size of a secure identifier.
+        /// </summary>
+        /// <value>The size of the secure identifier.</value>
+        [ConfigurationProperty("secureIdentifierIsCaseSensitive", DefaultValue = true, IsRequired = false)]
+        public bool SecureIdentifierIsCaseSensitive
+        {
+            get { return GetProperty<bool>("secureIdentifierIsCaseSensitive"); }
+            set { SetProperty("secureIdentifierIsCaseSensitive", value); }
+        }
+
         /// <summary>
         /// Gets the provider with the specified identity.
         /// </summary>

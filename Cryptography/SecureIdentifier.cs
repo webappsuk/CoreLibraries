@@ -26,6 +26,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Cryptography.Configuration;
@@ -33,10 +35,10 @@ using WebApplications.Utilities.Cryptography.Configuration;
 namespace WebApplications.Utilities.Cryptography
 {
     /// <summary>
-    /// A secure identifier that can be used safely in a URL (as it's base64 encoded) and can be more secure than a
-    /// GUID as  it uses a cryptographically secure random number generator.  It also has a built in hash to ensure
-    /// only certain identifiers are valid, making it capable of rejecting invalid identifiers (for example during
-    /// a DDOS attack).
+    /// A secure identifier that can be used safely in URLs, file names, etc. (as it's base32 encoded) and can be more
+    /// secure than a GUID as it uses a cryptographically secure random number generator.  It also has a built in hash 
+    /// to ensure only certain identifiers are valid, making it capable of rejecting invalid identifiers (for example
+    /// during a DDOS attack).
     /// </summary>
     public class SecureIdentifier : IComparable<SecureIdentifier>,
         IEquatable<SecureIdentifier>
@@ -51,7 +53,7 @@ namespace WebApplications.Utilities.Cryptography
         /// The base64 encoded string.
         /// </summary>
         [NotNull]
-        private readonly string _base64Encoded;
+        private readonly string _base32Encoded;
 
         /// <summary>
         /// The hash code embedded into the byte array for consistency checking.
@@ -59,10 +61,92 @@ namespace WebApplications.Utilities.Cryptography
         private readonly int _hashCode;
 
         /// <summary>
+        /// Gets the default size.
+        /// </summary>
+        /// <value>The default size.</value>
+        [PublicAPI]
+        public static byte DefaultSize { get; private set; }
+        
+        /// <summary>
+        /// Gets the default digits for base32 encoding/decoding.
+        /// </summary>
+        /// <value>The default digits.</value>
+        [NotNull]
+        [PublicAPI]
+        public static IReadOnlyList<char> DefaultDigits { get; private set; }
+
+        /// <summary>
+        /// Gets the default comparer for base32 decoding.
+        /// </summary>
+        /// <value>The default comparer.</value>
+        [NotNull]
+        [PublicAPI]
+        public static IEqualityComparer<char> DefaultComparer { get; private set; }
+
+        /// <summary>
+        /// Initializes static members of the <see cref="SecureIdentifier"/> class.
+        /// </summary>
+        static SecureIdentifier()
+        {
+            LoadConfiguration(CryptographyConfiguration.Active);
+            CryptographyConfiguration.ActiveChanged += (s, e) => LoadConfiguration(s);
+        }
+
+        /// <summary>
+        /// Loads the configuration.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        private static void LoadConfiguration(CryptographyConfiguration configuration)
+        {
+            if (configuration == null) return;
+            int size = configuration.SecureIdentifierSize;
+            string digitsStr = configuration.SecureIdentifierDigits;
+            bool cs = configuration.SecureIdentifierIsCaseSensitive;
+
+            if (size < MinLength || size > 256)
+                throw new CryptographicException(
+                    string.Format(
+                        Resources.SecureIdentifier_LoadConfiguration_Invalid_Size,
+                        size,
+                        MinLength));
+            DefaultSize = (byte)size;
+
+            DefaultComparer = cs ? CharComparer.Ordinal : CharComparer.OrdinalIgnoreCase;
+            
+            if (!string.IsNullOrEmpty(digitsStr))
+            {
+                if (digitsStr.Length != 32)
+                    throw new CryptographicException(
+                        Resources.SecureIdentifier_LoadConfiguration_Invalid_Digits);
+
+                DefaultDigits = digitsStr.ToCharArray();
+            }
+            else
+            {
+                // Create randomly ordered digits.
+                DefaultDigits = Base32EncoderDecoder.DefaultDigits.Randomize();
+                configuration.SecureIdentifierDigits = new string(DefaultDigits.ToArray());
+                configuration.Save();
+            }
+
+            // Check we have distinct digits
+            if (DefaultDigits.Distinct(DefaultComparer).Count() != 32)
+                throw new CryptographicException(
+                    Resources.SecureIdentifier_LoadConfiguration_Invalid_Digits);
+
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SecureIdentifier" /> class.
         /// </summary>
+        /// <param name="length">The length.</param>
+        /// <param name="digits">The digits used for base32 encoding/decoding.</param>
+        /// <param name="comparer">The character comparer used for base32 decoding (defaults to <see cref="CharComparer.Ordinal"/>).</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public SecureIdentifier(byte length = 0)
+        public SecureIdentifier(
+            byte length = 0,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
         {
             if (length == 0) length = (byte)CryptographyConfiguration.Active.SecureIdentifierSize;
 
@@ -70,7 +154,10 @@ namespace WebApplications.Utilities.Cryptography
                 throw new ArgumentOutOfRangeException(
                     nameof(length),
                     string.Format(Resources.SecureIdentifier_Ctor_Invalid_Length_Supplied, MinLength));
-            
+
+            if (digits == null) digits = DefaultDigits;
+            if (comparer == null) comparer = CharComparer.Ordinal;
+
             // Guid.NewGuid and System.Random are not particularly random. By using a
             // cryptographically-secure random number generator, the caller is always
             // protected, regardless of use.
@@ -94,34 +181,41 @@ namespace WebApplications.Utilities.Cryptography
                 hashCode /= 256;
             }
 
-            _base64Encoded = Convert.ToBase64String(bytes);
+            _base32Encoded = bytes.Base32Encode();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SecureIdentifier" /> class.
         /// </summary>
         /// <param name="hashCode">The hash code.</param>
-        /// <param name="base64Encoded">The base64 encoded.</param>
-        private SecureIdentifier(int hashCode, [NotNull] string base64Encoded)
+        /// <param name="base32Encoded">The base32 encoded string.</param>
+        private SecureIdentifier(
+            int hashCode,
+            [NotNull] string base32Encoded)
         {
             _hashCode = hashCode;
-            _base64Encoded = base64Encoded;
+            _base32Encoded = base32Encoded;
         }
 
         /// <summary>
         /// Parses the specified value as a <see cref="SecureIdentifier" />.
         /// </summary>
         /// <param name="value">The value to parse.</param>
+        /// <param name="digits">The digits used for base32 encoding/decoding.</param>
+        /// <param name="comparer">The character comparer used for base32 decoding (defaults to <see cref="CharComparer.Ordinal"/>).</param>
         /// <returns>SecureIdentifier.</returns>
         /// <exception cref="System.Security.Cryptography.CryptographicException">
         /// </exception>
         /// <exception cref="CryptographicException">The secure identifier is invalid</exception>
         /// <exception cref="System.ArgumentException"></exception>
         [PublicAPI]
-        public static SecureIdentifier Parse([NotNull] string value)
+        public static SecureIdentifier Parse(
+            [NotNull] string value,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
         {
             SecureIdentifier result;
-            if (!TryParse(value, out result))
+            if (!TryParse(value, out result, digits, comparer))
                 throw new CryptographicException(Resources.SecureIdentifier_Parse_Invalid);
             return result;
         }
@@ -131,42 +225,48 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="result">The result. Out.</param>
-        /// <returns></returns>
+        /// <param name="digits">The digits used for base32 encoding/decoding.</param>
+        /// <param name="comparer">The character comparer used for base32 decoding (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns><see langword="true" /> if the <see cref="SecureIdentifier"/> was parsed, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        public static bool TryParse([NotNull] string value, out SecureIdentifier result)
+        public static bool TryParse(
+            [NotNull] string value, 
+            out SecureIdentifier result,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
         {
+            if (digits == null) digits = DefaultDigits;
+            if (comparer == null) comparer = CharComparer.Ordinal;
+
             result = null;
-            try
-            {
-                byte[] bytes = Convert.FromBase64String(value);
-                int length = bytes.Length;
-                if (length < MinLength) return false;
+            byte[] bytes;
 
-                // Calculate hashcode
-                uint hashCode = 2147483647;
-                for (int i = 0; i < length - 4; i++)
-                    unchecked
-                    {
-                        hashCode = (hashCode * 397) + bytes[i];
-                    }
+            if (!value.TryBase32Decode(out bytes, digits, comparer) || bytes == null)
+                return false;
 
-                int hc = unchecked((int)hashCode);
+            int length = bytes.Length;
+            if (length < MinLength) return false;
 
-                // Validate
-                for (int i = length - 4; i < length; i++)
+            // Calculate hashcode
+            uint hashCode = 2147483647;
+            for (int i = 0; i < length - 4; i++)
+                unchecked
                 {
-                    if (unchecked((byte)hashCode) != bytes[i])
-                        return false;
-                    hashCode /= 256;
+                    hashCode = (hashCode * 397) + bytes[i];
                 }
 
-                result = new SecureIdentifier(hc, value);
-                return true;
-            }
-            catch (Exception)
+            int hc = unchecked((int)hashCode);
+
+            // Validate
+            for (int i = length - 4; i < length; i++)
             {
-                return false;
+                if (unchecked((byte)hashCode) != bytes[i])
+                    return false;
+                hashCode /= 256;
             }
+
+            result = new SecureIdentifier(hc, value);
+            return true;
         }
 
         /// <summary>
@@ -175,7 +275,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString() => _base64Encoded;
+        public override string ToString() => _base32Encoded;
 
         /// <summary>
         /// Equalses the specified other.
@@ -188,7 +288,7 @@ namespace WebApplications.Utilities.Cryptography
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return _hashCode == other._hashCode &&
-                   string.Equals(_base64Encoded, other._base64Encoded);
+                   string.Equals(_base32Encoded, other._base32Encoded);
         }
 
         /// <summary>
@@ -248,9 +348,9 @@ namespace WebApplications.Utilities.Cryptography
         {
             if (ReferenceEquals(null, other)) return 1;
             if (Equals(this, other)) return 0;
-            
+
             int d = _hashCode.CompareTo(other._hashCode);
-            return d != 0 ? d : string.CompareOrdinal(_base64Encoded, other._base64Encoded);
+            return d != 0 ? d : string.CompareOrdinal(_base32Encoded, other._base32Encoded);
         }
 
         /// <summary>
@@ -309,7 +409,7 @@ namespace WebApplications.Utilities.Cryptography
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
         public override int GetHashCode() => _hashCode;
-        
+
         /// <summary>
         /// Implements the operator implicit string.
         /// </summary>
@@ -319,7 +419,7 @@ namespace WebApplications.Utilities.Cryptography
         /// </returns>
         [NotNull]
         public static implicit operator string([NotNull] SecureIdentifier secureIdentifier)
-            => secureIdentifier._base64Encoded;
+            => secureIdentifier._base32Encoded;
 
         /// <summary>
         /// Implements the operator explicit SecureIdentifier.

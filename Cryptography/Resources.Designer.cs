@@ -97,6 +97,51 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not a valid Base32 encoded byte array..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32Decode_Invalid {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32Decode_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid Base32 encoded Guid..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32DecodeGuid_Invalid {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32DecodeGuid_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid Base32 encoded string..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32DecodeString_Invalid {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32DecodeString_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Must specify at least 32 digits for encoding..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32Encode_Invalid_Digits {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32Encode_Invalid_Digits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified digits contains comparable duplicates..
+        /// </summary>
+        internal static string Base32EncoderDecoder_TryBase32Decode_Duplicate_Digits {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_TryBase32Decode_Duplicate_Digits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot decrypt a node of type &apos;{0}&apos;..
         /// </summary>
         internal static string Cryptographer_Decrypt_CannotDecryptNode {
@@ -282,6 +327,24 @@ namespace WebApplications.Utilities.Cryptography {
         internal static string SecureIdentifier_Ctor_Invalid_Length_Supplied {
             get {
                 return ResourceManager.GetString("SecureIdentifier_Ctor_Invalid_Length_Supplied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The configured secure identifier digits are invalid, must be exactly 32 unique digits..
+        /// </summary>
+        internal static string SecureIdentifier_LoadConfiguration_Invalid_Digits {
+            get {
+                return ResourceManager.GetString("SecureIdentifier_LoadConfiguration_Invalid_Digits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The configured secure identifier size &apos;{0}&apos; is invalid, must be between &apos;{1}&apos; and 255 inclusive..
+        /// </summary>
+        internal static string SecureIdentifier_LoadConfiguration_Invalid_Size {
+            get {
+                return ResourceManager.GetString("SecureIdentifier_LoadConfiguration_Invalid_Size", resourceCulture);
             }
         }
         
