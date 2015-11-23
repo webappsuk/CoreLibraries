@@ -119,7 +119,7 @@
         <Properties>Configuration=Release;Platform=AnyCPU</Properties>
       </ProjectsToBuild>
     </ItemGroup>
-    <Import Project="$(SlnDir)Utilities\Utility.targets" Condition="$(DefineConstants.Contains('Utilities'))" />
+    <Import Project="$(SlnDir)Utilities\WebApplications.Utilities.targets" Condition="$(DefineConstants.Contains('Utilities'))" />
 
     <!-- Import ILMerge if ILMerge is defined -->
     <PropertyGroup Condition="$(DefineConstants.Contains('ILMerge'))">
@@ -158,7 +158,7 @@
         <Properties>Configuration=Release;Platform=x64</Properties>
       </ProjectsToBuild>
     </ItemGroup>
-    <Import Project="$(SlnDir)Performance\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup'))" />
+    <Import Project="$(SlnDir)Performance\WebApplications.Utilities.Performance.targets" Condition="$(DefineConstants.Contains('PerfSetup'))" />
 
     <!-- Copy resources if CopyResources is defined -->
     <ItemGroup Condition="$(DefineConstants.Contains('CopyResources'))">

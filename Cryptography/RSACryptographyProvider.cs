@@ -289,11 +289,11 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="algorithm">The algorithm.</param>
         /// <param name="configurationElement">The provider element.</param>
         /// <returns>WebApplications.Utilities.Cryptography.RSACryptographyProvider.</returns>
-        /// <exception cref="CryptographicException">The configuration was invalid.</exception><remarks><para>
+        /// <exception cref="CryptographicException">The configuration was invalid.</exception>
         /// <remarks><para>
         ///   <i>Warning:</i> This may expose the private key and should be used with
         /// care to only store the key in a secure location.</para>
-        /// <para> Conforms with the XMLDSIG spec, <see href="https://www.ietf.org/rfc/rfc3075.txt">RFC 3075, Section 6.4.2</see>:
+        /// <para>Conforms with the XMLDSIG spec, <see href="https://www.ietf.org/rfc/rfc3075.txt">RFC 3075, Section 6.4.2</see>:
         /// </para>
         /// <code><![CDATA[
         /// <element name = "RSAKeyValue" >

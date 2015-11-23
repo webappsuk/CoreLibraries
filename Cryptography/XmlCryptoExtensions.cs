@@ -91,7 +91,6 @@ namespace WebApplications.Utilities.Cryptography
             decryptedXml = null;
             try
             {
-                bool l;
                 decryptedXml = Decrypt(inputNode, provider);
                 return true;
             }
@@ -105,7 +104,7 @@ namespace WebApplications.Utilities.Cryptography
         /// Decrypts a <see cref="XNode" />.
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="cryptoProvider">The crypto provider.</param>
+        /// <param name="cryptographyProvider">The crypto provider.</param>
         /// <returns>The upmost <see cref="XElement" /> that was decrypted.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
@@ -113,10 +112,10 @@ namespace WebApplications.Utilities.Cryptography
         [CanBeNull]
         public static XElement Decrypt(
             [NotNull] this XNode inputNode,
-            [NotNull] CryptographyProvider cryptoProvider)
+            [NotNull] CryptographyProvider cryptographyProvider)
         {
             if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
-            if (cryptoProvider == null) throw new ArgumentNullException(nameof(cryptoProvider));
+            if (cryptographyProvider == null) throw new ArgumentNullException(nameof(cryptographyProvider));
 
             XElement element;
             XDocument ownerDocument;
@@ -167,7 +166,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (element.Name == "Encrypted")
                 {
                     // Decrypt the element
-                    string decryptedXmlStr = cryptoProvider.DecryptToString(element.Value);
+                    string decryptedXmlStr = cryptographyProvider.DecryptToString(element.Value);
                     if (string.IsNullOrEmpty(decryptedXmlStr))
                         continue;
                     
@@ -185,21 +184,20 @@ namespace WebApplications.Utilities.Cryptography
         }
 
         /// <summary>
-        /// Decrypts a <see cref="XmlNode"/>.
+        /// Decrypts a <see cref="XmlNode" />.
         /// </summary>
         /// <param name="inputNode">The input node.</param>
-        /// <param name="provider">The cryptography provider.</param>
-        /// <param name="isLatestKey">if set to <see langword="true"/> the latest key was always used.</param>
-        /// <returns>
-        /// The upmost <see cref="XmlElement"/> that was decrypted.
-        /// </returns>
+        /// <param name="cryptographyProvider">The cryptography provider.</param>
+        /// <returns>The topmost <see cref="XmlElement" /> that was decrypted.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="inputNode"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="cryptographyProvider"/> is <see langword="null"/>.</exception>
         [CanBeNull]
         public static XmlElement Decrypt(
             [NotNull] this XmlNode inputNode,
-            [NotNull] CryptographyProvider cryptoProvider)
+            [NotNull] CryptographyProvider cryptographyProvider)
         {
             if (inputNode == null) throw new ArgumentNullException(nameof(inputNode));
-            if (cryptoProvider == null) throw new ArgumentNullException(nameof(cryptoProvider));
+            if (cryptographyProvider == null) throw new ArgumentNullException(nameof(cryptographyProvider));
 
             XmlElement element;
             XmlDocument ownerDocument;
@@ -264,7 +262,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (element.LocalName == "Encrypted")
                 {
                     // Decrypt the element
-                    string decryptedXmlStr = cryptoProvider.DecryptToString(element.InnerText);
+                    string decryptedXmlStr = cryptographyProvider.DecryptToString(element.InnerText);
                     if (string.IsNullOrEmpty(decryptedXmlStr))
                         continue;
 
