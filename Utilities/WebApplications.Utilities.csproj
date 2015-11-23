@@ -387,10 +387,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configuration\Propogate Common Configuration Element Code.tt">
+    <None Include="Configuration\Propogate Common Configuration Element Code.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Propogate Common Configuration Element Code.cs</LastGenOutput>
-    </Content>
+    </None>
     <None Include="Threading\BufferedActionGeneric.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BufferedActionGeneric.cs</LastGenOutput>
