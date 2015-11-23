@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Cryptography.Configuration;
 
@@ -60,20 +61,45 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         private readonly int _hashCode;
 
+        private static IReadOnlyList<char> _defaultDigits;
+        private static byte _defaultSize;
+        private static IEqualityComparer<char> _defaultComparer;
+
         /// <summary>
         /// Gets the default size.
         /// </summary>
         /// <value>The default size.</value>
         [PublicAPI]
-        public static byte DefaultSize { get; private set; }
-        
+        public static byte DefaultSize
+        {
+            get { return _defaultSize; }
+            set
+            {
+                if (value < MinLength) throw new ArgumentOutOfRangeException(nameof(value));
+                _defaultSize = value;
+            }
+        }
+
         /// <summary>
         /// Gets the default digits for base32 encoding/decoding.
         /// </summary>
         /// <value>The default digits.</value>
         [NotNull]
         [PublicAPI]
-        public static IReadOnlyList<char> DefaultDigits { get; private set; }
+        public static IReadOnlyList<char> DefaultDigits
+        {
+            get
+            {
+                return Interlocked.CompareExchange(ref _defaultDigits, Base32EncoderDecoder.DefaultDigits, null) ??
+                       Base32EncoderDecoder.DefaultDigits;
+            }
+            set
+            {
+                if (value != null && value.Count == 32 && value.Distinct(DefaultComparer).Count() != 32)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                _defaultDigits = value;
+            }
+        }
 
         /// <summary>
         /// Gets the default comparer for base32 decoding.
@@ -81,7 +107,21 @@ namespace WebApplications.Utilities.Cryptography
         /// <value>The default comparer.</value>
         [NotNull]
         [PublicAPI]
-        public static IEqualityComparer<char> DefaultComparer { get; private set; }
+        public static IEqualityComparer<char> DefaultComparer
+        {
+            get
+            {
+                return Interlocked.CompareExchange(ref _defaultComparer, CharComparer.Ordinal, null) ??
+                       CharComparer.Ordinal;
+            }
+            set
+            {
+                if (value == null ||
+                    DefaultDigits.Distinct(DefaultComparer).Count() != 32)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                _defaultComparer = value;
+            }
+        }
 
         /// <summary>
         /// Initializes static members of the <see cref="SecureIdentifier"/> class.
@@ -110,30 +150,10 @@ namespace WebApplications.Utilities.Cryptography
                         size,
                         MinLength));
             DefaultSize = (byte)size;
-
+            DefaultDigits = string.IsNullOrEmpty(digitsStr)
+                ? Base32EncoderDecoder.DefaultDigits
+                : digitsStr.ToCharArray();
             DefaultComparer = cs ? CharComparer.Ordinal : CharComparer.OrdinalIgnoreCase;
-            
-            if (!string.IsNullOrEmpty(digitsStr))
-            {
-                if (digitsStr.Length != 32)
-                    throw new CryptographicException(
-                        Resources.SecureIdentifier_LoadConfiguration_Invalid_Digits);
-
-                DefaultDigits = digitsStr.ToCharArray();
-            }
-            else
-            {
-                // Create randomly ordered digits.
-                DefaultDigits = Base32EncoderDecoder.DefaultDigits.Randomize();
-                configuration.SecureIdentifierDigits = new string(DefaultDigits.ToArray());
-                configuration.Save();
-            }
-
-            // Check we have distinct digits
-            if (DefaultDigits.Distinct(DefaultComparer).Count() != 32)
-                throw new CryptographicException(
-                    Resources.SecureIdentifier_LoadConfiguration_Invalid_Digits);
-
         }
 
         /// <summary>
@@ -141,12 +161,10 @@ namespace WebApplications.Utilities.Cryptography
         /// </summary>
         /// <param name="length">The length.</param>
         /// <param name="digits">The digits used for base32 encoding/decoding.</param>
-        /// <param name="comparer">The character comparer used for base32 decoding (defaults to <see cref="CharComparer.Ordinal"/>).</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public SecureIdentifier(
             byte length = 0,
-            [CanBeNull] IReadOnlyList<char> digits = null,
-            [CanBeNull] IEqualityComparer<char> comparer = null)
+            [CanBeNull] IReadOnlyList<char> digits = null)
         {
             if (length == 0) length = (byte)CryptographyConfiguration.Active.SecureIdentifierSize;
 
@@ -156,7 +174,6 @@ namespace WebApplications.Utilities.Cryptography
                     string.Format(Resources.SecureIdentifier_Ctor_Invalid_Length_Supplied, MinLength));
 
             if (digits == null) digits = DefaultDigits;
-            if (comparer == null) comparer = CharComparer.Ordinal;
 
             // Guid.NewGuid and System.Random are not particularly random. By using a
             // cryptographically-secure random number generator, the caller is always
@@ -181,7 +198,7 @@ namespace WebApplications.Utilities.Cryptography
                 hashCode /= 256;
             }
 
-            _base32Encoded = bytes.Base32Encode();
+            _base32Encoded = bytes.Base32Encode(digits);
         }
 
         /// <summary>
@@ -236,7 +253,7 @@ namespace WebApplications.Utilities.Cryptography
             [CanBeNull] IEqualityComparer<char> comparer = null)
         {
             if (digits == null) digits = DefaultDigits;
-            if (comparer == null) comparer = CharComparer.Ordinal;
+            if (comparer == null) comparer = DefaultComparer;
 
             result = null;
             byte[] bytes;
