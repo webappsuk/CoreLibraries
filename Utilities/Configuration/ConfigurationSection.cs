@@ -89,10 +89,20 @@ namespace WebApplications.Utilities.Configuration
         private BufferedAction<string> _changeAction;
 
         /// <summary>
+        /// <see langword="true"/> is library is running in ASP.NET.
+        /// </summary>
+        public static readonly bool IsWeb;
+
+        /// <summary>
         /// Initializes static members of the <see cref="ConfigurationSection{T}" /> class.
         /// </summary>
         static ConfigurationSection()
         {
+            // Detect whether we are running in an ASP.NET website, note that the context may not be propogated to
+            // background threads so cannot be relied upon exclusively.
+            IsWeb = HttpContext.Current != null ||
+                    HttpRuntime.AppDomainAppId != null;
+
             _activeChangeAction =
                 new BufferedAction<string>(
                     // ReSharper disable EventExceptionNotDocumented, AssignNullToNotNullAttribute
@@ -249,9 +259,9 @@ namespace WebApplications.Utilities.Configuration
 
                     // ReSharper disable ExceptionNotDocumented
                     return _active = GetOrAdd(
-                        HttpContext.Current == null
-                            ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-                            : WebConfigurationManager.OpenWebConfiguration(null));
+                        IsWeb
+                            ? WebConfigurationManager.OpenWebConfiguration(null)
+                            : ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None));
                     // ReSharper restore ExceptionNotDocumented
                 }
             }
