@@ -26,6 +26,7 @@
 #endregion
 
 using System.IO;
+using System.Security.Cryptography;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Cryptography
@@ -40,21 +41,23 @@ namespace WebApplications.Utilities.Cryptography
         /// Computes the hash of a string.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
         /// <returns>The hash in bytes.</returns>
         [NotNull]
         [PublicAPI]
-        public static byte[] GetHash([NotNull] this string input) 
-            => HashingCryptographyProvider.GetHash(input);
+        public static byte[] GetHash([NotNull] this string input, [CanBeNull] HashAlgorithm algorithm = null)
+            => HashingCryptographyProvider.GetHash(input, algorithm);
 
         /// <summary>
         /// Computes the hash of a string and returns it as a base 64 encoded string.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
         /// <returns>The hash in a base 64 encoded string.</returns>
         [NotNull]
         [PublicAPI]
-        public static string GetHashString([NotNull] this string input) 
-            => HashingCryptographyProvider.GetHashString(input);
+        public static string GetHashString([NotNull] this string input, [CanBeNull] HashAlgorithm algorithm = null)
+            => HashingCryptographyProvider.GetHashString(input, algorithm);
 
         /// <summary>
         /// Computes the hash.
@@ -62,11 +65,12 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="buffer">The buffer.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="count">The count.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
         /// <returns>The hash in bytes.</returns>
         [NotNull]
         [PublicAPI]
-        public static byte[] GetHash([NotNull]this byte[] buffer, int offset = 0, int count = -1)
-            => HashingCryptographyProvider.GetHash(buffer, offset, count);
+        public static byte[] GetHash([NotNull]this byte[] buffer, int offset = 0, int count = -1, [CanBeNull] HashAlgorithm algorithm = null)
+            => HashingCryptographyProvider.GetHash(buffer, offset, count, algorithm);
 
         /// <summary>
         /// Computes the hash and returns it as a base 64 encoded string.
@@ -74,31 +78,34 @@ namespace WebApplications.Utilities.Cryptography
         /// <param name="buffer">The buffer.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="count">The count.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
         /// <returns>The hash in a base 64 encoded string.</returns>
         [NotNull]
         [PublicAPI]
-        public static string GetHashString([NotNull]this byte[] buffer, int offset = 0, int count = -1)
-            => HashingCryptographyProvider.GetHashString(buffer, offset, count);
+        public static string GetHashString([NotNull]this byte[] buffer, int offset = 0, int count = -1, [CanBeNull] HashAlgorithm algorithm = null)
+            => HashingCryptographyProvider.GetHashString(buffer, offset, count, algorithm);
 
         /// <summary>
         /// Computes the hash from an input stream.
         /// </summary>
         /// <param name="inputStream">The input stream.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
         /// <returns>The hash in bytes.</returns>
         [NotNull]
         [PublicAPI]
-        public static byte[] GetHash([NotNull]this Stream inputStream)
-            => HashingCryptographyProvider.GetHash(inputStream);
+        public static byte[] GetHash([NotNull]this Stream inputStream, [CanBeNull] HashAlgorithm algorithm = null)
+            => HashingCryptographyProvider.GetHash(inputStream, algorithm);
 
         /// <summary>
         /// Computes the hash from an input stream and returns it as a base 64 encoded string.
         /// </summary>
         /// <param name="inputStream">The input stream.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
         /// <returns>The hash in a base 64 encoded string.</returns>
         [NotNull]
         [PublicAPI]
-        public static string GetHashString([NotNull]this Stream inputStream)
-            => HashingCryptographyProvider.GetHashString(inputStream);
+        public static string GetHashString([NotNull]this Stream inputStream, [CanBeNull] HashAlgorithm algorithm = null)
+            => HashingCryptographyProvider.GetHashString(inputStream, algorithm);
 
         /// <summary>
         /// Fills the byte array with random bytes.
