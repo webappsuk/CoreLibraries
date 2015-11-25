@@ -53,6 +53,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Propogate Common Configuration Element Code.tt</DependentUpon>
     </Compile>
+    <Compile Include="Converters\XNamespaceConverter.cs" />
     <Compile Include="Converters\DurationConverter.cs" />
     <Compile Include="Converters\InstantConverter.cs" />
     <Compile Include="Converters\LocalDateTimeConverter.cs" />

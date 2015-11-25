@@ -47,10 +47,5 @@ namespace WebApplications.Utilities.Configuration
         /// <value>The file path.</value>
         [CanBeNull]
         string FilePath { get; }
-        /// <summary>
-        /// Gets the line number of the configuration file path the section was loaded from (if any); otherwise -1.
-        /// </summary>
-        /// <value>The line number.</value>
-        int LineNumber { get; }
     }
 }
