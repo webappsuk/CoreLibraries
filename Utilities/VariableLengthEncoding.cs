@@ -291,7 +291,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(ulong,byte[],long)" />
         /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
         [PublicAPI]
-        public static async Task<ulong> DecodeAsync([NotNull] Stream stream, CancellationToken cancellationToken)
+        public static async Task<ulong> DecodeAsync([NotNull] Stream stream, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             ulong result = 0;
