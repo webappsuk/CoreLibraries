@@ -27,6 +27,8 @@
 
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities
@@ -62,6 +64,7 @@ namespace WebApplications.Utilities
             // ReSharper disable once ExceptionNotDocumented
             Encode(value, result, ref offset);
             if (offset < 9) Array.Resize(ref result, (int)offset);
+            // ReSharper disable once AssignNullToNotNullAttribute
             return result;
         }
 
@@ -123,6 +126,71 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Encodes the specified value to a <see cref="Stream" />.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="stream">The stream.</param>
+        /// <returns>The compressed value.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="stream" /> is <see langword="null" />.</exception>
+        /// <seealso cref="Decode(Stream, out int)" />
+        /// <remarks><para>This compression assumes a weighting towards lower values, an is ideally suited for lengths.  It uses
+        /// 7-bits per byte, with the most significant bit indicating that another byte is used.  This means it also
+        /// encodes its own length and can act as a variable length header.</para>
+        /// <para>Values less than 268,435,456 (1 &lt;&lt; 28) take a maximum of four bytes, and only 1 byte for values
+        /// less than 128 (1 &lt;&lt; 7).  As such the compression becomes inefficient above 28 bits, however it has
+        /// the distinct benefit of being able to encode all possible ulong values, requiring up to 10 bytes for the
+        /// largest values, at a cost of two bytes compared to a ulong.</para></remarks>
+        [PublicAPI]
+        public static int Encode(ulong value, [NotNull] Stream stream)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            int written = 0;
+            do
+            {
+                byte b = (byte)(value & 0x7F);
+                bool end = b == value;
+                stream.WriteByte((byte)(b | (end ? 0 : 0x80)));
+                written++;
+                if (end) break;
+                value >>= 7;
+            } while (true);
+            return written;
+        }
+
+        /// <summary>
+        /// Encodes the specified value to a <see cref="Stream" /> asynchronously.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="stream">The stream.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns><see cref="Task{T}">An awaitable task</see>; the <see cref="Task{T}.Result">result of which</see>
+        /// is the number of bytes written.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <seealso cref="DecodeAsync(Stream, CancellationToken)" />
+        /// <remarks><para>This compression assumes a weighting towards lower values, an is ideally suited for lengths.  It uses
+        /// 7-bits per byte, with the most significant bit indicating that another byte is used.  This means it also
+        /// encodes its own length and can act as a variable length header.</para>
+        /// <para>Values less than 268,435,456 (1 &lt;&lt; 28) take a maximum of four bytes, and only 1 byte for values
+        /// less than 128 (1 &lt;&lt; 7).  As such the compression becomes inefficient above 28 bits, however it has
+        /// the distinct benefit of being able to encode all possible ulong values, requiring up to 10 bytes for the
+        /// largest values, at a cost of two bytes compared to a ulong.</para></remarks>
+        [PublicAPI]
+        public static async Task<int> EncodeAsync(ulong value, [NotNull] Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
+            byte[] result = new byte[10];
+            long offset = 0;
+            // ReSharper disable once ExceptionNotDocumented
+            Encode(value, result, ref offset);
+            int written = (int)offset;
+            // ReSharper disable once PossibleNullReferenceException
+            await stream.WriteAsync(result, 0, written, cancellationToken).ConfigureAwait(false);
+            return written;
+        }
+
+        /// <summary>
         /// Decodes the specified value from the buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
@@ -132,7 +200,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(ulong,byte[],long)"/>
         /// <seealso cref="Encode(ulong,byte[],ref long)"/>
         /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null"/>.</exception>
-        /// <remarks><para>As this uses a variable length encoding that encodes it's own length a length is no required.</para></remarks>
+        /// <remarks><para>As this uses a variable length encoding that encodes it's own length a length is not required.</para></remarks>
         /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
         [PublicAPI]
         public static ulong Decode([NotNull] byte[] buffer, long offset = 0) => Decode(buffer, ref offset);
@@ -146,7 +214,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(ulong)"/>
         /// <seealso cref="Encode(ulong,byte[],long)"/>
         /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null"/>.</exception>
-        /// <remarks><para>As this uses a variable length encoding that encodes it's own length a length is no required.</para></remarks>
+        /// <remarks><para>As this uses a variable length encoding that encodes it's own length a length is not required.</para></remarks>
         /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
         [PublicAPI]
         public static ulong Decode([NotNull] byte[] buffer, ref long offset)
@@ -163,6 +231,89 @@ namespace WebApplications.Utilities
                 result += (ulong)(b & 0x7F) << shift;
                 if ((b & 0x80) != 0x80) break;
                 if (offset == end)
+                    throw new InternalBufferOverflowException(Resources.VariableLengthEncoding_Decode_Buffer_Overflow);
+                shift += 7;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes the specified value from the <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="read">The number of bytes read.</param>
+        /// <returns>The uncompressed value.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.IO.InternalBufferOverflowException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="stream" /> is <see langword="null" />.</exception>
+        /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
+        /// <seealso cref="Encode(ulong)" />
+        /// <seealso cref="Encode(ulong,byte[],long)" />
+        /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
+        [PublicAPI]
+        public static ulong Decode([NotNull] Stream stream, out int read)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            ulong result = 0;
+            int shift = 0;
+            // ReSharper disable ExceptionNotDocumented
+            read = 0;
+            // ReSharper restore ExceptionNotDocumented
+            while (read < 11)
+            {
+                int readByte = stream.ReadByte();
+                if (readByte < 0)
+                    throw new InternalBufferOverflowException(Resources.VariableLengthEncoding_Decode_Buffer_Overflow);
+                read++;
+                byte b = (byte)readByte;
+                result += (ulong)(b & 0x7F) << shift;
+                if ((b & 0x80) != 0x80) break;
+
+                if (read > 9)
+                    throw new InternalBufferOverflowException(Resources.VariableLengthEncoding_Decode_Buffer_Overflow);
+                shift += 7;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes the specified value from the <see cref="Stream" /> asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The uncompressed value.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.IO.InternalBufferOverflowException">
+        /// </exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InternalBufferOverflowException"></exception>
+        /// <seealso cref="Encode(ulong)" />
+        /// <seealso cref="Encode(ulong,byte[],long)" />
+        /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
+        [PublicAPI]
+        public static async Task<ulong> DecodeAsync([NotNull] Stream stream, CancellationToken cancellationToken)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            ulong result = 0;
+            int shift = 0;
+            // ReSharper disable ExceptionNotDocumented
+            int read = 0;
+            byte[] buffer = new byte[1];
+            // ReSharper restore ExceptionNotDocumented
+            while (read < 11)
+            {
+                // ReSharper disable PossibleNullReferenceException
+                int readBytes = await stream.ReadAsync(buffer, 0, 1, cancellationToken).ConfigureAwait(false);
+                // ReSharper restore PossibleNullReferenceException
+
+                if (readBytes < 1)
+                    throw new InternalBufferOverflowException(Resources.VariableLengthEncoding_Decode_Buffer_Overflow);
+                read++;
+                byte b = buffer[0];
+                result += (ulong)(b & 0x7F) << shift;
+                if ((b & 0x80) != 0x80) break;
+
+                if (read > 9)
                     throw new InternalBufferOverflowException(Resources.VariableLengthEncoding_Decode_Buffer_Overflow);
                 shift += 7;
             }
