@@ -140,6 +140,8 @@
     <Compile Include="Generated\SqlProgramGeneric9.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
+    <Compile Include="CachedDataReader.cs" />
+    <Compile Include="CachedDataWriter.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -151,6 +153,7 @@
     <Compile Include="Schema\Difference.cs" />
     <Compile Include="Schema\ISchema.cs" />
     <Compile Include="Schema\SqlSchema.cs" />
+    <Compile Include="Schema\SqlUdtInfo.cs" />
     <Compile Include="Schema\TypeConstraintMode.cs" />
     <Compile Include="Schema\SqlMetaType.cs" />
     <Compile Include="Schema\SqlTableType.cs" />

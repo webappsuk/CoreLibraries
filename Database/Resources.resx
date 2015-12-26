@@ -342,4 +342,16 @@
   <data name="Connection_WeightMustBePositive" xml:space="preserve">
     <value>Weight must be positive.</value>
   </data>
+  <data name="SqlMetaType_GetMetaTypeFromValue_Invalid_Type" xml:space="preserve">
+    <value>The {0} type does not correspond to a known Sql Meta type.</value>
+  </data>
+  <data name="SqlMetaType_GetMetaTypeFromValue_Invalid_TypeCode" xml:space="preserve">
+    <value>The {0} type code does not correspond to a known Sql Meta type.</value>
+  </data>
+  <data name="SqlUdtInfo_GetFromType_Unknown_Type" xml:space="preserve">
+    <value>The {0} type does not correspond to a SQL UDT Type.</value>
+  </data>
+  <data name="SqlMetaType_GetMetaTypeFromDbType_Unknown_DbType" xml:space="preserve">
+    <value>The '{0}' DbType is unknown or invalid.</value>
+  </data>
 </root>

@@ -25,12 +25,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.OleDb;
 using System.Data.SqlTypes;
-using Microsoft.SqlServer.Server;
+using System.Runtime.CompilerServices;
+using System.Xml;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 
@@ -486,7 +489,7 @@ namespace WebApplications.Utilities.Database.Schema
             108,
             108,
             "decimal",
-            typeof(Decimal),
+            typeof(decimal),
             typeof(SqlDecimal),
             SqlDbType.Decimal,
             DbType.Decimal,
@@ -572,7 +575,7 @@ namespace WebApplications.Utilities.Database.Schema
             60,
             110,
             "money",
-            typeof(Decimal),
+            typeof(decimal),
             typeof(SqlMoney),
             SqlDbType.Money,
             DbType.Currency,
@@ -592,7 +595,7 @@ namespace WebApplications.Utilities.Database.Schema
             122,
             110,
             "smallmoney",
-            typeof(Decimal),
+            typeof(decimal),
             typeof(SqlMoney),
             SqlDbType.
                 SmallMoney,
@@ -943,11 +946,11 @@ namespace WebApplications.Utilities.Database.Schema
         }
 
         /// <summary>
-        ///   TODO
+        ///   Whether the <paramref name="type">specified type</paramref> is ANSI.
         /// </summary>
         /// <param name="type">The SQL type to check.</param>
         /// <returns>
-        ///   TODO
+        /// <see langword="true"/> if ANSI; otherwise <see langword="false"/>.
         /// </returns>
         public static bool IsAnsiType(SqlDbType type)
         {
@@ -1200,8 +1203,6 @@ namespace WebApplications.Utilities.Database.Schema
             }
         }
 
-#if false
-
     /// <summary>
     /// Gets the <see cref="SqlMetaType"/> equivalent of the <see cref="DbType"/>.
     /// </summary>
@@ -1257,7 +1258,9 @@ namespace WebApplications.Utilities.Database.Schema
                 case DbType.DateTimeOffset:
                     return MetaDateTimeOffset;
                 default:
-                    throw new DatabaseSchemaException("Unsupported DbType '{0}'.", LogLevel.Error, target);
+                    throw new DatabaseSchemaException(
+                        () => Resources.SqlMetaType_GetMetaTypeFromDbType_Unknown_DbType,
+                        target);
             }
         }
 
@@ -1288,126 +1291,138 @@ namespace WebApplications.Utilities.Database.Schema
             }
         }
 
-        internal static SqlMetaType GetMetaTypeFromType(Type dataType)
+        /// <summary>
+        /// Gets the equivalent <see cref="SqlMetaType"/> from the <paramref name="dataType"/>.
+        /// </summary>
+        /// <param name="dataType">Type of the data.</param>
+        /// <returns>SqlMetaType.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="dataType"/> is <see langword="null"/>.</exception>
+        public static SqlMetaType GetMetaTypeFromType([NotNull] Type dataType)
         {
-            return GetMetaTypeFromValue(dataType, (object)null, false);
+            if (dataType==null)throw new ArgumentNullException(nameof(dataType));
+            return GetMetaTypeFromValue(dataType, null, false);
         }
 
-        internal static SqlMetaType GetMetaTypeFromValue(object value)
+        /// <summary>
+        /// Gets the <see cref="SqlMetaType"/> from the <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>SqlMetaType.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static SqlMetaType GetMetaTypeFromValue([NotNull] object value)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
             return GetMetaTypeFromValue(value.GetType(), value, true);
         }
 
-        private static SqlMetaType GetMetaTypeFromValue(Type dataType, object value, bool inferLen)
+        /// <summary>
+        /// Gets the <see cref="SqlMetaType"/> from the <paramref name="dataType"/> and the <paramref name="value"/>.
+        /// </summary>
+        /// <param name="dataType">Type of the data.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="inferLen">if set to <see langword="true" /> infers the length.</param>
+        /// <returns>SqlMetaType.</returns>
+        /// <exception cref="DatabaseSchemaException">
+        /// </exception>
+        private static SqlMetaType GetMetaTypeFromValue([NotNull] Type dataType, [CanBeNull]object value, bool inferLen)
         {
-            switch (Type.GetTypeCode(dataType))
+            TypeCode typeCode = Type.GetTypeCode(dataType);
+            switch (typeCode)
             {
-                case TypeCode.Empty:
-                    throw ADP.InvalidDataType(TypeCode.Empty);
                 case TypeCode.Object:
                     if (dataType == typeof(byte[]))
+                        // ReSharper disable once PossibleNullReferenceException
+                        return !inferLen || ((byte[])value).Length <= 8000 ? MetaVarBinary : MetaImage;
+                    if (dataType == typeof(Guid))
+                        return MetaUniqueId;
+                    if (dataType == typeof(object))
+                        return MetaVariant;
+                    if (dataType == typeof(SqlBinary))
+                        return MetaVarBinary;
+                    if (dataType == typeof(SqlBoolean))
+                        return MetaBit;
+                    if (dataType == typeof(SqlByte))
+                        return MetaTinyInt;
+                    if (dataType == typeof(SqlBytes))
+                        return MetaVarBinary;
+                    if (dataType == typeof(SqlChars))
+                        return MetaNVarChar;
+                    if (dataType == typeof(SqlDateTime))
+                        return MetaDateTime;
+                    if (dataType == typeof(SqlDouble))
+                        return MetaFloat;
+                    if (dataType == typeof(SqlGuid))
+                        return MetaUniqueId;
+                    if (dataType == typeof(SqlInt16))
+                        return MetaSmallInt;
+                    if (dataType == typeof(SqlInt32))
+                        return MetaInt;
+                    if (dataType == typeof(SqlInt64))
+                        return MetaBigInt;
+                    if (dataType == typeof(SqlMoney))
+                        return MetaMoney;
+                    if (dataType == typeof(SqlDecimal))
+                        return MetaDecimal;
+                    if (dataType == typeof(SqlSingle))
+                        return MetaReal;
+                    if (dataType == typeof(SqlXml) || dataType == typeof(XmlReader))
+                        return MetaXml;
+                    if (dataType == typeof(SqlString))
                     {
-                        if (!inferLen || ((byte[])value).Length <= 8000)
-                            return SqlMetaType.MetaVarBinary;
-                        else
-                            return SqlMetaType.MetaImage;
+                        // ReSharper disable once PossibleNullReferenceException
+                        SqlString sqlString = (SqlString)value;
+                        return !inferLen || sqlString.IsNull
+                            ? MetaNVarChar
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            : PromoteStringType(sqlString.Value);
                     }
-                    else
-                    {
-                        if (dataType == typeof(Guid))
-                            return SqlMetaType.MetaUniqueId;
-                        if (dataType == typeof(object))
-                            return SqlMetaType.MetaVariant;
-                        if (dataType == typeof(SqlBinary))
-                            return SqlMetaType.MetaVarBinary;
-                        if (dataType == typeof(SqlBoolean))
-                            return SqlMetaType.MetaBit;
-                        if (dataType == typeof(SqlByte))
-                            return SqlMetaType.MetaTinyInt;
-                        if (dataType == typeof(SqlBytes))
-                            return SqlMetaType.MetaVarBinary;
-                        if (dataType == typeof(SqlChars))
-                            return SqlMetaType.MetaNVarChar;
-                        if (dataType == typeof(SqlDateTime))
-                            return SqlMetaType.MetaDateTime;
-                        if (dataType == typeof(SqlDouble))
-                            return SqlMetaType.MetaFloat;
-                        if (dataType == typeof(SqlGuid))
-                            return SqlMetaType.MetaUniqueId;
-                        if (dataType == typeof(SqlInt16))
-                            return SqlMetaType.MetaSmallInt;
-                        if (dataType == typeof(SqlInt32))
-                            return SqlMetaType.MetaInt;
-                        if (dataType == typeof(SqlInt64))
-                            return SqlMetaType.MetaBigInt;
-                        if (dataType == typeof(SqlMoney))
-                            return SqlMetaType.MetaMoney;
-                        if (dataType == typeof(SqlDecimal))
-                            return SqlMetaType.MetaDecimal;
-                        if (dataType == typeof(SqlSingle))
-                            return SqlMetaType.MetaReal;
-                        if (dataType == typeof(SqlXml) || dataType == typeof(XmlReader))
-                            return SqlMetaType.MetaXml;
-                        if (dataType == typeof(SqlString))
-                        {
-                            if (!inferLen || ((SqlString)value).IsNull)
-                                return SqlMetaType.MetaNVarChar;
-                            else
-                                return SqlMetaType.PromoteStringType(((SqlString)value).Value);
-                        }
-                        else
-                        {
-                            if (dataType == typeof(IEnumerable<DbDataRecord>) || dataType == typeof(DataTable))
-                                return SqlMetaType.MetaTable;
-                            if (dataType == typeof(TimeSpan))
-                                return SqlMetaType.MetaTime;
-                            if (dataType == typeof(DateTimeOffset))
-                                return SqlMetaType.MetaDateTimeOffset;
-                            if (SqlUdtInfo.TryGetFromType(dataType) != null)
-                                return SqlMetaType.MetaUdt;
-                            else
-                                throw ADP.UnknownDataType(dataType);
-                        }
-                    }
-                case TypeCode.DBNull:
-                    throw ADP.InvalidDataType(TypeCode.DBNull);
+                    if (dataType == typeof(IEnumerable<DbDataRecord>) || dataType == typeof(DataTable))
+                        return MetaTable;
+                    if (dataType == typeof(TimeSpan))
+                        return MetaTime;
+                    if (dataType == typeof(DateTimeOffset))
+                        return MetaDateTimeOffset;
+                    SqlUdtInfo info;
+                    if (SqlUdtInfo.TryGetFromType(dataType, out info))
+                        return MetaUdt;
+                    throw new DatabaseSchemaException(
+                        () => Resources.SqlMetaType_GetMetaTypeFromValue_Invalid_Type,
+                        dataType);
                 case TypeCode.Boolean:
-                    return SqlMetaType.MetaBit;
-                case TypeCode.Char:
-                    throw ADP.InvalidDataType(TypeCode.Char);
-                case TypeCode.SByte:
-                    throw ADP.InvalidDataType(TypeCode.SByte);
+                    return MetaBit;
                 case TypeCode.Byte:
-                    return SqlMetaType.MetaTinyInt;
+                    return MetaTinyInt;
                 case TypeCode.Int16:
-                    return SqlMetaType.MetaSmallInt;
-                case TypeCode.UInt16:
-                    throw ADP.InvalidDataType(TypeCode.UInt16);
+                    return MetaSmallInt;
                 case TypeCode.Int32:
-                    return SqlMetaType.MetaInt;
-                case TypeCode.UInt32:
-                    throw ADP.InvalidDataType(TypeCode.UInt32);
+                    return MetaInt;
                 case TypeCode.Int64:
-                    return SqlMetaType.MetaBigInt;
-                case TypeCode.UInt64:
-                    throw ADP.InvalidDataType(TypeCode.UInt64);
+                    return MetaBigInt;
                 case TypeCode.Single:
-                    return SqlMetaType.MetaReal;
+                    return MetaReal;
                 case TypeCode.Double:
-                    return SqlMetaType.MetaFloat;
+                    return MetaFloat;
                 case TypeCode.Decimal:
-                    return SqlMetaType.MetaDecimal;
+                    return MetaDecimal;
                 case TypeCode.DateTime:
-                    return SqlMetaType.MetaDateTime;
+                    return MetaDateTime;
                 case TypeCode.String:
-                    if (!inferLen)
-                        return SqlMetaType.MetaNVarChar;
-                    else
-                        return SqlMetaType.PromoteStringType((string)value);
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    return !inferLen ? MetaNVarChar : PromoteStringType((string)value);
                 default:
-                    throw ADP.UnknownDataTypeCode(dataType, Type.GetTypeCode(dataType));
+                    throw new DatabaseSchemaException(
+                        () => Resources.SqlMetaType_GetMetaTypeFromValue_Invalid_TypeCode,
+                        typeCode);
             }
         }
+
+        /// <summary>
+        /// Promotes the type of the string.
+        /// </summary>
+        /// <param name="s">The s.</param>
+        /// <returns>SqlMetaType.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static SqlMetaType PromoteStringType([NotNull] string s) => s.Length << 1 > 8000 ? MetaVarChar : MetaNVarChar;
 
         /// <summary>
         /// Gets the null SQL value for a given type.
@@ -1458,18 +1473,10 @@ namespace WebApplications.Utilities.Database.Schema
                 return DBNull.Value;
             if (sqlType == typeof (DateTimeOffset))
                 return DBNull.Value;
-             */
+            */
             // ReSharper disable AssignNullToNotNullAttribute
             return DBNull.Value;
             // ReSharper restore AssignNullToNotNullAttribute
-        }
-
-        internal static SqlMetaType PromoteStringType(string s)
-        {
-            if (s.Length << 1 > 8000)
-                return SqlMetaType.MetaVarChar;
-            else
-                return SqlMetaType.MetaNVarChar;
         }
 
 
@@ -1509,10 +1516,8 @@ namespace WebApplications.Utilities.Database.Schema
                 return ((SqlDateTime) sqlVal).Value;
             if (sqlVal is SqlMoney)
                 return ((SqlMoney) sqlVal).Value;
-            if (sqlVal is SqlXml)
-                return ((SqlXml) sqlVal).Value;
-
-            return null;
+            SqlXml xml = sqlVal as SqlXml;
+            return xml?.Value;
         }
 
         /// <summary>
@@ -1523,42 +1528,41 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public static object GetSqlValueFromCLRVariant(object clrVal)
         {
-            object obj = (object)null;
-            if (clrVal != null && DBNull.Value != clrVal)
-            {
-                if (clrVal is float)
-                    obj = (object)new SqlSingle((float)clrVal);
-                else if (clrVal is string)
-                    obj = (object)new SqlString((string)clrVal);
-                else if (clrVal is double)
-                    obj = (object)new SqlDouble((double)clrVal);
-                else if (clrVal is byte[])
-                    obj = (object)new SqlBinary((byte[])clrVal);
-                else if (clrVal is char)
-                    obj = (object)new SqlString(((char)clrVal).ToString());
-                else if (clrVal is char[])
-                    obj = (object)new SqlChars((char[])clrVal);
-                else if (clrVal is Guid)
-                    obj = (object)new SqlGuid((Guid)clrVal);
-                else if (clrVal is bool)
-                    obj = (object)new SqlBoolean((bool)clrVal);
-                else if (clrVal is byte)
-                    obj = (object)new SqlByte((byte)clrVal);
-                else if (clrVal is short)
-                    obj = (object)new SqlInt16((short)clrVal);
-                else if (clrVal is int)
-                    obj = (object)new SqlInt32((int)clrVal);
-                else if (clrVal is long)
-                    obj = (object)new SqlInt64((long)clrVal);
-                else if (clrVal is Decimal)
-                    obj = (object)new SqlDecimal((Decimal)clrVal);
-                else if (clrVal is DateTime)
-                    obj = (object)new SqlDateTime((DateTime)clrVal);
-                else if (clrVal is XmlReader)
-                    obj = (object)new SqlXml((XmlReader)clrVal);
-                else if (clrVal is TimeSpan || clrVal is DateTimeOffset)
-                    obj = clrVal;
-            }
+            object obj = null;
+            if (clrVal == null || DBNull.Value == clrVal) return null;
+
+            if (clrVal is float)
+                obj = new SqlSingle((float)clrVal);
+            else if (clrVal is string)
+                obj = new SqlString((string)clrVal);
+            else if (clrVal is double)
+                obj = new SqlDouble((double)clrVal);
+            else if (clrVal is byte[])
+                obj = new SqlBinary((byte[])clrVal);
+            else if (clrVal is char)
+                obj = new SqlString(((char)clrVal).ToString());
+            else if (clrVal is char[])
+                obj = new SqlChars((char[])clrVal);
+            else if (clrVal is Guid)
+                obj = new SqlGuid((Guid)clrVal);
+            else if (clrVal is bool)
+                obj = new SqlBoolean((bool)clrVal);
+            else if (clrVal is byte)
+                obj = new SqlByte((byte)clrVal);
+            else if (clrVal is short)
+                obj = new SqlInt16((short)clrVal);
+            else if (clrVal is int)
+                obj = new SqlInt32((int)clrVal);
+            else if (clrVal is long)
+                obj = new SqlInt64((long)clrVal);
+            else if (clrVal is decimal)
+                obj = new SqlDecimal((decimal)clrVal);
+            else if (clrVal is DateTime)
+                obj = new SqlDateTime((DateTime)clrVal);
+            else if (clrVal is XmlReader)
+                obj = new SqlXml((XmlReader)clrVal);
+            else if (clrVal is TimeSpan || clrVal is DateTimeOffset)
+                obj = clrVal;
             return obj;
         }
 
@@ -1614,6 +1618,7 @@ namespace WebApplications.Utilities.Database.Schema
                             sqlDbType = SqlDbType.DateTime;
                             break;
                     }
+                    break;
                 case (OleDbType)141:
                     sqlDbType = SqlDbType.Xml;
                     break;
@@ -1665,111 +1670,97 @@ namespace WebApplications.Utilities.Database.Schema
             return sqlDbType;
         }
 
-        internal static SqlMetaType GetSqlDataType(int tdsType, uint userType, int length)
+        /// <summary>
+        /// Gets the <see cref="SqlMetaType"/>.
+        /// </summary>
+        /// <param name="tdsType">Type of the TDS.</param>
+        /// <param name="userType">Type of the user.</param>
+        /// <param name="length">The length.</param>
+        /// <returns>SqlMetaType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        public static SqlMetaType GetSqlDataType(int tdsType, uint userType, int length)
         {
             switch (tdsType)
             {
                 case 231:
-                    return SqlMetaType.MetaNVarChar;
+                    return MetaNVarChar;
                 case 239:
-                    return SqlMetaType.MetaNChar;
+                    return MetaNChar;
                 case 240:
-                    return SqlMetaType.MetaUdt;
+                    return MetaUdt;
                 case 241:
-                    return SqlMetaType.MetaXml;
+                    return MetaXml;
                 case 243:
-                    return SqlMetaType.MetaTable;
+                    return MetaTable;
                 case 165:
-                    return SqlMetaType.MetaVarBinary;
+                    return MetaVarBinary;
                 case 167:
                 case 39:
-                    return SqlMetaType.MetaVarChar;
+                    return MetaVarChar;
                 case 173:
                 case 45:
-                    if (80 != (int)userType)
-                        return SqlMetaType.MetaBinary;
-                    else
-                        return SqlMetaType.MetaTimestamp;
+                    return 80 != (int)userType ? MetaBinary : MetaTimestamp;
                 case 175:
                 case 47:
-                    return SqlMetaType.MetaChar;
+                    return MetaChar;
                 case 122:
-                    return SqlMetaType.MetaSmallMoney;
-                case (int)sbyte.MaxValue:
-                    return SqlMetaType.MetaBigInt;
+                    return MetaSmallMoney;
+                case sbyte.MaxValue:
+                    return MetaBigInt;
                 case 34:
-                    return SqlMetaType.MetaImage;
+                    return MetaImage;
                 case 35:
-                    return SqlMetaType.MetaText;
+                    return MetaText;
                 case 36:
-                    return SqlMetaType.MetaUniqueId;
+                    return MetaUniqueId;
                 case 37:
-                    return SqlMetaType.MetaSmallVarBinary;
+                    return MetaSmallVarBinary;
                 case 38:
-                    if (4 > length)
-                    {
-                        if (2 != length)
-                            return SqlMetaType.MetaTinyInt;
-                        else
-                            return SqlMetaType.MetaSmallInt;
-                    }
-                    else if (4 != length)
-                        return SqlMetaType.MetaBigInt;
-                    else
-                        return SqlMetaType.MetaInt;
+                    return 4 > length
+                        ? (2 != length ? MetaTinyInt : MetaSmallInt)
+                        : (4 != length ? MetaBigInt : MetaInt);
                 case 40:
-                    return SqlMetaType.MetaDate;
+                    return MetaDate;
                 case 41:
-                    return SqlMetaType.MetaTime;
+                    return MetaTime;
                 case 42:
-                    return SqlMetaType.MetaDateTime2;
+                    return MetaDateTime2;
                 case 43:
-                    return SqlMetaType.MetaDateTimeOffset;
+                    return MetaDateTimeOffset;
                 case 48:
-                    return SqlMetaType.MetaTinyInt;
+                    return MetaTinyInt;
                 case 50:
                 case 104:
-                    return SqlMetaType.MetaBit;
+                    return MetaBit;
                 case 52:
-                    return SqlMetaType.MetaSmallInt;
+                    return MetaSmallInt;
                 case 56:
-                    return SqlMetaType.MetaInt;
+                    return MetaInt;
                 case 58:
-                    return SqlMetaType.MetaSmallDateTime;
+                    return MetaSmallDateTime;
                 case 59:
-                    return SqlMetaType.MetaReal;
+                    return MetaReal;
                 case 60:
-                    return SqlMetaType.MetaMoney;
+                    return MetaMoney;
                 case 61:
-                    return SqlMetaType.MetaDateTime;
+                    return MetaDateTime;
                 case 62:
-                    return SqlMetaType.MetaFloat;
+                    return MetaFloat;
                 case 98:
-                    return SqlMetaType.MetaVariant;
+                    return MetaVariant;
                 case 99:
-                    return SqlMetaType.MetaNText;
+                    return MetaNText;
                 case 106:
                 case 108:
-                    return SqlMetaType.MetaDecimal;
+                    return MetaDecimal;
                 case 109:
-                    if (4 != length)
-                        return SqlMetaType.MetaFloat;
-                    else
-                        return SqlMetaType.MetaReal;
+                    return 4 != length ? MetaFloat : MetaReal;
                 case 110:
-                    if (4 != length)
-                        return SqlMetaType.MetaMoney;
-                    else
-                        return SqlMetaType.MetaSmallMoney;
+                    return 4 != length ? MetaMoney : MetaSmallMoney;
                 case 111:
-                    if (4 != length)
-                        return SqlMetaType.MetaDateTime;
-                    else
-                        return SqlMetaType.MetaSmallDateTime;
-                default:
-                    throw SQL.InvalidSqlDbType((SqlDbType)tdsType);
+                    return 4 != length ? MetaDateTime : MetaSmallDateTime;
             }
+            throw new ArgumentOutOfRangeException(nameof(tdsType));
         }
-#endif
     }
 }
