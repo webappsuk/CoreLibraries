@@ -61,6 +61,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The reader is closed or disposed..
+        /// </summary>
+        internal static string CachedDataReader_Closed {
+            get {
+                return ResourceManager.GetString("CachedDataReader_Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrieved record set was sparse (not all columns present) and so could not be serialized..
         /// </summary>
         internal static string CachedDataWriter_SerializeAsync_Sparse_Columns {

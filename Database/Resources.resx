@@ -363,4 +363,7 @@
   <data name="CachedDataWriter_SerializeAsync_Sparse_Columns" xml:space="preserve">
     <value>Retrieved record set was sparse (not all columns present) and so could not be serialized.</value>
   </data>
+  <data name="CachedDataReader_Closed" xml:space="preserve">
+    <value>The reader is closed or disposed.</value>
+  </data>
 </root>

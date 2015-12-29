@@ -38,8 +38,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 {
                     do
                     {
+                        object[] values = new object[cachedReader.FieldCount];
                         while (await cachedReader.ReadAsync(cancellationToken))
                         {
+                            cachedReader.GetValues(values);
+
                         }
                     } while (await cachedReader.NextResultAsync(cancellationToken));
                 }

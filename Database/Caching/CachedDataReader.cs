@@ -51,14 +51,15 @@ namespace WebApplications.Utilities.Database.Caching
         private readonly AsyncLock _asyncLock = new AsyncLock();
 
         /// <summary>
-        /// Holds header information
+        /// Holds header information.
         /// </summary>
         private class Header
         {
             /// <summary>
-            /// The records affected.
+            /// The number of records affected.
             /// </summary>
             public readonly int RecordsAffected;
+
             /// <summary>
             /// Initializes a new instance of the <see cref="Header"/> class.
             /// </summary>
@@ -69,62 +70,330 @@ namespace WebApplications.Utilities.Database.Caching
             }
         }
 
-        private class TableDefinition
+        /// <summary>
+        /// Holds a table definition.
+        /// </summary>
+        private class TableDefinition : IReadOnlyCollection<Column>
         {
-            public readonly bool HasRows;
+            /// <summary>
+            /// The <see cref="TableDefinition"/> indicating the end of stream.
+            /// </summary>
             [NotNull]
-            public readonly Dictionary<string, Column> ColumnsByName;
+            public static readonly TableDefinition End = new TableDefinition();
 
-            [NotNull]
-            public readonly List<Column> Columns;
+            /// <summary>
+            /// Whether the table contains rows.
+            /// </summary>
+            private readonly bool _hasRows;
 
-            [NotNull]
-            public readonly List<Column> NullableColumns;
+            /// <summary>
+            /// The columns by name (case-insensitive).
+            /// </summary>
+            private readonly Dictionary<string, Column> _columnsByName;
 
-            public TableDefinition(int count, bool hasRows)
+            /// <summary>
+            /// The columns in ordinal order.
+            /// </summary>
+            private readonly List<Column> _columns;
+
+            /// <summary>
+            /// The nullable columns.
+            /// </summary>
+            private readonly List<Column> _nullableColumns;
+
+            /// <summary>
+            /// Creates a default, invalid instance of the <see cref="TableDefinition"/>.
+            /// </summary>
+            private TableDefinition()
             {
-                ColumnsByName = new Dictionary<string, Column>(count, StringComparer.InvariantCultureIgnoreCase);
-                Columns = new List<Column>(count);
-                NullableColumns = new List<Column>(count);
-                HasRows = hasRows;
             }
 
-            public class Column
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TableDefinition"/> class.
+            /// </summary>
+            /// <param name="count">The count.</param>
+            /// <param name="hasRows">if set to <see langword="true" /> the table has rows.</param>
+            public TableDefinition(int count, bool hasRows)
             {
-                public readonly int Ordinal;
-                public readonly string Name;
-                public readonly SqlDbType SqlDbType;
-                public readonly bool AllowDBNull;
+                _columnsByName = new Dictionary<string, Column>(count, StringComparer.InvariantCultureIgnoreCase);
+                _columns = new List<Column>(count);
+                _nullableColumns = new List<Column>(count);
+                _hasRows = hasRows;
+            }
 
-                public Column(int ordinal, string name, SqlDbType sqlDbType, bool allowDBNull)
+            /// <summary>
+            /// Whether the table contains rows.
+            /// </summary>
+            public bool HasRows
+            {
+                get
                 {
-                    Ordinal = ordinal;
-                    Name = name;
-                    SqlDbType = sqlDbType;
-                    AllowDBNull = allowDBNull;
+                    if (_columns == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _hasRows;
                 }
             }
 
-            public Column Add(string name, SqlDbType sqlDbType, bool allowDBNull)
+            /// <summary>
+            /// Adds the specified column.
+            /// </summary>
+            /// <param name="name">The name.</param>
+            /// <param name="sqlDbType">Type of the SQL database.</param>
+            /// <param name="allowDBNull">if set to <see langword="true" /> then the column is nullable.</param>
+            /// <returns>The newly created <see cref="Column"/>.</returns>
+            public Column Add([NotNull] string name, SqlDbType sqlDbType, bool allowDBNull)
             {
-                Column column = new Column(Columns.Count, name, sqlDbType, allowDBNull);
-                ColumnsByName.Add(name, column);
-                Columns.Add(column);
+                if (_columns == null)
+                    throw new InvalidOperationException("Invalid attempt to add a column.");
+                Column column = new Column(_columns.Count, name, sqlDbType, allowDBNull);
+                _columnsByName.Add(name, column);
+                _columns.Add(column);
                 if (allowDBNull)
-                    NullableColumns.Add(column);
+                    _nullableColumns.Add(column);
                 return column;
+            }
+            /// <summary>
+            /// Gets the nullable columns, in ordinal order.
+            /// </summary>
+            /// <value>The nullable columns.</value>
+            /// <exception cref="InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            [NotNull]
+            public IReadOnlyCollection<Column> NullableColumns
+            {
+                get
+                {
+                    if (_nullableColumns == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _nullableColumns;
+                }
+            }
+
+            /// <summary>
+            /// Gets the <see cref="Column"/> with the specified ordinal.
+            /// </summary>
+            /// <param name="ordinal">The ordinal.</param>
+            /// <returns>Column.</returns>
+            /// <exception cref="InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            public Column this[int ordinal]
+            {
+                get
+                {
+                    if (_columns == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _columns[ordinal];
+                }
+            }
+
+            /// <summary>
+            /// Gets the <see cref="Column"/> with the specified name.
+            /// </summary>
+            /// <param name="name">The name.</param>
+            /// <returns>Column.</returns>
+            /// <exception cref="InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            public Column this[string name]
+            {
+                get
+                {
+                    if (_columnsByName == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _columnsByName[name];
+                }
+            }
+
+            /// <summary>
+            /// Returns an enumerator that iterates through the collection.
+            /// </summary>
+            /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+            /// <exception cref="InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            public IEnumerator<Column> GetEnumerator()
+            {
+                if (_columns == null)
+                    throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                return _columns.GetEnumerator();
+            }
+
+            /// <summary>
+            /// Returns an enumerator that iterates through a collection.
+            /// </summary>
+            /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            /// <summary>
+            /// Gets the number of elements in the collection.
+            /// </summary>
+            /// <value>The count.</value>
+            /// <exception cref="System.InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            public int Count
+            {
+                get
+                {
+                    if (_columns == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _columns.Count;
+                }
             }
         }
 
         /// <summary>
-        /// Whether we've finished reading from the record set.
+        /// Holds a column definition.
         /// </summary>
-        private bool _eor = true;
+        private class Column
+        {
+            /// <summary>
+            /// The ordinal.
+            /// </summary>
+            public readonly int Ordinal;
+
+            /// <summary>
+            /// The name.
+            /// </summary>
+            public readonly string Name;
+
+            /// <summary>
+            /// The SQL database type.
+            /// </summary>
+            public readonly SqlDbType SqlDbType;
+
+            /// <summary>
+            /// Whether the column can be null.
+            /// </summary>
+            public readonly bool AllowDBNull;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Column"/> class.
+            /// </summary>
+            /// <param name="ordinal">The ordinal.</param>
+            /// <param name="name">The name.</param>
+            /// <param name="sqlDbType">Type of the SQL database.</param>
+            /// <param name="allowDBNull">if set to <see langword="true" /> column is nullable.</param>
+            public Column(int ordinal, string name, SqlDbType sqlDbType, bool allowDBNull)
+            {
+                Ordinal = ordinal;
+                Name = name;
+                SqlDbType = sqlDbType;
+                AllowDBNull = allowDBNull;
+            }
+
+            /// <summary>
+            /// Returns a <see cref="string" /> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="string" /> that represents this instance.</returns>
+            public override string ToString() => $"{Name} [{SqlDbType}]";
+        }
 
         /// <summary>
-        /// Whether we've finished reading from the stream.
+        /// Holds the current row.
         /// </summary>
-        private bool _eof;
+        private class Row
+        {
+            /// <summary>
+            /// The not read <see cref="Row"/>.
+            /// </summary>
+            [NotNull]
+            public static readonly Row NotRead = new Row();
+
+            /// <summary>
+            /// The end <see cref="Row"/>.
+            /// </summary>
+            [NotNull]
+            public static readonly Row End = new Row();
+
+            /// <summary>
+            /// The associated table definition.
+            /// </summary>
+            private readonly TableDefinition _tableDefinition;
+
+            /// <summary>
+            /// The SQL values
+            /// </summary>
+            private readonly object[] _sqlValues;
+
+            /// <summary>
+            /// The CLR values lazy initializer.
+            /// </summary>
+            private readonly Lazy<object[]> _values;
+
+            /// <summary>
+            /// Creates a default, invalid, instance of the <see cref="Row"/> class from being created.
+            /// </summary>
+            private Row()
+            {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Row"/> class.
+            /// </summary>
+            /// <param name="tableDefinition">The table definition.</param>
+            /// <param name="sqlValues">The SQL values.</param>
+            public Row([NotNull] TableDefinition tableDefinition, [NotNull] object[] sqlValues)
+            {
+                _tableDefinition = tableDefinition;
+                _sqlValues = sqlValues;
+
+                // Create lazy initializer for values.
+                _values = new Lazy<object[]>(
+                    () =>
+                    {
+                        object[] values = new object[tableDefinition.Count];
+                        int v = 0;
+                        foreach (CachedDataReader.Column column in tableDefinition)
+                        {
+                            if (column != null)
+                                values[v] = SqlValueSerialization.GetCLRValueFromSqlVariant(
+                                    column.SqlDbType,
+                                    sqlValues[v]);
+                            v++;
+                        }
+                        return values;
+                    },
+                    LazyThreadSafetyMode.ExecutionAndPublication);
+            }
+
+            /// <summary>
+            /// The SQL values
+            /// </summary>
+            /// <exception cref="System.InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            public object[] SqlValues
+            {
+                get
+                {
+                    if (_sqlValues == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _sqlValues;
+                }
+            }
+
+            /// <summary>
+            /// Gets the values.
+            /// </summary>
+            /// <value>The values.</value>
+            /// <exception cref="System.InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            public object[] Values
+            {
+                get
+                {
+                    if (_values == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _values.Value;
+                }
+            }
+
+            /// <summary>
+            /// The associated table definition.
+            /// </summary>
+            /// <exception cref="System.InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+            public TableDefinition TableDefinition
+            {
+                get
+                {
+                    if (_tableDefinition == null)
+                        throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                    return _tableDefinition; }
+            }
+        }
 
         /// <summary>
         /// Whether the <see cref="_stream">underlying data stream</see> is closed (1) or disposed (2).
@@ -141,7 +410,7 @@ namespace WebApplications.Utilities.Database.Caching
         /// The current row (if any).
         /// </summary>
         [NotNull]
-        private TaskCompletionSource<object[]> _row = new TaskCompletionSource<object[]>();
+        private TaskCompletionSource<Row> _row = new TaskCompletionSource<Row>();
 
         /// <summary>
         /// The current table definition.
@@ -153,7 +422,7 @@ namespace WebApplications.Utilities.Database.Caching
         /// The header information is set once the first stream is read.
         /// </summary>
         [NotNull]
-        private readonly TaskCompletionSource<Header> _header = new TaskCompletionSource<Header>();
+        private TaskCompletionSource<Header> _header = new TaskCompletionSource<Header>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedDataReader" /> class.
@@ -170,10 +439,9 @@ namespace WebApplications.Utilities.Database.Caching
         public CachedDataReader([NotNull] Stream stream)
         {
             _stream = stream;
-            _row.TrySetException(new InvalidOperationException("Invalid attempt to read when no data is present."));
             
-            // Get the first result
-            NextResultAsync();
+            // Trigger retrieval of first result, but don't wait.
+            NextResultAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -204,33 +472,47 @@ namespace WebApplications.Utilities.Database.Caching
         }
 
         /// <summary>
-        /// Gets the stream.
-        /// </summary>
-        /// <param name="ordinal">The ordinal.</param>
-        /// <returns>Stream.</returns>
-        public override Stream GetStream(int ordinal)
-        {
-            // TODO
-            return base.GetStream(ordinal);
-        }
-
-        /// <summary>
         /// Gets the name.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.String.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public override string GetName(int ordinal) => _tableDefinition.Task.Result.Columns[ordinal].Name;
+        public override string GetName(int ordinal) => _tableDefinition.Task.Result[ordinal].Name;
 
         /// <summary>
         /// Gets the values.
         /// </summary>
         /// <param name="values">The values.</param>
         /// <returns>System.Int32.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public override int GetValues(object[] values)
         {
-            throw new NotImplementedException();
+            if (values.Length < 1) return 0;
+
+            int c = 0;
+            foreach (object value in _row.Task.Result.Values)
+            {
+                values[c] = value;
+                if (c++ >= values.Length) break;
+            }
+            return c;
+        }
+
+        /// <summary>
+        /// Gets all provider-specific attribute columns in the collection for the current row.
+        /// </summary>
+        /// <param name="values">An array of <see cref="T:System.Object" /> into which to copy the attribute columns.</param>
+        /// <returns>The number of instances of <see cref="T:System.Object" /> in the array.</returns>
+        public override int GetProviderSpecificValues(object[] values)
+        {
+            if (values.Length < 1) return 0;
+
+            int c = 0;
+            foreach (object value in _row.Task.Result.SqlValues)
+            {
+                values[c] = value;
+                if (c++ >= values.Length) break;
+            }
+            return c;
         }
 
         /// <summary>
@@ -239,13 +521,13 @@ namespace WebApplications.Utilities.Database.Caching
         /// <param name="ordinal">The ordinal.</param>
         /// <returns><see langword="true" /> if [is database null] [the specified ordinal]; otherwise, <see langword="false" />.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public override bool IsDBNull(int ordinal) => _row.Task.Result[ordinal].IsNull();
+        public override bool IsDBNull(int ordinal) => _row.Task.Result.SqlValues[ordinal].IsNull();
 
         /// <summary>
         /// Gets the field count.
         /// </summary>
         /// <value>The field count.</value>
-        public override int FieldCount => _tableDefinition.Task.Result.Columns.Count;
+        public override int FieldCount => _tableDefinition.Task.Result.Count;
 
         /// <summary>
         /// Gets the <see cref="System.Object"/> with the specified ordinal.
@@ -295,7 +577,7 @@ namespace WebApplications.Utilities.Database.Caching
         public override async Task<bool> NextResultAsync(CancellationToken cancellationToken)
         {
             if (_streamState != 0)
-                throw new InvalidOperationException("The reader is closed or disposed");
+                throw new InvalidOperationException(Resources.CachedDataReader_Closed);
 
             try
             {
@@ -304,32 +586,37 @@ namespace WebApplications.Utilities.Database.Caching
                     cancellationToken.ThrowIfCancellationRequested();
 
                     if (_streamState != 0)
-                        throw new InvalidOperationException("The reader is closed or disposed");
+                        throw new InvalidOperationException(Resources.CachedDataReader_Closed);
 
-                    if (_eof) return false;
-                    
-                    // Check if we've read the header yet.
-                    if (_header.Task?.IsCompleted != true)
+                    // If this isn't the first call we should have a completed task.
+                    if (_tableDefinition.Task.IsCompleted)
+                    {
+                        // Grab current table definition (will also throw cancellations/failures).
+                        TableDefinition lastDefinition = _tableDefinition.Task.Result;
+
+                        // Check whether we're already at th end
+                        if (lastDefinition == TableDefinition.End)
+                            return false;
+
+                        // Skip over any remaining rows
+                        if (_row.Task.Result != Row.End)
+                            while (await ReadRowAsync(lastDefinition, cancellationToken)
+                                .ConfigureAwait(false) != null)
+                            {
+                            }
+
+                        // Create new task completion task for table definition and row.
+                        _tableDefinition = new TaskCompletionSource<TableDefinition>();
+                        _row = new TaskCompletionSource<Row>();
+                    }
+                    else if (!_header.Task.IsCompleted)
                     {
                         // Read Header
-                        int recordsAffected =
-                            await
-                                VariableLengthEncoding.DecodeIntAsync(_stream, cancellationToken).ConfigureAwait(false);
-                        _header.TrySetResult(new Header(recordsAffected));
+                        int recordsAffected = await
+                            VariableLengthEncoding.DecodeIntAsync(_stream, cancellationToken).ConfigureAwait(false);
+                        _header.SetResult(new Header(recordsAffected));
                     }
-
-                    // Read any remaining rows
-                    if (!_eor)
-                        while (
-                            await ReadRowAsync(_tableDefinition.Task.Result, cancellationToken)
-                                .ConfigureAwait(false) != null)
-                        {
-                        }
-
-                    // Create new task completion task for table definition.
-                    if (_tableDefinition.Task?.IsCompleted == true)
-                        _tableDefinition = new TaskCompletionSource<TableDefinition>();
-
+                    
                     // Read field count and hasRows flag
                     uint fieldCount =
                         await VariableLengthEncoding.DecodeUIntAsync(_stream, cancellationToken).ConfigureAwait(false);
@@ -337,15 +624,12 @@ namespace WebApplications.Utilities.Database.Caching
                     // Detect end of results
                     if (fieldCount < 1)
                     {
-                        _eor = true;
-                        _eof = true;
-                        _tableDefinition.TrySetException(new InvalidOperationException("Invalid attempt to read when no data is present."));
+                        _tableDefinition.SetResult(TableDefinition.End);
+                        _row.SetResult(Row.End);
                         return false;
                     }
 
                     bool hasRows = (fieldCount & 1) == 1;
-                    _eor = !hasRows;
-
                     fieldCount >>= 1;
 
                     // Create a new data table
@@ -375,23 +659,56 @@ namespace WebApplications.Utilities.Database.Caching
                     }
 
                     // Set the table definition.
-                    _tableDefinition.TrySetResult(tableDefinition);
+                    _tableDefinition.SetResult(tableDefinition);
+
+                    // Set the row as not yet read.
+                    _row.SetResult(Row.NotRead);
                 }
 
                 return true;
             }
             catch (OperationCanceledException)
             {
-                _header.TrySetCanceled();
-                _tableDefinition.TrySetCanceled();
-                _row.TrySetCanceled();
+                if (!_header.TrySetCanceled())
+                {
+                    TaskCompletionSource<Header> newHeader = new TaskCompletionSource<Header>();
+                    newHeader.SetCanceled();
+                    _header = newHeader;
+                }
+                if (!_tableDefinition.TrySetCanceled())
+                {
+                    TaskCompletionSource<TableDefinition> newTableDefinition = new TaskCompletionSource<TableDefinition>();
+                    newTableDefinition.SetCanceled();
+                    _tableDefinition = newTableDefinition;
+                }
+                if (!_row.TrySetCanceled())
+                {
+                    TaskCompletionSource<Row> newRow = new TaskCompletionSource<Row>();
+                    newRow.SetCanceled();
+                    _row = newRow;
+                }
                 throw;
             }
             catch (Exception exception)
             {
-                _header.TrySetException(exception);
-                _tableDefinition.TrySetException(exception);
-                _row.TrySetException(exception);
+                if (!_header.TrySetException(exception))
+                {
+                    TaskCompletionSource<Header> newHeader = new TaskCompletionSource<Header>();
+                    newHeader.SetException(exception);
+                    _header = newHeader;
+                }
+                if (!_tableDefinition.TrySetException(exception))
+                {
+                    TaskCompletionSource<TableDefinition> newTableDefinition = new TaskCompletionSource<TableDefinition>();
+                    newTableDefinition.SetException(exception);
+                    _tableDefinition = newTableDefinition;
+                }
+                if (!_row.TrySetException(exception))
+                {
+                    TaskCompletionSource<Row> newRow = new TaskCompletionSource<Row>();
+                    newRow.SetException(exception);
+                    _row = newRow;
+                }
                 throw;
             }
         }
@@ -412,7 +729,7 @@ namespace WebApplications.Utilities.Database.Caching
         public override async Task<bool> ReadAsync(CancellationToken cancellationToken)
         {
             if (_streamState != 0)
-                throw new InvalidOperationException("The reader is closed or disposed");
+                throw new InvalidOperationException(Resources.CachedDataReader_Closed);
 
             try
             {
@@ -421,37 +738,84 @@ namespace WebApplications.Utilities.Database.Caching
                     cancellationToken.ThrowIfCancellationRequested();
 
                     if (_streamState != 0)
-                        throw new InvalidOperationException("The reader is closed or disposed");
+                        throw new InvalidOperationException(Resources.CachedDataReader_Closed);
 
-                    if (_eor) return false;
+                    // Ensure the row task is in a completed state.
+                    if (!_row.Task.IsCompleted || !_tableDefinition.Task.IsCompleted)
+                        throw new InvalidOperationException("The reader is not initialized properly.");
+
+                    Row current = _row.Task.Result;
+                    if (current == Row.End) return false;
 
                     // Create new row task
-                    _row = new TaskCompletionSource<object[]>();
+                    _row = new TaskCompletionSource<Row>();
 
                     // Get the table definition.
-                    TableDefinition tableDefinition = await _tableDefinition.Task.ConfigureAwait(false);
-                    object[] values = await ReadRowAsync(tableDefinition, cancellationToken).ConfigureAwait(false);
+                    TableDefinition tableDefinition = _tableDefinition.Task.Result;
+
+                    // Sanity check we should have a table definition that matches the last row (unless we haven't
+                    // read a row yet).
+                    if (tableDefinition == null ||
+                        (current != Row.NotRead && current?.TableDefinition != tableDefinition))
+                        throw new InvalidOperationException("The reader is not in a valid state.");
+
+                    // Get the SQL values for the row.
+                    object[] sqlValues = await ReadRowAsync(tableDefinition, cancellationToken).ConfigureAwait(false);
 
                     // Update current row.
-                    if (values == null)
+                    if (sqlValues == null)
                     {
                         // Reached end of record set
-                        _row.TrySetException(new InvalidOperationException("Invalid attempt to read when no data is present."));
+                        _row.SetResult(Row.End);
                         return false;
                     }
 
-                    _row.TrySetResult(values);
+                    _row.SetResult(new Row(tableDefinition, sqlValues));
                     return true;
                 }
             }
             catch (OperationCanceledException)
             {
-                _row.TrySetCanceled();
+                if (!_header.TrySetCanceled())
+                {
+                    TaskCompletionSource<Header> newHeader = new TaskCompletionSource<Header>();
+                    newHeader.SetCanceled();
+                    _header = newHeader;
+                }
+                if (!_tableDefinition.TrySetCanceled())
+                {
+                    TaskCompletionSource<TableDefinition> newTableDefinition = new TaskCompletionSource<TableDefinition>();
+                    newTableDefinition.SetCanceled();
+                    _tableDefinition = newTableDefinition;
+                }
+                if (!_row.TrySetCanceled())
+                {
+                    TaskCompletionSource<Row> newRow = new TaskCompletionSource<Row>();
+                    newRow.SetCanceled();
+                    _row = newRow;
+                }
                 throw;
             }
             catch (Exception exception)
             {
-                _row.TrySetException(exception);
+                if (!_header.TrySetException(exception))
+                {
+                    TaskCompletionSource<Header> newHeader = new TaskCompletionSource<Header>();
+                    newHeader.SetException(exception);
+                    _header = newHeader;
+                }
+                if (!_tableDefinition.TrySetException(exception))
+                {
+                    TaskCompletionSource<TableDefinition> newTableDefinition = new TaskCompletionSource<TableDefinition>();
+                    newTableDefinition.SetException(exception);
+                    _tableDefinition = newTableDefinition;
+                }
+                if (!_row.TrySetException(exception))
+                {
+                    TaskCompletionSource<Row> newRow = new TaskCompletionSource<Row>();
+                    newRow.SetException(exception);
+                    _row = newRow;
+                }
                 throw;
             }
         }
@@ -465,10 +829,7 @@ namespace WebApplications.Utilities.Database.Caching
         private async Task<object[]> ReadRowAsync([NotNull] TableDefinition tableDefinition, CancellationToken cancellationToken)
         {
             if (!tableDefinition.HasRows)
-            {
-                _eor = true;
                 return null;
-            }
 
             // Read flags
             int nullableColumnCount = tableDefinition.NullableColumns.Count;
@@ -480,22 +841,19 @@ namespace WebApplications.Utilities.Database.Caching
 
             // ReSharper disable once PossibleNullReferenceException
             if (flags[0])
-            {
-                _eor = true;
                 return null;
-            }
 
             // Read nulls
             int f = 1;
             HashSet<int> nullColumns = new HashSet<int>();
-            foreach (TableDefinition.Column nullableColumn in tableDefinition.NullableColumns)
+            foreach (Column nullableColumn in tableDefinition.NullableColumns)
                 if (flags[f++])
                     // ReSharper disable once PossibleNullReferenceException
                     nullColumns.Add(nullableColumn.Ordinal);
 
             // Read values
-            object[] values = new object[tableDefinition.Columns.Count];
-            foreach (TableDefinition.Column column in tableDefinition.Columns)
+            object[] values = new object[tableDefinition.Count];
+            foreach (Column column in tableDefinition)
             {
                 // ReSharper disable once PossibleNullReferenceException
                 int ordinal = column.Ordinal;
@@ -526,7 +884,7 @@ namespace WebApplications.Utilities.Database.Caching
             {
 
                 if (_streamState != 0)
-                    throw new InvalidOperationException("The reader is closed or disposed"); // TODO Support Depth?
+                    throw new InvalidOperationException(Resources.CachedDataReader_Closed); // TODO Support Depth?
                 return 1;
             }
         }
@@ -536,20 +894,16 @@ namespace WebApplications.Utilities.Database.Caching
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>System.Int32.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetOrdinal(string name) => _tableDefinition.Task.Result.ColumnsByName[name].Ordinal;
+        public override int GetOrdinal(string name) => _tableDefinition.Task.Result[name].Ordinal;
 
         /// <summary>
         /// Gets the boolean.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns><see langword="true" /> if XXXX, <see langword="false" /> otherwise.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override bool GetBoolean(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override bool GetBoolean(int ordinal) => (bool)GetValue(ordinal);
 
         /// <summary>
         /// Gets the byte.
@@ -557,10 +911,8 @@ namespace WebApplications.Utilities.Database.Caching
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Byte.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public override byte GetByte(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override byte GetByte(int ordinal) => (byte)GetValue(ordinal);
 
         /// <summary>
         /// Gets the bytes.
@@ -570,11 +922,35 @@ namespace WebApplications.Utilities.Database.Caching
         /// <param name="buffer">The buffer.</param>
         /// <param name="bufferOffset">The buffer offset.</param>
         /// <param name="length">The length.</param>
-        /// <returns>System.Int64.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <returns>The actual number of bytes read.</returns>
+        /// <remarks><para>GetBytes returns the number of available bytes in the field. Most of the time this is the
+        /// exact length of the field. However, the number returned may be less than the true length of the field if
+        /// GetBytes has already been used to obtain bytes from the field. This may be the case, for example, if the
+        /// reader is reading a large data structure into a buffer. For more information, see the SequentialAccess
+        /// setting for CommandBehavior.</para>
+        /// <para>If you pass a buffer that is null, GetBytes returns the length of the entire field in bytes, not the
+        /// remaining size based on the buffer offset parameter.</para>
+        /// <para>No conversions are performed; therefore, the data retrieved must already be a byte array.</para>
+        /// </remarks>
         public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length)
         {
-            throw new NotImplementedException();
+            byte[] data = (byte[])GetValue(ordinal);
+            if (data == null) return 0;
+
+            long dataLength = data.LongLength;
+            if (buffer == null)
+                return dataLength;
+
+            long remainder = dataLength - dataOffset;
+
+            // If the number of bytes is more than are left, reduce length
+            if (length > remainder) length = (int)remainder;
+
+            // Copy bytes
+            if (length > 0)
+                Array.Copy(data, dataOffset, buffer, bufferOffset, length);
+
+            return length;
         }
 
         /// <summary>
@@ -582,10 +958,10 @@ namespace WebApplications.Utilities.Database.Caching
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Char.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <exception cref="NotSupportedException">Sql Server does not support single character values.</exception>
         public override char GetChar(int ordinal)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -596,11 +972,43 @@ namespace WebApplications.Utilities.Database.Caching
         /// <param name="buffer">The buffer.</param>
         /// <param name="bufferOffset">The buffer offset.</param>
         /// <param name="length">The length.</param>
-        /// <returns>System.Int64.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <returns>The actual number of chars read.</returns>
+        /// <remarks><para>GetChars returns the number of available chars in the field. Most of the time this is the
+        /// exact length of the field. However, the number returned may be less than the true length of the field if
+        /// GetChars has already been used to obtain chars from the field. This may be the case, for example, if the
+        /// reader is reading a large data structure into a buffer. For more information, see the SequentialAccess
+        /// setting for CommandBehavior.</para>
+        /// <para>If you pass a buffer that is null, GetBytes returns the length of the entire field in chars, not the
+        /// remaining size based on the buffer offset parameter.</para>
+        /// <para>No conversions are performed; therefore, the data retrieved must already be a byte array.</para>
+        /// </remarks>
         public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length)
         {
-            throw new NotImplementedException();
+            string data = (string)GetValue(ordinal);
+            if (data == null) return 0;
+
+            if (dataOffset > int.MaxValue)
+                throw new InvalidOperationException("GetChars does not support long data offsets.");
+            int offset = (int)dataOffset;
+
+            int dataLength = data.Length;
+            if (buffer == null)
+                return dataLength;
+
+            int remainder = dataLength - offset;
+
+            // If the number of chars is more than are left, reduce length
+            if (length > remainder) length = remainder;
+
+            // Copy bytes
+            if (length > 0)
+            {
+                int d = 0;
+                for (int c = offset; c < offset + length; c++)
+                    buffer[d++] = data[c];
+            }
+
+            return length;
         }
 
         /// <summary>
@@ -608,33 +1016,24 @@ namespace WebApplications.Utilities.Database.Caching
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>Guid.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override Guid GetGuid(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override Guid GetGuid(int ordinal) => (Guid)GetValue(ordinal);
 
         /// <summary>
         /// Gets the int16.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Int16.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override short GetInt16(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override short GetInt16(int ordinal) => (short)GetValue(ordinal);
 
         /// <summary>
         /// Gets the int32.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Int32.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override int GetInt32(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override int GetInt32(int ordinal) => (int)GetValue(ordinal);
 
         /// <summary>
         /// Gets the int64.
@@ -642,75 +1041,124 @@ namespace WebApplications.Utilities.Database.Caching
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Int64.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public override long GetInt64(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        public override long GetInt64(int ordinal) => (long)GetValue(ordinal);
 
         /// <summary>
         /// Gets the date time.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>DateTime.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override DateTime GetDateTime(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override DateTime GetDateTime(int ordinal) => (DateTime)GetValue(ordinal);
 
         /// <summary>
         /// Gets the string.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.String.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override string GetString(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override string GetString(int ordinal) => (string)GetValue(ordinal);
 
         /// <summary>
         /// Gets the decimal.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Decimal.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override decimal GetDecimal(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override decimal GetDecimal(int ordinal) => (decimal)GetValue(ordinal);
 
         /// <summary>
         /// Gets the double.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Double.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override double GetDouble(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override double GetDouble(int ordinal) => (double)GetValue(ordinal);
 
         /// <summary>
         /// Gets the float.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Single.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override float GetFloat(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
+        public override float GetFloat(int ordinal) => (float)GetValue(ordinal);
 
         /// <summary>
         /// Gets the name of the data type.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.String.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <exception cref="InvalidCastException">If the value is not of the specified type.</exception>
         public override string GetDataTypeName(int ordinal)
         {
-            throw new NotImplementedException();
+            // TODO
+            switch (_tableDefinition.Task.Result[ordinal].SqlDbType)
+            {
+                case SqlDbType.BigInt:
+                    return null;
+                case SqlDbType.Binary:
+                    return null;
+                case SqlDbType.Bit:
+                    return null;
+                case SqlDbType.Char:
+                    return null;
+                case SqlDbType.DateTime:
+                    return null;
+                case SqlDbType.Decimal:
+                    return null;
+                case SqlDbType.Float:
+                    return null;
+                case SqlDbType.Image:
+                    return null;
+                case SqlDbType.Int:
+                    return null;
+                case SqlDbType.Money:
+                    return null;
+                case SqlDbType.NChar:
+                    return null;
+                case SqlDbType.NText:
+                    return null;
+                case SqlDbType.NVarChar:
+                    return null;
+                case SqlDbType.Real:
+                    return null;
+                case SqlDbType.UniqueIdentifier:
+                    return null;
+                case SqlDbType.SmallDateTime:
+                    return null;
+                case SqlDbType.SmallInt:
+                    return null;
+                case SqlDbType.SmallMoney:
+                    return null;
+                case SqlDbType.Text:
+                    return null;
+                case SqlDbType.Timestamp:
+                    return null;
+                case SqlDbType.TinyInt:
+                    return null;
+                case SqlDbType.VarBinary:
+                    return null;
+                case SqlDbType.VarChar:
+                    return null;
+                case SqlDbType.Variant:
+                    return null;
+                case SqlDbType.Xml:
+                    return null;
+                case SqlDbType.Udt:
+                    return null;
+                case SqlDbType.Structured:
+                    return null;
+                case SqlDbType.Date:
+                    return null;
+                case SqlDbType.Time:
+                    return null;
+                case SqlDbType.DateTime2:
+                    return null;
+                case SqlDbType.DateTimeOffset:
+                    return null;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         /// <summary>
@@ -718,10 +1166,153 @@ namespace WebApplications.Utilities.Database.Caching
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>Type.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public override Type GetFieldType(int ordinal)
         {
-            throw new NotImplementedException();
+            // TODO
+            switch (_tableDefinition.Task.Result[ordinal].SqlDbType)
+            {
+                case SqlDbType.BigInt:
+                    return null;
+                case SqlDbType.Binary:
+                    return null;
+                case SqlDbType.Bit:
+                    return null;
+                case SqlDbType.Char:
+                    return null;
+                case SqlDbType.DateTime:
+                    return null;
+                case SqlDbType.Decimal:
+                    return null;
+                case SqlDbType.Float:
+                    return null;
+                case SqlDbType.Image:
+                    return null;
+                case SqlDbType.Int:
+                    return null;
+                case SqlDbType.Money:
+                    return null;
+                case SqlDbType.NChar:
+                    return null;
+                case SqlDbType.NText:
+                    return null;
+                case SqlDbType.NVarChar:
+                    return null;
+                case SqlDbType.Real:
+                    return null;
+                case SqlDbType.UniqueIdentifier:
+                    return null;
+                case SqlDbType.SmallDateTime:
+                    return null;
+                case SqlDbType.SmallInt:
+                    return null;
+                case SqlDbType.SmallMoney:
+                    return null;
+                case SqlDbType.Text:
+                    return null;
+                case SqlDbType.Timestamp:
+                    return null;
+                case SqlDbType.TinyInt:
+                    return null;
+                case SqlDbType.VarBinary:
+                    return null;
+                case SqlDbType.VarChar:
+                    return null;
+                case SqlDbType.Variant:
+                    return null;
+                case SqlDbType.Xml:
+                    return null;
+                case SqlDbType.Udt:
+                    return null;
+                case SqlDbType.Structured:
+                    return null;
+                case SqlDbType.Date:
+                    return null;
+                case SqlDbType.Time:
+                    return null;
+                case SqlDbType.DateTime2:
+                    return null;
+                case SqlDbType.DateTimeOffset:
+                    return null;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// Returns the provider-specific field type of the specified column.
+        /// </summary>
+        /// <param name="ordinal">The zero-based column ordinal.</param>
+        /// <returns>The <see cref="T:System.Type" /> object that describes the data type of the specified column.</returns>
+        public override Type GetProviderSpecificFieldType(int ordinal)
+        {
+            // TODO
+            switch (_tableDefinition.Task.Result[ordinal].SqlDbType)
+            {
+                case SqlDbType.BigInt:
+                    return null;
+                case SqlDbType.Binary:
+                    return null;
+                case SqlDbType.Bit:
+                    return null;
+                case SqlDbType.Char:
+                    return null;
+                case SqlDbType.DateTime:
+                    return null;
+                case SqlDbType.Decimal:
+                    return null;
+                case SqlDbType.Float:
+                    return null;
+                case SqlDbType.Image:
+                    return null;
+                case SqlDbType.Int:
+                    return null;
+                case SqlDbType.Money:
+                    return null;
+                case SqlDbType.NChar:
+                    return null;
+                case SqlDbType.NText:
+                    return null;
+                case SqlDbType.NVarChar:
+                    return null;
+                case SqlDbType.Real:
+                    return null;
+                case SqlDbType.UniqueIdentifier:
+                    return null;
+                case SqlDbType.SmallDateTime:
+                    return null;
+                case SqlDbType.SmallInt:
+                    return null;
+                case SqlDbType.SmallMoney:
+                    return null;
+                case SqlDbType.Text:
+                    return null;
+                case SqlDbType.Timestamp:
+                    return null;
+                case SqlDbType.TinyInt:
+                    return null;
+                case SqlDbType.VarBinary:
+                    return null;
+                case SqlDbType.VarChar:
+                    return null;
+                case SqlDbType.Variant:
+                    return null;
+                case SqlDbType.Xml:
+                    return null;
+                case SqlDbType.Udt:
+                    return null;
+                case SqlDbType.Structured:
+                    return null;
+                case SqlDbType.Date:
+                    return null;
+                case SqlDbType.Time:
+                    return null;
+                case SqlDbType.DateTime2:
+                    return null;
+                case SqlDbType.DateTimeOffset:
+                    return null;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         /// <summary>
@@ -729,11 +1320,16 @@ namespace WebApplications.Utilities.Database.Caching
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <returns>System.Object.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public override object GetValue(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override object GetValue(int ordinal) => _row.Task.Result.Values[ordinal];
+
+        /// <summary>
+        /// Gets the value of the specified column as an instance of <see cref="T:System.Object" />.
+        /// </summary>
+        /// <param name="ordinal">The zero-based column ordinal.</param>
+        /// <returns>The value of the specified column.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override object GetProviderSpecificValue(int ordinal) => _row.Task.Result.SqlValues[ordinal];
 
         /// <summary>
         /// Gets the enumerator.
@@ -742,6 +1338,7 @@ namespace WebApplications.Utilities.Database.Caching
         /// <exception cref="System.NotImplementedException"></exception>
         public override IEnumerator GetEnumerator()
         {
+            // TODO Create enumerable
             throw new NotImplementedException();
         }
     }

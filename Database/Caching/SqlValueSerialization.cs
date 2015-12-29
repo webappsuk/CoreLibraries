@@ -486,5 +486,73 @@ namespace WebApplications.Utilities.Database.Caching
 
             return flags;
         }
+
+
+        /// <summary>
+        /// Gets the CLR value from SQL variant.
+        /// </summary>
+        /// <param name="sqlDbType">Type of the SQL database.</param>
+        /// <param name="sqlValue">The SQL value.</param>
+        /// <returns>System.Object.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="sqlDbType"/> is unsupported.</exception>
+        /// <exception cref="InvalidCastException"><paramref name="sqlValue"/> does not correspond to <paramref name="sqlDbType"/>.</exception>
+        [CanBeNull]
+        public static object GetCLRValueFromSqlVariant(SqlDbType sqlDbType, object sqlValue)
+        {
+            if (sqlValue.IsNull())
+                return DBNull.Value;
+
+            switch (sqlDbType)
+            {
+                case SqlDbType.BigInt:
+                    return ((SqlInt64)sqlValue).Value;
+                case SqlDbType.Binary:
+                case SqlDbType.Image:
+                case SqlDbType.Timestamp:
+                case SqlDbType.VarBinary:
+                    return ((SqlBinary)sqlValue).Value;
+                case SqlDbType.Bit:
+                    return ((SqlBoolean)sqlValue).Value;
+                case SqlDbType.NChar:
+                case SqlDbType.Char:
+                case SqlDbType.NText:
+                case SqlDbType.NVarChar:
+                case SqlDbType.Text:
+                case SqlDbType.VarChar:
+                    return ((SqlString)sqlValue).Value;
+                case SqlDbType.SmallDateTime:
+                case SqlDbType.DateTime:
+                    return ((SqlDateTime)sqlValue).Value;
+                case SqlDbType.Decimal:
+                    return ((SqlDecimal)sqlValue).Value;
+                case SqlDbType.Float:
+                    return ((SqlDouble)sqlValue).Value;
+                case SqlDbType.Int:
+                    return ((SqlInt32)sqlValue).Value;
+                case SqlDbType.Real:
+                    return ((SqlSingle)sqlValue).Value;
+                case SqlDbType.UniqueIdentifier:
+                    return ((SqlGuid)sqlValue).Value;
+                case SqlDbType.SmallInt:
+                    return ((SqlInt16)sqlValue).Value;
+                case SqlDbType.Money:
+                case SqlDbType.SmallMoney:
+                    return ((SqlMoney)sqlValue).Value;
+                case SqlDbType.TinyInt:
+                    return ((SqlByte)sqlValue).Value;
+                case SqlDbType.Xml:
+                    return ((SqlXml)sqlValue).Value;
+                case SqlDbType.Variant:
+                case SqlDbType.Udt:
+                case SqlDbType.Structured:
+                case SqlDbType.Date:
+                case SqlDbType.Time:
+                case SqlDbType.DateTime2:
+                case SqlDbType.DateTimeOffset:
+                    return sqlValue;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(sqlDbType), sqlDbType, null);
+            }
+        }
     }
 }
