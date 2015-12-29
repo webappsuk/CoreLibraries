@@ -60,7 +60,7 @@ namespace WebApplications.Utilities.Database.Schema
         internal SqlSchema(int id, [NotNull] string fullName)
             : base(fullName)
         {
-            if (string.IsNullOrWhiteSpace(fullName)) throw new ArgumentNullException("fullName");
+            if (string.IsNullOrWhiteSpace(fullName)) throw new ArgumentNullException(nameof(fullName));
             ID = id;
         }
     }

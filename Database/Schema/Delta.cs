@@ -73,8 +73,8 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] DatabaseEntity right,
             [NotNull] ICollection<Difference> differences)
         {
-            if (left == null) throw new ArgumentNullException("left");
-            if (right == null) throw new ArgumentNullException("right");
+            if (left == null) throw new ArgumentNullException(nameof(left));
+            if (right == null) throw new ArgumentNullException(nameof(right));
 
             Left = left;
             Right = right;

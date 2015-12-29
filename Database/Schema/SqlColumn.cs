@@ -25,11 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.SqlServer.Server;
+using Microsoft.SqlServer.Types;
 using System;
 using System.Data;
 using System.Linq.Expressions;
-using Microsoft.SqlServer.Server;
-using Microsoft.SqlServer.Types;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -96,8 +96,8 @@ namespace WebApplications.Utilities.Database.Schema
             : base(name)
             // ReSharper restore PossibleNullReferenceException
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (type == null) throw new ArgumentNullException("type");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             Ordinal = ordinal;
             IsNullable = isNullable;

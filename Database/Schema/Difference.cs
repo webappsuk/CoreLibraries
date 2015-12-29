@@ -73,8 +73,8 @@ namespace WebApplications.Utilities.Database.Schema
             [CanBeNull] object leftValue,
             [CanBeNull] object rightValue)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (valueType == null) throw new ArgumentNullException("valueType");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (valueType == null) throw new ArgumentNullException(nameof(valueType));
 
             Name = name;
             ValueType = valueType;

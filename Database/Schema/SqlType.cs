@@ -25,6 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.SqlServer.Server;
+using Microsoft.SqlServer.Types;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -36,8 +38,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.SqlServer.Server;
-using Microsoft.SqlServer.Types;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
@@ -326,7 +326,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </remarks>
         public bool AcceptsCLRType([NotNull] Type clrType)
         {
-            if (clrType == null) throw new ArgumentNullException("clrType");
+            if (clrType == null) throw new ArgumentNullException(nameof(clrType));
 
             Func<object, TypeConstraintMode, object> temp;
             if (_clrTypeConverters.TryGetValue(clrType, out temp))
@@ -551,10 +551,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The converter (if found); otherwise returns <see langword="null"/>.
         /// </returns>
         [CanBeNull]
-        public Func<object, TypeConstraintMode, object> GetClrToSqlConverter<T>()
-        {
-            return GetClrToSqlConverter(typeof(T));
-        }
+        public Func<object, TypeConstraintMode, object> GetClrToSqlConverter<T>() => GetClrToSqlConverter(typeof(T));
 
         /// <summary>
         ///   Gets the CLR to SQL type converter if one can be found for the specified CLR type.
@@ -582,7 +579,7 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public Func<object, TypeConstraintMode, object> GetClrToSqlConverter([NotNull] Type clrType)
         {
-            if (clrType == null) throw new ArgumentNullException("clrType");
+            if (clrType == null) throw new ArgumentNullException(nameof(clrType));
 
             Func<object, TypeConstraintMode, object> conv = _clrTypeConverters.GetOrAdd(
                 clrType,
@@ -961,15 +958,15 @@ namespace WebApplications.Utilities.Database.Schema
                                     // after checking there are rows available.
                                     if (typeof(SqlDataRecord).IsAssignableFrom(enumerationType))
                                         // We are the base non-generic table type.
-                                        return (Func<object, TypeConstraintMode, object>)
-                                            ((c, m) =>
+                                        return
+                                            (c, m) =>
                                             {
                                                 if (c == null)
                                                     return null;
                                                 List<SqlDataRecord> records =
                                                     ((IEnumerable<SqlDataRecord>)c).ToList();
                                                 return records.Count < 1 ? null : records;
-                                            });
+                                            };
                                     
                                     // Check if we are IEnumerable<Tuple<...>>
                                     if (enumerationType.IsGenericType &&
@@ -1044,8 +1041,8 @@ namespace WebApplications.Utilities.Database.Schema
                                         }
 
                                         // Create lambda
-                                        return (Func<object, TypeConstraintMode, object>)
-                                            ((c, m) =>
+                                        return
+                                            (c, m) =>
                                             {
                                                 IEnumerable enumerable = c as IEnumerable;
                                                 if (enumerable == null)
@@ -1069,7 +1066,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 return records.Count < 1
                                                     ? (object)null
                                                     : records;
-                                            });
+                                            };
                                     }
 
                                     // If we're single column we support enumeration of column type
@@ -1084,8 +1081,8 @@ namespace WebApplications.Utilities.Database.Schema
 
                                         if (enumConverter != null)
                                             // Create lambda
-                                            return (Func<object, TypeConstraintMode, object>)
-                                                ((c, m) =>
+                                            return
+                                                (c, m) =>
                                                 {
                                                     IEnumerable enumerable = c as IEnumerable;
                                                     if (enumerable == null)
@@ -1105,7 +1102,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                     return records.Count < 1
                                                         ? (object)null
                                                         : records;
-                                                });
+                                                };
                                     }
 
                                     // If we have more than 1 column, but we need less than 3, then a keyvaluepair is fine.
@@ -1171,8 +1168,8 @@ namespace WebApplications.Utilities.Database.Schema
                                             (o, m) => valueConverter(valueSelector(o), m);
 
                                         // Create lambda
-                                        return (Func<object, TypeConstraintMode, object>)
-                                            ((c, m) =>
+                                        return
+                                            (c, m) =>
                                             {
                                                 IEnumerable enumerable = c as IEnumerable;
                                                 if (enumerable == null)
@@ -1194,7 +1191,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 return records.Count < 1
                                                     ? (object)null
                                                     : records;
-                                            });
+                                            };
                                     }
 
                                     // Unsupported Log error, but don't throw it.
@@ -1264,7 +1261,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] Type actualClrType,
             bool supportNullable = true)
         {
-            if (actualClrType == null) throw new ArgumentNullException("actualClrType");
+            if (actualClrType == null) throw new ArgumentNullException(nameof(actualClrType));
 
             bool isNullable = false;
 
@@ -1312,8 +1309,8 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] Type actualClrType,
             [NotNull] Func<TClr, TypeConstraintMode, object> converter)
         {
-            if (actualClrType == null) throw new ArgumentNullException("actualClrType");
-            if (converter == null) throw new ArgumentNullException("converter");
+            if (actualClrType == null) throw new ArgumentNullException(nameof(actualClrType));
+            if (converter == null) throw new ArgumentNullException(nameof(converter));
 
             Func<object, TClr> toInputType = actualClrType.GetConversion<object, TClr>();
             return toInputType != null

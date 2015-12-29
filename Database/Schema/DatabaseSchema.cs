@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using NodaTime;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -35,7 +36,6 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
@@ -81,7 +81,7 @@ namespace WebApplications.Utilities.Database.Schema
                 int schemaID,
                 [NotNull] string name)
             {
-                if (name == null) throw new ArgumentNullException("name");
+                if (name == null) throw new ArgumentNullException(nameof(name));
 
                 Type = type;
                 SchemaID = schemaID;
@@ -111,9 +111,9 @@ namespace WebApplications.Utilities.Database.Schema
                 ParameterDirection parameterDirection,
                 bool isReadonly)
             {
-                if (name == null) throw new ArgumentNullException("name");
-                if (parameterName == null) throw new ArgumentNullException("parameterName");
-                if (parameterType == null) throw new ArgumentNullException("parameterType");
+                if (name == null) throw new ArgumentNullException(nameof(name));
+                if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+                if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
 
                 Type = type;
                 SchemaID = schemaID;
@@ -177,9 +177,9 @@ namespace WebApplications.Utilities.Database.Schema
                 bool isNullable,
                 int? tableTypeID)
             {
-                if (name == null) throw new ArgumentNullException("name");
-                if (columnName == null) throw new ArgumentNullException("columnName");
-                if (columnType == null) throw new ArgumentNullException("columnType");
+                if (name == null) throw new ArgumentNullException(nameof(name));
+                if (columnName == null) throw new ArgumentNullException(nameof(columnName));
+                if (columnType == null) throw new ArgumentNullException(nameof(columnType));
 
                 Type = type;
                 SchemaID = schemaID;
@@ -385,7 +385,7 @@ namespace WebApplications.Utilities.Database.Schema
             bool forceReload = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (connection == null) throw new ArgumentNullException("connection");
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
             // ReSharper disable PossibleNullReferenceException
             return _databaseSchemas.GetOrAdd(

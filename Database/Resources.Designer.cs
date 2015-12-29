@@ -61,6 +61,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Retrieved record set was sparse (not all columns present) and so could not be serialized..
+        /// </summary>
+        internal static string CachedDataWriter_SerializeAsync_Sparse_Columns {
+            get {
+                return ResourceManager.GetString("CachedDataWriter_SerializeAsync_Sparse_Columns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Weight must be positive..
         /// </summary>
         internal static string Connection_WeightMustBePositive {
@@ -768,6 +777,24 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlUdtInfo_GetFromType_Unknown_Type {
             get {
                 return ResourceManager.GetString("SqlUdtInfo_GetFromType_Unknown_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The input stream ended unexpectedly..
+        /// </summary>
+        internal static string SqlValueSerialization_Deserialize_EOF {
+            get {
+                return ResourceManager.GetString("SqlValueSerialization_Deserialize_EOF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified SqlDbType &apos;{0}&apos; is unsupported..
+        /// </summary>
+        internal static string SqlValueSerialization_Serialize_Unsupported_SqlDbType {
+            get {
+                return ResourceManager.GetString("SqlValueSerialization_Serialize_Unsupported_SqlDbType", resourceCulture);
             }
         }
     }

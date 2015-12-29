@@ -25,11 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using Microsoft.SqlServer.Server;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database.Schema
@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Database.Schema
             : base(sqlSchema, name)
             // ReSharper restore PossibleNullReferenceException
         {
-            if (columns == null) throw new ArgumentNullException("columns");
+            if (columns == null) throw new ArgumentNullException(nameof(columns));
 
             Type = type;
             Name = name;
@@ -149,7 +149,7 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public SqlColumn GetColumn([NotNull] string columnName)
         {
-            if (columnName == null) throw new ArgumentNullException("columnName");
+            if (columnName == null) throw new ArgumentNullException(nameof(columnName));
 
             SqlColumn column;
             return _columnsByName.TryGetValue(columnName.ToLower(), out column)
@@ -168,7 +168,7 @@ namespace WebApplications.Utilities.Database.Schema
         [ContractAnnotation("=>true, column:notnull;=>false, column:null")]
         public bool TryGetColumn([NotNull] string columnName, out SqlColumn column)
         {
-            if (columnName == null) throw new ArgumentNullException("columnName");
+            if (columnName == null) throw new ArgumentNullException(nameof(columnName));
 
             return _columnsByName.TryGetValue(columnName.ToLower(), out column);
         }

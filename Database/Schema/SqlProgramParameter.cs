@@ -98,8 +98,8 @@ namespace WebApplications.Utilities.Database.Schema
             bool isReadOnly)
             : base(name)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (type == null) throw new ArgumentNullException("type");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (type == null) throw new ArgumentNullException(nameof(type));
             Ordinal = ordinal;
             IsReadOnly = isReadOnly;
             Direction = direction;
@@ -139,8 +139,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// </returns>
         [CanBeNull]
         public object CastCLRValue<T>([CanBeNull] T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
-        {
-            return Type.CastCLRValue(value, mode);
-        }
+            => Type.CastCLRValue(value, mode);
     }
 }

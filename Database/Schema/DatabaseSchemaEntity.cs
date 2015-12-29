@@ -51,8 +51,8 @@ namespace WebApplications.Utilities.Database.Schema
         protected DatabaseSchemaEntity([NotNull] SqlSchema sqlSchema, [NotNull] string name)
             : base(string.Format("{0}.{1}", sqlSchema.FullName, name))
         {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-            if (sqlSchema == null) throw new ArgumentNullException("sqlSchema");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+            if (sqlSchema == null) throw new ArgumentNullException(nameof(sqlSchema));
             SqlSchema = sqlSchema;
         }
     }

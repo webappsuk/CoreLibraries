@@ -67,7 +67,7 @@ namespace WebApplications.Utilities.Database.Configuration
             get { return GetProperty<DatabaseCollection>(""); }
             set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 SetProperty("", value);
             }
         }
@@ -90,7 +90,7 @@ namespace WebApplications.Utilities.Database.Configuration
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
+            if (database == null) throw new ArgumentNullException(nameof(database));
             return Active.GetConnection(database, connectionName, ensureIdentical, cancellationToken);
         }
 
@@ -112,7 +112,7 @@ namespace WebApplications.Utilities.Database.Configuration
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
+            if (database == null) throw new ArgumentNullException(nameof(database));
 
             DatabaseElement db = Databases[database];
             if ((db == null) ||
@@ -140,7 +140,7 @@ namespace WebApplications.Utilities.Database.Configuration
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
+            if (database == null) throw new ArgumentNullException(nameof(database));
             return Active.GetConnections(database, ensureIdentical, cancellationToken);
         }
 
@@ -159,7 +159,7 @@ namespace WebApplications.Utilities.Database.Configuration
             [CanBeNull] bool? ensureIdentical = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
+            if (database == null) throw new ArgumentNullException(nameof(database));
 
             DatabaseElement db = Databases[database];
             if ((db == null) ||
@@ -188,7 +188,7 @@ namespace WebApplications.Utilities.Database.Configuration
             bool forceReload = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
+            if (database == null) throw new ArgumentNullException(nameof(database));
 
             return Active.GetSchema(database, connectionName, forceReload, cancellationToken);
         }
@@ -209,7 +209,7 @@ namespace WebApplications.Utilities.Database.Configuration
             bool forceReload = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
+            if (database == null) throw new ArgumentNullException(nameof(database));
 
             DatabaseElement db = Databases[database];
             if ((db == null) ||
@@ -248,8 +248,8 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
-            if (name == null) throw new ArgumentNullException("name");
+            if (database == null) throw new ArgumentNullException(nameof(database));
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             return Active.GetSqlProgram(
                 database,
@@ -289,8 +289,8 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (database == null) throw new ArgumentNullException("database");
-            if (name == null) throw new ArgumentNullException("name");
+            if (database == null) throw new ArgumentNullException(nameof(database));
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];

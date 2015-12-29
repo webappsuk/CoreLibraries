@@ -75,7 +75,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="fullName">The full name.</param>
         protected DatabaseEntity([NotNull] string fullName)
         {
-            if (fullName == null) throw new ArgumentNullException("fullName");
+            if (fullName == null) throw new ArgumentNullException(nameof(fullName));
             FullName = fullName;
         }
 
@@ -326,7 +326,7 @@ namespace WebApplications.Utilities.Database.Schema
             [CanBeNull] Expression hashCodeExpression,
             [NotNull] Expression propertyExpression)
         {
-            if (propertyExpression == null) throw new ArgumentNullException("propertyExpression");
+            if (propertyExpression == null) throw new ArgumentNullException(nameof(propertyExpression));
 
             Expression gh = propertyExpression.Type.DescendsFrom(typeof(DatabaseEntity))
                 ? (Expression)Expression.Property(propertyExpression, HashCodeProperty)
@@ -390,7 +390,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="System.NotImplementedException"></exception>
         public override Delta GetDifferences(DatabaseEntity other)
         {
-            if (other == null) throw new ArgumentNullException("other");
+            if (other == null) throw new ArgumentNullException(nameof(other));
 
             T entity = other as T;
             if (entity == null)

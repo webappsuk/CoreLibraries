@@ -530,8 +530,7 @@ namespace WebApplications.Utilities.Database.Schema
             111,
             "datetime",
             typeof(DateTime),
-            typeof(SqlDateTime
-                ),
+            typeof(SqlDateTime),
             SqlDbType.DateTime,
             DbType.DateTime,
             0);
@@ -702,8 +701,7 @@ namespace WebApplications.Utilities.Database.Schema
             SqlDbType.Structured,
             DbType.Object,
             0);
-
-        // TODO What is this?
+        
         /// <summary>
         ///   The meta data for structured user defined type
         /// </summary>
@@ -780,8 +778,7 @@ namespace WebApplications.Utilities.Database.Schema
             "datetime2",
             typeof(DateTime),
             typeof(DateTime),
-            SqlDbType.
-                DateTime2,
+            SqlDbType.DateTime2,
             DbType.DateTime2,
             1);
 

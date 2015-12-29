@@ -84,7 +84,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] params SqlProgramParameter[] parameters)
             : base(sqlSchema, name)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             Type = type;
             Name = name;
@@ -110,7 +110,7 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public SqlProgramParameter GetParameter([NotNull] string parameterName)
         {
-            if (parameterName == null) throw new ArgumentNullException("parameterName");
+            if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
             SqlProgramParameter parameter;
             return _parametersByName.TryGetValue(parameterName, out parameter)
@@ -130,7 +130,7 @@ namespace WebApplications.Utilities.Database.Schema
         [ContractAnnotation("=>true, parameter:notnull;=>false, parameter:null")]
         public bool TryGetParameter([NotNull] string parameterName, out SqlProgramParameter parameter)
         {
-            if (parameterName == null) throw new ArgumentNullException("parameterName");
+            if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
             return _parametersByName.TryGetValue(parameterName, out parameter);
         }
@@ -152,7 +152,7 @@ namespace WebApplications.Utilities.Database.Schema
             bool validateOrder,
             [NotNull] params string[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
         }
@@ -226,8 +226,8 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] IEnumerable<string> names,
             [NotNull] params Type[] types)
         {
-            if (names == null) throw new ArgumentNullException("names");
-            if (types == null) throw new ArgumentNullException("types");
+            if (names == null) throw new ArgumentNullException(nameof(names));
+            if (types == null) throw new ArgumentNullException(nameof(types));
 
             List<Type> t = types.ToList();
 
