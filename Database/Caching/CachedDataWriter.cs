@@ -145,7 +145,7 @@ namespace WebApplications.Utilities.Database.Caching
             List<int> nullableColumns = new List<int>();
             HashSet<int> isNull = new HashSet<int>();
             SqlDbType[] sqlDbTypes = null;
-            object[] values = null;
+            object[] sqlValues = null;
             bool[] rowFlags = null;
 
             /*
@@ -175,7 +175,7 @@ namespace WebApplications.Utilities.Database.Caching
                 if (sqlDbTypes == null || sqlDbTypes.Length < fieldCount)
                 {
                     sqlDbTypes = new SqlDbType[fieldCount];
-                    values = new object[fieldCount];
+                    sqlValues = new object[fieldCount];
                 }
 
                 // Get the schema so we can store information about the columns
@@ -210,7 +210,7 @@ namespace WebApplications.Utilities.Database.Caching
 
                         // Keep track of nullable columns
                         if (allowDbNull)
-                            nullableColumns.Add(ordinal);
+                            nullableColumns.Add(reportedOrdinal);
 
                         // Store SqlDbType for serializing values
                         sqlDbTypes[reportedOrdinal] = sqlDbType;
@@ -234,49 +234,52 @@ namespace WebApplications.Utilities.Database.Caching
                     }
                 }
 
-                // Get the number of nullable columns and create or enlarge (if necessary) the rowFlags array
+                // Get the number of nullable columns and create (if necessary) the rowFlags array
                 int nullableColumnsCount = nullableColumns.Count;
-                if (rowFlags == null || rowFlags.Length <= nullableColumnsCount)
+                if (rowFlags == null || rowFlags.Length != nullableColumnsCount + 1)
                     rowFlags = new bool[nullableColumnsCount + 1];
                 else
                     rowFlags[0] = false;
-
-                /*
-                 * Write table data
-                 */
-                while (await dataReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                if (hasRows)
                 {
-                    // Read columns
-                    dataReader.GetProviderSpecificValues(values);
-
-                    // Set nullable flags
-                    int f = 1;
-                    foreach (int ordinal in nullableColumns)
+                    /*
+                     * Write table data
+                     */
+                    while (await dataReader.ReadAsync(cancellationToken).ConfigureAwait(false))
                     {
-                        bool i = values[ordinal].IsNull();
-                        rowFlags[f++] = i;
-                        if (i)
-                            isNull.Add(ordinal);
-                    }
+                        // Read columns
+                        dataReader.GetProviderSpecificValues(sqlValues);
 
-                    // Write row flags
-                    await SqlValueSerialization.WriteFlagsAsync(
-                        stream,
-                        rowFlags,
-                        cancellationToken)
-                        .ConfigureAwait(false);
+                        // Set nullable flags
+                        int f = 1;
+                        isNull.Clear();
+                        foreach (int ordinal in nullableColumns)
+                        {
+                            bool i = sqlValues[ordinal].IsNull();
+                            rowFlags[f++] = i;
+                            if (i)
+                                isNull.Add(ordinal);
+                        }
 
-                    // Write column data
-                    for (int ordinal = 0; ordinal < fieldCount; ordinal++)
-                    {
-                        if (isNull.Contains(ordinal)) continue;
-
-                        await SqlValueSerialization.SerializeAsync(
-                            sqlDbTypes[ordinal],
+                        // Write row flags
+                        await SqlValueSerialization.WriteFlagsAsync(
                             stream,
-                            // ReSharper disable once AssignNullToNotNullAttribute
-                            values[ordinal],
-                            cancellationToken).ConfigureAwait(false);
+                            rowFlags,
+                            cancellationToken)
+                            .ConfigureAwait(false);
+
+                        // Write column data
+                        for (int ordinal = 0; ordinal < fieldCount; ordinal++)
+                        {
+                            if (isNull.Contains(ordinal)) continue;
+
+                            await SqlValueSerialization.SerializeAsync(
+                                sqlDbTypes[ordinal],
+                                stream,
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                sqlValues[ordinal],
+                                cancellationToken).ConfigureAwait(false);
+                        }
                     }
                 }
 
@@ -288,10 +291,8 @@ namespace WebApplications.Utilities.Database.Caching
                     cancellationToken)
                     .ConfigureAwait(false);
 
-
                 // Clear nullable columns
                 nullableColumns.Clear();
-                isNull.Clear();
             } while (await dataReader.NextResultAsync(cancellationToken).ConfigureAwait(false));
 
             // Terminate stream

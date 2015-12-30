@@ -44,11 +44,11 @@ namespace WebApplications.Utilities.Converters
         public override object ConvertTo(ITypeDescriptorContext ctx, CultureInfo ci, object value, Type type)
         {
             if (value == null) return null;
-            Type t = value as Type;
+            ExtendedType t = value as Type;
             if (t == null)
                 throw new ArgumentException(Resources.SimplifiedTypeNameConverter_ConvertTo_Invalid_Type, nameof(value));
 
-            return t.SimplifiedTypeFullName();
+            return t.SimpleFullName;
         }
 
         /// <inheritdoc />
@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Converters
             if (data == null) return null;
             string typeName = (string)data;
             // ReSharper disable ExceptionNotDocumented
-            Type result = ExtendedType.FindType(typeName, false, true);
+            ExtendedType result = ExtendedType.FindType(typeName, false, true);
             // ReSharper restore ExceptionNotDocumented
 
             if (result == null)

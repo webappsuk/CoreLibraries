@@ -333,15 +333,9 @@ namespace WebApplications.Utilities.Reflect
         /// Gets the <see cref="ExtendedType"/> for the Base Type.
         /// </summary>
         /// <value>The type of the base.</value>
-        public ExtendedType BaseType
-        {
-            get
-            {
-                return Type.BaseType == null
-                    ? null
-                    : Get(Type.BaseType);
-            }
-        }
+        public ExtendedType BaseType => Type.BaseType == null
+            ? null
+            : Get(Type.BaseType);
 
         /// <summary>
         /// Gets the fields.
@@ -547,10 +541,7 @@ namespace WebApplications.Utilities.Reflect
         /// All the customer attributes on the type.
         /// </summary>
         [NotNull]
-        public IEnumerable<Attribute> CustomAttributes
-        {
-            get { return _customAttributes.Value ?? Enumerable.Empty<Attribute>(); }
-        }
+        public IEnumerable<Attribute> CustomAttributes => _customAttributes.Value ?? Enumerable.Empty<Attribute>();
 
         /// <summary>
         /// All the customer attributes on the type and base types.
@@ -574,28 +565,20 @@ namespace WebApplications.Utilities.Reflect
         /// If this type has a default member (indexer), indicates its name.
         /// </summary>
         [CanBeNull]
-        public string DefaultMember
-        {
-            get { return _defaultMember.Value; }
-        }
+        public string DefaultMember => _defaultMember.Value;
 
         /// <summary>
         /// Gets the signature of the type.
         /// </summary>
         /// <remarks>This is modelled after the Type.SigToString internal method.</remarks>
         [NotNull]
-        public string Signature
-        {
-            get { return _signature.Value ?? Type.FullName ?? Type.Name; }
-        }
+        public string Signature => _signature.Value ?? Type.FullName ?? Type.Name;
 
         /// <summary>
         /// Gets the simple full name for the type.
         /// </summary>
-        public string SimpleFullName
-        {
-            get { return _simpleFullName.Value ?? Type.FullName ?? Type.Name; }
-        }
+        [NotNull]
+        public string SimpleFullName => _simpleFullName.Value ?? Type.FullName ?? Type.Name;
 
         /// <summary>
         /// The generic arguments.
@@ -629,19 +612,13 @@ namespace WebApplications.Utilities.Reflect
         /// Gets a value indicating whether this type is a nullable type (i.e. <see cref="Nullable{T}"/>).
         /// </summary>
         /// <value><see langword="true" /> if this type is nullable type; otherwise, <see langword="false" />.</value>
-        public bool IsNullableType
-        {
-            get { return Type != _nonNullableType.Value; }
-        }
+        public bool IsNullableType => Type != _nonNullableType.Value;
 
         /// <summary>
         /// Gets a value indicating whether this type is convertible.
         /// </summary>
         /// <value><see langword="true" /> if this instance is convertible; otherwise, <see langword="false" />.</value>
-        public bool IsConvertible
-        {
-            get { return _isConvertible.Value; }
-        }
+        public bool IsConvertible => _isConvertible.Value;
 
         /// <summary>
         /// Gets the interfaces implemented by this type.

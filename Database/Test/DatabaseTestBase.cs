@@ -40,9 +40,7 @@ namespace WebApplications.Utilities.Database.Test
         protected readonly string LocalDatabaseConnectionString = CreateConnectionString("LocalData");
         protected readonly string LocalDatabaseCopyConnectionString = CreateConnectionString("LocalDataCopy");
         protected readonly string DifferentLocalDatabaseConnectionString = CreateConnectionString("DifferentLocalData");
-
-        private double _testStartTicks, _testEndTicks;
-
+        
         /// <summary>
         /// Lazy loader for database connection
         /// </summary>
@@ -113,15 +111,14 @@ namespace WebApplications.Utilities.Database.Test
             Trace.WriteLine($"Begin test: {TestContext.TestName}");
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            _testStartTicks = Stopwatch.GetTimestamp();
+            TestContext.Properties["StartTicks"] = Stopwatch.GetTimestamp();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            _testEndTicks = Stopwatch.GetTimestamp();
             Trace.WriteLine(
-                $"Ending test: {TestContext.TestName}, time taken {(_testEndTicks - _testStartTicks) / TimeSpan.TicksPerMillisecond}ms");
+                $"Ending test: {TestContext.TestName}, time taken {(Stopwatch.GetTimestamp() - (long)TestContext.Properties["StartTicks"]) / TimeSpan.TicksPerMillisecond}ms");
             Log.Flush().Wait();
         }
     }

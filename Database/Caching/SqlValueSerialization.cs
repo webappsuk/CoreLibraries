@@ -25,16 +25,20 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
+using WebApplications.Utilities.Reflect;
+using WebApplications.Utilities.Serialization;
 
 namespace WebApplications.Utilities.Database.Caching
 {
@@ -189,9 +193,49 @@ namespace WebApplications.Utilities.Database.Caching
                     await WriteAsync(stream, Encoding.Unicode.GetBytes(((SqlXml)sqlValue).Value), false, cancellationToken).ConfigureAwait(false);
                     return;
                 case SqlDbType.Udt:
-                case SqlDbType.Structured:
+                    IBinarySerialize value = sqlValue as IBinarySerialize;
+                    if (value != null)
+                    {
+                        // The UDT is Format.UserDefined
+                        // (see https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.server.format(v=vs.110).aspx)
+
+                        // Mark format
+                        await WriteAsync(stream, new byte[] { 0 }, true, cancellationToken).ConfigureAwait(false);
+                        
+                        // Write the simplified type name so we can recreate the type later
+                        ExtendedType et = value.GetType();
+                        await WriteAsync(stream, et.SimpleFullName, cancellationToken)
+                                .ConfigureAwait(false);
+
+                        // As IBinarySerialize isn't asynchronous, write into a buffer first.
+                        byte[] data;
+                        using (MemoryStream ms = new MemoryStream()) {
+                            using (BinaryWriter writer = new BinaryWriter(ms))
+                                value.Write(writer);
+                            data = ms.ToArray();
+                        }
+
+                        // Write data asynchronously
+                        await WriteAsync(stream, data, false, cancellationToken).ConfigureAwait(false);
+                        return;
+                    }
+
+                    // The UDT must be Format.Native and marked with the serializable attribute.
+                    // If it's Format.Unknown then we'll error out, unless it's serializable.
+                    // Mark format
+                    await WriteAsync(stream, new byte[] { 1 }, true, cancellationToken).ConfigureAwait(false);
+
+                    // Serialize object to byte array using BinaryFormatter and write out asynchronously.
+                    await WriteAsync(
+                            stream,
+                            sqlValue.SerializeToByteArray(),
+                            false,
+                            cancellationToken).ConfigureAwait(false);
+                    return;
+
                 case SqlDbType.Variant:
-                    // TODO All these are possible to an extent, but are more complicated
+                case SqlDbType.Structured:
+                    // TODO Should be possible
                     throw new NotImplementedException();
                 default:
                     throw new SqlCachingException(() => Resources.SqlValueSerialization_Serialize_Unsupported_SqlDbType, type);
@@ -215,7 +259,7 @@ namespace WebApplications.Utilities.Database.Caching
                     CancellationToken cancellationToken)
         {
             if (!isFixedLength)
-                await VariableLengthEncoding.EncodeAsync(buffer.Length, stream, cancellationToken).ConfigureAwait(false);
+                await VariableLengthEncoding.EncodeAsync((uint)buffer.Length, stream, cancellationToken).ConfigureAwait(false);
             // ReSharper disable PossibleNullReferenceException
             await stream.WriteAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
             // ReSharper restore PossibleNullReferenceException
@@ -389,12 +433,41 @@ namespace WebApplications.Utilities.Database.Caching
                         (SqlCompareOptions)await VariableLengthEncoding.DecodeIntAsync(stream, cancellationToken)
                             .ConfigureAwait(false),
                         await ReadAsync(stream, -1, cancellationToken).ConfigureAwait(false),
-                        false);
+                        true);
                 case SqlDbType.Xml:
                     using (MemoryStream ms =
                         new MemoryStream(await ReadAsync(stream, -1, cancellationToken).ConfigureAwait(false)))
                         return new SqlXml(ms);
                 case SqlDbType.Udt:
+                    buffer = await ReadAsync(stream, 1, cancellationToken).ConfigureAwait(false);
+                    if (buffer[0] == 0)
+                    {
+                        // The UDT is Format.UserDefined
+                        // (see https://msdn.microsoft.com/en-us/library/microsoft.sqlserver.server.format(v=vs.110).aspx)
+
+                        // Get the typename
+                        string typeName = await ReadStringAsync(stream, cancellationToken).ConfigureAwait(false);
+                        ExtendedType udtType = ExtendedType.FindType(typeName, false, true);
+
+                        // Create instance of type.
+                        IBinarySerialize result = (IBinarySerialize)Activator.CreateInstance(udtType);
+
+                        // Read data asynchronously into a memory stream
+                        using (MemoryStream ms =
+                            new MemoryStream(await ReadAsync(stream, -1, cancellationToken).ConfigureAwait(false)))
+                            // Read buffered data into result object
+                        using (BinaryReader reader = new BinaryReader(ms))
+                            result.Read(reader);
+
+                        return result;
+                    }
+
+                    // The UDT must be Format.Native and marked with the serializable attribute.
+                    // If it's Format.Unknown then we'll error out, unless it's serializable.
+                    Debug.Assert(buffer[0] == 1);
+
+                    // Read data asynchronously.
+                    return (await ReadAsync(stream, -1, cancellationToken).ConfigureAwait(false)).Deserialize<object>();
                 case SqlDbType.Structured:
                 case SqlDbType.Variant:
                     // TODO All these are possible to an extent, but are more complicated
@@ -419,7 +492,7 @@ namespace WebApplications.Utilities.Database.Caching
                     CancellationToken cancellationToken)
         {
             if (length < 0)
-                length = await VariableLengthEncoding.DecodeIntAsync(stream, cancellationToken).ConfigureAwait(false);
+                length = (int) await VariableLengthEncoding.DecodeUIntAsync(stream, cancellationToken).ConfigureAwait(false);
             // ReSharper disable PossibleNullReferenceException
             byte[] buffer = new byte[length];
             if (await stream.ReadAsync(buffer, 0, length, cancellationToken).ConfigureAwait(false) != length)
