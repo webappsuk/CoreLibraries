@@ -40,6 +40,10 @@
     <Compile Include="Accessor.cs" />
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="AssemblySemanticVersionAttribute.cs" />
+    <Compile Include="Blit\Blittable2.cs" />
+    <Compile Include="Blit\Blittable4.cs" />
+    <Compile Include="Blit\Blittable8.cs" />
+    <Compile Include="Blit\Blittable16.cs" />
     <Compile Include="Caching\WeakSingleton.cs" />
     <Compile Include="CharComparer.cs" />
     <Compile Include="Configuration\ConfigurationElement - Common.cs" />
