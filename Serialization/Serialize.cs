@@ -610,21 +610,11 @@ namespace WebApplications.Utilities.Serialization
             [NotNull] this object obj,
             [NotNull] IFormatter formatter)
         {
-            byte[] output;
-            using (Stream serializationStream = new MemoryStream())
+            using (MemoryStream serializationStream = new MemoryStream())
             {
                 formatter.Serialize(serializationStream, obj);
-                output = new byte[serializationStream.Length];
-
-                long count = 0;
-                serializationStream.Seek(0, SeekOrigin.Begin);
-
-                // Read into byte[]
-                while (count < serializationStream.Length)
-                    output[count++] = Convert.ToByte(serializationStream.ReadByte());
+                return serializationStream.GetBuffer();
             }
-
-            return output;
         }
 
         /// <summary>

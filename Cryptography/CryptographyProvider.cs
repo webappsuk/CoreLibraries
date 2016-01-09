@@ -197,7 +197,7 @@ namespace WebApplications.Utilities.Cryptography
                     cryptoStream.Clear();
                 }
 
-                return stream.ToArray();
+                return stream.GetBuffer();
             }
         }
 
@@ -474,7 +474,7 @@ namespace WebApplications.Utilities.Cryptography
                     int read;
                     while ((read = cryptoStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
                         output.Write(inputBuffer, 0, read);
-                    outputBuffer = output.ToArray();
+                    outputBuffer = output.GetBuffer();
                 }
                 cryptoStream.Clear();
             }

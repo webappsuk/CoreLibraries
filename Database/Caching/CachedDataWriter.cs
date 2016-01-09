@@ -60,7 +60,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(dataSet.CreateDataReader(), memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.ToArray();
+                return memoryStream.GetBuffer();
             }
         }
 
@@ -91,7 +91,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(dataTable.CreateDataReader(), memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.ToArray();
+                return memoryStream.GetBuffer();
             }
         }
 
@@ -122,7 +122,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(dataReader, memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.ToArray();
+                return memoryStream.GetBuffer();
             }
         }
 
@@ -151,7 +151,7 @@ namespace WebApplications.Utilities.Database.Caching
             /*
              * Write header
              */
-            await VariableLengthEncoding.EncodeAsync(dataReader.RecordsAffected, stream, cancellationToken)
+            VariableLengthEncoding.Encode(dataReader.RecordsAffected, stream, cancellationToken)
                     .ConfigureAwait(false);
 
             // Loop through results
@@ -312,7 +312,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(parameterCollection, memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.ToArray();
+                return memoryStream.GetBuffer();
             }
         }
 

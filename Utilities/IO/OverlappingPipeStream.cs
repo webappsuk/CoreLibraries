@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using Microsoft.Win32.SafeHandles;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -32,7 +33,6 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -219,7 +219,7 @@ namespace WebApplications.Utilities.IO
                                     if (stream.ReadMode == PipeTransmissionMode.Byte ||
                                         stream.IsMessageComplete)
                                         return ms.Length > 0
-                                            ? ms.ToArray()
+                                            ? ms.GetBuffer()
                                             : null;
 
                                     // We haven't finished our message so continue

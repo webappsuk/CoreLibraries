@@ -212,7 +212,7 @@ namespace WebApplications.Utilities.Database.Caching
                         using (MemoryStream ms = new MemoryStream()) {
                             using (BinaryWriter writer = new BinaryWriter(ms))
                                 value.Write(writer);
-                            data = ms.ToArray();
+                            data = ms.GetBuffer();
                         }
 
                         // Write data asynchronously

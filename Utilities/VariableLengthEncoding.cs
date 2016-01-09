@@ -58,11 +58,6 @@ namespace WebApplications.Utilities
         /// </summary>
         private const int ULongMaxSize = 10;
 
-        /// <summary>
-        /// The maximum size (in bytes) of an encoded long/ulong.
-        /// </summary>
-        private const int DecimalMaxSize = 20;
-
         #region Int overloads
         /// <summary>
         /// Maps an <see cref="int"/> to an <see cref="ulong"/>, optimizing for values close to zero.

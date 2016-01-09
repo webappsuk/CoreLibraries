@@ -31,7 +31,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\Column.cs" />
+    <Compile Include="Caching\Header.cs" />
+    <Compile Include="Caching\Row.cs" />
+    <Compile Include="Caching\SqlDbTypeInfo.cs" />
     <Compile Include="Caching\SqlValueSerialization.cs" />
+    <Compile Include="Caching\TableDefinition.cs" />
     <Compile Include="ConcurrencyController.cs" />
     <Compile Include="Configuration\DatabaseCollection.cs" />
     <Compile Include="Configuration\DatabaseElement.cs" />
