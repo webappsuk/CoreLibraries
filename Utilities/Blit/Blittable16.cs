@@ -38,6 +38,20 @@ namespace WebApplications.Utilities.Blit
     [PublicAPI]
     public struct Blittable16
     {
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Blittable16"/> to <see cref="T:byte[]"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator byte[] (Blittable16 value) => value.Bytes;
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="T:byte[]"/> to <see cref="Blittable16"/>.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Blittable16([NotNull] byte[] bytes) => new Blittable16(bytes);
+
         #region Decimal
         /// <summary>
         /// The decimal value.
