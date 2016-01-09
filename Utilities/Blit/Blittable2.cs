@@ -37,6 +37,20 @@ namespace WebApplications.Utilities.Blit
     [PublicAPI]
     public struct Blittable2
     {
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Blittable2"/> to <see cref="T:byte[]"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator byte[](Blittable2 value) => value.Bytes;
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="T:byte[]"/> to <see cref="Blittable2"/>.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Blittable2([NotNull] byte[] bytes) => new Blittable2(bytes);
+
         #region UShort
         /// <summary>
         /// The ushort value.
