@@ -27,12 +27,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
 //            for (int cacheId = 0; cacheId < 29; cacheId++)
 //            {
-            int cacheId = -1;
+                int cacheId = -1;
                 byte[] buffer;
                 using (
                     SqlConnection connection =
                         new SqlConnection(
-                            @"Data Source=RELEASESERVER1\SQL2008_R2;Initial Catalog=WUK_35109;Integrated Security=true;")
+                            @"Data Source=RELEASESERVER1\SQL2008_R2;Initial Catalog=WUK_35109;Integrated Security=true;Type System Version=SQL Server 2012;")
                     )
                 {
                     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
@@ -63,6 +63,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                     stamp($"Opened cached {cacheId}");
                     do
                     {
+                        Trace.WriteLine($"Table started - {cachedReader.TableDefinition}{Environment.NewLine}({cachedReader.RecordsAffected} records affected)");
+
                         object[] values = new object[cachedReader.FieldCount];
                         while (await cachedReader.ReadAsync(cancellationToken))
                         {

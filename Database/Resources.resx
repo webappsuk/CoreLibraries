@@ -357,13 +357,19 @@
   <data name="SqlValueSerialization_Serialize_Unsupported_SqlDbType" xml:space="preserve">
     <value>The specified SqlDbType '{0}' is unsupported.</value>
   </data>
-  <data name="SqlValueSerialization_Deserialize_EOF" xml:space="preserve">
+  <data name="Deserialize_EOF" xml:space="preserve">
     <value>The input stream ended unexpectedly.</value>
   </data>
-  <data name="CachedDataWriter_SerializeAsync_Sparse_Columns" xml:space="preserve">
+  <data name="Table_Definition_Sparse_Columns" xml:space="preserve">
     <value>Retrieved record set was sparse (not all columns present) and so could not be serialized.</value>
   </data>
   <data name="CachedDataReader_Closed" xml:space="preserve">
     <value>The reader is closed or disposed.</value>
+  </data>
+  <data name="TableDefinition_Invalid_Column_Info" xml:space="preserve">
+    <value>The data reader did not provide the required column information.</value>
+  </data>
+  <data name="Header_Invalid_Protocol" xml:space="preserve">
+    <value>The protocol stream '{0}' is unsupported.</value>
   </data>
 </root>

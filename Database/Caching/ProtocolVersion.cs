@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2016.  All rights reserved.
+// Copyright (c) 2016, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,49 +25,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using ProtoBuf;
-using System;
-using System.IO;
-using WebApplications.Utilities.Annotations;
-
-namespace WebApplications.Utilities.Service.Common.Protocol
+namespace WebApplications.Utilities.Database.Caching
 {
     /// <summary>
-    /// Base message class, used for communication between named pipe client and server.
+    /// The ProtocolVersion enumeration marks serialized data by the version of the serializer that created it,
+    /// this allows the de-serializer to check whether the data being deserialized is valid.
     /// </summary>
-    [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof(Request))]
-    [ProtoInclude(200, typeof(Response))]
-    [ProtoInclude(300, typeof(LogResponse))]
-    public abstract class Message
+    /// <remarks>
+    /// <para>This is for future-proofing the protocol.</para></remarks>
+    public enum ProtocolVersion : byte
     {
         /// <summary>
-        /// Gets the serialized form of a message.
+        /// The first version, of the protocol.
         /// </summary>
-        /// <returns>System.Byte[].</returns>
-        [NotNull]
-        public byte[] Serialize()
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                Serializer.Serialize(ms, this);
-                return ms.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Deserializes the specified data to a message.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <returns>Message.</returns>
-        [NotNull]
-        public static Message Deserialize([NotNull] byte[] data)
-        {
-            if (data == null) throw new ArgumentNullException("data");
-
-            using (MemoryStream ms = new MemoryStream(data))
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return Serializer.Deserialize<Message>(ms);
-        }
+        Initial = 0
     }
 }

@@ -2317,7 +2317,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
-        [ContractAnnotation("value:null=>true")]
+        [ContractAnnotation("value:null=>true;value:notnull=>false")]
         public static bool IsNull([CanBeNull] this object value)
         {
             if (ReferenceEquals(value, null) ||

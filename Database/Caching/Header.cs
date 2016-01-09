@@ -25,25 +25,95 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Data.Common;
+using System.IO;
+using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
+
 namespace WebApplications.Utilities.Database.Caching
 {
     /// <summary>
     /// Holds header information.
     /// </summary>
-    internal class Header
+    [PublicAPI]
+    public class Header
     {
+        /// <summary>
+        /// The protocol version currently implemented by this code-base.
+        /// </summary>
+        public static ProtocolVersion CurrentProtocolVersion = ProtocolVersion.Initial;
+
+        /// <summary>
+        /// The current protocol version.
+        /// </summary>
+        public readonly ProtocolVersion ProtocolVersion;
+
+        /// <summary>
+        /// The current depth.
+        /// </summary>
+        public readonly int Depth;
+
         /// <summary>
         /// The number of records affected.
         /// </summary>
         public readonly int RecordsAffected;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Header"/> class.
+        /// Initializes a new instance of the <see cref="Header" /> class.
         /// </summary>
+        /// <param name="protocolVersion">The protocol version.</param>
         /// <param name="recordsAffected">The records affected.</param>
-        public Header(int recordsAffected)
+        /// <param name="depth">The depth.</param>
+        private Header(ProtocolVersion protocolVersion, int recordsAffected, int depth)
         {
+            ProtocolVersion = protocolVersion;
             RecordsAffected = recordsAffected;
+            Depth = depth;
         }
+
+        /// <summary>
+        /// Reads a <see cref="Header" /> from the <paramref name="dataReader">specified dataReader</paramref>.
+        /// </summary>
+        /// <param name="dataReader">The dataReader.</param>
+        /// <returns>A <see cref="TableDefinition" />.</returns>
+        [NotNull]
+        internal static Header Read([NotNull] DbDataReader dataReader)
+            => new Header(CurrentProtocolVersion, dataReader.RecordsAffected, dataReader.Depth);
+
+        /// <summary>
+        /// Reads a <see cref="Header" /> from the <paramref name="stream">specified stream</paramref>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <returns>A <see cref="TableDefinition" />.</returns>
+        [NotNull]
+        internal static Header Read([NotNull] Stream stream)
+        {
+            ProtocolVersion protocolVersion = (ProtocolVersion)stream.ReadByte();
+
+            // Sanity check, in future we can decide now to decode based on protocol version, for now we only have one!
+            if (protocolVersion != CurrentProtocolVersion)
+                throw new SqlCachingException(() => Resources.Header_Invalid_Protocol, protocolVersion);
+
+            int recordsAffected = VariableLengthEncoding.DecodeInt(stream);
+            int depth = VariableLengthEncoding.DecodeInt(stream);
+            return new Header(protocolVersion, recordsAffected, depth);
+        }
+
+        /// <summary>
+        /// Serializes this instance to the <paramref name="stream">specified stream</paramref>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        internal void Serialize([NotNull] Stream stream)
+        {
+            stream.WriteByte((byte)ProtocolVersion);
+            VariableLengthEncoding.Encode(RecordsAffected, stream);
+            VariableLengthEncoding.Encode(Depth, stream);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString() => $"Cache protocol {ProtocolVersion} - {RecordsAffected} records affected, Depth = {Depth}.";
     }
 }

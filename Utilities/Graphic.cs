@@ -83,7 +83,7 @@ namespace WebApplications.Utilities
             using (MemoryStream ms = new MemoryStream())
             {
                 image.Save(ms, image.RawFormat);
-                data = ms.GetBuffer();
+                data = ms.ToArray();
             }
             Format = data.GetGraphicFormat();
             Data = data;

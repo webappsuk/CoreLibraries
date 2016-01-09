@@ -26,12 +26,14 @@
 #endregion
 
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Caching;
 using WebApplications.Utilities.Serialization;
 
 namespace WebApplications.Utilities.Database
@@ -41,6 +43,14 @@ namespace WebApplications.Utilities.Database
     /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Gets extra information about a <see cref="SqlDbType"/>.
+        /// </summary>
+        /// <param name="sqlDbType">Type of the SQL database value.</param>
+        /// <returns>A <see cref="SqlDbTypeInfo"/>.</returns>
+        [NotNull]
+        public static SqlDbTypeInfo GetInfo(this SqlDbType sqlDbType) => SqlDbTypeInfo.Get(sqlDbType);
+
         /// <summary>
         /// Gets a serialized object from a data reader by column name.
         /// </summary>
@@ -61,8 +71,8 @@ namespace WebApplications.Utilities.Database
             [CanBeNull] object context = null,
             StreamingContextStates contextState = StreamingContextStates.Other)
         {
-            if (reader == null) throw new ArgumentNullException("reader");
-            if (column == null) throw new ArgumentNullException("column");
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
+            if (column == null) throw new ArgumentNullException(nameof(column));
 
             int ordinal = reader.GetOrdinal(column);
             if (reader.IsDBNull(ordinal))

@@ -613,7 +613,7 @@ namespace WebApplications.Utilities.Serialization
             using (MemoryStream serializationStream = new MemoryStream())
             {
                 formatter.Serialize(serializationStream, obj);
-                return serializationStream.GetBuffer();
+                return serializationStream.ToArray();
             }
         }
 
@@ -694,6 +694,148 @@ namespace WebApplications.Utilities.Serialization
         {
             using (Stream serializationStream = new MemoryStream(data))
                 return (T)formatter.Deserialize(serializationStream);
+        }
+
+        /// <summary>
+        /// Writes the specified buffer to the stream (with 64-bit buffer support).
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        public static void Write([NotNull] this Stream stream, [NotNull] byte[] buffer, long offset, long count)
+        {
+            // Check if 32-bit write is usable.
+            if (offset + count < int.MaxValue)
+            {
+                stream.Write(buffer, (int)offset, (int)count);
+                return;
+            }
+
+            // We need to write to the stream in chunks.
+            byte[] temp = new byte[4096];
+            int length = temp.Length;
+            while (count > 0)
+            {
+                if (count < length) length = (int)count;
+                Array.Copy(buffer, offset, temp, 0, length);
+                stream.Write(buffer, 0, length);
+                count -= length;
+                offset += length;
+            }
+        }
+
+        /// <summary>
+        /// Read the specified buffer to the stream (with 64-bit buffer support).
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        public static long Read([NotNull] this Stream stream, [NotNull] byte[] buffer, long offset, long count)
+        {
+            // Check if 32-bit write is usable.
+            if (offset + count < int.MaxValue)
+                return stream.Read(buffer, (int)offset, (int)count);
+
+            // We need to read from the stream in chunks.
+            byte[] temp = new byte[4096];
+            int length = temp.Length;
+            long read = 0;
+            while (count > 0)
+            {
+                if (count < length) length = (int)count;
+                read += stream.Read(buffer, 0, length);
+                Array.Copy(temp, 0, buffer, offset, read);
+                count -= read;
+                offset += read;
+            }
+            return read;
+        }
+
+        /// <summary>
+        /// Writes the <paramref name="bits" /> to the stream.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="bits">The flags.</param>
+        /// <returns>A byte array.</returns>
+        public static void WriteBits([NotNull] this Stream stream, [NotNull] IReadOnlyCollection<bool> bits)
+        {
+            byte[] bytes = bits.WriteBits();
+            stream.Write(bytes, 0, bytes.Length);
+        }
+
+        /// <summary>
+        /// Writes the <paramref name="bits" /> to a byte array.
+        /// </summary>
+        /// <param name="bits">The flags.</param>
+        /// <returns>A byte array.</returns>
+        [NotNull]
+        public static byte[] WriteBits([NotNull] this IReadOnlyCollection<bool> bits)
+        {
+            byte[] buffer = new byte[1 + ((bits.Count - 1) >> 3)];
+            int byt = 0;
+            byte bit = 1;
+            foreach (bool flag in bits)
+            {
+                if (flag) buffer[byt] |= bit;
+                if (bit == 128)
+                {
+                    byt++;
+                    bit = 1;
+                }
+                else bit <<= 1;
+            }
+            return buffer;
+        }
+
+        /// <summary>
+        /// Reads the bits as booleans from the <paramref name="stream" />.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="length">The number of bits to read.</param>
+        /// <returns>An array of boolean flags.</returns>
+        public static bool[] ReadBits([NotNull] this Stream stream, int length)
+        {
+            byte[] buffer = new byte[1 + ((length - 1) >> 3)];
+
+            if (stream.Read(buffer, 0, buffer.Length) != buffer.Length)
+                throw new EndOfStreamException();
+            return ReadBits(buffer, length);
+        }
+
+        /// <summary>
+        /// Reads the bits as booleans from the <paramref name="buffer" />.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="length">The number of bits to read.</param>
+        /// <returns>An array of boolean flags.</returns>
+        [NotNull]
+        public static bool[] ReadBits([NotNull] this IReadOnlyCollection<byte> buffer, int length = -1)
+        {
+            int maxLength = buffer.Count * 8;
+            if (length < 0)
+                length = maxLength;
+            else if (length > maxLength)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            bool[] flags = new bool[length];
+            if (length < 1) return flags;
+
+            int f = 0;
+            foreach (byte byt in buffer)
+            {
+                byte b = byt;
+                for (int a = 0; a < 8; a++)
+                {
+                    if (1 == (b & 1)) flags[f] = true;
+                    b >>= 1;
+                    f++;
+                    if (f >= length) break;
+                }
+            }
+
+            return flags;
         }
     }
 }

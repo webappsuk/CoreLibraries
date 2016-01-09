@@ -26,16 +26,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Database.Exceptions;
 
 namespace WebApplications.Utilities.Database.Caching
 {
@@ -60,7 +56,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(dataSet.CreateDataReader(), memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.GetBuffer();
+                return memoryStream.ToArray();
             }
         }
 
@@ -91,7 +87,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(dataTable.CreateDataReader(), memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.GetBuffer();
+                return memoryStream.ToArray();
             }
         }
 
@@ -122,7 +118,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(dataReader, memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.GetBuffer();
+                return memoryStream.ToArray();
             }
         }
 
@@ -142,161 +138,38 @@ namespace WebApplications.Utilities.Database.Caching
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            List<int> nullableColumns = new List<int>();
-            HashSet<int> isNull = new HashSet<int>();
-            SqlDbType[] sqlDbTypes = null;
-            object[] sqlValues = null;
-            bool[] rowFlags = null;
-
-            /*
-             * Write header
-             */
-            VariableLengthEncoding.Encode(dataReader.RecordsAffected, stream, cancellationToken)
-                    .ConfigureAwait(false);
+            // Create a header record and write to stream.
+            Header.Read(dataReader).Serialize(stream);
 
             // Loop through results
             do
             {
-                /*
-                 * Write Table header
-                 */
-                uint fieldCount = (uint)dataReader.FieldCount;
+                // Get table definition from reader and write to stream.
+                TableDefinition tableDefinition = TableDefinition.Read(dataReader);
+                tableDefinition.Serialize(stream);
 
-                // Empty result
-                if (fieldCount == 0)
-                    break;
-
-                bool hasRows = dataReader.HasRows;
-
-                // Encode number of columns, and flag for has rows.
-                await VariableLengthEncoding.EncodeAsync((uint) (fieldCount*2 + (hasRows ? 1 : 0)), stream, cancellationToken).ConfigureAwait(false);
-                
-                // Grow buffers
-                if (sqlDbTypes == null || sqlDbTypes.Length < fieldCount)
-                {
-                    sqlDbTypes = new SqlDbType[fieldCount];
-                    sqlValues = new object[fieldCount];
-                }
-
-                // Get the schema so we can store information about the columns
-                using (DataTable table = dataReader.GetSchemaTable())
-                {
-                    Debug.Assert(table.Rows != null);
-                    Debug.Assert(table.Rows.Count == fieldCount);
-
-                    // Find ordinals for key columns
-                    int cnindex = table.Columns.IndexOf("ColumnName");
-                    int ptindex = table.Columns.IndexOf("ProviderType");
-                    int anindex = table.Columns.IndexOf("AllowDBNull");
-                    int coindex = table.Columns.IndexOf("ColumnOrdinal");
-                    Debug.Assert(cnindex > -1);
-                    Debug.Assert(ptindex > -1);
-                    int ordinal = 0;
-                    foreach (DataRow row in table.Rows.Cast<DataRow>().OrderBy(r => (int)r[coindex]))
-                    {
-                        // Grab the values we care about
-                        // ReSharper disable PossibleNullReferenceException
-                        int reportedOrdinal = (int)row[coindex];
-                        bool allowDbNull = (bool)row[anindex];
-                        SqlDbType sqlDbType = (SqlDbType)row[ptindex];
-                        string columnName = row[cnindex] as string;
-                        bool cnIsNull = columnName == null;
-                        // ReSharper restore PossibleNullReferenceException
-
-                        // Check we have all ordinals from 0 to fieldCount -1
-                        if (reportedOrdinal != ordinal++)
-                            throw new SqlCachingException(
-                                () => Resources.CachedDataWriter_SerializeAsync_Sparse_Columns);
-
-                        // Keep track of nullable columns
-                        if (allowDbNull)
-                            nullableColumns.Add(reportedOrdinal);
-
-                        // Store SqlDbType for serializing values
-                        sqlDbTypes[reportedOrdinal] = sqlDbType;
-
-                        // Write flags
-                        await SqlValueSerialization.WriteFlagsAsync(
-                            stream,
-                            new[] { allowDbNull, cnIsNull },
-                            cancellationToken)
-                            .ConfigureAwait(false);
-
-                        // Encode the SqlDbType
-                        // ReSharper disable once PossibleNullReferenceException
-                        await VariableLengthEncoding.EncodeAsync((int)row[ptindex], stream, cancellationToken)
-                            .ConfigureAwait(false);
-
-                        // Encode the name
-                        if (!cnIsNull)
-                            await SqlValueSerialization.WriteAsync(stream, columnName, cancellationToken)
-                                .ConfigureAwait(false);
-                    }
-                }
-
-                // Get the number of nullable columns and create (if necessary) the rowFlags array
-                int nullableColumnsCount = nullableColumns.Count;
-                if (rowFlags == null || rowFlags.Length != nullableColumnsCount + 1)
-                    rowFlags = new bool[nullableColumnsCount + 1];
-                else
-                    rowFlags[0] = false;
-                if (hasRows)
+                if (tableDefinition.HasRows)
                 {
                     /*
                      * Write table data
                      */
+                    // ReSharper disable PossibleNullReferenceException
                     while (await dataReader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                    {
-                        // Read columns
-                        dataReader.GetProviderSpecificValues(sqlValues);
+                        // ReSharper restore PossibleNullReferenceException
 
-                        // Set nullable flags
-                        int f = 1;
-                        isNull.Clear();
-                        foreach (int ordinal in nullableColumns)
-                        {
-                            bool i = sqlValues[ordinal].IsNull();
-                            rowFlags[f++] = i;
-                            if (i)
-                                isNull.Add(ordinal);
-                        }
-
-                        // Write row flags
-                        await SqlValueSerialization.WriteFlagsAsync(
-                            stream,
-                            rowFlags,
-                            cancellationToken)
-                            .ConfigureAwait(false);
-
-                        // Write column data
-                        for (int ordinal = 0; ordinal < fieldCount; ordinal++)
-                        {
-                            if (isNull.Contains(ordinal)) continue;
-
-                            await SqlValueSerialization.SerializeAsync(
-                                sqlDbTypes[ordinal],
-                                stream,
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                sqlValues[ordinal],
-                                cancellationToken).ConfigureAwait(false);
-                        }
-                    }
+                        // Get a row from the data reader and write to stream.
+                        Row.Read(tableDefinition, dataReader).Serialize(stream);
                 }
 
-                // Write end of record set rowflags
-                rowFlags[0] = true;
-                await SqlValueSerialization.WriteFlagsAsync(
-                    stream,
-                    rowFlags,
-                    cancellationToken)
-                    .ConfigureAwait(false);
+                // Write the end row marker to the stream.
+                Row.End.Serialize(stream);
 
-                // Clear nullable columns
-                nullableColumns.Clear();
+                // ReSharper disable PossibleNullReferenceException
             } while (await dataReader.NextResultAsync(cancellationToken).ConfigureAwait(false));
+            // ReSharper restore PossibleNullReferenceException
 
-            // Terminate stream
-            await stream.WriteAsync(new byte[] { 0 }, 0, 1, cancellationToken).ConfigureAwait(false);
+            // Terminate stream with end marker
+            TableDefinition.End.Serialize(stream);
         }
 
         /// <summary>
@@ -312,7 +185,7 @@ namespace WebApplications.Utilities.Database.Caching
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 await SerializeAsync(parameterCollection, memoryStream, cancellationToken).ConfigureAwait(false);
-                return memoryStream.GetBuffer();
+                return memoryStream.ToArray();
             }
         }
 

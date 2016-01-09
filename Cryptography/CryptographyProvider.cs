@@ -197,7 +197,7 @@ namespace WebApplications.Utilities.Cryptography
                     cryptoStream.Clear();
                 }
 
-                return stream.GetBuffer();
+                return stream.ToArray();
             }
         }
 
@@ -466,6 +466,7 @@ namespace WebApplications.Utilities.Cryptography
 
             byte[] inputBuffer = new byte[bufferSize];
             byte[] outputBuffer;
+            int length;
             using (MemoryStream stream = new MemoryStream(input))
             using (CryptoStream cryptoStream = GetDecryptionStream(stream))
             {
@@ -475,13 +476,13 @@ namespace WebApplications.Utilities.Cryptography
                     while ((read = cryptoStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
                         output.Write(inputBuffer, 0, read);
                     outputBuffer = output.GetBuffer();
+                    length = (int)output.Length;
                 }
                 cryptoStream.Clear();
             }
 
             if (preserveLength && !PreservesLength)
             {
-                int length = outputBuffer.Length;
                 do
                 {
                 } while (outputBuffer[--length] < 1);

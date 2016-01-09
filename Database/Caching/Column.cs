@@ -26,13 +26,17 @@
 #endregion
 
 using System.Data;
+using System.IO;
+using System.Text;
+using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
 
 namespace WebApplications.Utilities.Database.Caching
 {
     /// <summary>
     /// Holds a column definition.
     /// </summary>
-    internal class Column
+    public class Column
     {
         /// <summary>
         /// The ordinal.
@@ -42,12 +46,14 @@ namespace WebApplications.Utilities.Database.Caching
         /// <summary>
         /// The name.
         /// </summary>
+        [CanBeNull]
         public readonly string Name;
 
         /// <summary>
         /// The SQL database type.
         /// </summary>
-        public readonly SqlDbType SqlDbType;
+        [NotNull]
+        public readonly SqlDbTypeInfo SqlDbTypeInfo;
 
         /// <summary>
         /// Whether the column can be null.
@@ -55,24 +61,107 @@ namespace WebApplications.Utilities.Database.Caching
         public readonly bool AllowDBNull;
 
         /// <summary>
+        /// Whether the column fits in a bit.
+        /// </summary>
+        public readonly bool IsBit;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Column"/> class.
         /// </summary>
         /// <param name="ordinal">The ordinal.</param>
         /// <param name="name">The name.</param>
         /// <param name="sqlDbType">Type of the SQL database.</param>
-        /// <param name="allowDBNull">if set to <see langword="true" /> column is nullable.</param>
-        public Column(int ordinal, string name, SqlDbType sqlDbType, bool allowDBNull)
+        /// <param name="allowDbNull">if set to <see langword="true" /> [allow database null].</param>
+        private Column(int ordinal, string name, SqlDbType sqlDbType, bool allowDbNull)
         {
             Ordinal = ordinal;
             Name = name;
-            SqlDbType = sqlDbType;
-            AllowDBNull = allowDBNull;
+            SqlDbTypeInfo = sqlDbType.GetInfo();
+            AllowDBNull = allowDbNull;
+            IsBit = sqlDbType == SqlDbType.Bit;
+        }
+        
+        /// <summary>
+        /// Reads a <see cref="Column" /> from the <paramref name="row" />.
+        /// </summary>
+        /// <param name="row">The row.</param>
+        /// <param name="ordinalIndex">Index of the ordinal.</param>
+        /// <param name="nameIndex">Index of the name.</param>
+        /// <param name="providerTypeIndex">Index of the provider type.</param>
+        /// <param name="allowDBNullIndex">Index of the allow database null.</param>
+        /// <returns>A <see cref="Column" />.</returns>
+        [NotNull]
+        internal static Column Read(
+            DataRow row,
+            int ordinalIndex,
+            int nameIndex,
+            int providerTypeIndex,
+            int allowDBNullIndex)
+            // ReSharper disable PossibleNullReferenceException
+            => new Column(
+                (int)row[ordinalIndex],
+                row[nameIndex] as string,
+                (SqlDbType)row[providerTypeIndex],
+                (bool)row[allowDBNullIndex]);
+            // ReSharper restore PossibleNullReferenceException
+
+        /// <summary>
+        /// Reads a <see cref="Column" /> from the <paramref name="stream">specified stream</paramref>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <returns>A <see cref="Column" />.</returns>
+        [NotNull]
+        internal static Column Read([NotNull] Stream stream)
+        {
+            // Get ordinal
+            int ordinal = (int)VariableLengthEncoding.DecodeUInt(stream);
+            
+            // Get column flags and type
+            int flags = stream.ReadByte();
+            if (flags < 0) throw new SqlCachingException(() => Resources.Deserialize_EOF);
+            bool allowDbNull = 1 == (flags & 1);
+            bool cnIsNull = 2 == (flags & 2);
+            SqlDbType sqlDbType = (SqlDbType)(flags / 4);
+            string name;
+            if (!cnIsNull)
+            {
+                int length = (int)VariableLengthEncoding.DecodeUInt(stream);
+                byte[] buffer = new byte[length];
+                stream.Read(buffer, 0, length);
+                name = Encoding.UTF8.GetString(buffer);
+            }
+            else name = null;
+            return new Column(ordinal, name, sqlDbType, allowDbNull);
+        }
+
+        /// <summary>
+        /// Serializes this instance to the <paramref name="stream">specified stream</paramref>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        internal void Serialize([NotNull]Stream stream)
+        {
+            bool cnIsNull = Name == null;
+
+            // Write out ordinal.
+            VariableLengthEncoding.Encode((uint)Ordinal, stream);
+
+            // Write type and flags together
+            // ReSharper disable once PossibleNullReferenceException
+            stream.WriteByte((byte)((AllowDBNull ? 1 : 0) + (cnIsNull ? 2 : 0) + (4 * (byte)SqlDbTypeInfo.SqlDbType)));
+            
+            if (cnIsNull) return;
+
+            // Write name (if any)
+            byte[] buffer = Encoding.UTF8.GetBytes(Name);
+            VariableLengthEncoding.Encode((uint)buffer.Length, stream);
+            stream.Write(buffer, 0, buffer.Length);
         }
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
-        public override string ToString() => $"{Name} [{SqlDbType}]";
+        public override string ToString()
+            => $"Column #{Ordinal} '{Name}'\t[{SqlDbTypeInfo.SqlDbType} {(AllowDBNull ? "" : "Not ")}Null]";
     }
 }

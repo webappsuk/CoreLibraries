@@ -219,7 +219,7 @@ namespace WebApplications.Utilities.IO
                                     if (stream.ReadMode == PipeTransmissionMode.Byte ||
                                         stream.IsMessageComplete)
                                         return ms.Length > 0
-                                            ? ms.GetBuffer()
+                                            ? ms.ToArray()
                                             : null;
 
                                     // We haven't finished our message so continue

@@ -26,15 +26,19 @@
 #endregion
 
 using System;
+using System.Data.Common;
+using System.IO;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
+using WebApplications.Utilities.Serialization;
 
 namespace WebApplications.Utilities.Database.Caching
 {
     /// <summary>
     /// Holds the current row.
     /// </summary>
-    internal class Row
+    public class Row
     {
         /// <summary>
         /// The not read <see cref="Row"/>.
@@ -47,20 +51,28 @@ namespace WebApplications.Utilities.Database.Caching
         /// </summary>
         [NotNull]
         public static readonly Row End = new Row();
-
+        
         /// <summary>
         /// The associated table definition.
         /// </summary>
         private readonly TableDefinition _tableDefinition;
 
         /// <summary>
+        /// The underlying row data.
+        /// </summary>
+        [CanBeNull]
+        private readonly byte[] _data;
+
+        /// <summary>
         /// The SQL values
         /// </summary>
-        private readonly object[] _sqlValues;
+        [CanBeNull]
+        private readonly Lazy<object[]> _sqlValues;
 
         /// <summary>
         /// The CLR values lazy initializer.
         /// </summary>
+        [CanBeNull]
         private readonly Lazy<object[]> _values;
 
         /// <summary>
@@ -71,45 +83,110 @@ namespace WebApplications.Utilities.Database.Caching
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Row" /> class.
+        /// </summary>
+        /// <param name="tableDefinition">The table definition.</param>
+        /// <param name="data">The data.</param>
+        private Row([NotNull] TableDefinition tableDefinition, [NotNull] byte[] data)
+        {
+            _tableDefinition = tableDefinition;
+            _data = data;
+            _sqlValues = new Lazy<object[]>(
+                () => tableDefinition.DeserializeSqlValues(data),
+                LazyThreadSafetyMode.ExecutionAndPublication);
+            _values = new Lazy<object[]>(
+                () => tableDefinition.DeserializeValues(data),
+                LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Row"/> class.
         /// </summary>
         /// <param name="tableDefinition">The table definition.</param>
         /// <param name="sqlValues">The SQL values.</param>
-        public Row([NotNull] TableDefinition tableDefinition, [NotNull] object[] sqlValues)
+        private Row([NotNull] TableDefinition tableDefinition, [NotNull] object[] sqlValues)
         {
             _tableDefinition = tableDefinition;
-            _sqlValues = sqlValues;
-
-            // Create lazy initializer for values.
+            _data = tableDefinition.SerializeRow(sqlValues);
+            _sqlValues = new Lazy<object[]>(() => sqlValues, true);
             _values = new Lazy<object[]>(
-                () =>
-                {
-                    object[] values = new object[tableDefinition.Count];
-                    int v = 0;
-                    foreach (Column column in tableDefinition)
-                    {
-                        if (column != null)
-                            values[v] = SqlValueSerialization.GetCLRValueFromSqlVariant(
-                                column.SqlDbType,
-                                sqlValues[v]);
-                        v++;
-                    }
-                    return values;
-                },
+                () => tableDefinition.DeserializeValues(_data),
                 LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        /// <summary>
+        /// Reads a <see cref="Row" /> from the <paramref name="dataReader">specified data reader</paramref>.
+        /// </summary>
+        /// <param name="tableDefinition">The table definition.</param>
+        /// <param name="dataReader">The data reader.</param>
+        /// <returns>A <see cref="Row" />.</returns>
+        [NotNull]
+        internal static Row Read([NotNull] TableDefinition tableDefinition, [NotNull] DbDataReader dataReader)
+        {
+            // Get SQL Values
+            object[] sqlValues = new object[tableDefinition.Count];
+            dataReader.GetProviderSpecificValues(sqlValues);
+
+            return new Row(tableDefinition, sqlValues);
+        }
+
+        /// <summary>
+        /// Reads a <see cref="Row" /> from the <paramref name="stream">specified stream</paramref>.
+        /// </summary>
+        /// <param name="tableDefinition">The table definition.</param>
+        /// <param name="stream">The stream.</param>
+        /// <returns>A <see cref="Row" />.</returns>
+        [NotNull]
+        internal static Row Read([NotNull] TableDefinition tableDefinition, [NotNull]Stream stream)
+        {
+            long length = (long)VariableLengthEncoding.DecodeULong(stream);
+            if (length == 0) return End;
+
+            byte[] data = new byte[length];
+            if (stream.Read(data, 0, length) != length)
+                throw new SqlCachingException(() => Resources.Deserialize_EOF);
+
+            return new Row(tableDefinition, data);
+        }
+
+        /// <summary>
+        /// Serializes this instance to the <paramref name="stream">specified stream</paramref>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        internal void Serialize([NotNull]Stream stream)
+        {
+            // Create zero-length row to indicate end row (table terminator).
+            if (IsEnd)
+            {
+                stream.WriteByte(0);
+                return;
+            }
+
+            // Check for data
+            if (_data == null || _data.Length < 1)
+                throw new InvalidOperationException("Invalid attempt to write when no data is present.");
+
+            // Encode length
+            long length = _data.LongLength;
+            VariableLengthEncoding.Encode((ulong)length, stream);
+
+            // Write out data.
+            stream.Write(_data, 0, length);
         }
 
         /// <summary>
         /// The SQL values
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+        [NotNull]
         public object[] SqlValues
         {
             get
             {
                 if (_sqlValues == null)
                     throw new InvalidOperationException("Invalid attempt to read when no data is present.");
-                return _sqlValues;
+                // ReSharper disable once AssignNullToNotNullAttribute
+                return _sqlValues.Value;
             }
         }
 
@@ -118,12 +195,14 @@ namespace WebApplications.Utilities.Database.Caching
         /// </summary>
         /// <value>The values.</value>
         /// <exception cref="System.InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+        [NotNull]
         public object[] Values
         {
             get
             {
                 if (_values == null)
                     throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return _values.Value;
             }
         }
@@ -132,6 +211,7 @@ namespace WebApplications.Utilities.Database.Caching
         /// The associated table definition.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Invalid attempt to read when no data is present.</exception>
+        [NotNull]
         public TableDefinition TableDefinition
         {
             get
@@ -141,5 +221,17 @@ namespace WebApplications.Utilities.Database.Caching
                 return _tableDefinition;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is the end.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is end; otherwise, <see langword="false" />.</value>
+        public bool IsEnd => ReferenceEquals(this, End);
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is not read.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is not read; otherwise, <see langword="false" />.</value>
+        public bool IsNotRead => ReferenceEquals(this, NotRead);
     }
 }
