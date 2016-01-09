@@ -56,7 +56,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The maximum size (in bytes) of an encoded long/ulong.
         /// </summary>
-        private const int ULongMaxSize = 10;
+        public const int ULongMaxSize = 10;
 
         /// <summary>
         /// The maximum size (in bytes) of an encoded long/ulong.
@@ -287,6 +287,25 @@ namespace WebApplications.Utilities
         /// Decodes the specified value from the <see cref="Stream"/>.
         /// </summary>
         /// <param name="stream">The stream.</param>
+        /// <returns>The uncompressed value.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.IO.InternalBufferOverflowException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="stream" /> is <see langword="null" />.</exception>
+        /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
+        /// <seealso cref="Encode(long)" />
+        /// <seealso cref="Encode(long,byte[],long)" />
+        /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
+        [PublicAPI]
+        public static int DecodeInt([NotNull] Stream stream)
+        {
+            int read;
+            return DecodeInt(stream, out read);
+        }
+
+        /// <summary>
+        /// Decodes the specified value from the <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
         /// <param name="read">The number of bytes read.</param>
         /// <returns>The uncompressed value.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
@@ -297,6 +316,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(long,byte[],long)" />
         /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int DecodeInt([NotNull] Stream stream, out int read)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -546,6 +566,7 @@ namespace WebApplications.Utilities
         /// <remarks><para>As this uses a variable length encoding that encodes it's own length a length is not required.</para></remarks>
         /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint DecodeUInt([NotNull] byte[] buffer, ref long offset)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
@@ -570,6 +591,25 @@ namespace WebApplications.Utilities
         /// Decodes the specified value from the <see cref="Stream"/>.
         /// </summary>
         /// <param name="stream">The stream.</param>
+        /// <returns>The uncompressed value.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.IO.InternalBufferOverflowException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="stream" /> is <see langword="null" />.</exception>
+        /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
+        /// <seealso cref="Encode(uint)" />
+        /// <seealso cref="Encode(uint,byte[],long)" />
+        /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
+        [PublicAPI]
+        public static uint DecodeUInt([NotNull] Stream stream)
+        {
+            int read;
+            return DecodeUInt(stream, out read);
+        }
+
+        /// <summary>
+        /// Decodes the specified value from the <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
         /// <param name="read">The number of bytes read.</param>
         /// <returns>The uncompressed value.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
@@ -580,6 +620,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(uint,byte[],long)" />
         /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint DecodeUInt([NotNull] Stream stream, out int read)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -877,6 +918,25 @@ namespace WebApplications.Utilities
         /// Decodes the specified value from the <see cref="Stream"/>.
         /// </summary>
         /// <param name="stream">The stream.</param>
+        /// <returns>The uncompressed value.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.IO.InternalBufferOverflowException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="stream" /> is <see langword="null" />.</exception>
+        /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
+        /// <seealso cref="Encode(long)" />
+        /// <seealso cref="Encode(long,byte[],long)" />
+        /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
+        [PublicAPI]
+        public static long DecodeLong([NotNull] Stream stream)
+        {
+            int read;
+            return DecodeLong(stream, out read);
+        }
+
+        /// <summary>
+        /// Decodes the specified value from the <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
         /// <param name="read">The number of bytes read.</param>
         /// <returns>The uncompressed value.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
@@ -887,6 +947,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(long,byte[],long)" />
         /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long DecodeLong([NotNull] Stream stream, out int read)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
@@ -1160,6 +1221,25 @@ namespace WebApplications.Utilities
         /// Decodes the specified value from the <see cref="Stream"/>.
         /// </summary>
         /// <param name="stream">The stream.</param>
+        /// <returns>The uncompressed value.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.IO.InternalBufferOverflowException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="stream" /> is <see langword="null" />.</exception>
+        /// <exception cref="InternalBufferOverflowException">The encoding was invalid, ran out of bytes before getting an end of encoding byte.</exception>
+        /// <seealso cref="Encode(ulong)" />
+        /// <seealso cref="Encode(ulong,byte[],long)" />
+        /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
+        [PublicAPI]
+        public static ulong DecodeULong([NotNull] Stream stream)
+        {
+            int read;
+            return DecodeULong(stream, out read);
+        }
+
+        /// <summary>
+        /// Decodes the specified value from the <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
         /// <param name="read">The number of bytes read.</param>
         /// <returns>The uncompressed value.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
@@ -1170,6 +1250,7 @@ namespace WebApplications.Utilities
         /// <seealso cref="Encode(ulong,byte[],long)" />
         /// <remarks>As this uses a variable length encoding that encodes it's own length a length is not required.</remarks>
         [PublicAPI]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong DecodeULong([NotNull] Stream stream, out int read)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
