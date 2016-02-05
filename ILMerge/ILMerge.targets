@@ -104,6 +104,13 @@
       <MakeDir Directories="%(MergeAsmDirs.Identity)" />
 
       <!-- Perform merges -->
-      <ILMerge InputAssemblies="%(MergeAsm.Inputs)" OutputFile="%(MergeAsm.Identity)" SnkFile="%(MergeAsm.Snk)" TargetKind="%(MergeAsm.TargetKind)" ILMergeTool="$(ILMergeTool)" />
+      <ILMerge InputAssemblies="%(MergeAsm.Inputs)" 
+               OutputFile="%(MergeAsm.Identity)"
+               SnkFile="%(MergeAsm.Snk)"
+               TargetKind="%(MergeAsm.TargetKind)"
+               ILMergeTool="$(ILMergeTool)"
+               TargetFrameworkVersion="$(TargetFrameworkVersion)"
+               TargetPlatform="$(Platform)"
+                />
     </Target>
   </Project>

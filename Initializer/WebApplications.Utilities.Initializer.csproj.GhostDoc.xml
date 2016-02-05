@@ -15,7 +15,7 @@
   <HelpConfiguration name="HelpFile">
     <OutputPath>.\Help</OutputPath>
     <CleanupOutputPath>true</CleanupOutputPath>
-    <HelpFileName>ILMerge</HelpFileName>
+    <HelpFileName>Core-Libraries</HelpFileName>
     <ImageFolderPath />
     <HtmlFormats>
       <HtmlHelp>true</HtmlHelp>
