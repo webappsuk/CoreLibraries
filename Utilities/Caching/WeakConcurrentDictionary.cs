@@ -126,21 +126,14 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance is empty.
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                // This will remove dead keys.
-                return Count < 1;
-            }
-        }
+        public bool IsEmpty => Count < 1;
 
         #region IDictionary Members
         /// <inheritdoc />
         void IDictionary.Add(object key, object value)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             if (!(key is TKey))
                 throw new ArgumentException(Resources.WeakConcurrentDictionary_Add_KeyTypeIncorrect);
             TValue obj;
@@ -159,7 +152,7 @@ namespace WebApplications.Utilities.Caching
         bool IDictionary.Contains(object key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             if (key is TKey)
                 return ContainsKey((TKey)key);
             return false;
@@ -175,7 +168,7 @@ namespace WebApplications.Utilities.Caching
         void IDictionary.Remove(object key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             if (!(key is TKey))
                 return;
             TValue obj;
@@ -204,23 +197,17 @@ namespace WebApplications.Utilities.Caching
                 {
                     object[] array3 = array as object[];
                     if (array3 == null)
-                        throw new ArgumentException(Resources.WeakConcurrentDictionary_CopyTo_InvalidArrayType, "array");
+                        throw new ArgumentException(Resources.WeakConcurrentDictionary_CopyTo_InvalidArrayType, nameof(array));
                     CopyToObjects(array3, index);
                 }
             }
         }
 
         /// <inheritdoc />
-        bool IDictionary.IsFixedSize
-        {
-            get { return false; }
-        }
+        bool IDictionary.IsFixedSize => false;
 
         /// <inheritdoc />
-        bool IDictionary.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool IDictionary.IsReadOnly => false;
 
         /// <inheritdoc />
         ICollection IDictionary.Keys
@@ -237,10 +224,7 @@ namespace WebApplications.Utilities.Caching
         }
 
         /// <inheritdoc />
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
         /// <inheritdoc />
         object ICollection.SyncRoot
@@ -251,16 +235,13 @@ namespace WebApplications.Utilities.Caching
 
         #region IDictionary<TKey,TValue> Members
         /// <inheritdoc />
-        public bool ContainsKey(TKey key)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute - Let Contains throw
-            return _dictionary.ContainsKey(key);
-        }
+        // ReSharper disable once AssignNullToNotNullAttribute
+        public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
 
         /// <inheritdoc />
         public bool TryGetValue(TKey key, out TValue value)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             WeakReference<TValue> weakReference;
             bool found = _dictionary.TryGetValue(key, out weakReference);
@@ -317,7 +298,7 @@ namespace WebApplications.Utilities.Caching
         {
             get
             {
-                if (key == null) throw new ArgumentNullException("key");
+                if (key == null) throw new ArgumentNullException(nameof(key));
                 TValue value;
                 if (!TryGetValue(key, out value))
                     throw new KeyNotFoundException();
@@ -325,7 +306,7 @@ namespace WebApplications.Utilities.Caching
             }
             set
             {
-                if (key == null) throw new ArgumentNullException("key");
+                if (key == null) throw new ArgumentNullException(nameof(key));
                 AddOrUpdate(key, value, (k, v) => value);
             }
         }
@@ -350,7 +331,7 @@ namespace WebApplications.Utilities.Caching
         public ICollection<TKey> Keys
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get { return (ICollection<TKey>)this.Select(kvp => kvp.Key); }
+            get { return this.Select(kvp => kvp.Key).ToArray(); }
         }
 
 
@@ -358,7 +339,7 @@ namespace WebApplications.Utilities.Caching
         public ICollection<TValue> Values
         {
             [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get { return (ICollection<TValue>)this.Select(kvp => kvp.Value); }
+            get { return this.Select(kvp => kvp.Value).ToArray(); }
         }
 
         /// <inheritdoc />
@@ -387,7 +368,7 @@ namespace WebApplications.Utilities.Caching
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> keyValuePair)
         {
             if (ReferenceEquals(keyValuePair.Key, null))
-                throw new ArgumentNullException("keyValuePair", Resources.WeakConcurrentDictionary_KeyIsNull);
+                throw new ArgumentNullException(nameof(keyValuePair), Resources.WeakConcurrentDictionary_KeyIsNull);
             Add(keyValuePair.Key, keyValuePair.Value);
         }
 
@@ -395,7 +376,7 @@ namespace WebApplications.Utilities.Caching
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> keyValuePair)
         {
             if (ReferenceEquals(keyValuePair.Key, null))
-                throw new ArgumentNullException("keyValuePair", Resources.WeakConcurrentDictionary_KeyIsNull);
+                throw new ArgumentNullException(nameof(keyValuePair), Resources.WeakConcurrentDictionary_KeyIsNull);
 
             TValue x;
             return TryGetValue(keyValuePair.Key, out x) &&
@@ -406,7 +387,7 @@ namespace WebApplications.Utilities.Caching
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> keyValuePair)
         {
             if (ReferenceEquals(keyValuePair.Key, null))
-                throw new ArgumentNullException("keyValuePair", Resources.WeakConcurrentDictionary_KeyIsNull);
+                throw new ArgumentNullException(nameof(keyValuePair), Resources.WeakConcurrentDictionary_KeyIsNull);
 
             TValue obj;
             return TryRemove(keyValuePair.Key, out obj) &&
@@ -415,16 +396,10 @@ namespace WebApplications.Utilities.Caching
 
         /// <inheritdoc />
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
         #endregion
 
         /// <summary>
@@ -458,9 +433,7 @@ namespace WebApplications.Utilities.Caching
         {
             if (!_observable ||
                 (weakReference == null)) return;
-            ObservableWeakReference<TValue> owf = weakReference as ObservableWeakReference<TValue>;
-            if (owf == null) return;
-            owf.Dispose();
+            (weakReference as ObservableWeakReference<TValue>)?.Dispose();
         }
 
         /// <summary>
