@@ -236,7 +236,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="System.ArgumentNullException"><paramref name="databaseId"/> was null.</exception>
         public static AsyncSemaphore GetDatabaseSemaphore([NotNull] string databaseId)
         {
-            if (databaseId == null) throw new ArgumentNullException("databaseId");
+            if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
 
             AsyncSemaphore semaphore;
             _databaseSemaphores.TryGetValue(databaseId, out semaphore);
@@ -254,8 +254,8 @@ namespace WebApplications.Utilities.Database
             [NotNull] string databaseId,
             [NotNull] string connectionId)
         {
-            if (databaseId == null) throw new ArgumentNullException("databaseId");
-            if (connectionId == null) throw new ArgumentNullException("connectionId");
+            if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
+            if (connectionId == null) throw new ArgumentNullException(nameof(connectionId));
 
             AsyncSemaphore semaphore;
             _loadBalancedConnectionSemaphores.TryGetValue(new Id(databaseId, connectionId), out semaphore);
@@ -275,9 +275,9 @@ namespace WebApplications.Utilities.Database
             [NotNull] string connectionId,
             [NotNull] Connection connection)
         {
-            if (databaseId == null) throw new ArgumentNullException("databaseId");
-            if (connectionId == null) throw new ArgumentNullException("connectionId");
-            if (connection == null) throw new ArgumentNullException("connection");
+            if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
+            if (connectionId == null) throw new ArgumentNullException(nameof(connectionId));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
             AsyncSemaphore semaphore;
             _connectionSemaphores.TryGetValue(new ConnectionId(databaseId, connectionId, connection), out semaphore);
@@ -295,8 +295,8 @@ namespace WebApplications.Utilities.Database
             [NotNull] string databaseId,
             [NotNull] string programName)
         {
-            if (databaseId == null) throw new ArgumentNullException("databaseId");
-            if (programName == null) throw new ArgumentNullException("programName");
+            if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
+            if (programName == null) throw new ArgumentNullException(nameof(programName));
 
             AsyncSemaphore semaphore;
             _programSemaphores.TryGetValue(new Id(databaseId, programName), out semaphore);

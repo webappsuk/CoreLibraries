@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Utilities.Database.Exceptions;
+using WebApplications.Utilities.IO;
 
 namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 {
@@ -128,6 +132,54 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 Balance = reader.GetValue<decimal>(2),
                 IsValued = reader.GetValue<bool>(3)
             };
+        }
+
+
+
+        [TestMethod]
+        public async Task ExecuteReaderAsync_WithManualDisposal_ExecutesAndAllowsStreaming()
+        {
+            SqlProgram<byte[]> readerTest =
+                await SqlProgram<byte[]>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakeByteArray");
+
+            byte[] data = Encoding.UTF8.GetBytes(AString);
+            string resultString;
+
+            using (Stream stream = await readerTest.ExecuteReaderAsync(
+                async (reader, disposable, token) =>
+                {
+                    if (await reader.ReadAsync(token))
+                        return (Stream)new CloseableStream(reader.GetStream(0), disposable);
+
+                    throw new Exception("Critical Test Error");
+                },
+                data).ConfigureAwait(false))
+            {
+                Assert.IsNotNull(stream);
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                    resultString = reader.ReadToEnd();
+            }
+            Assert.AreEqual(AString, resultString);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SqlProgramExecutionException))]
+        public async Task ExecuteReaderAsync_WithManualDisposal_Timeouts()
+        {
+            TimeSpan commandTimeout = TimeSpan.FromSeconds(1);
+            SqlProgram<int> timeoutTest =
+                await
+                    SqlProgram<int>.Create(
+                        (Connection)DifferentLocalDatabaseConnectionString,
+                        "spTimeoutTest",
+                        defaultCommandTimeout: commandTimeout);
+
+            // Expose all the properties from the inner lambda.
+            dynamic result = await timeoutTest.ExecuteReaderAsync(
+                (reader, disposable, token) =>
+                    Task.FromResult(new { Reader = reader, Disposable = disposable, Token = token }),
+                10)
+                .ConfigureAwait(false);
         }
     }
 }

@@ -94,7 +94,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="System.ArgumentNullException"><paramref name="connectionString"/> was null.</exception>
         private Connection(double weight, [NotNull] string connectionString, [CanBeNull] AsyncSemaphore semaphore)
         {
-            if (connectionString == null) throw new ArgumentNullException("connectionString");
+            if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
             Weight = weight;
             ConnectionString = connectionString;
@@ -111,7 +111,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="System.ArgumentNullException">connectionString</exception>
         public Connection([NotNull] string connectionString, double weight = 1.0D, int maxConcurrency = -1)
         {
-            if (connectionString == null) throw new ArgumentNullException("connectionString");
+            if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
             Weight = weight;
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -150,7 +150,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="System.ArgumentNullException">connectionString</exception>
         public Connection([NotNull] string connectionString, double weight, AsyncSemaphore semaphore)
         {
-            if (connectionString == null) throw new ArgumentNullException("connectionString");
+            if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
             Weight = weight;
             // ReSharper disable once AssignNullToNotNullAttribute

@@ -67,9 +67,9 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgramDefinition definition,
             [NotNull] IEnumerable<SqlProgramParameter> parameters)
         {
-            if (connection == null) throw new ArgumentNullException("connection");
-            if (definition == null) throw new ArgumentNullException("definition");
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             Connection = connection;
             Definition = definition;

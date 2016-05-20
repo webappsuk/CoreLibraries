@@ -133,7 +133,7 @@ namespace WebApplications.Utilities.Database.Configuration
             get { return GetProperty<ConnectionCollection>(""); }
             set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 SetProperty("", value);
             }
         }

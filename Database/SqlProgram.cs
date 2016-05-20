@@ -39,6 +39,7 @@ using System.Xml;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
+using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Threading;
 
@@ -56,8 +57,20 @@ namespace WebApplications.Utilities.Database
     /// A delegate that accepts any method that accepts a <see cref="SqlDataReader"/>.
     /// </summary>
     /// <param name="reader">The reader.</param>
-    /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
+    /// <remarks>The <paramref name="reader"/> is disposed automatically after use, so should not be disposed by this method.</remarks>
     public delegate void ResultDelegate([NotNull] SqlDataReader reader);
+
+    /// <summary>
+    /// A delegate that accepts any method that accepts a <see cref="SqlDataReader"/>, and a disposable.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    public delegate void ResultDisposableDelegate([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
     /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" />.
@@ -70,6 +83,20 @@ namespace WebApplications.Utilities.Database
     public delegate Task ResultDelegateAsync([NotNull] SqlDataReader reader, CancellationToken cancellationToken);
 
     /// <summary>
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" />.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [NotNull]
+    public delegate Task ResultDisposableDelegateAsync([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
+
+    /// <summary>
     /// A delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
     /// </summary>
     /// <typeparam name="T">The result type.</typeparam>
@@ -78,6 +105,21 @@ namespace WebApplications.Utilities.Database
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     [CanBeNull]
     public delegate T ResultDelegate<out T>([NotNull] SqlDataReader reader);
+
+    /// <summary>
+    /// A delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
+    /// </summary>
+    /// <typeparam name="T">The result type.</typeparam>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <returns>The result.</returns>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [CanBeNull]
+    public delegate T ResultDisposableDelegate<out T>([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
     /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
@@ -90,11 +132,38 @@ namespace WebApplications.Utilities.Database
     public delegate Task<T> ResultDelegateAsync<T>([NotNull] SqlDataReader reader, CancellationToken cancellationToken);
 
     /// <summary>
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>An awaitable task, containing the result.</returns>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [NotNull]
+    public delegate Task<T> ResultDisposableDelegateAsync<T>([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
+
+    /// <summary>
     /// A delegate that accepts any method that accepts a <see cref="XmlReader"/>.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     public delegate void XmlResultDelegate([NotNull] XmlReader reader);
+
+    /// <summary>
+    /// A delegate that accepts any method that accepts a <see cref="XmlReader"/>.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    public delegate void XmlResultDisposableDelegate([NotNull] XmlReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
     /// An asynchronous delegate that accepts any method that accepts a <see cref="XmlReader" />.
@@ -107,6 +176,21 @@ namespace WebApplications.Utilities.Database
     public delegate Task XmlResultDelegateAsync([NotNull] XmlReader reader, CancellationToken cancellationToken);
 
     /// <summary>
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="XmlReader" />.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>An awaitable task.</returns>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [NotNull]
+    public delegate Task XmlResultDisposableDelegateAsync([NotNull] XmlReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
+
+    /// <summary>
     /// A delegate that accepts any method that accepts a <see cref="XmlReader" /> and returns a result.
     /// </summary>
     /// <typeparam name="T">The result type.</typeparam>
@@ -117,6 +201,21 @@ namespace WebApplications.Utilities.Database
     public delegate T XmlResultDelegate<out T>([NotNull] XmlReader reader);
 
     /// <summary>
+    /// A delegate that accepts any method that accepts a <see cref="XmlReader" /> and returns a result.
+    /// </summary>
+    /// <typeparam name="T">The result type.</typeparam>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <returns>The result.</returns>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [CanBeNull]
+    public delegate T XmlResultDisposableDelegate<out T>([NotNull] XmlReader reader, [NotNull] IDisposable disposable);
+
+    /// <summary>
     /// An asynchronous delegate that accepts any method that accepts a <see cref="XmlReader" /> and returns a result.
     /// </summary>
     /// <param name="reader">The reader.</param>
@@ -125,6 +224,21 @@ namespace WebApplications.Utilities.Database
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     [NotNull]
     public delegate Task<T> XmlResultDelegateAsync<T>([NotNull] XmlReader reader, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="XmlReader" /> and returns a result.
+    /// </summary>
+    /// <param name="reader">The reader.</param>
+    /// <param name="disposable">The disposer that can be used to clean up manually.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>An awaitable task, containing the result.</returns>
+    /// <remarks><para>The <paramref name="disposable"/> can be used to dispose the <paramref name="reader"/>,
+    /// it's associated <see cref="SqlCommand"/> and <see cref="SqlConnection"/>, by calling the
+    /// <see cref="IDisposable.Dispose"/> method when ready.</para>
+    /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
+    /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [NotNull]
+    public delegate Task<T> XmlResultDisposableDelegateAsync<T>([NotNull] XmlReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
     #endregion
 
     /// <summary>
@@ -254,8 +368,8 @@ namespace WebApplications.Utilities.Database
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
         {
-            if (connection == null) throw new ArgumentNullException("connection");
-            if (name == null) throw new ArgumentNullException("name");
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             Name = name;
             Connection = connection;
@@ -280,7 +394,7 @@ namespace WebApplications.Utilities.Database
                 Parameters = p;
             }
 
-            _connectionMappings = new CurrentMapping[connection.Count()];
+            _connectionMappings = new CurrentMapping[connection.Count];
         }
 
         /// <summary>
@@ -298,8 +412,8 @@ namespace WebApplications.Utilities.Database
             TimeSpan? defaultCommandTimeout,
             TypeConstraintMode constraintMode)
         {
-            if (program == null) throw new ArgumentNullException("program");
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (program == null) throw new ArgumentNullException(nameof(program));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             Connection = program.Connection;
             Name = program.Name;
@@ -350,7 +464,7 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (connection == null) throw new ArgumentNullException("connection");
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
             return Create(
                 new LoadBalancedConnection(connection),
                 name,
@@ -433,7 +547,7 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode,
             [NotNull] params Type[] parameterTypes)
         {
-            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
+            if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
             return Create(
                 connection,
                 name,
@@ -479,8 +593,8 @@ namespace WebApplications.Utilities.Database
             [NotNull] IEnumerable<string> parameterNames,
             [NotNull] params Type[] parameterTypes)
         {
-            if (parameterNames == null) throw new ArgumentNullException("parameterNames");
-            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
+            if (parameterNames == null) throw new ArgumentNullException(nameof(parameterNames));
+            if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
 
             return Create(
                 connection,
@@ -515,7 +629,7 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode,
             [NotNull] params Type[] parameterTypes)
         {
-            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
+            if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
 
             SqlProgram newProgram = new SqlProgram(
                 program,
@@ -556,8 +670,8 @@ namespace WebApplications.Utilities.Database
             [NotNull] IEnumerable<string> parameterNames,
             [NotNull] params Type[] parameterTypes)
         {
-            if (parameterNames == null) throw new ArgumentNullException("parameterNames");
-            if (parameterTypes == null) throw new ArgumentNullException("parameterTypes");
+            if (parameterNames == null) throw new ArgumentNullException(nameof(parameterNames));
+            if (parameterTypes == null) throw new ArgumentNullException(nameof(parameterTypes));
 
             SqlProgram newProgram = new SqlProgram(
                 program,
@@ -845,7 +959,7 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public T ExecuteScalar<T>([NotNull] SetParametersDelegate setParameters)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -881,7 +995,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<T> ExecuteScalarAll<T>([NotNull] SetParametersDelegate setParameters)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             // ReSharper disable PossibleNullReferenceException
             return CreateCommandsForAllConnections().Select(
@@ -987,7 +1101,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -1019,7 +1133,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return Task.WhenAll(
@@ -1098,7 +1212,7 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         public int ExecuteNonQuery([NotNull] SetParametersDelegate setParameters)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -1123,7 +1237,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<int> ExecuteNonQueryAll([NotNull] SetParametersDelegate setParameters)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             // ReSharper disable PossibleNullReferenceException
             return CreateCommandsForAllConnections().Select(
@@ -1218,7 +1332,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -1246,7 +1360,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return Task.WhenAll(
@@ -1370,7 +1484,32 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+            SqlProgramCommand command = CreateCommand();
+            command.ExecuteReader(resultAction, behavior);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <exception cref="SqlProgramExecutionException">A
+        /// An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteReader(
+            [NotNull] ResultDisposableDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
             SqlProgramCommand command = CreateCommand();
             command.ExecuteReader(resultAction, behavior);
         }
@@ -1394,7 +1533,32 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
+                // ReSharper disable once PossibleNullReferenceException
+                command.ExecuteReader(resultAction, behavior);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteReaderAll(
+            [NotNull] ResultDisposableDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
                 // ReSharper disable once PossibleNullReferenceException
                 command.ExecuteReader(resultAction, behavior);
@@ -1422,7 +1586,34 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+            SqlProgramCommand command = CreateCommand();
+            return command.ExecuteReader(resultFunc, behavior);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [CanBeNull]
+        public T ExecuteReader<T>(
+            [NotNull] ResultDisposableDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteReader(resultFunc, behavior);
         }
@@ -1452,7 +1643,40 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+            // ReSharper disable once PossibleNullReferenceException
+            return
+                CreateCommandsForAllConnections()
+                    .Select(command => command.ExecuteReader(resultFunc, behavior))
+                    .ToArray();
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <returns>An enumerable containing the results from all connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
+        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
+        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [CanBeNull]
+        public IEnumerable<T> ExecuteReaderAll<T>(
+            [NotNull] ResultDisposableDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
             // ReSharper disable once PossibleNullReferenceException
             return
                 CreateCommandsForAllConnections()
@@ -1482,8 +1706,38 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            command.ExecuteReader(resultAction, behavior);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <exception cref="LoggingException">An error occurred executing the program.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteReader(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -1511,8 +1765,40 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
+            {
+                Debug.Assert(command != null);
+                setParameters(command);
+                command.ExecuteReader(resultAction, behavior);
+            }
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters against all connections, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteReaderAll(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegate resultAction,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
@@ -1546,8 +1832,40 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            return command.ExecuteReader(resultFunc, behavior);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type to return from the result function</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [CanBeNull]
+        public T ExecuteReader<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -1581,8 +1899,46 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
+            {
+                Debug.Assert(command != null);
+                setParameters(command);
+                yield return command.ExecuteReader(resultFunc, behavior);
+            }
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters against all connections, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <param name="behavior">The behaviour of the results and how they effect the database.</param>
+        /// <returns>An enumerable containing the results from all the connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
+        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
+        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public IEnumerable<T> ExecuteReaderAll<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegate<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
@@ -1730,7 +2086,36 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            SqlProgramCommand command = CreateCommand();
+            return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteReaderAsync(
+            [NotNull] ResultDisposableDelegateAsync resultAction,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
@@ -1759,7 +2144,40 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return
+                Task.WhenAll(
+                    CreateCommandsForAllConnections()
+                        .Select(command => command.ExecuteReaderAsync(resultAction, behavior, cancellationToken)));
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteReaderAllAsync(
+            [NotNull] ResultDisposableDelegateAsync resultAction,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
@@ -1793,7 +2211,37 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            SqlProgramCommand command = CreateCommand();
+            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<T> ExecuteReaderAsync<T>(
+            [NotNull] ResultDisposableDelegateAsync<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
@@ -1823,7 +2271,46 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return
+                Task.WhenAll(
+                    CreateCommandsForAllConnections()
+                        .Select(command => command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken)))
+                    .ContinueWith(
+                        t => (IEnumerable<T>)t.Result,
+                        cancellationToken,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters against all connections, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An enumerable containing the results from all the connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(
+            [NotNull] ResultDisposableDelegateAsync<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
@@ -1863,8 +2350,41 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteReaderAsync(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegateAsync resultAction,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -1896,8 +2416,49 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return
+                Task.WhenAll(
+                    CreateCommandsForAllConnections()
+                        .Select(
+                            command =>
+                            {
+                                setParameters(command);
+                                return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
+                            }));
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteReaderAllAsync(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegateAsync resultAction,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return
@@ -1938,8 +2499,42 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type to return from the result function</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<T> ExecuteReaderAsync<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegateAsync<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -1972,8 +2567,54 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(
+                        command =>
+                        {
+                            setParameters(command);
+                            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+                        }))
+                .ContinueWith(
+                    t => (IEnumerable<T>)t.Result,
+                    cancellationToken,
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.Current);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An enumerable containing the results from all connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] ResultDisposableDelegateAsync<T> resultFunc,
+            CommandBehavior behavior = CommandBehavior.Default,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return Task.WhenAll(
@@ -2094,7 +2735,30 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction)
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            SqlProgramCommand command = CreateCommand();
+            command.ExecuteXmlReader(resultAction);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <exception cref="SqlProgramExecutionException">A
+        /// An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteXmlReader([NotNull] XmlResultDisposableDelegate resultAction)
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             SqlProgramCommand command = CreateCommand();
             command.ExecuteXmlReader(resultAction);
@@ -2116,7 +2780,30 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction)
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
+                // ReSharper disable once PossibleNullReferenceException
+                command.ExecuteXmlReader(resultAction);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteXmlReaderAll([NotNull] XmlResultDisposableDelegate resultAction)
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
                 // ReSharper disable once PossibleNullReferenceException
@@ -2142,7 +2829,32 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public T ExecuteXmlReader<T>([NotNull] XmlResultDelegate<T> resultFunc)
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            SqlProgramCommand command = CreateCommand();
+            return command.ExecuteXmlReader(resultFunc);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [CanBeNull]
+        public T ExecuteXmlReader<T>([NotNull] XmlResultDisposableDelegate<T> resultFunc)
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteXmlReader(resultFunc);
@@ -2170,7 +2882,35 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public IEnumerable<T> ExecuteXmlReaderAll<T>([NotNull] XmlResultDelegate<T> resultFunc)
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            // ReSharper disable once PossibleNullReferenceException
+            return CreateCommandsForAllConnections().Select(command => command.ExecuteXmlReader(resultFunc)).ToArray();
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <returns>An enumerable containing the results from all connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
+        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
+        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [CanBeNull]
+        public IEnumerable<T> ExecuteXmlReaderAll<T>([NotNull] XmlResultDisposableDelegate<T> resultFunc)
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             // ReSharper disable once PossibleNullReferenceException
             return CreateCommandsForAllConnections().Select(command => command.ExecuteXmlReader(resultFunc)).ToArray();
@@ -2196,8 +2936,36 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate resultAction)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            command.ExecuteXmlReader(resultAction);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <exception cref="LoggingException">An error occurred executing the program.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteXmlReader(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegate resultAction)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -2223,8 +2991,38 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate resultAction)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
+            {
+                Debug.Assert(command != null);
+                setParameters(command);
+                command.ExecuteXmlReader(resultAction);
+            }
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters against all connections, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action to use to process the results.</param>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        public void ExecuteXmlReaderAll(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegate resultAction)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
@@ -2256,8 +3054,38 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate<T> resultFunc)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            return command.ExecuteXmlReader(resultFunc);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type to return from the result function</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [CanBeNull]
+        public T ExecuteXmlReader<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegate<T> resultFunc)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -2289,8 +3117,44 @@ namespace WebApplications.Utilities.Database
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate<T> resultFunc)
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
+            {
+                Debug.Assert(command != null);
+                setParameters(command);
+                yield return command.ExecuteXmlReader(resultFunc);
+            }
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters against all connections, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function to use to process the results.</param>
+        /// <returns>An enumerable containing the results from all the connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="InvalidOperationException">The connection did not specify a source or server.</exception>
+        /// <exception cref="SqlException">A connection-level error occurred whilst opening the connection.
+        /// See <see cref="SqlConnection.Open" /> for more details.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public IEnumerable<T> ExecuteXmlReaderAll<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegate<T> resultFunc)
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
             {
@@ -2436,7 +3300,34 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            SqlProgramCommand command = CreateCommand();
+            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteXmlReaderAsync(
+            [NotNull] XmlResultDisposableDelegateAsync resultAction,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
@@ -2463,7 +3354,37 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(command => command.ExecuteXmlReaderAsync(resultAction, cancellationToken)));
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteXmlReaderAllAsync(
+            [NotNull] XmlResultDisposableDelegateAsync resultAction,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return Task.WhenAll(
@@ -2494,7 +3415,35 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            SqlProgramCommand command = CreateCommand();
+            return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<T> ExecuteXmlReaderAsync<T>(
+            [NotNull] XmlResultDisposableDelegateAsync<T> resultFunc,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             SqlProgramCommand command = CreateCommand();
             return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
@@ -2522,7 +3471,43 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(command => command.ExecuteXmlReaderAsync(resultFunc, cancellationToken)))
+                .ContinueWith(
+                    t => (IEnumerable<T>)t.Result,
+                    cancellationToken,
+                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.Current);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters against all connections, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An enumerable containing the results from all the connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
+            [NotNull] XmlResultDisposableDelegateAsync<T> resultFunc,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return Task.WhenAll(
@@ -2559,8 +3544,39 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteXmlReaderAsync(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegateAsync resultAction,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -2590,8 +3606,46 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync resultAction,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultAction == null) throw new ArgumentNullException("resultAction");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return Task.WhenAll(
+                CreateCommandsForAllConnections()
+                    .Select(
+                        command =>
+                        {
+                            setParameters(command);
+                            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+                        }));
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task ExecuteXmlReaderAllAsync(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegateAsync resultAction,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return Task.WhenAll(
@@ -2629,8 +3683,40 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            SqlProgramCommand command = CreateCommand();
+            setParameters(command);
+            return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type to return from the result function</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<T> ExecuteXmlReaderAsync<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegateAsync<T> resultFunc,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             SqlProgramCommand command = CreateCommand();
             setParameters(command);
@@ -2661,8 +3747,53 @@ namespace WebApplications.Utilities.Database
             [NotNull] XmlResultDelegateAsync<T> resultFunc,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (setParameters == null) throw new ArgumentNullException("setParameters");
-            if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return
+                Task.WhenAll(
+                    CreateCommandsForAllConnections()
+                        .Select(
+                            command =>
+                            {
+                                setParameters(command);
+                                return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
+                            }))
+                    .ContinueWith(
+                        t => (IEnumerable<T>)t.Result,
+                        cancellationToken,
+                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
+                        TaskScheduler.Current);
+            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Executes the program with the specified parameters, requires manual disposal.
+        /// </summary>
+        /// <typeparam name="T">The type of the results.</typeparam>
+        /// <param name="setParameters">The action to set the command parameters.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An enumerable containing the results from all connections.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+        ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+        ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
+            [NotNull] SetParametersDelegate setParameters,
+            [NotNull] XmlResultDisposableDelegateAsync<T> resultFunc,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
             return

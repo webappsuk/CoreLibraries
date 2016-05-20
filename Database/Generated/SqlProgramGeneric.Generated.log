@@ -1,4 +1,4 @@
-﻿© Copyright Web Applications (UK) Ltd, 2015.
+﻿© Copyright Web Applications (UK) Ltd, 2016.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -30,42 +30,42 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Schema code file generation
 ============================
-Started			: 06/16/2015 16:42:39
+Started			: 05/20/2016 12:44:42
 Saved helper template files:
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric.Generated.txt4
+    CoreLibraries\Database\Generated\SqlProgramGeneric.Generated.txt4
 Saved files:
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric32.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric31.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric30.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric29.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric28.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric27.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric26.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric25.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric24.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric23.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric22.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric21.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric20.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric19.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric18.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric17.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric16.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric15.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric14.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric13.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric12.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric11.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric10.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric9.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric8.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric7.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric6.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric5.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric4.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric3.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric2.Generated.cs
-    C:\SourceControl\Core-Library-and-Tools\Core-Library\Utilities_Database\Generated\SqlProgramGeneric1.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric32.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric31.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric30.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric29.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric28.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric27.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric26.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric25.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric24.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric23.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric22.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric21.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric20.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric19.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric18.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric17.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric16.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric15.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric14.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric13.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric12.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric11.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric10.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric9.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric8.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric7.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric6.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric5.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric4.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric3.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric2.Generated.cs
+    CoreLibraries\Database\Generated\SqlProgramGeneric1.Generated.cs
 
-Finished        : 06/16/2015 16:42:40
-Total Duration  : 428.622 ms
+Finished        : 05/20/2016 12:44:43
+Total Duration  : 1,699.202 ms

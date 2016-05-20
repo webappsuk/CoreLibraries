@@ -98,7 +98,7 @@ namespace WebApplications.Utilities.Database
                        // ReSharper disable once AssignNullToNotNullAttribute
                        .Select(cs => new Connection(cs)))
         {
-            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
+            if (connectionStrings == null) throw new ArgumentNullException(nameof(connectionStrings));
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace WebApplications.Utilities.Database
                        .Select(cs => new Connection(cs)),
                    maxConcurrency)
         {
-            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
+            if (connectionStrings == null) throw new ArgumentNullException(nameof(connectionStrings));
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace WebApplications.Utilities.Database
                    maxConcurrency)
             // ReSharper restore AssignNullToNotNullAttribute
         {
-            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
+            if (connectionStrings == null) throw new ArgumentNullException(nameof(connectionStrings));
         }
 
         /// <summary>
@@ -160,9 +160,9 @@ namespace WebApplications.Utilities.Database
                        .Select(kvp => new Connection(databaseId, connectionId, kvp.Key, kvp.Value)))
             // ReSharper restore AssignNullToNotNullAttribute
         {
-            if (databaseId == null) throw new ArgumentNullException("databaseId");
-            if (connectionId == null) throw new ArgumentNullException("connectionId");
-            if (connectionStrings == null) throw new ArgumentNullException("connectionStrings");
+            if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
+            if (connectionId == null) throw new ArgumentNullException(nameof(connectionId));
+            if (connectionStrings == null) throw new ArgumentNullException(nameof(connectionStrings));
 
             DatabaseId = databaseId;
             DatabaseSemaphore = ConcurrencyController.GetDatabaseSemaphore(databaseId);
@@ -191,7 +191,7 @@ namespace WebApplications.Utilities.Database
         /// </exception>
         public LoadBalancedConnection([NotNull] IEnumerable<Connection> connections, int maxConcurrency = -1)
         {
-            if (connections == null) throw new ArgumentNullException("connections");
+            if (connections == null) throw new ArgumentNullException(nameof(connections));
 
             if (maxConcurrency > 0)
                 ConnectionSemaphore = new AsyncSemaphore(maxConcurrency);
@@ -319,7 +319,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public static Connection ChooseConnection([NotNull] IEnumerable<Connection> connections)
         {
-            if (connections == null) throw new ArgumentNullException("connections");
+            if (connections == null) throw new ArgumentNullException(nameof(connections));
             // Choose a random connection.
 
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
