@@ -68,7 +68,7 @@ namespace WebApplications.Utilities.Converters
                     string.Format(Resources.SimplifiedTypeNameConverter_ConvertFrom_Unknown_Type, typeName),
                     nameof(data));
 
-            return result;
+            return (Type)result;
         }
     }
 }
