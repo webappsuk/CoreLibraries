@@ -148,7 +148,7 @@
     <value>The service runner does not accept generic methods.</value>
   </data>
   <data name="NamedPipeServer_MaxConnections" xml:space="preserve">
-    <value>The maximum number of connections must be greater than zero.</value>
+    <value>The maximum number of connections must be positive.</value>
   </data>
   <data name="Not_In_Console" xml:space="preserve">
     <value>This class can only be created when running in a console.</value>

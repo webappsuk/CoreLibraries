@@ -115,7 +115,7 @@ namespace WebApplications.Utilities.Formatting
                     ILayoutTextWriter lw = Writer as ILayoutTextWriter;
                     return lw == null ? 0 : lw.Position;
                 }
-                Debug.Assert(Console.CursorLeft > 0);
+                // TODO Is this needed? Debug.Assert(Console.CursorLeft > 0);
                 return Console.CursorLeft;
             }
         }
