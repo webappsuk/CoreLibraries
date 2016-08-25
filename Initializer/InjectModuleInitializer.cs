@@ -94,12 +94,18 @@ namespace WebApplications.Utilities.Initializer
         public override bool Execute()
         {
             Debug.Assert(Log != null);
-            foreach (Output output in Injector.Inject(AssemblyFile,
-                TypeName,
-                MethodName,
-                StrongNameKeyPair,
-                UseIsolatedAppDomain,
-                AssemblySearchDirs.Select(ti => ti.ItemSpec).ToArray()))
+
+            string[] searchDirs = AssemblySearchDirs == null
+                ? new string[0]
+                : AssemblySearchDirs.Select(ti => ti.ItemSpec).ToArray();
+
+            foreach (Output output in Injector.Inject(
+                    AssemblyFile,
+                    TypeName,
+                    MethodName,
+                    StrongNameKeyPair,
+                    UseIsolatedAppDomain,
+                    searchDirs))
                 switch (output.Importance)
                 {
                     case OutputImportance.Error:
