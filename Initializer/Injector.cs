@@ -241,8 +241,10 @@ namespace WebApplications.Utilities.Initializer
 
                 // Add the search directories to the resolver
                 string assemblyDir = Path.GetDirectoryName(Path.GetFullPath(assemblyFile));
-                foreach (string dir in new[] { assemblyDir }.Union(assemblySearchDirs))
-                    asmResolver.AddSearchDirectory(Path.GetFullPath(dir));
+                asmResolver.AddSearchDirectory(Path.GetFullPath(assemblyDir));
+                foreach (string dir in assemblySearchDirs.Distinct())
+                    if (!string.Equals(dir, assemblyDir))
+                        asmResolver.AddSearchDirectory(Path.GetFullPath(dir));
 
                 // Read the assembly definition
                 ReaderParameters readParams = new ReaderParameters(ReadingMode.Immediate);

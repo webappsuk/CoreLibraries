@@ -26,7 +26,11 @@
     <ProjectReference Include="..\WebApplications.Utilities.Initializer.csproj">
       <Project>{3626816d-eb33-4ed0-af95-fd7ca6c6d99a}</Project>
       <Name>WebApplications.Utilities.Initializer</Name>
+      <!-- Dont copy the assembly to test the InjectModuleSearchDir item -->
+      <Private>False</Private>
     </ProjectReference>
+    <!-- Look in Initilizer build directory for the above referenced project -->
+    <InjectModuleSearchDir Include="..\$(OutDir)\Merged" />
   </ItemGroup>
   <!--<Import Project="Instrument.targets" />-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

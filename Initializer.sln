@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplications.Utilities.Initializer.TestApp", "Initializer\TestApp\WebApplications.Utilities.Initializer.TestApp.csproj", "{B32CE846-8FAF-4B89-9A17-22B4427133C9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{73FDA02C-149C-41C2-A80C-C011015CCE0F}"
+	ProjectSection(SolutionItems) = preProject
+		Initializer\InjectModuleInitializer.targets = Initializer\InjectModuleInitializer.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

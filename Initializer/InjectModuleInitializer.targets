@@ -24,6 +24,11 @@
       <!-- Raise an error if we need to resign and can't find the key -->
       <Error Condition="'$(SignAssembly)'=='true' AND !Exists('$(InjectModuleSnk)')" Text="Could not find the signature file for resigning, module initialisation cannot be performed." />
 
-      <InjectModuleInitializer AssemblyFile="$(TargetPath)" TypeName="$(InjectModuleInitializerTypeName)" MethodName="$(InjectModuleInitializerMethodName)" StrongNameKeyPair="$(InjectModuleSnk)" />
+      <InjectModuleInitializer 
+        AssemblyFile="$(TargetPath)" 
+        TypeName="$(InjectModuleInitializerTypeName)" 
+        MethodName="$(InjectModuleInitializerMethodName)" 
+        StrongNameKeyPair="$(InjectModuleSnk)" 
+        AssemblySearchDirs="@(InjectModuleSearchDir)" />
     </Target>
   </Project>
