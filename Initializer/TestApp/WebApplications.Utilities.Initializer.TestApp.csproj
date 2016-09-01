@@ -30,7 +30,9 @@
       <Private>False</Private>
     </ProjectReference>
     <!-- Look in Initilizer build directory for the above referenced project -->
-    <InjectModuleSearchDir Include="..\$(OutDir)\Merged" />
+    <InjectModuleSearchDir Include="..\$(OutDir)\Merged">
+      <InProject>false</InProject>
+    </InjectModuleSearchDir>
   </ItemGroup>
   <!--<Import Project="Instrument.targets" />-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
