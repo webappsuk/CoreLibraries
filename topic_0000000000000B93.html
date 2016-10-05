@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="GENERATOR" content="VSdocman - documentation generator; http://www.helixoft.com" />
+	<title>LogonType Enumeration</title>
+
+	<link rel="stylesheet" type="text/css" href="msdn10_lightweight/msdn10_lightweight.css"></link>
+	<script src="msdn10_lightweight/msdn10_lightweight.js" type="text/javascript"></script>
+	<script src="SyntaxHighlighter/scripts/shCore_helixoft.js" type="text/javascript"></script>
+	<script src="SyntaxHighlighter/scripts/shBrushVb.js" type="text/javascript"></script>
+	<script src="SyntaxHighlighter/scripts/shBrushCSharp.js" type="text/javascript"></script>
+	<script src="SyntaxHighlighter/scripts/shBrushCpp.js" type="text/javascript"></script>
+	<script src="SyntaxHighlighter/scripts/shBrushJScript.js" type="text/javascript"></script>
+	<link href="SyntaxHighlighter/styles/shCore.css" rel="stylesheet" type="text/css" />
+	<link href="SyntaxHighlighter/styles/shThemeMsdnLW.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript">
+		SyntaxHighlighter.all();
+	</script>				
+
+	<script type="text/javascript">
+<!--
+if (self.name != "vbdocright") {
+	if (location.search != "?toc=no") {
+		var filename = location.pathname.replace(/\\/g, "/");
+		filename = filename.substring(filename.lastIndexOf('/')+1);
+		location.replace("index.html#" + filename);
+	} 
+}
+
+function replaceTitleAndUrl(win, title, url) {
+	if(history.replaceState) {
+		win.history.replaceState(null, title, url);
+	} else {
+		win.document.title = document.title;
+		win.location.replace(url);
+	}
+}
+//-->
+	</script>	
+</head>
+
+<body style="direction: ltr;">
+	<script type="text/javascript">
+		try {
+			if (location.search != "?toc=no") {
+				parent.document.title = document.title;
+				var filename = location.pathname.replace(/\\/g, "/");
+				filename = filename.substring(filename.lastIndexOf('/')+1);
+				if (window.parent.location.search == null || window.parent.location.search != "?" + filename) {
+					if (window.parent.location.hash == null || window.parent.location.hash != "#" + filename) {
+						replaceTitleAndUrl(window.parent, document.title, "index.html#" + filename);
+					}
+				}
+			}
+		} catch (ex) {}
+	</script>
+	<div id="topic">
+<!--HEADER START-->
+  <div id="header">
+  	<div id="runningHeaderText">Web Applications UK Core Libraries Reference</div>
+  	<h1 class="title">LogonType Enumeration</h1>
+  	<div id="headerLinks">
+
+	<a href="#seeAlsoSection">See Also</a>
+
+		</div>
+		<hr />
+	</div>
+<!--HEADER END-->
+    
+		<div id="mainSection">
+      <div id="mainBody">
+        <p />
+       
+        The types of logon operation that can be performed.
+
+
+        <p /><strong>Namespace:</strong>
+<a href="topic_0000000000000248.html">WebApplications.Utilities</a>
+
+
+
+
+        <br /><strong>Assembly:</strong> WebApplications.Utilities (in WebApplications.Utilities.dll)
+
+
+
+
+
+
+
+	
+	
+	<div id="syntaxCodeBlocks">
+		
+
+		
+		
+	</div>
+
+
+
+<div class="section_container">
+	<div class="section_heading">
+		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">Members</a></span>
+		<div><hr /></div>
+	</div>
+
+<div id="membersSection" class="section">
+	<table>
+		<tr>
+			<th>&nbsp;
+			</th>
+			<th>
+				Member name
+			</th>
+			<th>
+				Description
+			</th>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td>
+				Interactive
+			</td>
+			<td>
+				This logon type is intended for users who will be interactively using the computer, such as a user being
+ logged on by a terminal server, remote shell, or similar process. This logon type has the additional
+expense of caching logon information for disconnected operations; therefore, it is inappropriate for
+some client/server applications, such as a mail server.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td>
+				Network
+			</td>
+			<td>
+				This logon type is intended for high performance servers to authenticate plaintext passwords.
+Credentials are not cached for this logon type.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td>
+				Batch
+			</td>
+			<td>
+				This logon type is intended for batch servers, where processes may be executing on behalf of a user
+without their direct intervention. This type is also for higher performance servers that process many
+plaintext authentication attempts at a time, such as mail or web servers.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td>
+				Service
+			</td>
+			<td>
+				Indicates a service-type logon. The account provided must have the service privilege enabled.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td>
+				Unlock
+			</td>
+			<td>
+				<p>GINAs are no longer supported.</p>
+<p><strong>Windows Server 2003 and Windows XP:</strong> This logon type is for GINA DLLs that log on users who will be
+interactively using the computer. This logon type can generate a unique audit record that shows when
+the workstation was unlocked.</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td>
+				NetworkCleartext
+			</td>
+			<td>
+				This logon type preserves the name and password in the authentication package, which allows the server to make
+connections to other network servers while impersonating the client. A server can accept plaintext credentials
+from a client, create an <a target="_top" href="topic_0000000000000B92.html" onclick="this.target='';return true;">Impersonator</a>, verify that the user can access the system across the network, and still
+communicate with other servers.
+			</td>
+		</tr>
+		<tr>
+			<td>
+			</td>
+			<td>
+				NewCredentials
+			</td>
+			<td>
+				This logon type allows the caller to clone its current token and specify new credentials for outbound connections.
+The new logon session has the same local identifier but uses different credentials for other network connections.
+This logon type is supported only by the <a target="_top" href=".html" onclick="this.target='';return true;">WinNT50</a> logon provider.
+			</td>
+		</tr>
+		
+	</table>
+</div>					
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section_container">
+	<div class="section_heading">
+		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">See Also</a></span>
+		<div><hr /></div>
+	</div>
+
+	<div id="seeAlsoSection" class="section">	
+		<div>
+			<h4 class="subHeading">
+				Reference</h4>
+			<a href="topic_0000000000000B92.html">Impersonator Class</a><br />
+<a href="topic_0000000000000B92_members--.html">Impersonator Members</a><br />
+
+
+
+<a href="topic_0000000000000248.html">WebApplications.Utilities Namespace</a><br />
+
+
+			
+
+		</div>
+	</div>					
+</div>
+			</div>
+			</div>
+      <div id="footer">
+      	<p>&copy; Copyright 2016 <see href="http://www.webappuk.com">Web Applications UK Ltd</see>, ALL RIGHTS RESERVED</p>
+      </div>
+    </div>
+  	<script type="text/javascript">
+<!--
+	try {
+		parent.frames["vbdocswitch"].expandLinkInToc(location.href);
+	} catch (ex) {}
+//-->
+		</script>	
+  </body>
+</html>
