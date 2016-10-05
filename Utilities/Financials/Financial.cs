@@ -440,7 +440,7 @@ namespace WebApplications.Utilities.Financials
                 cultures.Length > 0)
                 found = cultures[0];
 
-            return string.Format(found, "{0:C}", _amount);
+            return string.Format(found ?? culture, "{0:C}", _amount);
         }
 
         /// <summary>

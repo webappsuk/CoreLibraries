@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
 using System;
 using System.Linq;
+using System.Threading;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Scheduling.Configuration;
@@ -92,6 +93,8 @@ namespace WebApplications.Utilities.Scheduling.Test
 
                 SchedulerConfiguration.Active = CloneConfig(current);
 
+                Thread.Sleep(ConfigurationExtensions.EventBufferMs * 2);
+
                 Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
                 Assert.AreSame(gap, Scheduler.GetSchedule("Gap"));
                 Assert.AreSame(etm, Scheduler.GetSchedule("EveryTwoMonths"));
@@ -124,6 +127,8 @@ namespace WebApplications.Utilities.Scheduling.Test
 
                 SchedulerConfiguration.Active = newConfig;
 
+                Thread.Sleep(ConfigurationExtensions.EventBufferMs * 2);
+
                 Assert.AreEqual(Scheduler.Enabled, false);
 
                 Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
@@ -152,6 +157,8 @@ namespace WebApplications.Utilities.Scheduling.Test
                 newConfig.Schedules["Aggregate"].Parameters.Remove("schedule3");
 
                 SchedulerConfiguration.Active = newConfig;
+
+                Thread.Sleep(ConfigurationExtensions.EventBufferMs * 2);
 
                 Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
                 Assert.AreSame(gap, Scheduler.GetSchedule("Gap"));
@@ -182,6 +189,8 @@ namespace WebApplications.Utilities.Scheduling.Test
                 newConfig.Schedules["Gap"].Parameters["timeSpan"].Value = "4.00:00:00";
 
                 SchedulerConfiguration.Active = newConfig;
+
+                Thread.Sleep(ConfigurationExtensions.EventBufferMs * 2);
 
                 Assert.AreSame(oneOff, Scheduler.GetSchedule("OneOff"));
                 Assert.AreNotSame(gap, Scheduler.GetSchedule("Gap"));

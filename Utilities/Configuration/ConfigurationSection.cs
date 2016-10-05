@@ -260,6 +260,7 @@ namespace WebApplications.Utilities.Configuration
                     if (Equals(active, value)) return;
                     if (value.IsDisposed) throw new ObjectDisposedException(typeof(T).ToString());
                     _active = value;
+                    _activeChangeAction.Run(value.FullPath);
                 }
             }
         }

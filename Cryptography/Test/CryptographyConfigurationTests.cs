@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using WebApplications.Testing;
@@ -154,13 +155,17 @@ namespace WebApplications.Utilities.Cryptography.Test
                     string random = Tester.RandomString(minLength: 1);
                     string encrypted = provider.EncryptToString(random);
                     Assert.IsNotNull(encrypted);
-                    Assert.AreNotEqual(random, encrypted);
+                    Assert.IsFalse(random == encrypted, "Expected and actual string are equal.");
 
                     if (reloadProvider.CanDecrypt)
                     {
                         string decrypted = provider.DecryptToString(encrypted);
                         Assert.IsNotNull(decrypted);
-                        Assert.AreEqual(random, decrypted);
+                        Assert.IsTrue(
+                            random == decrypted,
+                            "Expected: {0}\r\n  Actual: {1}",
+                            Convert.ToBase64String(Encoding.Unicode.GetBytes(random)),
+                            Convert.ToBase64String(Encoding.Unicode.GetBytes(decrypted)));
                     }
                 }
 
