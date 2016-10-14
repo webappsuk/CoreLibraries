@@ -108,91 +108,106 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[0];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p1Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p1Value, mode);
+                AddOutParameter(programParameter, parameter, p1Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p2Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p2Value, mode);
+                AddOutParameter(programParameter, parameter, p2Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p3Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p3Value, mode);
+                AddOutParameter(programParameter, parameter, p3Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p4Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p4Value, mode);
+                AddOutParameter(programParameter, parameter, p4Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 5.
                 programParameter = parameters[4];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p5Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p5Value, mode);
+                AddOutParameter(programParameter, parameter, p5Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 6.
                 programParameter = parameters[5];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p6Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p6Value, mode);
+                AddOutParameter(programParameter, parameter, p6Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 7.
                 programParameter = parameters[6];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p7Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p7Value, mode);
+                AddOutParameter(programParameter, parameter, p7Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 8.
                 programParameter = parameters[7];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p8Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p8Value, mode);
+                AddOutParameter(programParameter, parameter, p8Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 9.
                 programParameter = parameters[8];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p9Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p9Value, mode);
+                AddOutParameter(programParameter, parameter, p9Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 10.
                 programParameter = parameters[9];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p10Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p10Value, mode);
+                AddOutParameter(programParameter, parameter, p10Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 11.
                 programParameter = parameters[10];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p11Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p11Value, mode);
+                AddOutParameter(programParameter, parameter, p11Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 12.
                 programParameter = parameters[11];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p12Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p12Value, mode);
+                AddOutParameter(programParameter, parameter, p12Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 13.
                 programParameter = parameters[12];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p13Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p13Value, mode);
+                AddOutParameter(programParameter, parameter, p13Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 14.
                 programParameter = parameters[13];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p14Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p14Value, mode);
+                AddOutParameter(programParameter, parameter, p14Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 15.
                 programParameter = parameters[14];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p15Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p15Value, mode);
+                AddOutParameter(programParameter, parameter, p15Value as IOut);
                 sqlParameters.Add(parameter);
             }
 
@@ -280,91 +295,106 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[0];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p1Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p1Value, mode);
+                AddOutParameter(programParameter, parameter, p1Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p2Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p2Value, mode);
+                AddOutParameter(programParameter, parameter, p2Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p3Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p3Value, mode);
+                AddOutParameter(programParameter, parameter, p3Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p4Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p4Value, mode);
+                AddOutParameter(programParameter, parameter, p4Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 5.
                 programParameter = parameters[4];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p5Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p5Value, mode);
+                AddOutParameter(programParameter, parameter, p5Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 6.
                 programParameter = parameters[5];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p6Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p6Value, mode);
+                AddOutParameter(programParameter, parameter, p6Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 7.
                 programParameter = parameters[6];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p7Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p7Value, mode);
+                AddOutParameter(programParameter, parameter, p7Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 8.
                 programParameter = parameters[7];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p8Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p8Value, mode);
+                AddOutParameter(programParameter, parameter, p8Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 9.
                 programParameter = parameters[8];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p9Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p9Value, mode);
+                AddOutParameter(programParameter, parameter, p9Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 10.
                 programParameter = parameters[9];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p10Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p10Value, mode);
+                AddOutParameter(programParameter, parameter, p10Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 11.
                 programParameter = parameters[10];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p11Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p11Value, mode);
+                AddOutParameter(programParameter, parameter, p11Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 12.
                 programParameter = parameters[11];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p12Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p12Value, mode);
+                AddOutParameter(programParameter, parameter, p12Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 13.
                 programParameter = parameters[12];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p13Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p13Value, mode);
+                AddOutParameter(programParameter, parameter, p13Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 14.
                 programParameter = parameters[13];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p14Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p14Value, mode);
+                AddOutParameter(programParameter, parameter, p14Value as IOut);
                 sqlParameters.Add(parameter);
                 // Find or create SQL Parameter 15.
                 programParameter = parameters[14];
                 index = _parameters.IndexOf(programParameter.FullName);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                parameter.Value = programParameter.CastCLRValue(p15Value, mode);
+                programParameter.SetSqlParameterValue(parameter, p15Value, mode);
+                AddOutParameter(programParameter, parameter, p15Value as IOut);
                 sqlParameters.Add(parameter);
             }
 
@@ -727,12 +757,14 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for this program.</param>
         /// <returns>The scalar value for each connection.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public IEnumerable<TOut> ExecuteScalarAll<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null)
         {
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteScalarAll<TOut>(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
-        }
+        } 
 
         /// <summary>
         /// Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
@@ -757,10 +789,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The scalar value for each connection.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteScalarAllAsync<TOut>(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
@@ -841,10 +875,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for this program.</param>
         /// <returns>Number of rows affected for each connection.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public IEnumerable<int> ExecuteNonQueryAll(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null)
         {
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteNonQueryAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
         }
 
@@ -870,10 +906,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Number of rows affected for each connection.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteNonQueryAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
         }
 
@@ -1019,10 +1057,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result function.</param>
         /// <param name="behavior">The behaviour.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteReaderAll([NotNull] ResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
@@ -1048,10 +1088,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result function.</param>
         /// <param name="behavior">The behaviour.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteReaderAll([NotNull] ResultDisposableDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
         }
 
@@ -1078,11 +1120,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task ExecuteReaderAllAsync([NotNull] ResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
@@ -1109,11 +1153,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task ExecuteReaderAllAsync([NotNull] ResultDisposableDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
         }
 
@@ -1269,11 +1315,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public IEnumerable<TOut> ExecuteReaderAll<TOut>([NotNull] ResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
@@ -1301,11 +1349,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public IEnumerable<TOut> ExecuteReaderAll<TOut>([NotNull] ResultDisposableDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
         }
 
@@ -1334,11 +1384,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteReaderAllAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
@@ -1367,11 +1419,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteReaderAllAsync<TOut>([NotNull] ResultDisposableDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
         }
 
@@ -1512,10 +1566,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for this program.</param>
         /// <param name="resultAction">The result function.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
@@ -1540,10 +1596,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for this program.</param>
         /// <param name="resultAction">The result function.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public void ExecuteXmlReaderAll([NotNull] XmlResultDisposableDelegate resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
         }
 
@@ -1569,11 +1627,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result function.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task ExecuteXmlReaderAllAsync([NotNull] XmlResultDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
@@ -1599,11 +1659,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result function.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task ExecuteXmlReaderAllAsync([NotNull] XmlResultDisposableDelegateAsync resultAction, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
         }
 
@@ -1754,11 +1816,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultFunc">The result function.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public IEnumerable<TOut> ExecuteXmlReaderAll<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
@@ -1785,11 +1849,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultFunc">The result function.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public IEnumerable<TOut> ExecuteXmlReaderAll<TOut>([NotNull] XmlResultDisposableDelegate<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteXmlReaderAll(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
         }
 
@@ -1817,11 +1883,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteXmlReaderAllAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
         }
 
@@ -1849,12 +1917,53 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
         public Task<IEnumerable<TOut>> ExecuteXmlReaderAllAsync<TOut>([NotNull] XmlResultDisposableDelegateAsync<TOut> resultFunc, T1 p1Value = default(T1), T2 p2Value = default(T2), T3 p3Value = default(T3), T4 p4Value = default(T4), T5 p5Value = default(T5), T6 p6Value = default(T6), T7 p7Value = default(T7), T8 p8Value = default(T8), T9 p9Value = default(T9), T10 p10Value = default(T10), T11 p11Value = default(T11), T12 p12Value = default(T12), T13 p13Value = default(T13), T14 p14Value = default(T14), T15 p15Value = default(T15), TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
+            ValidateExecuteAllOutParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value);
             return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+        }
+        
+        /// <summary>
+        /// Validates the specified parameters are valid to use with an Execute*All overload.
+        /// </summary>
+        /// <param name="p1Value">Value of SQL Parameter 1.</param>
+        /// <param name="p2Value">Value of SQL Parameter 2.</param>
+        /// <param name="p3Value">Value of SQL Parameter 3.</param>
+        /// <param name="p4Value">Value of SQL Parameter 4.</param>
+        /// <param name="p5Value">Value of SQL Parameter 5.</param>
+        /// <param name="p6Value">Value of SQL Parameter 6.</param>
+        /// <param name="p7Value">Value of SQL Parameter 7.</param>
+        /// <param name="p8Value">Value of SQL Parameter 8.</param>
+        /// <param name="p9Value">Value of SQL Parameter 9.</param>
+        /// <param name="p10Value">Value of SQL Parameter 10.</param>
+        /// <param name="p11Value">Value of SQL Parameter 11.</param>
+        /// <param name="p12Value">Value of SQL Parameter 12.</param>
+        /// <param name="p13Value">Value of SQL Parameter 13.</param>
+        /// <param name="p14Value">Value of SQL Parameter 14.</param>
+        /// <param name="p15Value">Value of SQL Parameter 15.</param>
+        /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
+        private void ValidateExecuteAllOutParameters(T1 p1Value, T2 p2Value, T3 p3Value, T4 p4Value, T5 p5Value, T6 p6Value, T7 p7Value, T8 p8Value, T9 p9Value, T10 p10Value, T11 p11Value, T12 p12Value, T13 p13Value, T14 p14Value, T15 p15Value)
+        {
+            if ((p1Value is IOut && !(p1Value is IMultiOut)) || 
+                (p2Value is IOut && !(p2Value is IMultiOut)) || 
+                (p3Value is IOut && !(p3Value is IMultiOut)) || 
+                (p4Value is IOut && !(p4Value is IMultiOut)) || 
+                (p5Value is IOut && !(p5Value is IMultiOut)) || 
+                (p6Value is IOut && !(p6Value is IMultiOut)) || 
+                (p7Value is IOut && !(p7Value is IMultiOut)) || 
+                (p8Value is IOut && !(p8Value is IMultiOut)) || 
+                (p9Value is IOut && !(p9Value is IMultiOut)) || 
+                (p10Value is IOut && !(p10Value is IMultiOut)) || 
+                (p11Value is IOut && !(p11Value is IMultiOut)) || 
+                (p12Value is IOut && !(p12Value is IMultiOut)) || 
+                (p13Value is IOut && !(p13Value is IMultiOut)) || 
+                (p14Value is IOut && !(p14Value is IMultiOut)) || 
+                (p15Value is IOut && !(p15Value is IMultiOut)))
+                throw new ArgumentException(Resources.SqlProgram_ValidateExecuteAllOutParameters_InvalidOut);
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2016.  All rights reserved.
+// Copyright (c) 2016, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -47,11 +47,10 @@ namespace WebApplications.Utilities.Database
     public partial class SqlProgramCommand
     {
         /// <summary>
-        /// Class CommandDisposer implements <see cref="IDisposable"/> and allows for manual disposal of resources.
+        /// Class ReaderDisposer implements <see cref="IDisposable"/> and allows for manual disposal of resources.
         /// </summary>
         /// <seealso cref="System.IDisposable" />
-        private class ReaderDisposer<TReader> : IDisposable
-            where TReader: class, IDisposable
+        private class ReaderDisposer : IDisposable
         {
             /// <summary>
             /// The semaphore.
@@ -75,13 +74,27 @@ namespace WebApplications.Utilities.Database
             /// The reader.
             /// </summary>
             [CanBeNull]
-            public TReader Reader;
+            public IDisposable Reader;
+
+            /// <summary>
+            /// The output parameters.
+            /// </summary>
+            public IEnumerable<SqlProgramParameter, SqlParameter, IOut> OutputParameters;
+
+            /// <summary>
+            /// The command timeout.
+            /// </summary>
+            public TimeSpan CommandTimeout;
+
+            public CancellationToken CancellationToken { get; private set; }
 
             /// <summary>
             /// The registration for cancellation.
             /// </summary>
             [CanBeNull]
             private IDisposable _registration;
+
+            private bool _cancelled;
 
             /// <summary>
             /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -93,6 +106,10 @@ namespace WebApplications.Utilities.Database
                 Interlocked.Exchange(ref Command, null)?.Dispose();
                 Interlocked.Exchange(ref Connection, null)?.Dispose();
                 Interlocked.Exchange(ref Semaphore, null)?.Dispose();
+                IEnumerable<SqlProgramParameter, SqlParameter, IOut> outs = Interlocked.Exchange(
+                    ref OutputParameters,
+                    null);
+                if (!_cancelled && outs != null) SetOutputValues(outs);
             }
 
             /// <summary>
@@ -100,28 +117,299 @@ namespace WebApplications.Utilities.Database
             /// </summary>
             /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>CancellationToken.</returns>
-            public CancellationToken SetCancellationToken(CancellationToken cancellationToken)
+            public void SetCancellationToken(CancellationToken cancellationToken = default(CancellationToken))
             {
-                if (cancellationToken.CanBeCanceled)
-                    _registration = cancellationToken.Register(Dispose);
+                if (CommandTimeout > TimeSpan.Zero)
+                    cancellationToken = cancellationToken
+                        .WithTimeout(CommandTimeout.Add(AdditionalCancellationTime))
+                        .Token;
 
-                return cancellationToken;
+                if (cancellationToken.CanBeCanceled)
+                    _registration = cancellationToken.Register(
+                        () =>
+                        {
+                            _cancelled = true;
+                            Dispose();
+                        });
+
+                CancellationToken = cancellationToken;
+            }
+
+            private void SetOutputValues(
+                [NotNull] [ItemNotNull] IEnumerable<SqlProgramParameter, SqlParameter, IOut> outputs)
+            {
+                foreach (Tuple<SqlProgramParameter, SqlParameter, IOut> tuple in outputs)
+                {
+                    SqlProgramParameter programParameter = tuple.Item1;
+                    SqlParameter parameter = tuple.Item2;
+                    IOut output = tuple.Item3;
+
+                    Debug.Assert(programParameter != null, "programParameter != null");
+                    Debug.Assert(parameter != null, "parameter != null");
+                    Debug.Assert(output != null, "output != null");
+
+                    try
+                    {
+                        object outValue = programParameter.CastSQLValue(parameter.Value, output.Type);
+                        output.SetOutputValue(outValue, parameter);
+                    }
+                    catch (Exception e)
+                    {
+                        output.SetOutputError(e, parameter);
+                    }
+                }
+            }
+
+            #region SqlCommand.Execute methods
+            /// <summary>Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.</summary>
+            /// <returns>The first column of the first row in the result set, or a null reference (Nothing in Visual Basic) if the result set is empty. Returns a maximum of 2033 characters.</returns>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">An exception occurred while executing the command against a locked row. This exception is not generated when you are using Microsoft .NET Framework version 1.0.A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.InvalidOperationException">The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <PermissionSet>
+            ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+            ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+            ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            /// </PermissionSet>
+            public object ExecuteScalar()
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                SetCancellationToken();
+                return command.ExecuteScalar();
+            }
+
+            /// <summary>An asynchronous version of <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteScalar" />, which executes the query asynchronously and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.The cancellation token can be used to request that the operation be abandoned before the command timeout elapses. Exceptions will be reported via the returned Task object.</summary>
+            /// <returns>A task representing the asynchronous operation.</returns>
+            /// <param name="cancellationToken">The cancellation instruction.</param>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.InvalidOperationException">Calling <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteScalarAsync(System.Threading.CancellationToken)" /> more than once for the same instance before task completion.The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.Context Connection=true is specified in the connection string.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">SQL Server returned an error while executing the command text.A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            [NotNull]
+            public Task<object> ExecuteScalarAsync(CancellationToken cancellationToken)
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                SetCancellationToken(cancellationToken);
+                return command.ExecuteScalarAsync(cancellationToken);
+            }
+
+            /// <summary>Executes a Transact-SQL statement against the connection and returns the number of rows affected.</summary>
+            /// <returns>The number of rows affected.</returns>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">An exception occurred while executing the command against a locked row. This exception is not generated when you are using Microsoft .NET Framework version 1.0.A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.InvalidOperationException">The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <PermissionSet>
+            ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
+            ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            /// </PermissionSet>
+            public int ExecuteNonQuery()
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                SetCancellationToken();
+                return command.ExecuteNonQuery();
+            }
+
+            /// <summary>An asynchronous version of <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteNonQuery" />, which executes a Transact-SQL statement against the connection and returns the number of rows affected. The cancellation token can be used to request that the operation be abandoned before the command timeout elapses.  Exceptions will be reported via the returned Task object.</summary>
+            /// <returns>A task representing the asynchronous operation.</returns>
+            /// <param name="cancellationToken">The cancellation instruction.</param>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.InvalidOperationException">Calling <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteNonQueryAsync(System.Threading.CancellationToken)" /> more than once for the same instance before task completion.The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.Context Connection=true is specified in the connection string.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">SQL Server returned an error while executing the command text.A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            [NotNull]
+            public Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                SetCancellationToken(cancellationToken);
+                return command.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            /// <summary>Sends the <see cref="P:System.Data.SqlClient.SqlCommand.CommandText" /> to the <see cref="P:System.Data.SqlClient.SqlCommand.Connection" />, and builds a <see cref="T:System.Data.SqlClient.SqlDataReader" /> using one of the <see cref="T:System.Data.CommandBehavior" /> values.</summary>
+            /// <returns>A <see cref="T:System.Data.SqlClient.SqlDataReader" /> object.</returns>
+            /// <param name="behavior">One of the <see cref="T:System.Data.CommandBehavior" /> values.</param>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.InvalidOperationException">The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <PermissionSet>
+            ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+            ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+            ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            /// </PermissionSet>
+            [NotNull]
+            public SqlDataReader ExecuteReader(CommandBehavior behavior)
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                SqlDataReader reader = command.ExecuteReader(behavior);
+                Reader = reader;
+                SetCancellationToken();
+                return reader;
+            }
+
+            /// <summary>An asynchronous version of <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteReader(System.Data.CommandBehavior)" />, which sends the <see cref="P:System.Data.SqlClient.SqlCommand.CommandText" /> to the <see cref="P:System.Data.SqlClient.SqlCommand.Connection" />, and builds a <see cref="T:System.Data.SqlClient.SqlDataReader" />The cancellation token can be used to request that the operation be abandoned before the command timeout elapses.  Exceptions will be reported via the returned Task object.</summary>
+            /// <returns>A task representing the asynchronous operation.</returns>
+            /// <param name="behavior">Options for statement execution and data retrieval.  When is set to Default, <see cref="M:System.Data.SqlClient.SqlDataReader.ReadAsync(System.Threading.CancellationToken)" /> reads the entire row before returning a complete Task.</param>
+            /// <param name="cancellationToken">The cancellation instruction.</param>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.ArgumentException">An invalid <see cref="T:System.Data.CommandBehavior" /> value.</exception>
+            /// <exception cref="T:System.InvalidOperationException">Calling <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteReaderAsync(System.Data.CommandBehavior,System.Threading.CancellationToken)" /> more than once for the same instance before task completion.The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.Context Connection=true is specified in the connection string.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">SQL Server returned an error while executing the command text.A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            [NotNull]
+            [ItemNotNull]
+            public async Task<SqlDataReader> ExecuteReaderAsync(
+                CommandBehavior behavior,
+                CancellationToken cancellationToken)
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                SqlDataReader reader =
+                    await command.ExecuteReaderAsync(behavior, cancellationToken).ConfigureAwait(false);
+                Reader = reader;
+                SetCancellationToken(cancellationToken);
+                Debug.Assert(reader != null, "reader != null");
+                return reader;
+            }
+
+            /// <summary>Sends the <see cref="P:System.Data.SqlClient.SqlCommand.CommandText" /> to the <see cref="P:System.Data.SqlClient.SqlCommand.Connection" /> and builds an <see cref="T:System.Xml.XmlReader" /> object.</summary>
+            /// <returns>An <see cref="T:System.Xml.XmlReader" /> object.</returns>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">An exception occurred while executing the command against a locked row. This exception is not generated when you are using Microsoft .NET Framework version 1.0.A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.InvalidOperationException">The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <PermissionSet>
+            ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" />
+            ///   <IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain" />
+            ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+            /// </PermissionSet>
+            [NotNull]
+            public XmlReader ExecuteXmlReader()
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                XmlReader reader = command.ExecuteXmlReader();
+                Reader = reader;
+                SetCancellationToken();
+                return reader;
+            }
+
+            /// <summary>An asynchronous version of <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteXmlReader" />, which sends the <see cref="P:System.Data.SqlClient.SqlCommand.CommandText" /> to the <see cref="P:System.Data.SqlClient.SqlCommand.Connection" /> and builds an <see cref="T:System.Xml.XmlReader" /> object.Exceptions will be reported via the returned Task object.</summary>
+            /// <returns>A task representing the asynchronous operation.</returns>
+            /// <exception cref="T:System.InvalidCastException">A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Binary or VarBinary was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.Stream" />. For more information about streaming, see SqlClient Streaming Support.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Char, NChar, NVarChar, VarChar, or  Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.IO.TextReader" />.A <see cref="P:System.Data.SqlClient.SqlParameter.SqlDbType" /> other than Xml was used when <see cref="P:System.Data.SqlClient.SqlParameter.Value" /> was set to <see cref="T:System.Xml.XmlReader" />.</exception>
+            /// <exception cref="T:System.InvalidOperationException">Calling <see cref="M:System.Data.SqlClient.SqlCommand.ExecuteScalarAsync(System.Threading.CancellationToken)" /> more than once for the same instance before task completion.The <see cref="T:System.Data.SqlClient.SqlConnection" /> closed or dropped during a streaming operation. For more information about streaming, see SqlClient Streaming Support.Context Connection=true is specified in the connection string.</exception>
+            /// <exception cref="T:System.Data.SqlClient.SqlException">SQL Server returned an error while executing the command text.A timeout occurred during a streaming operation. For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.IO.IOException">An error occurred in a <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            /// <exception cref="T:System.ObjectDisposedException">The <see cref="T:System.IO.Stream" />, <see cref="T:System.Xml.XmlReader" /> or <see cref="T:System.IO.TextReader" /> object was closed during a streaming operation.  For more information about streaming, see SqlClient Streaming Support.</exception>
+            [NotNull]
+            [ItemNotNull]
+            public async Task<XmlReader> ExecuteXmlReaderAsync(CancellationToken cancellationToken)
+            {
+                SqlCommand command = Command;
+                // Should never happen
+                if (command == null) throw new ObjectDisposedException(nameof(ReaderDisposer));
+
+                // ReSharper disable once PossibleNullReferenceException
+                XmlReader reader = await command.ExecuteXmlReaderAsync(cancellationToken).ConfigureAwait(false);
+                Reader = reader;
+                SetCancellationToken(cancellationToken);
+                return reader;
+            }
+            #endregion
+        }
+
+        [NotNull]
+        private ReaderDisposer CreateReaderDisposer()
+        {
+            ReaderDisposer disposer = new ReaderDisposer();
+            try
+            {
+                disposer.Semaphore = WaitSemaphoresAsync().GetAwaiter().GetResult();
+                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
+                disposer.Connection.Open();
+                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = (int)CommandTimeout.TotalSeconds
+                };
+                disposer.CommandTimeout = CommandTimeout;
+                _setSqlParameterCollection(disposer.Command, _parameters);
+                disposer.OutputParameters = _outputParameters;
+                return disposer;
+            }
+            catch
+            {
+                disposer.Dispose();
+                throw;
             }
         }
 
-        /// <summary>
-        /// Creates a cancellation token that will eventually timeout if there is a command timeout.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>CancellationToken.</returns>
-        private CancellationToken CreateCancellationToken(
-            CancellationToken cancellationToken = default(CancellationToken))
+        [NotNull]
+        [ItemNotNull]
+        private async Task<ReaderDisposer> CreateReaderDisposerAsync(CancellationToken cancellationToken)
         {
-            if (CommandTimeout > TimeSpan.Zero)
-                cancellationToken =
-                    cancellationToken.WithTimeout(CommandTimeout.Add(AdditionalCancellationTime))
-                        .Token;
-            return cancellationToken;
+            ReaderDisposer disposer = new ReaderDisposer();
+            try
+            {
+                disposer.Semaphore = await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false);
+                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
+                await disposer.Connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = (int)CommandTimeout.TotalSeconds
+                };
+                _setSqlParameterCollection(disposer.Command, _parameters);
+                disposer.OutputParameters = _outputParameters;
+                return disposer;
+            }
+            catch
+            {
+                disposer.Dispose();
+                throw;
+            }
         }
 
         /// <summary>
@@ -147,6 +435,9 @@ namespace WebApplications.Utilities.Database
 
         [NotNull]
         private readonly SqlParameterCollection _parameters;
+
+        [CanBeNull]
+        private List<SqlProgramParameter, SqlParameter, IOut> _outputParameters;
 
         private TimeSpan _commandTimeout;
 
@@ -208,7 +499,8 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="parameterName">The name of the parameter to retrieve.</param>
         /// <returns>The <see cref="SqlParameter" /> that corresponds to the <paramref name="parameterName" /> provided.</returns>
-        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="parameterName"/> is <see langword="null" />.</exception>
+        /// <exception cref="LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
         [NotNull]
         public SqlParameter GetParameter([NotNull] string parameterName)
         {
@@ -254,7 +546,21 @@ namespace WebApplications.Utilities.Database
         /// <param name="mode"><para>The constraint mode.</para>
         /// <para>By default this is set to give a warning if truncation/loss of precision occurs.</para></param>
         /// <returns>The SqlParameter with the specified name.</returns>
-        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="parameterName"/> is <see langword="null" />.</exception>
+        /// <exception cref="LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
+        /// <exception cref="DatabaseSchemaException"><para>The type <typeparamref name="T" /> is invalid for the <see cref="SqlProgramParameter.Direction" />.</para>
+        /// <para>-or-</para>
+        /// <para>The type <typeparamref name="T" /> was unsupported.</para>
+        /// <para>-or-</para>
+        /// <para>A fatal error occurred.</para>
+        /// <para>-or-</para>
+        /// <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        /// <para>-or-</para>
+        /// <para>The serialized object was truncated.</para>
+        /// <para>-or-</para>
+        /// <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        /// <para>-or-</para>
+        /// <para>The date was outside the range of accepted dates for the SQL type.</para></exception>
         [NotNull]
         public SqlParameter SetParameter<T>(
             [NotNull] string parameterName,
@@ -284,9 +590,27 @@ namespace WebApplications.Utilities.Database
                     : _parameters[index];
 
                 Debug.Assert(parameter != null);
-                parameter.Value = parameterDefinition.CastCLRValue(value, mode);
+                parameterDefinition.SetSqlParameterValue(parameter, value, mode);
+                AddOutParameter(parameterDefinition, parameter, value as IOut);
                 return parameter;
             }
+        }
+
+        /// <summary>
+        /// Adds the output parameter value given if it isnt null.
+        /// </summary>
+        /// <param name="sqlProgramParameter">The program parameter the value is for.</param>
+        /// <param name="sqlParameter">The sql parameter the value is for.</param>
+        /// <param name="outValue">The output value.</param>
+        private void AddOutParameter(
+            [NotNull] SqlProgramParameter sqlProgramParameter,
+            SqlParameter sqlParameter,
+            IOut outValue)
+        {
+            if (outValue == null) return;
+            if (_outputParameters == null)
+                _outputParameters = new List<SqlProgramParameter, SqlParameter, IOut>();
+            _outputParameters.Add(sqlProgramParameter, sqlParameter, outValue);
         }
 
         /// <summary>
@@ -314,10 +638,7 @@ namespace WebApplications.Utilities.Database
         ///   The first column of the first row in the result set, or <see langword="null"/> if the result set is empty.
         ///   Returns a maximum of 2033 characters.
         /// </returns>
-        /// <exception cref="SqlException">
-        ///   An exception occurred whilst executing the command against a locked row.
-        ///   This exception is not generated when using Microsoft .NET Framework version 1.0.
-        /// </exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
@@ -331,20 +652,8 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (WaitSemaphoresAsync().Result)
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
-                {
-                    connection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        return (T)sqlCommand.ExecuteScalar();
-                    }
-                }
+                using (ReaderDisposer disposer = CreateReaderDisposer())
+                    return (T)disposer.ExecuteScalar();
             }
             catch (Exception exception)
             {
@@ -359,6 +668,7 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T">The type of the value in the result (the value first column of the first row).</typeparam>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing the scalar result.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -373,23 +683,12 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
+                using (ReaderDisposer disposer =
+                    await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-
-                        // ReSharper disable PossibleNullReferenceException
-                        return (T)await sqlCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
-                        // ReSharper restore PossibleNullReferenceException
-                    }
+                    return (T)await disposer
+                        .ExecuteScalarAsync(cancellationToken)
+                        .ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -402,6 +701,7 @@ namespace WebApplications.Utilities.Database
         /// Executes a Transact-SQL statement against the connection and returns the number of rows affected.
         /// </summary>
         /// <returns>The number of rows affected.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -413,20 +713,8 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (WaitSemaphoresAsync().Result)
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
-                {
-                    connection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        return sqlCommand.ExecuteNonQuery();
-                    }
-                }
+                using (ReaderDisposer disposer = CreateReaderDisposer())
+                    return disposer.ExecuteNonQuery();
             }
             catch (Exception exception)
             {
@@ -440,6 +728,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing the number of rows affected.</returns>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -452,22 +741,12 @@ namespace WebApplications.Utilities.Database
         {
             try
             {
-                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
+                using (ReaderDisposer disposer =
+                    await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        // ReSharper disable PossibleNullReferenceException
-                        return await sqlCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
-                        // ReSharper restore PossibleNullReferenceException
-                    }
+                    return await disposer
+                        .ExecuteNonQueryAsync(cancellationToken)
+                        .ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -485,7 +764,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <returns>The built <see cref="SqlDataReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -502,21 +782,8 @@ namespace WebApplications.Utilities.Database
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
             try
             {
-                using (WaitSemaphoresAsync().Result)
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
-                {
-                    connection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (SqlDataReader reader = sqlCommand.ExecuteReader(behavior))
-                            resultAction(reader);
-                    }
-                }
+                using (ReaderDisposer disposer = CreateReaderDisposer())
+                    resultAction(disposer.ExecuteReader(behavior));
             }
             catch (Exception exception)
             {
@@ -533,7 +800,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <returns>The built <see cref="SqlDataReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -548,27 +816,16 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default)
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-            
-            ReaderDisposer<SqlDataReader> disposer = new ReaderDisposer<SqlDataReader>();
+
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = WaitSemaphoresAsync().Result;
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                disposer.Connection.Open();
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = disposer.Command.ExecuteReader(behavior);
-                disposer.SetCancellationToken(CreateCancellationToken());
-                // ReSharper disable once AssignNullToNotNullAttribute
-                resultAction(disposer.Reader, disposer);
+                disposer = CreateReaderDisposer();
+                resultAction(disposer.ExecuteReader(behavior), disposer);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
@@ -581,7 +838,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <returns>The built <see cref="SqlDataReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -599,21 +857,8 @@ namespace WebApplications.Utilities.Database
 
             try
             {
-                using (WaitSemaphoresAsync().Result)
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
-                {
-                    connection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (SqlDataReader reader = sqlCommand.ExecuteReader(behavior))
-                            return resultFunc(reader);
-                    }
-                }
+                using (ReaderDisposer disposer = CreateReaderDisposer())
+                    return resultFunc(disposer.ExecuteReader(behavior));
             }
             catch (Exception exception)
             {
@@ -630,7 +875,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior"><para>Describes the results of the query and its effect on the database.</para>
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <returns>The built <see cref="SqlDataReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -646,26 +892,15 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            ReaderDisposer<SqlDataReader> disposer = new ReaderDisposer<SqlDataReader>();
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = WaitSemaphoresAsync().Result;
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                disposer.Connection.Open();
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = disposer.Command.ExecuteReader(behavior);
-                disposer.SetCancellationToken(CreateCancellationToken());
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return resultFunc(disposer.Reader, disposer);
+                disposer = CreateReaderDisposer();
+                return resultFunc(disposer.ExecuteReader(behavior), disposer);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
@@ -678,7 +913,8 @@ namespace WebApplications.Utilities.Database
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="SqlDataReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -698,22 +934,15 @@ namespace WebApplications.Utilities.Database
 
             try
             {
-                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
+                using (ReaderDisposer disposer =
+                    await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    // ReSharper disable PossibleNullReferenceException
-                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (SqlDataReader reader = await sqlCommand.ExecuteReaderAsync(behavior, cancellationToken).ConfigureAwait(false))
-                            await resultAction(reader, CreateCancellationToken(cancellationToken)).ConfigureAwait(false);
-                    }
-                    // ReSharper restore PossibleNullReferenceException
+                    SqlDataReader reader = await disposer
+                        .ExecuteReaderAsync(behavior, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    await resultAction(reader, disposer.CancellationToken).ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -730,7 +959,8 @@ namespace WebApplications.Utilities.Database
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="SqlDataReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -748,28 +978,21 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            ReaderDisposer<SqlDataReader> disposer = new ReaderDisposer<SqlDataReader>();
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                // ReSharper disable PossibleNullReferenceException
-                await disposer.Connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = await disposer.Command.ExecuteReaderAsync(behavior, cancellationToken)
+                disposer = await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false);
+
+                SqlDataReader reader = await disposer
+                    .ExecuteReaderAsync(behavior, cancellationToken)
                     .ConfigureAwait(false);
-                cancellationToken = disposer.SetCancellationToken(CreateCancellationToken(cancellationToken));
-                await resultAction(disposer.Reader, disposer, cancellationToken).ConfigureAwait(false);
-                // ReSharper restore PossibleNullReferenceException
+
+                // ReSharper disable once PossibleNullReferenceException
+                await resultAction(reader, disposer, disposer.CancellationToken).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
@@ -783,7 +1006,8 @@ namespace WebApplications.Utilities.Database
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="SqlDataReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -803,24 +1027,15 @@ namespace WebApplications.Utilities.Database
 
             try
             {
-                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
+                using (ReaderDisposer disposer =
+                    await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    // ReSharper disable PossibleNullReferenceException
-                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (
-                            SqlDataReader reader =
-                                await sqlCommand.ExecuteReaderAsync(behavior, cancellationToken).ConfigureAwait(false))
-                            return await resultFunc(reader, CreateCancellationToken(cancellationToken)).ConfigureAwait(false);
-                    }
-                    // ReSharper restore PossibleNullReferenceException
+                    SqlDataReader reader = await disposer
+                        .ExecuteReaderAsync(behavior, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    return await resultFunc(reader, disposer.CancellationToken).ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -838,7 +1053,8 @@ namespace WebApplications.Utilities.Database
         /// <para>By default this is set to CommandBehavior.Default.</para></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="SqlDataReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -856,28 +1072,21 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            ReaderDisposer<SqlDataReader> disposer = new ReaderDisposer<SqlDataReader>();
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                // ReSharper disable PossibleNullReferenceException
-                await disposer.Connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = await disposer.Command.ExecuteReaderAsync(behavior, cancellationToken)
+                disposer = await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false);
+
+                SqlDataReader reader = await disposer
+                    .ExecuteReaderAsync(behavior, cancellationToken)
                     .ConfigureAwait(false);
-                cancellationToken = disposer.SetCancellationToken(CreateCancellationToken(cancellationToken));
-                return await resultFunc(disposer.Reader, disposer, cancellationToken).ConfigureAwait(false);
-                // ReSharper restore PossibleNullReferenceException
+
+                // ReSharper disable once PossibleNullReferenceException
+                return await resultFunc(reader, disposer, disposer.CancellationToken).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
@@ -890,7 +1099,8 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="resultAction">The action to use to process the results.</param>
         /// <returns>The built <see cref="XmlReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -906,21 +1116,8 @@ namespace WebApplications.Utilities.Database
 
             try
             {
-                using (WaitSemaphoresAsync().Result)
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
-                {
-                    connection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (XmlReader reader = sqlCommand.ExecuteXmlReader())
-                            resultAction(reader);
-                    }
-                }
+                using (ReaderDisposer disposer = CreateReaderDisposer())
+                    resultAction(disposer.ExecuteXmlReader());
             }
             catch (Exception exception)
             {
@@ -935,7 +1132,8 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="resultAction">The action to use to process the results.</param>
         /// <returns>The built <see cref="XmlReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -949,26 +1147,15 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            ReaderDisposer<XmlReader> disposer = new ReaderDisposer<XmlReader>();
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = WaitSemaphoresAsync().Result;
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                disposer.Connection.Open();
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = disposer.Command.ExecuteXmlReader();
-                disposer.SetCancellationToken(CreateCancellationToken());
-                // ReSharper disable once AssignNullToNotNullAttribute
-                resultAction(disposer.Reader, disposer);
+                disposer = CreateReaderDisposer();
+                resultAction(disposer.ExecuteXmlReader(), disposer);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
@@ -980,7 +1167,8 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T"></typeparam>
         /// <param name="resultFunc">The function to use to process the results.</param>
         /// <returns>The built <see cref="XmlReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -996,21 +1184,8 @@ namespace WebApplications.Utilities.Database
 
             try
             {
-                using (WaitSemaphoresAsync().Result)
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
-                {
-                    connection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (XmlReader reader = sqlCommand.ExecuteXmlReader())
-                            return resultFunc(reader);
-                    }
-                }
+                using (ReaderDisposer disposer = CreateReaderDisposer())
+                    return resultFunc(disposer.ExecuteXmlReader());
             }
             catch (Exception exception)
             {
@@ -1025,7 +1200,8 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T"></typeparam>
         /// <param name="resultFunc">The function to use to process the results.</param>
         /// <returns>The built <see cref="XmlReader" /> object.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -1038,27 +1214,16 @@ namespace WebApplications.Utilities.Database
         public T ExecuteXmlReader<T>([NotNull] XmlResultDisposableDelegate<T> resultFunc)
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-            
-            ReaderDisposer<XmlReader> disposer = new ReaderDisposer<XmlReader>();
+
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = WaitSemaphoresAsync().Result;
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                disposer.Connection.Open();
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = disposer.Command.ExecuteXmlReader();
-                disposer.SetCancellationToken(CreateCancellationToken());
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return resultFunc(disposer.Reader, disposer);
+                disposer = CreateReaderDisposer();
+                return resultFunc(disposer.ExecuteXmlReader(), disposer);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
@@ -1070,7 +1235,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result action.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="XmlReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -1089,23 +1255,15 @@ namespace WebApplications.Utilities.Database
 
             try
             {
-                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
+                using (ReaderDisposer disposer =
+                    await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    // ReSharper disable PossibleNullReferenceException
-                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (XmlReader reader =
-                                await sqlCommand.ExecuteXmlReaderAsync(cancellationToken).ConfigureAwait(false))
-                            await resultAction(reader, CreateCancellationToken(cancellationToken)).ConfigureAwait(false);
-                    }
-                    // ReSharper restore PossibleNullReferenceException
+                    XmlReader reader = await disposer
+                        .ExecuteXmlReaderAsync(cancellationToken)
+                        .ConfigureAwait(false);
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    await resultAction(reader, disposer.CancellationToken).ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -1121,7 +1279,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result action.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="XmlReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultAction"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -1138,28 +1297,21 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            ReaderDisposer<XmlReader> disposer = new ReaderDisposer<XmlReader>();
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                // ReSharper disable PossibleNullReferenceException
-                await disposer.Connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = await disposer.Command.ExecuteXmlReaderAsync(cancellationToken)
+                disposer = await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false);
+
+                XmlReader reader = await disposer
+                    .ExecuteXmlReaderAsync(cancellationToken)
                     .ConfigureAwait(false);
-                cancellationToken = disposer.SetCancellationToken(CreateCancellationToken(cancellationToken));
-                await resultAction(disposer.Reader, disposer, cancellationToken).ConfigureAwait(false);
-                // ReSharper restore PossibleNullReferenceException
+
+                // ReSharper disable once PossibleNullReferenceException
+                await resultAction(reader, disposer, disposer.CancellationToken).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
@@ -1172,7 +1324,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultFunc">The result function.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="XmlReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -1191,26 +1344,15 @@ namespace WebApplications.Utilities.Database
 
             try
             {
-                using (await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false))
-                using (SqlConnection connection = new SqlConnection(_mapping.Connection.ConnectionString))
+                using (ReaderDisposer disposer =
+                    await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    // ReSharper disable PossibleNullReferenceException
-                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                    using (SqlCommand sqlCommand = new SqlCommand(_program.Name, connection)
-                    {
-                        CommandType = CommandType.StoredProcedure,
-                        CommandTimeout = (int)CommandTimeout.TotalSeconds
-                    })
-                    {
-                        _setSqlParameterCollection(sqlCommand, _parameters);
-                        using (
-                            XmlReader reader =
-                                await sqlCommand.ExecuteXmlReaderAsync(cancellationToken).ConfigureAwait(false))
-                            return
-                                await
-                                    resultFunc(reader, CreateCancellationToken(cancellationToken)).ConfigureAwait(false);
-                    }
-                    // ReSharper restore PossibleNullReferenceException
+                    XmlReader reader = await disposer
+                        .ExecuteXmlReaderAsync(cancellationToken)
+                        .ConfigureAwait(false);
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    return await resultFunc(reader, disposer.CancellationToken).ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -1227,7 +1369,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultFunc">The result function.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task, containing a <see cref="XmlReader" />.</returns>
-        /// <exception cref="WebApplications.Utilities.Database.Exceptions.SqlProgramExecutionException"></exception>
+        /// <exception cref="ArgumentNullException"><paramref name="resultFunc"/> is <see langword="null" />.</exception>
+        /// <exception cref="SqlProgramExecutionException">An error occured while executing the program.</exception>
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
@@ -1244,28 +1387,21 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            ReaderDisposer<XmlReader> disposer = new ReaderDisposer<XmlReader>();
+            ReaderDisposer disposer = null;
             try
             {
-                disposer.Semaphore = await WaitSemaphoresAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Connection = new SqlConnection(_mapping.Connection.ConnectionString);
-                // ReSharper disable PossibleNullReferenceException
-                await disposer.Connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-                disposer.Command = new SqlCommand(_program.Name, disposer.Connection)
-                {
-                    CommandType = CommandType.StoredProcedure,
-                    CommandTimeout = (int)CommandTimeout.TotalSeconds
-                };
-                _setSqlParameterCollection(disposer.Command, _parameters);
-                disposer.Reader = await disposer.Command.ExecuteXmlReaderAsync(cancellationToken)
+                disposer = await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false);
+
+                XmlReader reader = await disposer
+                    .ExecuteXmlReaderAsync(cancellationToken)
                     .ConfigureAwait(false);
-                cancellationToken = disposer.SetCancellationToken(CreateCancellationToken(cancellationToken));
-                return await resultFunc(disposer.Reader, disposer, cancellationToken).ConfigureAwait(false);
-                // ReSharper restore PossibleNullReferenceException
+
+                // ReSharper disable once PossibleNullReferenceException
+                return await resultFunc(reader, disposer, disposer.CancellationToken).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                disposer.Dispose();
+                disposer?.Dispose();
                 throw new SqlProgramExecutionException(_program, exception);
             }
         }
