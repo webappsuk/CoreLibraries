@@ -135,6 +135,10 @@ namespace WebApplications.Utilities.Database
                 CancellationToken = cancellationToken;
             }
 
+            /// <summary>
+            /// Sets the values of the output parameters from the SqlParameters.
+            /// </summary>
+            /// <param name="outputs">The outputs.</param>
             private void SetOutputValues(
                 [NotNull] [ItemNotNull] IEnumerable<SqlProgramParameter, SqlParameter, IOut> outputs)
             {
@@ -148,15 +152,17 @@ namespace WebApplications.Utilities.Database
                     Debug.Assert(parameter != null, "parameter != null");
                     Debug.Assert(output != null, "output != null");
 
+                    object outValue;
                     try
                     {
-                        object outValue = programParameter.CastSQLValue(parameter.Value, output.Type);
-                        output.SetOutputValue(outValue, parameter);
+                        outValue = programParameter.CastSQLValue(parameter.Value, output.Type);
                     }
                     catch (Exception e)
                     {
                         output.SetOutputError(e, parameter);
+                        continue;
                     }
+                    output.SetOutputValue(outValue, parameter);
                 }
             }
 

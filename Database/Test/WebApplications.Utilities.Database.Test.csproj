@@ -57,6 +57,8 @@
     <Compile Include="TestSqlProgram\ExecuteNonQueryAndExecuteNonQueryAll.cs" />
     <Compile Include="TestSqlProgram\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
     <Compile Include="TestSqlProgram\ExecuteReaderAndExecuteReaderAllTests.cs" />
+    <Compile Include="TestSqlProgram\ExecuteXmlReaderAsyncAndExecuteXmlReaderAllAsyncTests.cs" />
+    <Compile Include="TestSqlProgram\ExecuteXmlReaderAndExecuteXmlReaderAllTests.cs" />
     <Compile Include="TestSqlProgram\ExecuteScalarAsyncAndExecuteScalarAllAsyncTests.cs" />
     <Compile Include="TestSqlProgram\SqlProgramTestBase.cs" />
     <Compile Include="TestSqlProgram\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />

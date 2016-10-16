@@ -100,7 +100,8 @@ namespace WebApplications.Utilities.Database
         /// <value>
         /// The optional input value.
         /// </value>
-        Optional<object> IOut.InputValue => _inputValue;
+        Optional<object> IOut.InputValue
+            => _inputValue.IsAssigned ? new Optional<object>(_inputValue.Value) : Optional<object>.Unassigned;
 
         /// <summary>
         /// Gets the optional input value.
@@ -116,7 +117,7 @@ namespace WebApplications.Utilities.Database
         /// <value>
         /// The output value.
         /// </value>
-        public Optional<T> OutputValue
+        public virtual Optional<T> OutputValue
         {
             get
             {
@@ -132,7 +133,7 @@ namespace WebApplications.Utilities.Database
         /// The output error.
         /// </value>
         [CanBeNull]
-        public Exception OutputError => _outputError;
+        public virtual Exception OutputError => _outputError;
 
         /// <summary>
         /// Gets the value of the parameter.
@@ -141,7 +142,7 @@ namespace WebApplications.Utilities.Database
         /// The <see cref="Optional{T}.Value" /> of <see cref="OutputValue" /> if it <see cref="Optional{T}.IsAssigned" />,
         /// otherwise the value of <see cref="InputValue" />.
         /// </value>
-        public T Value => _outputValue.IsAssigned ? _outputValue.Value : _inputValue.Value;
+        public T Value => OutputValue.IsAssigned ? OutputValue.Value : InputValue.Value;
 
         /// <summary>
         /// Gets a value indicating whether this parameter has a value.
@@ -171,7 +172,7 @@ namespace WebApplications.Utilities.Database
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
         /// <exception cref="InvalidOperationException">This value is already being used by a parameter.</exception>
-        protected virtual void SetParameter(SqlParameter parameter)
+        protected internal virtual void SetParameter(SqlParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             if (_parameter != null || _outputValue.IsAssigned)

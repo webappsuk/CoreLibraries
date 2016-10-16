@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Database.Exceptions;
@@ -180,6 +181,110 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                     Task.FromResult(new { Reader = reader, Disposable = disposable, Token = token }),
                 10)
                 .ConfigureAwait(false);
+        }
+
+        [TestMethod]
+        public async Task ExecuteReaderAsync_WithOutputParameters_ExecutesSuccessfully()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create((Connection)LocalDatabaseConnectionString, "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            Out<int> inputOutput = new Out<int>(inputOutputVal);
+            Out<int> output = new Out<int>();
+
+            string result = await program.ExecuteReaderAsync(
+                async (reader, token) =>
+                {
+                    Assert.IsTrue(await reader.ReadAsync());
+
+                    string res = reader.GetString(0);
+
+                    Assert.IsFalse(await reader.ReadAsync());
+                    Assert.IsFalse(await reader.NextResultAsync());
+
+                    return res;
+                },
+                inputVal,
+                inputOutput,
+                output);
+            Assert.AreEqual("<foo>bar</foo>", result);
+
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+
+            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            Assert.AreEqual(inputVal, output.OutputValue.Value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task ExecuteReaderAllAsync_WithOutputParametersAndOut_ThrowsArgumentException()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                    "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            Out<int> inputOutput = new Out<int>(inputOutputVal);
+            Out<int> output = new Out<int>();
+
+            await program.ExecuteReaderAllAsync(
+                async (reader, token) =>
+                {
+                    Assert.Fail("Shouldnt reach this point.");
+                },
+                inputVal,
+                inputOutput,
+                output);
+        }
+
+        [TestMethod]
+        public async Task ExecuteReaderAllAsync_WithOutputParametersAndMultiOut_ExecutesSuccessfully()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                    "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            MultiOut<int> inputOutput = new MultiOut<int>(inputOutputVal);
+            MultiOut<int> output = new MultiOut<int>();
+
+            string[] result = (await program.ExecuteReaderAllAsync(
+                async (reader, token) =>
+                {
+                    Assert.IsTrue(await reader.ReadAsync());
+
+                    string res = reader.GetString(0);
+
+                    Assert.IsFalse(await reader.ReadAsync());
+                    Assert.IsFalse(await reader.NextResultAsync());
+
+                    return res;
+                },
+                inputVal,
+                inputOutput,
+                output)).ToArray();
+
+            Assert.AreEqual(2, result.Length);
+            Assert.IsTrue(result.All(i => i == "<foo>bar</foo>"));
+
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+
+            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            Assert.AreEqual(inputVal, output.OutputValue.Value);
+
+            Assert.IsTrue(inputOutput.All(o => o.OutputValue.Value == inputOutputVal * 2));
+            Assert.IsTrue(output.All(o => o.OutputValue.Value == inputVal));
         }
     }
 }

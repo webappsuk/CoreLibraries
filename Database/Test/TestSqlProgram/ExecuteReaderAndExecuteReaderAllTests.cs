@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,7 +30,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 await SqlProgram.Create(connection: new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
                        name: "spNonQuery");
 
-            readerTest.ExecuteReader();
+            readerTest.ExecuteReaderAll();
 
             // Can't really do any assertions here so test is just that it doesn't throw an exception.
         }
@@ -43,18 +44,20 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             dynamic result = readerTest.ExecuteReader<dynamic>(
                 reader =>
                 {
-                    if (reader.Read())
-                    {
-                        return new
-                        {
-                            Name = reader.GetValue<string>(0),
-                            Age = reader.GetValue<int>(1),
-                            Balance = reader.GetValue<decimal>(2),
-                            IsValued = reader.GetValue<bool>(3)
-                        };
-                    }
+                    Assert.IsTrue(reader.Read());
 
-                    throw new Exception("Critical Test Error");
+                    var res = new
+                    {
+                        Name = reader.GetValue<string>(0),
+                        Age = reader.GetValue<int>(1),
+                        Balance = reader.GetValue<decimal>(2),
+                        IsValued = reader.GetValue<bool>(3)
+                    };
+
+                    Assert.IsFalse(reader.Read());
+                    Assert.IsFalse(reader.NextResult());
+
+                    return res;
                 });
 
             Assert.IsNotNull(result);
@@ -82,18 +85,20 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 },
                 reader =>
                 {
-                    if (reader.Read())
-                    {
-                        return new
-                        {
-                            Name = reader.GetValue<string>(0),
-                            Age = reader.GetValue<int>(1),
-                            Balance = reader.GetValue<decimal>(2),
-                            IsValued = reader.GetValue<bool>(3)
-                        };
-                    }
+                    Assert.IsTrue(reader.Read());
 
-                    throw new Exception("Critical Test Error");
+                    var res = new
+                    {
+                        Name = reader.GetValue<string>(0),
+                        Age = reader.GetValue<int>(1),
+                        Balance = reader.GetValue<decimal>(2),
+                        IsValued = reader.GetValue<bool>(3)
+                    };
+
+                    Assert.IsFalse(reader.Read());
+                    Assert.IsFalse(reader.NextResult());
+
+                    return res;
                 });
 
             Assert.IsNotNull(result);
@@ -374,6 +379,110 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                     }
                 },
                 rows);
+        }
+        
+        [TestMethod]
+        public async Task ExecuteReader_WithOutputParameters_ExecutesSuccessfully()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create((Connection)LocalDatabaseConnectionString, "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            Out<int> inputOutput = new Out<int>(inputOutputVal);
+            Out<int> output = new Out<int>();
+
+            string result = program.ExecuteReader(
+                (reader) =>
+                {
+                    Assert.IsTrue(reader.Read());
+
+                    string res = reader.GetString(0);
+
+                    Assert.IsFalse(reader.Read());
+                    Assert.IsFalse(reader.NextResult());
+
+                    return res;
+                },
+                inputVal,
+                inputOutput,
+                output);
+            Assert.AreEqual("<foo>bar</foo>", result);
+
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+
+            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            Assert.AreEqual(inputVal, output.OutputValue.Value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task ExecuteReaderAll_WithOutputParametersAndOut_ThrowsArgumentException()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                    "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            Out<int> inputOutput = new Out<int>(inputOutputVal);
+            Out<int> output = new Out<int>();
+
+            program.ExecuteReaderAll(
+                (reader) =>
+                {
+                    Assert.Fail("Shouldnt reach this point.");
+                },
+                inputVal,
+                inputOutput,
+                output);
+        }
+
+        [TestMethod]
+        public async Task ExecuteReaderAll_WithOutputParametersAndMultiOut_ExecutesSuccessfully()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                    "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            MultiOut<int> inputOutput = new MultiOut<int>(inputOutputVal);
+            MultiOut<int> output = new MultiOut<int>();
+
+            string[] result = program.ExecuteReaderAll(
+                (reader) =>
+                {
+                    Assert.IsTrue(reader.Read());
+
+                    string res = reader.GetString(0);
+
+                    Assert.IsFalse(reader.Read());
+                    Assert.IsFalse(reader.NextResult());
+
+                    return res;
+                },
+                inputVal,
+                inputOutput,
+                output).ToArray();
+
+            Assert.AreEqual(2, result.Length);
+            Assert.IsTrue(result.All(i => i == "<foo>bar</foo>"));
+
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+
+            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            Assert.AreEqual(inputVal, output.OutputValue.Value);
+
+            Assert.IsTrue(inputOutput.All(o => o.OutputValue.Value == inputOutputVal * 2));
+            Assert.IsTrue(output.All(o => o.OutputValue.Value == inputVal));
         }
 
         /// <summary>

@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database
@@ -62,6 +63,38 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Gets the output value.
+        /// </summary>
+        /// <value>
+        /// The output value.
+        /// </value>
+        public override Optional<T> OutputValue
+        {
+            get
+            {
+                OutputError?.ReThrow();
+                return _outputs.Values.FirstOrDefault()?.OutputValue ?? Optional<T>.Unassigned;
+            }
+        }
+
+        /// <summary>
+        /// Gets the error that occured when fetching the output, if any.
+        /// </summary>
+        /// <value>
+        /// The output error.
+        /// </value>
+        public override Exception OutputError
+        {
+            get
+            {
+                Exception[] errors = _outputs.Values.Select(o => o.OutputError).Where(e => e != null).ToArray();
+                if (errors.Length < 1) return null;
+                if (errors.Length == 1) return errors[0];
+                return new AggregateException(errors);
+            }
+        }
+
+        /// <summary>
         /// Sets the parameter to get the value from.
         /// </summary>
         /// <param name="parameter">The parameter to get the value from.</param>
@@ -69,14 +102,15 @@ namespace WebApplications.Utilities.Database
         /// The instance of <see cref="Out{T}" /> for the parameter.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        protected override void SetParameter(SqlParameter parameter)
+        protected internal override void SetParameter(SqlParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             Out<T> output;
             if (_outputs.TryGetValue(parameter, out output))
-                return;
+                throw new InvalidOperationException(Resources.Out_SetParameter_AlreadyInUse);
 
             output = InputValue.IsAssigned ? new Out<T>(InputValue.Value) : new Out<T>();
+            output.SetParameter(parameter);
 
             _outputs.Add(parameter, output);
         }
@@ -127,13 +161,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <returns>An <see cref="IEnumerator{T}" /> object that can be used to iterate through the collection.</returns>
         public IEnumerator<Out<T>> GetEnumerator() => ((IEnumerable<Out<T>>)_outputs.Values).GetEnumerator();
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="IEnumerator{T}" /> object that can be used to iterate through the collection.</returns>
-        IEnumerator<IOut> IEnumerable<IOut>.GetEnumerator() => ((IEnumerable<IOut>)_outputs.Values).GetEnumerator();
-
+        
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
@@ -144,7 +172,7 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     /// Internal interface used to identify <see cref="MultiOut{T}"/> from non-generic methods.
     /// </summary>
-    internal interface IMultiOut : IOut, IEnumerable<IOut>
+    internal interface IMultiOut : IOut
     {
     }
 }

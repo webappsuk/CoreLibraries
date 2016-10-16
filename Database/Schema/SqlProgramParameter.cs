@@ -125,6 +125,7 @@ namespace WebApplications.Utilities.Database.Schema
                 parameter.Scale = Type.Size.Scale;
             if (Type.SqlDbType == SqlDbType.Udt)
                 parameter.UdtTypeName = Type.Name;
+            parameter.Direction = Direction;
             return parameter;
         }
 
@@ -156,10 +157,16 @@ namespace WebApplications.Utilities.Database.Schema
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
+            if (value == null)
+            {
+                parameter.Value = null;
+                return;
+            }
+
             IOut output = value as IOut;
             if (output != null)
             {
-                bool hasInput = output.InputValue.IsAssigned;
+                bool hasInput = output?.InputValue.IsAssigned ?? false;
                 string dir = hasInput ? "input/output" : "output";
                 switch (Direction)
                 {
@@ -179,7 +186,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 FullName);
                         break;
                 }
-
+                
                 output.SetParameter(parameter);
 
                 if (hasInput)
