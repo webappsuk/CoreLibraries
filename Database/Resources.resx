@@ -240,7 +240,7 @@
   <data name="SqlType_GetClrToSqlConverter_DateTimeTruncated" xml:space="preserve">
     <value>Truncating DateTime '{0}' when converting to SQL type '{1}' which only accepts DateTimes in the '{2}' range.</value>
   </data>
-  <data name="SqlType_GetClrToSqlConverter_FatalErrorOccurred" xml:space="preserve">
+  <data name="SqlType_GetConverter_FatalErrorOccurred" xml:space="preserve">
     <value>Fatal error whilst trying to create type converter for '{0}' type on SQL Type '{1}'. {2}</value>
   </data>
   <data name="SqlType_GetClrToSqlConverter_NotCreatedAsSqlTableType" xml:space="preserve">
@@ -255,13 +255,13 @@
   <data name="SqlType_GetClrToSqlConverter_StringTruncated" xml:space="preserve">
     <value>Truncating string of length '{0}' characters when converting to SQL type '{1}' which only accepts '{2}' characters.</value>
   </data>
-  <data name="SqlType_GetClrToSqlConverter_UdtTypeNotSupported" xml:space="preserve">
+  <data name="SqlType_GetConverter_UdtTypeNotSupported" xml:space="preserve">
     <value>UDT type '{0}' is not supported.</value>
   </data>
   <data name="SqlType_GetClrToSqlConverter_UnicodeCharactersLost" xml:space="preserve">
     <value>Losing Unicode characters when converting string into SQL type '{0}' as the SQL type only accepts ASCII characters.</value>
   </data>
-  <data name="SqlType_GetClrToSqlConverter_UnsupportedSqlDbType" xml:space="preserve">
+  <data name="SqlType_GetConverter_UnsupportedSqlDbType" xml:space="preserve">
     <value>Unsupported SqlDbType '{0}'.</value>
   </data>
   <data name="SqlType_UnknownSqlSystemType" xml:space="preserve">
@@ -341,5 +341,20 @@
   </data>
   <data name="Connection_WeightMustBePositive" xml:space="preserve">
     <value>Weight must be positive.</value>
+  </data>
+  <data name="SqlProgram_ValidateExecuteAllOutParameters_InvalidOut" xml:space="preserve">
+    <value>Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</value>
+  </data>
+  <data name="Out_SetOutputValue_ValueAlreadySet" xml:space="preserve">
+    <value>The value of this parameter has already been set.</value>
+  </data>
+  <data name="Out_SetOutputValue_ParameterMismatch" xml:space="preserve">
+    <value>The parameter given does not match the parameter this value is for.</value>
+  </data>
+  <data name="MultiOut_SetOutputValue_ParameterMismatch" xml:space="preserve">
+    <value>The parameter given does not match any of the parameters this value is for.</value>
+  </data>
+  <data name="Out_SetParameter_AlreadyInUse" xml:space="preserve">
+    <value>This value is already being used by a parameter.</value>
   </data>
 </root>

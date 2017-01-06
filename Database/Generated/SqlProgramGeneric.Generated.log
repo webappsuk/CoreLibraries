@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Schema code file generation
 ============================
-Started			: 05/20/2016 12:44:42
+Started			: 10/14/2016 15:20:12
 Saved helper template files:
     CoreLibraries\Database\Generated\SqlProgramGeneric.Generated.txt4
 Saved files:
@@ -67,5 +67,5 @@ Saved files:
     CoreLibraries\Database\Generated\SqlProgramGeneric2.Generated.cs
     CoreLibraries\Database\Generated\SqlProgramGeneric1.Generated.cs
 
-Finished        : 05/20/2016 12:44:43
-Total Duration  : 1,699.202 ms
+Finished        : 10/14/2016 15:20:14
+Total Duration  : 1,833.929 ms

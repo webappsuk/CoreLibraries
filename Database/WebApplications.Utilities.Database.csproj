@@ -140,6 +140,9 @@
     <Compile Include="Generated\SqlProgramGeneric9.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
+    <Compile Include="IOut.cs" />
+    <Compile Include="MultiOut.cs" />
+    <Compile Include="Out.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -30,6 +30,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database.Schema
 {
@@ -89,6 +91,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="isReadOnly">
         ///   If set to <see langword="true"/> the parameter is <see cref="IsReadOnly">read-only.</see>
         /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> or <paramref name="type"/> is <see langword="null" />.</exception>
         internal SqlProgramParameter(
             int ordinal,
             [NotNull] string name,
@@ -98,8 +101,8 @@ namespace WebApplications.Utilities.Database.Schema
             bool isReadOnly)
             : base(name)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (type == null) throw new ArgumentNullException("type");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (type == null) throw new ArgumentNullException(nameof(type));
             Ordinal = ordinal;
             IsReadOnly = isReadOnly;
             Direction = direction;
@@ -122,7 +125,110 @@ namespace WebApplications.Utilities.Database.Schema
                 parameter.Scale = Type.Size.Scale;
             if (Type.SqlDbType == SqlDbType.Udt)
                 parameter.UdtTypeName = Type.Name;
+            parameter.Direction = Direction;
             return parameter;
+        }
+
+        /// <summary>
+        /// Sets the SQL parameter value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="mode">The mode.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
+        /// <exception cref="DatabaseSchemaException"><para>The type <typeparamref name="T" /> is invalid for the <see cref="Direction" />.</para>
+        /// <para>-or-</para>
+        /// <para>The type <typeparamref name="T" /> was unsupported.</para>
+        /// <para>-or-</para>
+        /// <para>A fatal error occurred.</para>
+        /// <para>-or-</para>
+        /// <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        /// <para>-or-</para>
+        /// <para>The serialized object was truncated.</para>
+        /// <para>-or-</para>
+        /// <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        /// <para>-or-</para>
+        /// <para>The date was outside the range of accepted dates for the SQL type.</para></exception>
+        public void SetSqlParameterValue<T>(
+            [NotNull] SqlParameter parameter,
+            T value,
+            TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+
+            if (value == null)
+            {
+                parameter.Value = null;
+                return;
+            }
+
+            IOut output = value as IOut;
+            if (output != null)
+            {
+                bool hasInput = output?.InputValue.IsAssigned ?? false;
+                string dir = hasInput ? "input/output" : "output";
+                switch (Direction)
+                {
+                    case ParameterDirection.Input:
+                        throw new DatabaseSchemaException(
+                            LoggingLevel.Error,
+                            () => "Cannot pass {0} value to input only parameter {1}",
+                            dir,
+                            FullName);
+                    case ParameterDirection.Output:
+                    case ParameterDirection.ReturnValue:
+                        if (hasInput)
+                            throw new DatabaseSchemaException(
+                                LoggingLevel.Error,
+                                () => "Cannot pass {0} value to output only parameter {1}",
+                                dir,
+                                FullName);
+                        break;
+                }
+                
+                output.SetParameter(parameter);
+
+                if (hasInput)
+                    parameter.Value = Type.CastCLRValue(output.InputValue.Value, output.Type, mode);
+            }
+            else
+                parameter.Value = Type.CastCLRValue(value, mode);
+        }
+
+        /// <summary>
+        ///   Casts the CLR value to the correct SQL type.
+        /// </summary>
+        /// <param name="value">The CLR value to cast.</param>
+        /// <param name="clrType">The CLR type of the value to cast.</param>
+        /// <param name="mode">
+        ///   <para>The constraint mode.</para>
+        ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
+        /// </param>
+        /// <returns>
+        ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
+        /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The <paramref name="clrType"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        ///   <para>-or-</para>
+        ///   <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        ///   <para>-or-</para>
+        ///   <para>The serialized object was truncated.</para>
+        ///   <para>-or-</para>
+        ///   <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        ///   <para>-or-</para>
+        ///   <para>The date was outside the range of accepted dates for the SQL type.</para>
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="clrType"/> is <see langword="null" />.</exception>
+        [CanBeNull]
+        public object CastCLRValue(
+            [CanBeNull] object value,
+            [NotNull] Type clrType,
+            TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            return Type.CastCLRValue(value, clrType, mode);
         }
 
         /// <summary>
@@ -137,10 +243,70 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
         /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        ///   <para>-or-</para>
+        ///   <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        ///   <para>-or-</para>
+        ///   <para>The serialized object was truncated.</para>
+        ///   <para>-or-</para>
+        ///   <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        ///   <para>-or-</para>
+        ///   <para>The date was outside the range of accepted dates for the SQL type.</para>
+        /// </exception>
         [CanBeNull]
         public object CastCLRValue<T>([CanBeNull] T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
             return Type.CastCLRValue(value, mode);
+        }
+
+        /// <summary>
+        ///   Casts the CLR value to the correct SQL type.
+        /// </summary>
+        /// <param name="value">The CLR value to cast.</param>
+        /// <param name="clrType">The CLR type of the value to cast.</param>
+        /// <param name="mode">
+        ///   <para>The constraint mode.</para>
+        ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
+        /// </param>
+        /// <returns>
+        ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
+        /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="clrType"/> is <see langword="null" />.</exception>
+        [CanBeNull]
+        public object CastSQLValue(object value, [NotNull] Type clrType, TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            return Type.CastSQLValue(value, clrType, mode);
+        }
+
+        /// <summary>
+        ///   Casts the CLR value to the correct SQL type.
+        /// </summary>
+        /// <typeparam name="T">The CLR type of the value to cast.</typeparam>
+        /// <param name="value">The CLR value to cast.</param>
+        /// <param name="mode">
+        ///   <para>The constraint mode.</para>
+        ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
+        /// </param>
+        /// <returns>
+        ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
+        /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        /// </exception>
+        [CanBeNull]
+        public object CastSQLValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            return Type.CastSQLValue(value, mode);
         }
     }
 }

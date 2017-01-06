@@ -181,11 +181,18 @@ namespace WebApplications.Utilities.Database.Schema
             = new ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>();
 
         /// <summary>
+        ///   The SQL type converters for this type.
+        /// </summary>
+        [NotNull]
+        private readonly ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>> _sqlTypeConverters
+            = new ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>();
+
+        /// <summary>
         /// Whether this SQL type accepts the CLR type.
         /// </summary>
         [NotNull]
-        private readonly ConcurrentDictionary<Type, bool> _acceptsType = new ConcurrentDictionary<Type, bool>(); 
-
+        private readonly ConcurrentDictionary<Type, bool> _acceptsType = new ConcurrentDictionary<Type, bool>();
+        
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlType"/> class.
         /// </summary>
@@ -313,6 +320,10 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         /// <value>The corresponding <see cref="SqlDbType"/>.</value>
         public SqlDbType SqlDbType { get; private set; }
+
+        /* TODO AcceptsCLRType and the converter methods should mirror to/from SQL checking
+         *  For example, you might be able to convert a type to a byte[], but not from a byte[]
+         */
 
         /// <summary>
         ///   Checks to see whether the specified CLR type can be used to represent the current <see cref="SqlType"/>.
@@ -524,6 +535,43 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   Casts the CLR value to the correct SQL type.
         /// </summary>
+        /// <param name="value">The CLR value to cast.</param>
+        /// <param name="clrType">The CLR type of the value to cast.</param>
+        /// <param name="mode">
+        ///   <para>The constraint mode.</para>
+        ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
+        /// </param>
+        /// <returns>
+        ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
+        /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The <paramref name="clrType"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        ///   <para>-or-</para>
+        ///   <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        ///   <para>-or-</para>
+        ///   <para>The serialized object was truncated.</para>
+        ///   <para>-or-</para>
+        ///   <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        ///   <para>-or-</para>
+        ///   <para>The date was outside the range of accepted dates for the SQL type.</para>
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="clrType"/> is <see langword="null" />.</exception>
+        [CanBeNull]
+        public object CastCLRValue(
+            object value,
+            [NotNull] Type clrType,
+            TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            if (clrType == null) throw new ArgumentNullException(nameof(clrType));
+            Func<object, TypeConstraintMode, object> converter = GetClrToSqlConverter(clrType);
+            return converter != null ? converter(value, mode) : value;
+        }
+
+        /// <summary>
+        ///   Casts the CLR value to the correct SQL type.
+        /// </summary>
         /// <typeparam name="T">The CLR type of the value to cast.</typeparam>
         /// <param name="value">The CLR value to cast.</param>
         /// <param name="mode">
@@ -533,10 +581,76 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
         /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        ///   <para>-or-</para>
+        ///   <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        ///   <para>-or-</para>
+        ///   <para>The serialized object was truncated.</para>
+        ///   <para>-or-</para>
+        ///   <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        ///   <para>-or-</para>
+        ///   <para>The date was outside the range of accepted dates for the SQL type.</para>
+        /// </exception>
         [CanBeNull]
         public object CastCLRValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
             Func<object, TypeConstraintMode, object> converter = GetClrToSqlConverter(typeof(T));
+            return converter != null ? converter(value, mode) : value;
+        }
+
+        /// <summary>
+        ///   Casts the CLR value to the correct SQL type.
+        /// </summary>
+        /// <param name="value">The CLR value to cast.</param>
+        /// <param name="clrType">The CLR type of the value to cast.</param>
+        /// <param name="mode">
+        ///   <para>The constraint mode.</para>
+        ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
+        /// </param>
+        /// <returns>
+        ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
+        /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="clrType"/> is <see langword="null" />.</exception>
+        [CanBeNull]
+        public object CastSQLValue(
+            object value,
+            [NotNull] Type clrType,
+            TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            if (clrType == null) throw new ArgumentNullException(nameof(clrType));
+            Func<object, TypeConstraintMode, object> converter = GetSqlToClrConverter(clrType);
+            return converter != null ? converter(value, mode) : value;
+        }
+
+        /// <summary>
+        ///   Casts the CLR value to the correct SQL type.
+        /// </summary>
+        /// <typeparam name="T">The CLR type of the value to cast.</typeparam>
+        /// <param name="value">The CLR value to cast.</param>
+        /// <param name="mode">
+        ///   <para>The constraint mode.</para>
+        ///   <para>By default this is set to give a warning if truncation/loss of precision occurs.</para>
+        /// </param>
+        /// <returns>
+        ///   The result (if possible); otherwise returns the <paramref name="value"/> passed in.
+        /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        /// </exception>
+        [CanBeNull]
+        public object CastSQLValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            Func<object, TypeConstraintMode, object> converter = GetSqlToClrConverter(typeof(T));
             return converter != null ? converter(value, mode) : value;
         }
 
@@ -550,11 +664,21 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>
         ///   The converter (if found); otherwise returns <see langword="null"/>.
         /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        ///   <para>-or-</para>
+        ///   <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        ///   <para>-or-</para>
+        ///   <para>The serialized object was truncated.</para>
+        ///   <para>-or-</para>
+        ///   <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        ///   <para>-or-</para>
+        ///   <para>The date was outside the range of accepted dates for the SQL type.</para>
+        /// </exception>
         [CanBeNull]
-        public Func<object, TypeConstraintMode, object> GetClrToSqlConverter<T>()
-        {
-            return GetClrToSqlConverter(typeof(T));
-        }
+        public Func<object, TypeConstraintMode, object> GetClrToSqlConverter<T>() => GetClrToSqlConverter(typeof(T));
 
         /// <summary>
         ///   Gets the CLR to SQL type converter if one can be found for the specified CLR type.
@@ -579,10 +703,11 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>-or-</para>
         ///   <para>The date was outside the range of accepted dates for the SQL type.</para>
         /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="clrType"/> is <see langword="null" />.</exception>
         [CanBeNull]
         public Func<object, TypeConstraintMode, object> GetClrToSqlConverter([NotNull] Type clrType)
         {
-            if (clrType == null) throw new ArgumentNullException("clrType");
+            if (clrType == null) throw new ArgumentNullException(nameof(clrType));
 
             Func<object, TypeConstraintMode, object> conv = _clrTypeConverters.GetOrAdd(
                 clrType,
@@ -611,13 +736,13 @@ namespace WebApplications.Utilities.Database.Schema
                         switch (SqlDbType)
                         {
                             case SqlDbType.BigInt:
-                                return CreateConverter<long>(t);
+                                return CreateConverterTo<long>(t);
                             case SqlDbType.Image:
                             case SqlDbType.Binary:
                             case SqlDbType.Timestamp:
                             case SqlDbType.VarBinary:
                                 // If we have a byte[] (or can cast to byte[]) then use that.
-                                Func<object, TypeConstraintMode, object> converter = CreateConverter<byte[]>(
+                                Func<object, TypeConstraintMode, object> converter = CreateConverterTo<byte[]>(
                                     t,
                                     (c, m) =>
                                     {
@@ -682,11 +807,11 @@ namespace WebApplications.Utilities.Database.Schema
                                 // Do not support this type.
                                 return null;
                             case SqlDbType.Bit:
-                                return CreateConverter<bool>(t);
+                                return CreateConverterTo<bool>(t);
                             case SqlDbType.Text:
                             case SqlDbType.Char:
                             case SqlDbType.VarChar:
-                                return CreateConverter<string>(
+                                return CreateConverterTo<string>(
                                     t,
                                     (c, m) =>
                                     {
@@ -740,7 +865,7 @@ namespace WebApplications.Utilities.Database.Schema
                             case SqlDbType.NChar:
                             case SqlDbType.NText:
                             case SqlDbType.NVarChar:
-                                return CreateConverter<string>(
+                                return CreateConverterTo<string>(
                                     t,
                                     (c, m) =>
                                     {
@@ -780,7 +905,7 @@ namespace WebApplications.Utilities.Database.Schema
                             case SqlDbType.DateTimeOffset:
                                 return clrType.IsGenericType &&
                                        clrType.GetGenericTypeDefinition() == typeof(Nullable<>)
-                                    ? CreateConverter<DateTime?>(
+                                    ? CreateConverterTo<DateTime?>(
                                         t,
                                         (c, m) =>
                                         {
@@ -817,7 +942,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             }
                                             return bound;
                                         })
-                                    : CreateConverter<DateTime>(
+                                    : CreateConverterTo<DateTime>(
                                         t,
                                         (c, m) =>
                                         {
@@ -850,30 +975,29 @@ namespace WebApplications.Utilities.Database.Schema
                                             return bound;
                                         });
                             case SqlDbType.Time:
-                                return CreateConverter<TimeSpan>(t);
+                                return CreateConverterTo<TimeSpan>(t);
                             case SqlDbType.Decimal:
-                                return CreateConverter<decimal>(t);
+                                return CreateConverterTo<decimal>(t);
                             case SqlDbType.Float:
-                                return CreateConverter<double>(t);
+                                return CreateConverterTo<double>(t);
                             case SqlDbType.Int:
-                                return CreateConverter<int>(t);
+                                return CreateConverterTo<int>(t);
                             case SqlDbType.Money:
                             case SqlDbType.SmallMoney:
-                                return CreateConverter<decimal>(t);
+                                return CreateConverterTo<decimal>(t);
                             case SqlDbType.Real:
-                                return CreateConverter<float>(t);
+                                return CreateConverterTo<float>(t);
                             case SqlDbType.UniqueIdentifier:
-                                return CreateConverter<Guid>(t);
+                                return CreateConverterTo<Guid>(t);
                             case SqlDbType.SmallInt:
-                                return CreateConverter<short>(t);
+                                return CreateConverterTo<short>(t);
                             case SqlDbType.TinyInt:
-                                return CreateConverter<byte>(t);
+                                return CreateConverterTo<byte>(t);
                             case SqlDbType.Variant:
                                 // TODO Variant type can't accept everything!
                                 return (c, m) => c;
                             case SqlDbType.Xml:
-                                return
-                                    CreateConverter<XNode>(
+                                return CreateConverterTo<XNode>(
                                         t,
                                         (c, m) =>
                                         {
@@ -882,8 +1006,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             using (XmlReader xmlNodeReader = c.CreateReader())
                                                 return new SqlXml(xmlNodeReader);
                                         })
-                                    ??
-                                    CreateConverter<XmlNode>(
+                                    ?? CreateConverterTo<XmlNode>(
                                         t,
                                         (c, m) =>
                                         {
@@ -897,18 +1020,18 @@ namespace WebApplications.Utilities.Database.Schema
                                 switch (Name)
                                 {
                                     case "geography":
-                                        return CreateConverter<SqlGeography>(t, false);
+                                        return CreateConverterTo<SqlGeography>(t, false);
                                     case "geometry":
-                                        return CreateConverter<SqlGeometry>(t, false);
+                                        return CreateConverterTo<SqlGeometry>(t, false);
                                     case "hierarchyid":
-                                        return CreateConverter<SqlHierarchyId>(t, false);
+                                        return CreateConverterTo<SqlHierarchyId>(t, false);
                                     default:
                                         // Log error, but don't throw it.
                                         // ReSharper disable once ObjectCreationAsStatement
                                         new DatabaseSchemaException(
                                             LoggingLevel.Critical,
                                             () => Resources
-                                                .SqlType_GetClrToSqlConverter_UdtTypeNotSupported,
+                                                .SqlType_GetConverter_UdtTypeNotSupported,
                                             Name);
                                         return null;
                                 }
@@ -1219,7 +1342,7 @@ namespace WebApplications.Utilities.Database.Schema
                             default:
                                 throw new DatabaseSchemaException(
                                     LoggingLevel.Critical,
-                                    () => Resources.SqlType_GetClrToSqlConverter_UnsupportedSqlDbType,
+                                    () => Resources.SqlType_GetConverter_UnsupportedSqlDbType,
                                     SqlDbType);
                         }
                     }
@@ -1229,7 +1352,7 @@ namespace WebApplications.Utilities.Database.Schema
                         new DatabaseSchemaException(
                             e,
                             LoggingLevel.Critical,
-                            () => Resources.SqlType_GetClrToSqlConverter_FatalErrorOccurred,
+                            () => Resources.SqlType_GetConverter_FatalErrorOccurred,
                             t,
                             this,
                             e.Message
@@ -1247,20 +1370,218 @@ namespace WebApplications.Utilities.Database.Schema
         }
 
         /// <summary>
-        ///   Returns a converter that casts from the input type to the output type
-        ///   (if the input type is assignable to the output type).
+        ///   Gets the SQL to CLR type converter if one can be found for the specified CLR type.
+        ///   The converter function takes two inputs, the CLR object to convert and also the
+        ///   <see cref="TypeConstraintMode">constraint mode</see>, which determines what will
+        ///   happen if truncation/loss of precision occurs.
         /// </summary>
-        /// <typeparam name="TClr">The CLR type to convert to.</typeparam>
-        /// <param name="actualClrType">The CLR type to convert from.</param>
-        /// <param name="supportNullable">
-        ///   <para>If set to <see langword="true"/> then supports <see langword="null"/>.</para>
-        ///   <para>By default this is set to <see langword="true"/>.</para>
-        /// </param>
+        /// <typeparam name="T">The CLR type to retrieve the converter for.</typeparam>
         /// <returns>
-        ///   The created converter; or <see langword="null"/> if the input type is not assignable to the required input type.
+        ///   The converter (if found); otherwise returns <see langword="null"/>.
         /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The type <typeparamref name="T"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        /// </exception>
         [CanBeNull]
-        private static Func<object, TypeConstraintMode, object> CreateConverter<TClr>(
+        public Func<object, TypeConstraintMode, object> GetSqlToClrConverter<T>() => GetSqlToClrConverter(typeof(T));
+
+        /// <summary>
+        ///   Gets the SQL to CLR type converter if one can be found for the specified CLR type.
+        ///   The converter function takes two inputs, the CLR object to convert and also the
+        ///   <see cref="TypeConstraintMode">constraint mode</see>, which determines what will
+        ///   happen if truncation/loss of precision occurs.
+        /// </summary>
+        /// <param name="clrType">The CLR type to retrieve the converter for.</param>
+        /// <returns>
+        ///   The converter (if found); otherwise returns <see langword="null"/>.
+        /// </returns>
+        /// <exception cref="DatabaseSchemaException">
+        ///   <para>The <paramref name="clrType"/> was unsupported.</para>
+        ///   <para>-or-</para>
+        ///   <para>A fatal error occurred.</para>
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="clrType"/> is <see langword="null" />.</exception>
+        public Func<object, TypeConstraintMode, object> GetSqlToClrConverter([NotNull] Type clrType)
+        {
+            if (clrType == null) throw new ArgumentNullException(nameof(clrType));
+
+            Func<object, TypeConstraintMode, object> conv = _sqlTypeConverters.GetOrAdd(
+                clrType,
+                t =>
+                {
+                    // Should never happen, but if it does there is not conversion from a null type!
+                    if (t == null)
+                    {
+                        // Log error, but don't throw it.
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new DatabaseSchemaException(
+                            LoggingLevel.Critical,
+                            () => Resources.SqlType_GetClrToSqlConverter_NoTypeSpecified,
+                            this);
+                        return null;
+                    }
+
+                    // Check if we have already determined if this type is not accepted
+                    bool acceptsType;
+                    if (_acceptsType.TryGetValue(t, out acceptsType) && !acceptsType)
+                        return null;
+
+                    // TODO Support Sql* types?
+                    try
+                    {
+                        switch (SqlDbType)
+                        {
+                            case SqlDbType.BigInt:
+                                return CreateConverterFrom<long>(t);
+                            case SqlDbType.Image:
+                            case SqlDbType.Binary:
+                            case SqlDbType.Timestamp:
+                            case SqlDbType.VarBinary:
+                                Func<object, TypeConstraintMode, object> binaryConverter = 
+                                    CreateConverterFrom<byte[]>(t);
+                                if (binaryConverter != null)
+                                    return binaryConverter;
+
+                                if (t.IsSerializable)
+                                {
+                                    return (c, m) =>
+                                    {
+                                        if (c.IsNull())
+                                            return null;
+
+                                        // Serialize object
+                                        byte[] serializedObject = (byte[])c;
+
+                                        return serializedObject.Deserialize<object>();
+                                    };
+                                }
+
+                                return null;
+                            case SqlDbType.Bit:
+                                return CreateConverterFrom<bool>(t);
+                            case SqlDbType.Text:
+                            case SqlDbType.Char:
+                            case SqlDbType.VarChar:
+                            case SqlDbType.NChar:
+                            case SqlDbType.NText:
+                            case SqlDbType.NVarChar:
+                                return CreateConverterFrom<string>(t);
+                            case SqlDbType.SmallDateTime:
+                            case SqlDbType.DateTime:
+                            case SqlDbType.Date:
+                            case SqlDbType.DateTime2:
+                                return CreateConverterFrom<DateTime>(t);
+                            case SqlDbType.DateTimeOffset:
+                                return CreateConverterFrom<DateTimeOffset>(t);
+                            case SqlDbType.Time:
+                                return CreateConverterFrom<TimeSpan>(t);
+                            case SqlDbType.Decimal:
+                                return CreateConverterFrom<decimal>(t);
+                            case SqlDbType.Float:
+                                return CreateConverterFrom<double>(t);
+                            case SqlDbType.Int:
+                                return CreateConverterFrom<int>(t);
+                            case SqlDbType.Money:
+                            case SqlDbType.SmallMoney:
+                                return CreateConverterFrom<decimal>(t);
+                            case SqlDbType.Real:
+                                return CreateConverterFrom<float>(t);
+                            case SqlDbType.UniqueIdentifier:
+                                return CreateConverterFrom<Guid>(t);
+                            case SqlDbType.SmallInt:
+                                return CreateConverterFrom<short>(t);
+                            case SqlDbType.TinyInt:
+                                return CreateConverterFrom<byte>(t);
+                            case SqlDbType.Variant:
+                                return (c, m) => c;
+                            case SqlDbType.Xml:
+                                var xmlConverter = CreateConverterFrom<XNode>(t);
+                                if (xmlConverter != null)
+                                    return (c, m) => c.IsNull() ? null : xmlConverter(XElement.Parse((string)c), m);
+
+                                xmlConverter = CreateConverterFrom<XmlNode>(t);
+                                if (xmlConverter != null)
+                                    return (c, m) =>
+                                    {
+                                        if (c.IsNull()) return null;
+
+                                        XmlDocument doc = new XmlDocument();
+                                        doc.LoadXml((string)c);
+                                        return xmlConverter(doc, m);
+                                    };
+
+                                return CreateConverterFrom<string>(t);
+                            case SqlDbType.Udt:
+                                // Add UDT conversions (which depend on the type name).
+                                switch (Name)
+                                {
+                                    case "geography":
+                                        return CreateConverterFrom<SqlGeography>(t, false);
+                                    case "geometry":
+                                        return CreateConverterFrom<SqlGeometry>(t, false);
+                                    case "hierarchyid":
+                                        return CreateConverterFrom<SqlHierarchyId>(t, false);
+                                    default:
+                                        // Log error, but don't throw it.
+                                        // ReSharper disable once ObjectCreationAsStatement
+                                        new DatabaseSchemaException(
+                                            LoggingLevel.Critical,
+                                            () => Resources.SqlType_GetConverter_UdtTypeNotSupported,
+                                            Name);
+                                        return null;
+                                }
+                                // TODO Structured. Currently this method is only *needed* for output parameters, and TVPs cant be output.
+                            case SqlDbType.Structured:
+                            default:
+                                throw new DatabaseSchemaException(
+                                    LoggingLevel.Critical,
+                                    () => Resources.SqlType_GetConverter_UnsupportedSqlDbType,
+                                    SqlDbType);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new DatabaseSchemaException(
+                            e,
+                            LoggingLevel.Critical,
+                            () => Resources.SqlType_GetConverter_FatalErrorOccurred,
+                            t,
+                            this,
+                            e.Message);
+                    }
+
+                    // Unsupported conversion
+                    return null;
+                });
+
+            bool tmp;
+            _acceptsType.TryRemove(clrType, out tmp);
+
+            return conv;
+        }
+
+        /// <summary>
+        /// Returns a converter that casts a CLR type to/from a SQL CLR type
+        /// (if the input type is assignable to the output type).
+        /// </summary>
+        /// <typeparam name="TSql">The CLR type for the SQL type.</typeparam>
+        /// <param name="convertTo">
+        /// If set to <see langword="true" /> convert from the <paramref name="actualClrType"/> to the <typeparamref name="TSql"/> type;
+        /// otherwise convert from the <typeparamref name="TSql"/> type to the <paramref name="actualClrType"/>.
+        /// </param>
+        /// <param name="actualClrType">The actual CLR type.</param>
+        /// <param name="supportNullable"><para>If set to <see langword="true" /> then supports <see langword="null" />.</para>
+        /// <para>By default this is set to <see langword="true" />.</para></param>
+        /// <returns>
+        /// The created converter; or <see langword="null" /> if the input type is not assignable to the required input type.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">actualClrType</exception>
+        [CanBeNull]
+        private static Func<object, TypeConstraintMode, object> CreateConverter<TSql>(
+            bool convertTo,
             [NotNull] Type actualClrType,
             bool supportNullable = true)
         {
@@ -1280,7 +1601,9 @@ namespace WebApplications.Utilities.Database.Schema
             }
 
             // Find a conversion if any
-            Func<object, object> converter = actualClrType.GetConversion(typeof(TClr));
+            Func<object, object> converter = convertTo
+                ? actualClrType.GetConversion(typeof(TSql))
+                : typeof(TSql).GetConversion(actualClrType);
 
             // If we didn't find one there is no known conversion.
             if (converter == null)
@@ -1290,11 +1613,53 @@ namespace WebApplications.Utilities.Database.Schema
             if (isNullable)
             {
                 Func<object, object> conCopy = converter;
-                converter = c => c.IsNull() ? DBNull.Value : conCopy(c);
+                if (convertTo) converter = c => c.IsNull() ? DBNull.Value : conCopy(c);
+                else converter = c => c.IsNull() ? null : conCopy(c);
             }
 
             // Ignore the type constraint.
             return (o, m) => converter(o);
+        }
+
+        /// <summary>
+        ///   Returns a converter that casts from the input type to the output type
+        ///   (if the input type is assignable to the output type).
+        /// </summary>
+        /// <typeparam name="TClr">The CLR type to convert to.</typeparam>
+        /// <param name="actualClrType">The CLR type to convert from.</param>
+        /// <param name="supportNullable">
+        ///   <para>If set to <see langword="true"/> then supports <see langword="null"/>.</para>
+        ///   <para>By default this is set to <see langword="true"/>.</para>
+        /// </param>
+        /// <returns>
+        ///   The created converter; or <see langword="null"/> if the input type is not assignable to the required input type.
+        /// </returns>
+        [CanBeNull]
+        private static Func<object, TypeConstraintMode, object> CreateConverterTo<TClr>(
+            [NotNull] Type actualClrType,
+            bool supportNullable = true)
+        {
+            return CreateConverter<TClr>(true, actualClrType, supportNullable);
+        }
+
+        /// <summary>
+        ///   Returns a converter that casts from the input type to the output type
+        ///   (if the input type is assignable to the output type).
+        /// </summary>
+        /// <typeparam name="TClr">The CLR type to convert from.</typeparam>
+        /// <param name="actualClrType">The CLR type to convert to.</param>
+        /// <param name="supportNullable">
+        ///   <para>If set to <see langword="true"/> then supports <see langword="null"/>.</para>
+        ///   <para>By default this is set to <see langword="true"/>.</para>
+        /// </param>
+        /// <returns>
+        ///   The created converter; or <see langword="null"/> if the input type is not assignable to the required input type.
+        /// </returns>
+        private static Func<object, TypeConstraintMode, object> CreateConverterFrom<TClr>(
+            [NotNull] Type actualClrType,
+            bool supportNullable = true)
+        {
+            return CreateConverter<TClr>(false, actualClrType, supportNullable);
         }
 
         /// <summary>
@@ -1308,12 +1673,15 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The created  converter; or <see langword="null"/> if the input type is not assignable to the required input type.
         /// </returns>
         [CanBeNull]
-        private static Func<object, TypeConstraintMode, object> CreateConverter<TClr>(
+        private static Func<object, TypeConstraintMode, object> CreateConverterTo<TClr>(
             [NotNull] Type actualClrType,
             [NotNull] Func<TClr, TypeConstraintMode, object> converter)
         {
             if (actualClrType == null) throw new ArgumentNullException("actualClrType");
             if (converter == null) throw new ArgumentNullException("converter");
+
+            if (typeof(TClr) == actualClrType)
+                return (c, m) => converter((TClr)c, m);
 
             Func<object, TClr> toInputType = actualClrType.GetConversion<object, TClr>();
             return toInputType != null
