@@ -67,7 +67,7 @@
 
       <!-- Find the ILMerge tools, look in nuget packages first, then use included version. -->
       <ItemGroup Condition="!Exists('$(ILMergeTool)')">
-        <ILMergePackage Include="$(SolutionDir)packages\ilmerge.*\tools\ILMerge.exe" />
+        <ILMergePackage Include="$(SolutionDir)packages\WebApplications.Utilities.*\tools\ILMerge.exe" />
       </ItemGroup>
       <PropertyGroup Condition="!Exists('$(ILMergeTool)') AND '@(ILMergePackage)'!=''">
         <ILMergeTool>@(ILMergePackage)</ILMergeTool>
