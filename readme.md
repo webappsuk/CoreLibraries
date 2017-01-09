@@ -10,7 +10,7 @@ We have carefully sanitised the code to protect our commercial customers interes
 Using the libraries
 -------------------
 
-All the code present [here] (https://github.com/webappsuk/CoreLibraries) is also available on [nuget.org] (https://www.nuget.org/profiles/WebApplicationsUK), as a collection of 10 inter-connected NuGets and can be installed into your .NET projects using NuGet.  Alternatively, you can look for the individual NuGet files, or the compiled binaries in the [releases] (https://github.com/webappsuk/CoreLibraries/releases).
+All the code present [here] (https://github.com/webappsuk/CoreLibraries) is also available on [nuget.org] (https://www.nuget.org/profiles/WebApplicationsUK), as a collection of 9 inter-connected NuGets and can be installed into your .NET projects using NuGet.  Alternatively, you can look for the individual NuGet files, or the compiled binaries in the [releases] (https://github.com/webappsuk/CoreLibraries/releases).
 
 The official NuGets are strongly named and digitally signed by [Web Applications UK] (http://www.webappuk.com), using a separate, secure process, that guarantees the NuGets authenticity.  Although you can build your own NuGets from the source included [here] (https://github.com/webappsuk/CoreLibraries), the ability to upload them to [nuget.org] (https://www.nuget.org/profiles/WebApplicationsUK) is not provided to protect casual users.  If you wish to use a customised version of a library, we recommend building and including the dll directly (but remember to include the [License](license.md)!).
 
@@ -18,8 +18,6 @@ We will accept relevant pull requests, and issues, so please consider [contribut
 
 Building the libraries
 ----------------------
-
-**WIP:** *There are known issues with the current build proccess which can cause them to fail on repeat builds, these will be resolved soon, our apologies for the inconvenience.*
 
 The libraries are built using [Visual Studio 2015] (https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx).  They can also be built using msbuild, and for that reason build dependencies are included as project references in projects (see ["Incorrect solution build ordering when using msbuild.exe"] (http://blogs.msdn.com/b/visualstudio/archive/2010/12/21/incorrect-solution-build-ordering-when-using-msbuild-exe.aspx)).
 
