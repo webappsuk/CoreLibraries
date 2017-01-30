@@ -4497,7 +4497,7 @@ namespace WebApplications.Utilities
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             if (sequence == null) throw new ArgumentNullException(nameof(sequence));
 
-            IList<T> list = collection as IList<T>;
+            List<T> list = collection as List<T>;
             if (list != null)
             {
                 list.AddRange(sequence);
