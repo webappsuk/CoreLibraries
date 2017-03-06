@@ -85,8 +85,8 @@ namespace WebApplications.Utilities.Globalization
         internal ExtendedCultureInfo([NotNull] CultureInfo cultureInfo)
             : base(cultureInfo.Name, cultureInfo.UseUserOverride)
         {
-            // Neutral cultures do not have a region
-            if (!cultureInfo.IsNeutralCulture)
+            // Neutral and invariant cultures do not have a region
+            if (!cultureInfo.IsNeutralCulture && !cultureInfo.IsInvariant())
                 try
                 {
                     RegionInfo = new RegionInfo(cultureInfo.Name);
