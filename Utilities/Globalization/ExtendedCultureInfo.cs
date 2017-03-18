@@ -86,7 +86,11 @@ namespace WebApplications.Utilities.Globalization
             : base(cultureInfo.Name, cultureInfo.UseUserOverride)
         {
             // Neutral and invariant cultures do not have a region
+#if BUILD_TASKS
+            if (!cultureInfo.IsNeutralCulture && !string.IsNullOrEmpty(cultureInfo.Name))
+#else
             if (!cultureInfo.IsNeutralCulture && !cultureInfo.IsInvariant())
+#endif
                 try
                 {
                     RegionInfo = new RegionInfo(cultureInfo.Name);

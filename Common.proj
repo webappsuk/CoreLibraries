@@ -124,6 +124,7 @@
     <!-- Import ILMerge if ILMerge is defined -->
     <PropertyGroup Condition="$(DefineConstants.Contains('ILMerge'))">
       <ILMergeBuildTask>$(SlnDir)ILMerge\bin\Release\AnyCPU\ILMerge.Build.Task.dll</ILMergeBuildTask>
+      <ILMergeTool>$(SlnDir)ILMerge\bin\Release\AnyCPU\ILMerge.exe</ILMergeTool>
     </PropertyGroup>
     <ItemGroup Condition="'$(ILMergeBuildTask)'!='' AND !Exists('$(ILMergeBuildTask)')">
       <ProjectsToBuild Include="$(SlnDir)ILMerge\ILMerge.Build.Task.csproj">
