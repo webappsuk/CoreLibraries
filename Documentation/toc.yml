@@ -1,0 +1,11 @@
+﻿- name: Home
+  href: index.md
+- name: Articles
+  href: articles/
+  homepage: articles/getting_started.md
+- name: API Reference
+  href: obj/api/
+- name: Contributing
+  href: contributing.md
+- name: Licensing
+  href: license.md
