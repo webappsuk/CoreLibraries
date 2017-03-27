@@ -1,0 +1,836 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Base32EncoderDecoder
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Base32EncoderDecoder
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder">Class Base32EncoderDecoder
+              </h1>
+              <div class="markdown level0 summary"><p>Extension methods supporting clean Base32 encoding, with custom digits (skips easily confused characters).</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><span class="xref">Base32EncoderDecoder</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Cryptography</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.Cryptography.dll</h6>
+              <h5 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static class Base32EncoderDecoder</code></pre>
+              </div>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L56">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_DefaultDigits" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.DefaultDigits">DefaultDigits</h4>
+              <div class="markdown level1 summary"><p>The digits for a base 32 number system.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly IReadOnlyList&lt;char&gt; DefaultDigits</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L226">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Decode_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Decode*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Decode_System_String_System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Decode(System.String,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">Base32Decode(String, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries to convert base32 string to a byte array.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static byte[] Base32Decode(this string base32String, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">base32String</span></td>
+                    <td><p>Base32 string to convert.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><p>The decoded byte array.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L188">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32DecodeGuid_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32DecodeGuid*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32DecodeGuid_System_String_System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32DecodeGuid(System.String,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">Base32DecodeGuid(String, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries to convert base32 string to a GUID.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Guid Base32DecodeGuid(this string base32String, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">base32String</span></td>
+                    <td><p>Base32 string to convert.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><p>The decoded GUID.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L208">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32DecodeString_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32DecodeString*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32DecodeString_System_String_System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32DecodeString(System.String,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">Base32DecodeString(String, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries to convert base32 string to a string.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static string Base32DecodeString(this string base32String, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">base32String</span></td>
+                    <td><p>Base32 string to convert.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>The decoded string.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L90">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Encode_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Encode*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Encode_System_Byte___System_Collections_Generic_IReadOnlyList_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Encode(System.Byte[],System.Collections.Generic.IReadOnlyList{System.Char})">Base32Encode(Byte[], IReadOnlyList&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Encodes a byte[] into a Base32 string.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ContractAnnotation(&quot;bytes:notnull=&gt;notnull;bytes:null=&gt;null&quot;)]
+public static string Base32Encode(this byte[] bytes, IReadOnlyList&lt;char&gt; digits = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><span class="parametername">bytes</span></td>
+                    <td><p>The bytes.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.overflowexception(v=vs.110).aspx">OverflowException</a></td>
+                    <td><p>The buffer is multidimensional and contains more than <a class="xref" href="https://msdn.microsoft.com/en-us/library/ax7as1fx(v=vs.110).aspx">MaxValue</a> elements.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L66">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Encode_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Encode*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Encode_System_Guid_System_Collections_Generic_IReadOnlyList_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Encode(System.Guid,System.Collections.Generic.IReadOnlyList{System.Char})">Base32Encode(Guid, IReadOnlyList&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Encodes a Guid into a Base32 string.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static string Base32Encode(this Guid guid, IReadOnlyList&lt;char&gt; digits = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">guid</span></td>
+                    <td><p>The GUID.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.overflowexception(v=vs.110).aspx">OverflowException</a></td>
+                    <td><p>The buffer is multidimensional and contains more than <a class="xref" href="https://msdn.microsoft.com/en-us/library/ax7as1fx(v=vs.110).aspx">MaxValue</a> elements.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L77">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Encode_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Encode*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_Base32Encode_System_String_System_Collections_Generic_IReadOnlyList_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.Base32Encode(System.String,System.Collections.Generic.IReadOnlyList{System.Char})">Base32Encode(String, IReadOnlyList&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Encodes a Guid into a Base32 string.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ContractAnnotation(&quot;input:notnull=&gt;notnull;input:null=&gt;null&quot;)]
+public static string Base32Encode(this string input, IReadOnlyList&lt;char&gt; digits = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">input</span></td>
+                    <td><p>The input.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>System.String.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.overflowexception(v=vs.110).aspx">OverflowException</a></td>
+                    <td><p>The buffer is multidimensional and contains more than <a class="xref" href="https://msdn.microsoft.com/en-us/library/ax7as1fx(v=vs.110).aspx">MaxValue</a> elements.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L336">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32Decode_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32Decode*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32Decode_System_String_System_Byte___System_Int32_System_Int32_System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32Decode(System.String,System.Byte[],System.Int32,System.Int32,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">TryBase32Decode(String, Byte[], Int32, Int32, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries to convert base32 string to array of bytes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool TryBase32Decode(this string base32String, byte[] buffer, int offset = 0, int length = -1, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">base32String</span></td>
+                    <td><p>Base32 string to convert.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><span class="parametername">buffer</span></td>
+                    <td><p>The buffer to fill.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">offset</span></td>
+                    <td><p>The offset in the buffer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">length</span></td>
+                    <td><p>The length (if set will ensure that length bytes are filled).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the string was successfully decoded; otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L304">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32Decode_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32Decode*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32Decode_System_String_System_Byte____System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32Decode(System.String,System.Byte[]@,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">TryBase32Decode(String, out Byte[], IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries to convert base32 string to array of bytes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool TryBase32Decode(this string base32String, out byte[] outputBytes, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">base32String</span></td>
+                    <td><p>Base32 string to convert.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><span class="parametername">outputBytes</span></td>
+                    <td><p>The output bytes.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the string was successfully decoded; otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L245">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32DecodeGuid_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32DecodeGuid*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32DecodeGuid_System_String_System_Guid__System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32DecodeGuid(System.String,System.Guid@,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">TryBase32DecodeGuid(String, out Guid, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries to convert base32 string to a GUID.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool TryBase32DecodeGuid(this string base32String, out Guid output, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">base32String</span></td>
+                    <td><p>Base32 string to convert.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">output</span></td>
+                    <td><p>The output.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the string was successfully decoded; otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L277">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32DecodeString_" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32DecodeString*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_Base32EncoderDecoder_TryBase32DecodeString_System_String_System_String__System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.Base32EncoderDecoder.TryBase32DecodeString(System.String,System.String@,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">TryBase32DecodeString(String, out String, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries to convert base32 string to string.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool TryBase32DecodeString(this string base32String, out string output, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">base32String</span></td>
+                    <td><p>Base32 string to convert.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">output</span></td>
+                    <td><p>The output.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the string was successfully decoded; otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/Base32EncoderDecoder.cs/#L39" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

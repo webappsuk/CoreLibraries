@@ -1,0 +1,2317 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct CombGuid
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct CombGuid
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_CombGuid" data-uid="WebApplications.Utilities.CombGuid">Struct CombGuid
+              </h1>
+              <div class="markdown level0 summary"><p>A <a class="xref" href="WebApplications.Utilities.CombGuid.html#WebApplications_Utilities_CombGuid_Guid">Guid</a> that encodes its creation date and can be used with SQL Server to create efficient inserts and indexes.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
+              <h5 id="WebApplications_Utilities_CombGuid_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[Serializable]
+[ComVisible(true)]
+[PublicAPI]
+public struct CombGuid : IFormattable, IComparable, IComparable&lt;CombGuid&gt;, IEquatable&lt;CombGuid&gt;, IComparable&lt;Guid&gt;, IEquatable&lt;Guid&gt;</code></pre>
+              </div>
+              <h5 id="WebApplications_Utilities_CombGuid_remarks"><strong>Remarks</strong></h5>
+              <div class="markdown level0 remarks"><p>The encoded date is accurate to ~3.4ms (or ~8ms from SQL) depending on the source.</p>
+</div>
+              <h3 id="constructors">Constructors
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L76">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid__ctor_" data-uid="WebApplications.Utilities.CombGuid.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid__ctor_System_Byte___" data-uid="WebApplications.Utilities.CombGuid.#ctor(System.Byte[])">CombGuid(Byte[])</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> struct.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CombGuid(byte[] b)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>A 16-element byte array containing values with which to initialize the Guid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid__ctor_System_Byte____seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L173">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid__ctor_" data-uid="WebApplications.Utilities.CombGuid.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid__ctor_System_Guid_" data-uid="WebApplications.Utilities.CombGuid.#ctor(System.Guid)">CombGuid(Guid)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> struct.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CombGuid(Guid g)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">g</span></td>
+                    <td><p>The Guid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid__ctor_System_Guid__seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L138">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid__ctor_" data-uid="WebApplications.Utilities.CombGuid.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid__ctor_System_Int32_System_Int16_System_Int16_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_" data-uid="WebApplications.Utilities.CombGuid.#ctor(System.Int32,System.Int16,System.Int16,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">CombGuid(Int32, Int16, Int16, Byte, Byte, Byte, Byte, Byte, Byte, Byte, Byte)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> struct.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CombGuid(int a, short b, short c, byte d, byte e, byte f, byte g, byte h, byte i, byte j, byte k)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first 4 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int16(v=vs.110).aspx">Int16</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The next 2 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int16(v=vs.110).aspx">Int16</a></td>
+                    <td><span class="parametername">c</span></td>
+                    <td><p>The next 2 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">d</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">e</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">f</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">g</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">h</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">i</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">j</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">k</span></td>
+                    <td><p>The final byte of the Guid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid__ctor_System_Int32_System_Int16_System_Int16_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>Specifying the bytes in this manner can be used to circumvent byte order restrictions on certain computers (endianness).</p>
+</div>
+              <h5 id="WebApplications_Utilities_CombGuid__ctor_System_Int32_System_Int16_System_Int16_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte__seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L114">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid__ctor_" data-uid="WebApplications.Utilities.CombGuid.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid__ctor_System_Int32_System_Int16_System_Int16_System_Byte___" data-uid="WebApplications.Utilities.CombGuid.#ctor(System.Int32,System.Int16,System.Int16,System.Byte[])">CombGuid(Int32, Int16, Int16, Byte[])</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> struct.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CombGuid(int a, short b, short c, byte[] d)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first 4 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int16(v=vs.110).aspx">Int16</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The next 2 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int16(v=vs.110).aspx">Int16</a></td>
+                    <td><span class="parametername">c</span></td>
+                    <td><p>The next 2 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><span class="parametername">d</span></td>
+                    <td><p>The final 8 bytes of the Guid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid__ctor_System_Int32_System_Int16_System_Int16_System_Byte____seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L162">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid__ctor_" data-uid="WebApplications.Utilities.CombGuid.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid__ctor_System_String_" data-uid="WebApplications.Utilities.CombGuid.#ctor(System.String)">CombGuid(String)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> using the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> specified. </p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CombGuid(string g)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">g</span></td>
+                    <td><p>The string containing a Guid. The format can be one of the following (d represents a hex digit):</p>
+<p>32 continuous digits: dddddddddddddddddddddddddddddddd.</p>
+<p>-or-</p>
+<p>Groups of 8, 4, 4, 4 and 12 digits: dddddddd-dddd-dddd-dddd-dddddddddddd</p>
+<p>(The entire GUID can be enclosed in either braces or parenthesis.)</p>
+<p>-or-</p>
+<p>Groups of 8, 4, and 4 digits, then a subset of 8 groups of 2 digits. Each group is prefixed by &quot;0x&quot; or &quot;0X&quot;
+and is separated by commas. The entire GUID, as well as the subset, is enclosed in matching braces:
+{0xdddddddd, 0xdddd, 0xdddd,{0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd,0xdd}}</p>
+<p>Embedded spaces and leading zeros are ignored as well as leading zeros in a group.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">g</span> is a <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.formatexception(v=vs.110).aspx">FormatException</a></td>
+                    <td><p>The format of <span class="paramref">g</span> is invalid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.overflowexception(v=vs.110).aspx">OverflowException</a></td>
+                    <td><p>The format of <span class="paramref">g</span> is invalid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L100">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid__ctor_" data-uid="WebApplications.Utilities.CombGuid.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid__ctor_System_UInt32_System_UInt16_System_UInt16_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_" data-uid="WebApplications.Utilities.CombGuid.#ctor(System.UInt32,System.UInt16,System.UInt16,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">CombGuid(UInt32, UInt16, UInt16, Byte, Byte, Byte, Byte, Byte, Byte, Byte, Byte)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> struct.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CombGuid(uint a, ushort b, ushort c, byte d, byte e, byte f, byte g, byte h, byte i, byte j, byte k)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.uint32(v=vs.110).aspx">UInt32</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first 4 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.uint16(v=vs.110).aspx">UInt16</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The next 2 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.uint16(v=vs.110).aspx">UInt16</a></td>
+                    <td><span class="parametername">c</span></td>
+                    <td><p>The next 2 bytes of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">d</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">e</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">f</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">g</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">h</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">i</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">j</span></td>
+                    <td><p>The next byte of the Guid.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">k</span></td>
+                    <td><p>The final byte of the Guid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid__ctor_System_UInt32_System_UInt16_System_UInt16_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>Specifying the bytes in this manner can be used to circumvent byte order restrictions on certain computers (endianness).</p>
+</div>
+              <h5 id="WebApplications_Utilities_CombGuid__ctor_System_UInt32_System_UInt16_System_UInt16_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte_System_Byte__seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></div>
+              </div>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L69">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_CombGuid_Created" data-uid="WebApplications.Utilities.CombGuid.Created">Created</h4>
+              <div class="markdown level1 summary"><p>The UTC <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a> encoded into the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public readonly DateTime Created</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_Created_remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>This is accurate to ~3.4ms (or ~8ms from SQL) depending on the source.</p>
+</div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L53">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_CombGuid_Empty" data-uid="WebApplications.Utilities.CombGuid.Empty">Empty</h4>
+              <div class="markdown level1 summary"><p>The empty <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly CombGuid Empty</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L58">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_CombGuid_Guid" data-uid="WebApplications.Utilities.CombGuid.Guid">Guid</h4>
+              <div class="markdown level1 summary"><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a> component of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public readonly Guid Guid</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L426">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_CompareTo_" data-uid="WebApplications.Utilities.CombGuid.CompareTo*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_CompareTo_System_Guid_" data-uid="WebApplications.Utilities.CombGuid.CompareTo(System.Guid)">CompareTo(Guid)</h4>
+              <div class="markdown level1 summary"><p>Compares this instance to the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public int CompareTo(Guid other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">other</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p><p>A signed number indicating the relative value between <span class="paramref">other</span> and this instance.</p></p>
+<ul><li>A negative integer: The instance is less than <span class="paramref">other</span>.</li><li>Zero: The instance equal to <span class="paramref">other</span>.</li><li>A positive integer: The instance is greater than <span class="paramref">other</span>.</li></ul>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/43hc6wht(v=vs.110).aspx">IComparable&lt;T&gt;.CompareTo(T)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L386">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_CompareTo_" data-uid="WebApplications.Utilities.CombGuid.CompareTo*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_CompareTo_System_Object_" data-uid="WebApplications.Utilities.CombGuid.CompareTo(System.Object)">CompareTo(Object)</h4>
+              <div class="markdown level1 summary"><p>Compares this instance to the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public int CompareTo(object value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to compare to this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>A signed number indicating the the relative value between <span class="paramref">value</span> and this instance.</p>
+<ul><li>A negative integer: The instance is less than <span class="paramref">value</span>.</li><li>Zero: The instance equal to <span class="paramref">value</span>.</li><li>A positive integer: The instance is greater than <span class="paramref">value</span> or <span class="paramref">value</span>
+  is <span class="xref">null</span>.</li></ul>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/4ah99705(v=vs.110).aspx">IComparable.CompareTo(Object)</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentexception(v=vs.110).aspx">ArgumentException</a></td>
+                    <td><p><span class="paramref">value</span> was not a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>/<a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L410">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_CompareTo_" data-uid="WebApplications.Utilities.CombGuid.CompareTo*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_CompareTo_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.CompareTo(WebApplications.Utilities.CombGuid)">CompareTo(CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Compares this instance to the specified <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public int CompareTo(CombGuid value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare to this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p><p>A signed number indicating the relative value between <span class="paramref">value</span> and this instance.</p></p>
+<ul><li>A negative integer: The instance is less than <span class="paramref">value</span>.</li><li>Zero: The instance equal to <span class="paramref">value</span>.</li><li>A positive integer: The instance is greater than <span class="paramref">value</span>.</li></ul>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/43hc6wht(v=vs.110).aspx">IComparable&lt;T&gt;.CompareTo(T)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L365">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_Equals_" data-uid="WebApplications.Utilities.CombGuid.Equals*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_Equals_System_Guid_" data-uid="WebApplications.Utilities.CombGuid.Equals(System.Guid)">Equals(Guid)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system(v=vs.110).aspx">System</a> is equal to this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool Equals(Guid other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">other</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a> to compare with this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the <span class="paramref">other</span> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a> is equal to this instance;
+otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131190(v=vs.110).aspx">IEquatable&lt;T&gt;.Equals(T)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L331">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_Equals_" data-uid="WebApplications.Utilities.CombGuid.Equals*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_Equals_System_Object_" data-uid="WebApplications.Utilities.CombGuid.Equals(System.Object)">Equals(Object)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override bool Equals(object o)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">o</span></td>
+                    <td><p>The object to compare with this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance;
+otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/2dts52z7(v=vs.110).aspx">ValueType.Equals(Object)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L352">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_Equals_" data-uid="WebApplications.Utilities.CombGuid.Equals*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_Equals_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.Equals(WebApplications.Utilities.CombGuid)">Equals(CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> is equal to this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool Equals(CombGuid g)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">g</span></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare with this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the specified <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> (<span class="paramref">g</span>) is equal to this instance;
+otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131190(v=vs.110).aspx">IEquatable&lt;T&gt;.Equals(T)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L654">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_GetDateTime_" data-uid="WebApplications.Utilities.CombGuid.GetDateTime*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_GetDateTime" data-uid="WebApplications.Utilities.CombGuid.GetDateTime">GetDateTime()</h4>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>&#39;s creation <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public DateTime GetDateTime()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a></td>
+                    <td><p>The value of the <a class="xref" href="WebApplications.Utilities.CombGuid.html#WebApplications_Utilities_CombGuid_Created">Created</a> member.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L592">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_GetDateTime_" data-uid="WebApplications.Utilities.CombGuid.GetDateTime*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_GetDateTime_System_Guid_" data-uid="WebApplications.Utilities.CombGuid.GetDateTime(System.Guid)">GetDateTime(Guid)</h4>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>&#39;s creation date (if it&#39;s a <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static DateTime GetDateTime(Guid guid)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">guid</span></td>
+                    <td><p>The Guid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>&#39;s creation <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a> (always UTC).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_GetDateTime_System_Guid__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>The creation date is stored in the last 6 bytes of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>.
+A group of 4 bytes for the msecs and a group of 2 bytes for the days.</p>
+</div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L635">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_GetDateTime_" data-uid="WebApplications.Utilities.CombGuid.GetDateTime*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_GetDateTime_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.GetDateTime(WebApplications.Utilities.CombGuid)">GetDateTime(CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Gets the creation <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a> for the specified <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static DateTime GetDateTime(CombGuid guid)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">guid</span></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a></td>
+                    <td><p>The value of the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>&#39;s <a class="xref" href="WebApplications.Utilities.CombGuid.html#WebApplications_Utilities_CombGuid_Created">Created</a> member.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L318">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_GetHashCode_" data-uid="WebApplications.Utilities.CombGuid.GetHashCode*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_GetHashCode" data-uid="WebApplications.Utilities.CombGuid.GetHashCode">GetHashCode()</h4>
+              <div class="markdown level1 summary"><p>Returns a hash code for this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>The hash code for this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/y3509fc2(v=vs.110).aspx">ValueType.GetHashCode()</a></div>
+              <h5 id="WebApplications_Utilities_CombGuid_GetHashCode_remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>This is suitable for use in hashing algorithms and data structures like a hash table.</p>
+</div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L663">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_GetInstant_" data-uid="WebApplications.Utilities.CombGuid.GetInstant*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_GetInstant" data-uid="WebApplications.Utilities.CombGuid.GetInstant">GetInstant()</h4>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>&#39;s creation <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public Instant GetInstant()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>An <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> value equivalent to the <a class="xref" href="WebApplications.Utilities.CombGuid.html#WebApplications_Utilities_CombGuid_Created">Created</a> member.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L625">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_GetInstant_" data-uid="WebApplications.Utilities.CombGuid.GetInstant*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_GetInstant_System_Guid_" data-uid="WebApplications.Utilities.CombGuid.GetInstant(System.Guid)">GetInstant(Guid)</h4>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>&#39;s creation date (if it&#39;s a <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant GetInstant(Guid guid)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">guid</span></td>
+                    <td><p>The Guid.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>&#39;s creation <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> (always UTC).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_GetInstant_System_Guid__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>The creation date is stored in the last 6 bytes of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>.
+A group of 4 bytes for the msecs and a group of 2 bytes for the days.</p>
+</div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L645">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_GetInstant_" data-uid="WebApplications.Utilities.CombGuid.GetInstant*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_GetInstant_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.GetInstant(WebApplications.Utilities.CombGuid)">GetInstant(CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Gets the creation <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> for the specified <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant GetInstant(CombGuid guid)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">guid</span></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>An <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> value equivalent to the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>&#39;s <a class="xref" href="WebApplications.Utilities.CombGuid.html#WebApplications_Utilities_CombGuid_Created">Created</a> member.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L516">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_NewCombGuid_" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_NewCombGuid" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid">NewCombGuid()</h4>
+              <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> with the current <a class="xref" href="https://msdn.microsoft.com/en-us/library/1393e40z(v=vs.110).aspx">Now</a> embedded
+as its creation date.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CombGuid NewCombGuid()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><p>A new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L538">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_NewCombGuid_" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_NewCombGuid_NodaTime_Instant_" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid(NodaTime.Instant)">NewCombGuid(Instant)</h4>
+              <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> based on the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> specified.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CombGuid NewCombGuid(Instant instant)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><span class="parametername">instant</span></td>
+                    <td><p>The instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><p>A new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L549">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_NewCombGuid_" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_NewCombGuid_System_DateTime_" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid(System.DateTime)">NewCombGuid(DateTime)</h4>
+              <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> based on the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a> specified.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CombGuid NewCombGuid(DateTime dateTime)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a></td>
+                    <td><span class="parametername">dateTime</span></td>
+                    <td><p>The date time.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><p>A new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L527">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_NewCombGuid_" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_NewCombGuid_System_DateTimeOffset_" data-uid="WebApplications.Utilities.CombGuid.NewCombGuid(System.DateTimeOffset)">NewCombGuid(DateTimeOffset)</h4>
+              <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> based on the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a> specified.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CombGuid NewCombGuid(DateTimeOffset dateTime)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">dateTime</span></td>
+                    <td><p>The date time.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><p>A new <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L192">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_Parse_" data-uid="WebApplications.Utilities.CombGuid.Parse*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_Parse_System_String_" data-uid="WebApplications.Utilities.CombGuid.Parse(System.String)">Parse(String)</h4>
+              <div class="markdown level1 summary"><p>Parses the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> into a <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> equivalent.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CombGuid Parse(string input)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">input</span></td>
+                    <td><p>The Guid to parse.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> containing the parsed <span class="paramref">input</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">input</span> is a <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.formatexception(v=vs.110).aspx">FormatException</a></td>
+                    <td><p><span class="paramref">input</span> is not in a recognised format.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L250">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_ParseExact_" data-uid="WebApplications.Utilities.CombGuid.ParseExact*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_ParseExact_System_String_System_String_" data-uid="WebApplications.Utilities.CombGuid.ParseExact(System.String,System.String)">ParseExact(String, String)</h4>
+              <div class="markdown level1 summary"><p>Parses the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> input into the equivalent <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> (with the format specified).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CombGuid ParseExact(string input, string format)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">input</span></td>
+                    <td><p>The Guid to parse.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">format</span></td>
+                    <td><p>The format specifier.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> containing the parsed <span class="paramref">input</span>, which is in the specified <span class="paramref">format</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_ParseExact_System_String_System_String__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>The <span class="paramref">format</span> can be:</p>
+<ul><li>&quot;N&quot; - 32 digits.</li><li>&quot;D&quot; - 32 digits separated by hyphens.</li><li>&quot;B&quot; - 32 digits separated by hyphens (enclosed in braces).</li><li>&quot;P&quot; - 32 digits separated by hyphens (enclosed in parenthesis).</li><li>&quot;X&quot; - Four hex values (enclosed in braces) where the fourth value is a subset of eight hex values (also enclosed in braces).
+  ({0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}</li></ul>
+</div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">format</span> is a <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.formatexception(v=vs.110).aspx">FormatException</a></td>
+                    <td><p>The value of <span class="paramref">format</span> is not one of the following:</p>
+<ul><li>&quot;N&quot;</li><li>&quot;D&quot;</li><li>&quot;B&quot;</li><li>&quot;P&quot;</li><li>&quot;X&quot;</li></ul>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L296">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_ToByteArray_" data-uid="WebApplications.Utilities.CombGuid.ToByteArray*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_ToByteArray" data-uid="WebApplications.Utilities.CombGuid.ToByteArray">ToByteArray()</h4>
+              <div class="markdown level1 summary"><p>Returns an unsigned byte <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a> containing the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public byte[] ToByteArray()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><p>An unsigned 16-element byte <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a> containing the <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L308">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_ToString_" data-uid="WebApplications.Utilities.CombGuid.ToString*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_ToString" data-uid="WebApplications.Utilities.CombGuid.ToString">ToString()</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance in &quot;registry&quot; format. </p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> representation of this instance.</p>
+<p><strong>Output Format:</strong> dddddddd-dddd-dddd-dddd-dddddddddddd (d represents a hex digit).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/wb77sz3h(v=vs.110).aspx">ValueType.ToString()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L699">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_ToString_" data-uid="WebApplications.Utilities.CombGuid.ToString*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_ToString_System_String_" data-uid="WebApplications.Utilities.CombGuid.ToString(System.String)">ToString(String)</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public string ToString(string format)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">format</span></td>
+                    <td><p>The format specifier.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> representation of this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_ToString_System_String__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>The <span class="paramref">format</span> can be:</p>
+<ul><li>&quot;N&quot; - 32 digits.</li><li>&quot;D&quot; - 32 digits separated by hyphens.</li><li>&quot;B&quot; - 32 digits separated by hyphens (enclosed in braces).</li><li>&quot;P&quot; - 32 digits separated by hyphens (enclosed in parenthesis).</li><li>&quot;X&quot; - Four hex values (enclosed in braces) where the fourth value is a subset of
+  eight hex values (also enclosed in braces).</li></ul>
+<p>If the format is a <span class="xref">null</span> or an empty string then &quot;D&quot; is used.</p>
+</div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.formatexception(v=vs.110).aspx">FormatException</a></td>
+                    <td><p><p>The value of <span class="paramref">format</span> is not one of the following:</p></p>
+<ul><li><span class="xref">null</span></li><li>An empty string (&quot;&quot;)</li><li>&quot;N&quot;</li><li>&quot;D&quot;</li><li>&quot;B&quot;</li><li>&quot;P&quot;</li><li>&quot;X&quot;</li></ul>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_ToString_System_String__seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/560tzess(v=vs.110).aspx">ToString()</a></div>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformatprovider(v=vs.110).aspx">IFormatProvider</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L736">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_ToString_" data-uid="WebApplications.Utilities.CombGuid.ToString*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_ToString_System_String_System_IFormatProvider_" data-uid="WebApplications.Utilities.CombGuid.ToString(System.String,System.IFormatProvider)">ToString(String, IFormatProvider)</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public string ToString(string format, IFormatProvider provider)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">format</span></td>
+                    <td><p>The format specifier.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformatprovider(v=vs.110).aspx">IFormatProvider</a></td>
+                    <td><span class="parametername">provider</span></td>
+                    <td><p>Controls culture specific formatting.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> representation of this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bhf180ey(v=vs.110).aspx">IFormattable.ToString(String, IFormatProvider)</a></div>
+              <h5 id="WebApplications_Utilities_CombGuid_ToString_System_String_System_IFormatProvider__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>The <span class="paramref">format</span> can be:</p>
+<ul><li>&quot;N&quot; - 32 digits.</li><li>&quot;D&quot; - 32 digits separated by hyphens.</li><li>&quot;B&quot; - 32 digits separated by hyphens (enclosed in braces).</li><li>&quot;P&quot; - 32 digits separated by hyphens (enclosed in parenthesis).</li><li>&quot;X&quot; - Four hex values (enclosed in braces) where the fourth value is a subset of eight hex values 
+  (also enclosed in braces). {0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}</li></ul>
+<p>If the format is a <span class="xref">null</span> or an empty string then &quot;D&quot; is used.</p>
+</div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.formatexception(v=vs.110).aspx">FormatException</a></td>
+                    <td><p><p>The value of <span class="paramref">format</span> is not one of the following:</p></p>
+<ul><li><span class="xref">null</span></li><li>An empty string (&quot;&quot;)</li><li>&quot;N&quot;</li><li>&quot;D&quot;</li><li>&quot;B&quot;</li><li>&quot;P&quot;</li><li>&quot;X&quot;</li></ul>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_ToString_System_String_System_IFormatProvider__seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/560tzess(v=vs.110).aspx">ToString()</a></div>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformatprovider(v=vs.110).aspx">IFormatProvider</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L208">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_TryParse_" data-uid="WebApplications.Utilities.CombGuid.TryParse*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_TryParse_System_String_WebApplications_Utilities_CombGuid__" data-uid="WebApplications.Utilities.CombGuid.TryParse(System.String,WebApplications.Utilities.CombGuid@)">TryParse(String, out CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Tries to parse the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> into a <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> equivalent.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool TryParse(string input, out CombGuid result)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">input</span></td>
+                    <td><p>The Guid to parse.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">result</span></td>
+                    <td><p>If the <span class="paramref">input</span> is parsed successfully, a <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> containing the parsed value
+is output; otherwise an empty <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the parse was successful; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L278">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_TryParseExact_" data-uid="WebApplications.Utilities.CombGuid.TryParseExact*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_TryParseExact_System_String_System_String_WebApplications_Utilities_CombGuid__" data-uid="WebApplications.Utilities.CombGuid.TryParseExact(System.String,System.String,WebApplications.Utilities.CombGuid@)">TryParseExact(String, String, out CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Parses the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> input into the equivalent <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> (with the format specified).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool TryParseExact(string input, string format, out CombGuid result)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">input</span></td>
+                    <td><p>The Guid to parse.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">format</span></td>
+                    <td><p>The format string.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">result</span></td>
+                    <td><p>If the <span class="paramref">input</span> is parsed successfully, a <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> containing the parsed
+value is output; otherwise an empty <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the <span class="paramref">input</span> was parsed successfully; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_CombGuid_TryParseExact_System_String_System_String_WebApplications_Utilities_CombGuid___remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p><p>The <span class="paramref">format</span> can be:</p></p>
+<ul><li>&quot;N&quot; - 32 digits.</li><li>&quot;D&quot; - 32 digits separated by hyphens.</li><li>&quot;B&quot; - 32 digits separated by hyphens (enclosed in braces).</li><li>&quot;P&quot; - 32 digits separated by hyphens (enclosed in parenthesis).</li><li>&quot;X&quot; - Four hex values (enclosed in braces) where the fourth value is a subset of eight hex values (also enclosed in braces).
+  ({0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}</li></ul>
+</div>
+              <h3 id="operators">Operators
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L436">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_Equality_" data-uid="WebApplications.Utilities.CombGuid.op_Equality*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_Equality_WebApplications_Utilities_CombGuid_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.op_Equality(WebApplications.Utilities.CombGuid,WebApplications.Utilities.CombGuid)">Equality(CombGuid, CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator ==.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator ==(CombGuid a, CombGuid b)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The second <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L456">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_GreaterThan_" data-uid="WebApplications.Utilities.CombGuid.op_GreaterThan*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_GreaterThan_WebApplications_Utilities_CombGuid_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.op_GreaterThan(WebApplications.Utilities.CombGuid,WebApplications.Utilities.CombGuid)">GreaterThan(CombGuid, CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &gt;.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator&gt;(CombGuid a, CombGuid b)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The second <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L476">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_GreaterThanOrEqual_" data-uid="WebApplications.Utilities.CombGuid.op_GreaterThanOrEqual*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_GreaterThanOrEqual_WebApplications_Utilities_CombGuid_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.op_GreaterThanOrEqual(WebApplications.Utilities.CombGuid,WebApplications.Utilities.CombGuid)">GreaterThanOrEqual(CombGuid, CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &gt;=.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator &gt;=(CombGuid a, CombGuid b)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The second <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L506">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_Implicit_" data-uid="WebApplications.Utilities.CombGuid.op_Implicit*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_Implicit_System_Guid__WebApplications_Utilities_CombGuid" data-uid="WebApplications.Utilities.CombGuid.op_Implicit(System.Guid)~WebApplications.Utilities.CombGuid">Implicit(Guid to CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Performs an implicit conversion from <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a> to <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static implicit operator CombGuid(Guid guid)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">guid</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a> to convert.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><p>The result of the conversion.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L496">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_Implicit_" data-uid="WebApplications.Utilities.CombGuid.op_Implicit*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_Implicit_WebApplications_Utilities_CombGuid__System_Guid" data-uid="WebApplications.Utilities.CombGuid.op_Implicit(WebApplications.Utilities.CombGuid)~System.Guid">Implicit(CombGuid to Guid)</h4>
+              <div class="markdown level1 summary"><p>Performs an implicit conversion from <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static implicit operator Guid(CombGuid combGuid)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">combGuid</span></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to convert.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><p>The result of the conversion.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L446">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_Inequality_" data-uid="WebApplications.Utilities.CombGuid.op_Inequality*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_Inequality_WebApplications_Utilities_CombGuid_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.op_Inequality(WebApplications.Utilities.CombGuid,WebApplications.Utilities.CombGuid)">Inequality(CombGuid, CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator !=.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator !=(CombGuid a, CombGuid b)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The second <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L466">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_LessThan_" data-uid="WebApplications.Utilities.CombGuid.op_LessThan*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_LessThan_WebApplications_Utilities_CombGuid_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.op_LessThan(WebApplications.Utilities.CombGuid,WebApplications.Utilities.CombGuid)">LessThan(CombGuid, CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &lt;.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator &lt;(CombGuid a, CombGuid b)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The second <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L486">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CombGuid_op_LessThanOrEqual_" data-uid="WebApplications.Utilities.CombGuid.op_LessThanOrEqual*"></a>
+              <h4 id="WebApplications_Utilities_CombGuid_op_LessThanOrEqual_WebApplications_Utilities_CombGuid_WebApplications_Utilities_CombGuid_" data-uid="WebApplications.Utilities.CombGuid.op_LessThanOrEqual(WebApplications.Utilities.CombGuid,WebApplications.Utilities.CombGuid)">LessThanOrEqual(CombGuid, CombGuid)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &lt;=.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator &lt;=(CombGuid a, CombGuid b)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">a</span></td>
+                    <td><p>The first <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a></td>
+                    <td><span class="parametername">b</span></td>
+                    <td><p>The second <a class="xref" href="WebApplications.Utilities.CombGuid.html">CombGuid</a> to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CombGuid.cs/#L43" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

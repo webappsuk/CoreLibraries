@@ -1,0 +1,794 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class FileLogger
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class FileLogger
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Logging_Loggers_FileLogger" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger">Class FileLogger
+              </h1>
+              <div class="markdown level0 summary"><p>A logger that implements logging to files.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html">LoggerBase</a></div>
+                  <div class="level2"><span class="xref">FileLogger</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html#WebApplications_Utilities_Logging_Loggers_LoggerBase_AllowMultiple">LoggerBase.AllowMultiple</a>
+                </div>
+                <div>
+                  <a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html#WebApplications_Utilities_Logging_Loggers_LoggerBase_ValidLevels">LoggerBase.ValidLevels</a>
+                </div>
+                <div>
+                  <a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html#WebApplications_Utilities_Logging_Loggers_LoggerBase_Name">LoggerBase.Name</a>
+                </div>
+                <div>
+                  <a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html#WebApplications_Utilities_Logging_Loggers_LoggerBase_All">LoggerBase.All</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Logging.Loggers</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.Logging.dll</h6>
+              <h5 id="WebApplications_Utilities_Logging_Loggers_FileLogger_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public class FileLogger : LoggerBase, ILogger, IDisposable</code></pre>
+              </div>
+              <h5 id="WebApplications_Utilities_Logging_Loggers_FileLogger_remarks"><strong>Remarks</strong></h5>
+              <div class="markdown level0 remarks"><p>TODO It should be possible to turn this into a logger that retrieves data.
+That is that supports log retrieval.</p>
+</div>
+              <h3 id="constructors">Constructors
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L140">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger__ctor_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger__ctor_System_String_System_String_System_Int64_System_TimeSpan_WebApplications_Utilities_Logging_LoggingLevels_WebApplications_Utilities_Formatting_FormatBuilder_WebApplications_Utilities_Formatting_FormatBuilder_System_String_System_UInt32_System_Boolean_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.#ctor(System.String,System.String,System.Int64,System.TimeSpan,WebApplications.Utilities.Logging.LoggingLevels,WebApplications.Utilities.Formatting.FormatBuilder,WebApplications.Utilities.Formatting.FormatBuilder,System.String,System.UInt32,System.Boolean)">FileLogger(String, String, Int64, TimeSpan, LoggingLevels, FormatBuilder, FormatBuilder, String, UInt32, Boolean)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Logging.Loggers.FileLogger.html">FileLogger</a> class.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public FileLogger(string name, string directory = null, long maxLog = 1000L, TimeSpan maxDuration = null, LoggingLevels validLevels = LoggingLevels.All | LoggingLevels.AtLeastCritical | LoggingLevels.AtLeastError | LoggingLevels.AtLeastWarning | LoggingLevels.AtLeastSystemNotification | LoggingLevels.AtLeastNotification | LoggingLevels.AtLeastInformation | LoggingLevels.Emergency | LoggingLevels.Critical | LoggingLevels.Error | LoggingLevels.Warning | LoggingLevels.SystemNotification | LoggingLevels.Notification | LoggingLevels.Information | LoggingLevels.Debugging, FormatBuilder format = null, FormatBuilder fileNameFormat = null, string extension = null, uint buffer = 65536U, bool autoFlush = false)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">name</span></td>
+                    <td><p>The filename.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">directory</span></td>
+                    <td><p>The directory to log to (default to entry assembly directory).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int64(v=vs.110).aspx">Int64</a></td>
+                    <td><span class="parametername">maxLog</span></td>
+                    <td><p>The maximum number of log items in a single log file.</p>
+<p>By default this is set to 1,000.</p></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">maxDuration</span></td>
+                    <td><p>The maximum time period that a single log file can cover.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Logging.LoggingLevels.html">LoggingLevels</a></td>
+                    <td><span class="parametername">validLevels</span></td>
+                    <td><p>The valid log levels.</p>
+<p>By default allows <a class="xref" href="WebApplications.Utilities.Logging.LoggingLevels.html">LoggingLevels</a>.</p></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td><span class="parametername">format</span></td>
+                    <td><p>The log format (default to &quot;Verbose,Xml&quot;).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td><span class="parametername">fileNameFormat</span></td>
+                    <td><p>The filename format - where {DateTime} is the creation date time.</p>
+<p>By default the format is &quot;{ApplicationName}-{DateTime:yyMMddHHmmssffff}&quot;.</p></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">extension</span></td>
+                    <td><p>The file extension.</p>
+<p>By default this is set to use &quot;log&quot;.</p></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.uint32(v=vs.110).aspx">UInt32</a></td>
+                    <td><span class="parametername">buffer</span></td>
+                    <td><p>The buffer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><span class="parametername">autoFlush</span></td>
+                    <td><p>if set to <span class="xref">true</span> [auto flush].</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Logging.LoggingException.html">LoggingException</a></td>
+                    <td><p>
+<span class="paramref">maxLog</span> was less than 10, which would result in too many log files to be created.</p>
+<p>-or-</p>
+<p>
+<span class="paramref">maxDuration</span> was less than 10 seconds, which would result in too many log files to be created.</p>
+<p>-or-</p>
+<p>
+<span class="paramref">directory</span> was either <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd992422(v=vs.110).aspx">IsNullOrWhiteSpace(String)</a>.</p>
+<p>-or-</p>
+<p>The <span class="paramref">fileNameFormat</span> string was either <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd992422(v=vs.110).aspx">IsNullOrWhiteSpace(String)</a>.</p>
+<p>-or-</p>
+<p>An error occurred trying to access the <span class="paramref">directory</span>.</p>
+<p>-or-</p>
+<p>
+<span class="paramref">extension</span> was more than 5 characters long.</p>
+<p>-or-</p>
+<p>The <span class="paramref">fileNameFormat</span> led to an invalid path or created a path that references the wrong <span class="paramref">directory</span>.</p>
+<p>-or-</p>
+<p>File path contained <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms143439(v=vs.110).aspx">GetInvalidPathChars()</a>.</p></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L58">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_DefaultDirectory" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.DefaultDirectory">DefaultDirectory</h4>
+              <div class="markdown level1 summary"><p>The default logging directory.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly string DefaultDirectory</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L99">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_DefaultFileNameFormat" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.DefaultFileNameFormat">DefaultFileNameFormat</h4>
+              <div class="markdown level1 summary"><p>The default file name format</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static FormatBuilder DefaultFileNameFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L359">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_FormatTagDedupe" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.FormatTagDedupe">FormatTagDedupe</h4>
+              <div class="markdown level1 summary"><p>The format tag used to dedupe a file.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public const string FormatTagDedupe = &quot;dedupe&quot;</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L353">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_AutoFlush_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.AutoFlush*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_AutoFlush" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.AutoFlush">AutoFlush</h4>
+              <div class="markdown level1 summary"><p>Gets or sets a value indicating whether to auto flush the file.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool AutoFlush { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if auto flush; otherwise, <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L325">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_Buffer_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Buffer*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_Buffer" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Buffer">Buffer</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the buffer size in bytes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public uint Buffer { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.uint32(v=vs.110).aspx">UInt32</a></td>
+                    <td><p>The buffer.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L202">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_Directory_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Directory*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_Directory" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Directory">Directory</h4>
+              <div class="markdown level1 summary"><p>The directory being logged to.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public string Directory { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L267">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_Extension_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Extension*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_Extension" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Extension">Extension</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the extension.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public string Extension { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>The extension.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L223">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_FileNameFormat_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.FileNameFormat*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_FileNameFormat" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.FileNameFormat">FileNameFormat</h4>
+              <div class="markdown level1 summary"><p>The format string used for naming log files.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public FormatBuilder FileNameFormat { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L245">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_Format_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Format*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_Format" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Format">Format</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the log format.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public FormatBuilder Format { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td><p>The format.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L284">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_MaxDuration_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.MaxDuration*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_MaxDuration" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.MaxDuration">MaxDuration</h4>
+              <div class="markdown level1 summary"><p>The maximum time period that a single log file can cover.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TimeSpan MaxDuration { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L303">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_MaxLog_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.MaxLog*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_MaxLog" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.MaxLog">MaxLog</h4>
+              <div class="markdown level1 summary"><p>The maximum number of log items in a single log file.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public long MaxLog { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int64(v=vs.110).aspx">Int64</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L485">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_Add_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Add*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_Add_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Logging_Log__System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Add(System.Collections.Generic.IEnumerable{WebApplications.Utilities.Logging.Log},System.Threading.CancellationToken)">Add(IEnumerable&lt;Log&gt;, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Adds the specified logs to storage in batches.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override Task Add(IEnumerable&lt;Log&gt; logs, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Logging.Log.html">Log</a>&gt;</td>
+                    <td><span class="parametername">logs</span></td>
+                    <td><p>The logs to add to storage.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task(v=vs.110).aspx">Task</a></td>
+                    <td><p>Task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html#WebApplications_Utilities_Logging_Loggers_LoggerBase_Add_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Logging_Log__System_Threading_CancellationToken_">LoggerBase.Add(IEnumerable&lt;Log&gt;, CancellationToken)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L592">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_CloseFile_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.CloseFile*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_CloseFile" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.CloseFile">CloseFile()</h4>
+              <div class="markdown level1 summary"><p>Closes the current log file.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void CloseFile()</code></pre>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L468">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_Dispose_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Dispose*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_Dispose" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Dispose">Dispose()</h4>
+              <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override void Dispose()</code></pre>
+              </div>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html#WebApplications_Utilities_Logging_Loggers_LoggerBase_Dispose">LoggerBase.Dispose()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L583">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Logging_Loggers_FileLogger_Flush_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Flush*"></a>
+              <h4 id="WebApplications_Utilities_Logging_Loggers_FileLogger_Flush_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Logging.Loggers.FileLogger.Flush(System.Threading.CancellationToken)">Flush(CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Force a flush of this logger.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override Task Flush(CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task(v=vs.110).aspx">Task</a></td>
+                    <td><p>Task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="WebApplications.Utilities.Logging.Loggers.LoggerBase.html#WebApplications_Utilities_Logging_Loggers_LoggerBase_Flush_System_Threading_CancellationToken_">LoggerBase.Flush(CancellationToken)</a></div>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/FileLogger.cs/#L51" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

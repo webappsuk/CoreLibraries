@@ -1,0 +1,1856 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class BaseService
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class BaseService
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Service_BaseService" data-uid="WebApplications.Utilities.Service.BaseService">Class BaseService
+              </h1>
+              <div class="markdown level0 summary"><p>Base implementation of a service, you should always extends the generic version of this class.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.marshalbyrefobject(v=vs.110).aspx">MarshalByRefObject</a></div>
+                  <div class="level2"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.componentmodel.component(v=vs.110).aspx">Component</a></div>
+                  <div class="level3"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.servicebase(v=vs.110).aspx">ServiceBase</a></div>
+                  <div class="level4"><span class="xref">BaseService</span></div>
+                  <div class="level5"><a class="xref" href="WebApplications.Utilities.Service.BaseService-1.html">BaseService&lt;TService&gt;</a></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/8by3acw7(v=vs.110).aspx">ServiceBase.MaxNameLength</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms149216(v=vs.110).aspx">ServiceBase.RequestAdditionalTime(Int32)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/0edwyfx9(v=vs.110).aspx">ServiceBase.Dispose(Boolean)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/1tex5547(v=vs.110).aspx">ServiceBase.OnContinue()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57c21sbf(v=vs.110).aspx">ServiceBase.OnPause()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/33w4s8x1(v=vs.110).aspx">ServiceBase.OnPowerEvent(PowerBroadcastStatus)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms149215(v=vs.110).aspx">ServiceBase.OnSessionChange(SessionChangeDescription)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/za79d99t(v=vs.110).aspx">ServiceBase.OnShutdown()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/39hw3bdf(v=vs.110).aspx">ServiceBase.OnStart(String[])</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zb556kzw(v=vs.110).aspx">ServiceBase.OnStop()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/4yw1h2c8(v=vs.110).aspx">ServiceBase.OnCustomCommand(Int32)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/6esb073b(v=vs.110).aspx">ServiceBase.Run(ServiceBase[])</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/tks2stkt(v=vs.110).aspx">ServiceBase.Run(ServiceBase)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms149218(v=vs.110).aspx">ServiceBase.Stop()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bw2wez51(v=vs.110).aspx">ServiceBase.AutoLog</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/xxxfw7xf(v=vs.110).aspx">ServiceBase.ExitCode</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/s5x0xwft(v=vs.110).aspx">ServiceBase.CanHandlePowerEvent</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w92b21z4(v=vs.110).aspx">ServiceBase.CanHandleSessionChangeEvent</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/wx464xh4(v=vs.110).aspx">ServiceBase.CanPauseAndContinue</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7y82fxsy(v=vs.110).aspx">ServiceBase.CanShutdown</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/1s3bex34(v=vs.110).aspx">ServiceBase.CanStop</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms149220(v=vs.110).aspx">ServiceBase.ServiceHandle</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/z8sxfb5y(v=vs.110).aspx">ServiceBase.ServiceName</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/3cc9y48w(v=vs.110).aspx">Component.Dispose()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/6szz9afc(v=vs.110).aspx">Component.GetService(Type)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/z819d1t5(v=vs.110).aspx">Component.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w2kf6w79(v=vs.110).aspx">Component.CanRaiseEvents</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/xe4ht2sc(v=vs.110).aspx">Component.Events</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/1fycyexx(v=vs.110).aspx">Component.Site</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/3c1xtx35(v=vs.110).aspx">Component.Container</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/c58hb4bw(v=vs.110).aspx">Component.DesignMode</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/adz0f023(v=vs.110).aspx">Component.Disposed</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131262(v=vs.110).aspx">MarshalByRefObject.MemberwiseClone(Boolean)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/c6y7316f(v=vs.110).aspx">MarshalByRefObject.GetLifetimeService()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zwt5tzck(v=vs.110).aspx">MarshalByRefObject.InitializeLifetimeService()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/2ch65xad(v=vs.110).aspx">MarshalByRefObject.CreateObjRef(Type)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Service</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.Service.dll</h6>
+              <h5 id="WebApplications_Utilities_Service_BaseService_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public abstract class BaseService : ServiceBase, IComponent, IDisposable</code></pre>
+              </div>
+              <h3 id="constructors">Constructors
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L178">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService__ctor_" data-uid="WebApplications.Utilities.Service.BaseService.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService__ctor_System_String_System_String_System_String_WebApplications_Utilities_Service_ServerConfig_" data-uid="WebApplications.Utilities.Service.BaseService.#ctor(System.String,System.String,System.String,WebApplications.Utilities.Service.ServerConfig)">BaseService(String, String, String, ServerConfig)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Service.BaseService.html">BaseService</a> class.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected BaseService(string name, string displayName, string description, ServerConfig serverConfiguration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">name</span></td>
+                    <td><p>The name.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">displayName</span></td>
+                    <td><p>The display name.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">description</span></td>
+                    <td><p>The description.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Service.ServerConfig.html">ServerConfig</a></td>
+                    <td><span class="parametername">serverConfiguration</span></td>
+                    <td><p>The server configuration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L204">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_AllCommandsHelpFormat" data-uid="WebApplications.Utilities.Service.BaseService.AllCommandsHelpFormat">AllCommandsHelpFormat</h4>
+              <div class="markdown level1 summary"><p>The format to use for outputting help for all commands.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly FormatBuilder AllCommandsHelpFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L247">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_AllPerformanceCategoriesFormat" data-uid="WebApplications.Utilities.Service.BaseService.AllPerformanceCategoriesFormat">AllPerformanceCategoriesFormat</h4>
+              <div class="markdown level1 summary"><p>The format for listing all performance categories.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly FormatBuilder AllPerformanceCategoriesFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L211">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_CommandHelpFormat" data-uid="WebApplications.Utilities.Service.BaseService.CommandHelpFormat">CommandHelpFormat</h4>
+              <div class="markdown level1 summary"><p>The format to use for outputting help for a single command.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly FormatBuilder CommandHelpFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L54">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_CreateSessionChangeDescription" data-uid="WebApplications.Utilities.Service.BaseService.CreateSessionChangeDescription">CreateSessionChangeDescription</h4>
+              <div class="markdown level1 summary"><p>Function for creating a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangedescription(v=vs.110).aspx">SessionChangeDescription</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly Func&lt;SessionChangeReason, int, SessionChangeDescription&gt; CreateSessionChangeDescription</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangereason(v=vs.110).aspx">SessionChangeReason</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangedescription(v=vs.110).aspx">SessionChangeDescription</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L250">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Description" data-uid="WebApplications.Utilities.Service.BaseService.Description">Description</h4>
+              <div class="markdown level1 summary"><p>The description.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public readonly string Description</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L244">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DisplayName" data-uid="WebApplications.Utilities.Service.BaseService.DisplayName">DisplayName</h4>
+              <div class="markdown level1 summary"><p>The display name.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public readonly string DisplayName</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L233">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_HelpCommandNotFoundFormat" data-uid="WebApplications.Utilities.Service.BaseService.HelpCommandNotFoundFormat">HelpCommandNotFoundFormat</h4>
+              <div class="markdown level1 summary"><p>The format to use when the command name given to the help command does not exist.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly FormatBuilder HelpCommandNotFoundFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L240">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_HelpCommandParameterNotFoundFormat" data-uid="WebApplications.Utilities.Service.BaseService.HelpCommandParameterNotFoundFormat">HelpCommandParameterNotFoundFormat</h4>
+              <div class="markdown level1 summary"><p>The format to use when the command parameter name given to the help command does not exist.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly FormatBuilder HelpCommandParameterNotFoundFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L238">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_IsService" data-uid="WebApplications.Utilities.Service.BaseService.IsService">IsService</h4>
+              <div class="markdown level1 summary"><p>Whether the service is running as a service.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public readonly bool IsService</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L222">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_ParameterHelpFormat" data-uid="WebApplications.Utilities.Service.BaseService.ParameterHelpFormat">ParameterHelpFormat</h4>
+              <div class="markdown level1 summary"><p>The format to use for outputting help for a single command.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly FormatBuilder ParameterHelpFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L254">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_PerformanceCatergoryNotFoundFormat" data-uid="WebApplications.Utilities.Service.BaseService.PerformanceCatergoryNotFoundFormat">PerformanceCatergoryNotFoundFormat</h4>
+              <div class="markdown level1 summary"><p>The format to use when the category name given to the performance command does not exist.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected static readonly FormatBuilder PerformanceCatergoryNotFoundFormat</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L256">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Service_BaseService_ServerConfiguration" data-uid="WebApplications.Utilities.Service.BaseService.ServerConfiguration">ServerConfiguration</h4>
+              <div class="markdown level1 summary"><p>The server configuration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public readonly ServerConfig ServerConfiguration</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Service.ServerConfig.html">ServerConfig</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L161">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.CancellationToken*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_CancellationToken" data-uid="WebApplications.Utilities.Service.BaseService.CancellationToken">CancellationToken</h4>
+              <div class="markdown level1 summary"><p>Gets a <a class="xref" href="WebApplications.Utilities.Service.BaseService.html#WebApplications_Utilities_Service_BaseService_CancellationToken">CancellationToken</a> that is cancelled when the service is not running.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract CancellationToken CancellationToken { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><p>A pause token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L118">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_EventLog_" data-uid="WebApplications.Utilities.Service.BaseService.EventLog*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_EventLog" data-uid="WebApplications.Utilities.Service.BaseService.EventLog">EventLog</h4>
+              <div class="markdown level1 summary"><p>Gets an event log you can use to write notification of service command calls, such as Start and Stop, to the Application event log.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override EventLog EventLog { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.diagnostics.eventlog(v=vs.110).aspx">EventLog</a></td>
+                    <td><p>The event log.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/9dybyf4e(v=vs.110).aspx">ServiceBase.EventLog</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L133">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_IsAdministrator_" data-uid="WebApplications.Utilities.Service.BaseService.IsAdministrator*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_IsAdministrator" data-uid="WebApplications.Utilities.Service.BaseService.IsAdministrator">IsAdministrator</h4>
+              <div class="markdown level1 summary"><p>Determines whether this instance is an administrator.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool IsAdministrator { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if this instance is administrator; otherwise, <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L155">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_PauseToken_" data-uid="WebApplications.Utilities.Service.BaseService.PauseToken*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_PauseToken" data-uid="WebApplications.Utilities.Service.BaseService.PauseToken">PauseToken</h4>
+              <div class="markdown level1 summary"><p>Gets a <a class="xref" href="WebApplications.Utilities.Threading.PauseToken.html">PauseToken</a> that is paused when the service is not running, or paused.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract PauseToken PauseToken { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.PauseToken.html">PauseToken</a></td>
+                    <td><p>A pause token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L102">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_State_" data-uid="WebApplications.Utilities.Service.BaseService.State*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_State" data-uid="WebApplications.Utilities.Service.BaseService.State">State</h4>
+              <div class="markdown level1 summary"><p>Gets the current state of the service.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract ServiceControllerStatus State { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.servicecontrollerstatus(v=vs.110).aspx">ServiceControllerStatus</a></td>
+                    <td><p>The state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L356">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Connect_" data-uid="WebApplications.Utilities.Service.BaseService.Connect*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Connect_WebApplications_Utilities_Service_IConnection_" data-uid="WebApplications.Utilities.Service.BaseService.Connect(WebApplications.Utilities.Service.IConnection)">Connect(IConnection)</h4>
+              <div class="markdown level1 summary"><p>Connects the specified connection.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract Guid Connect(IConnection connection)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Service.IConnection.html">IConnection</a></td>
+                    <td><span class="parametername">connection</span></td>
+                    <td><p>The connection.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><p>A connection GUID.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L136">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Continue_" data-uid="WebApplications.Utilities.Service.BaseService.Continue*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Continue_System_IO_TextWriter_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.Continue(System.IO.TextWriter,System.Threading.CancellationToken)">Continue(TextWriter, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Continues this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Continue_Names&quot;, &quot;Cmd_Continue_Description&quot;, false, 0, null)]
+public abstract Task&lt;bool&gt; Continue(TextWriter writer, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L155">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_CustomCommand_" data-uid="WebApplications.Utilities.Service.BaseService.CustomCommand*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_CustomCommand_System_IO_TextWriter_System_Int32_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.CustomCommand(System.IO.TextWriter,System.Int32,System.Threading.CancellationToken)">CustomCommand(TextWriter, Int32, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Runs the custom command on this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_CustomCommand_Names&quot;, &quot;Cmd_CustomCommand_Description&quot;, false, 0, null)]
+public abstract Task&lt;bool&gt; CustomCommand(TextWriter writer, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_CustomCommand_Command_Description&quot;)] int command, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">command</span></td>
+                    <td><p>The command.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L377">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Disconnect_" data-uid="WebApplications.Utilities.Service.BaseService.Disconnect*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Disconnect_System_Guid_" data-uid="WebApplications.Utilities.Service.BaseService.Disconnect(System.Guid)">Disconnect(Guid)</h4>
+              <div class="markdown level1 summary"><p>Disconnects the specified user interface.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract bool Disconnect(Guid id)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">id</span></td>
+                    <td><p>The connection.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if disconnected, <span class="xref">false</span> otherwise.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L310">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoContinue_" data-uid="WebApplications.Utilities.Service.BaseService.DoContinue*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoContinue" data-uid="WebApplications.Utilities.Service.BaseService.DoContinue">DoContinue()</h4>
+              <div class="markdown level1 summary"><p>When implemented in a derived class, <a class="xref" href="https://msdn.microsoft.com/en-us/library/1tex5547(v=vs.110).aspx">OnContinue()</a> runs when a Continue command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service resumes normal functioning after being paused.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void DoContinue()</code></pre>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L325">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoCustomCommand_" data-uid="WebApplications.Utilities.Service.BaseService.DoCustomCommand*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoCustomCommand_System_Int32_" data-uid="WebApplications.Utilities.Service.BaseService.DoCustomCommand(System.Int32)">DoCustomCommand(Int32)</h4>
+              <div class="markdown level1 summary"><p>When implemented in a derived class, <a class="xref" href="https://msdn.microsoft.com/en-us/library/4yw1h2c8(v=vs.110).aspx">OnCustomCommand(Int32)</a> executes when the Service Control Manager (SCM) passes a custom command to the service. Specifies actions to take when a command with the specified parameter value occurs.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void DoCustomCommand(int command)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">command</span></td>
+                    <td><p>The command message sent to the service.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L303">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoPause_" data-uid="WebApplications.Utilities.Service.BaseService.DoPause*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoPause" data-uid="WebApplications.Utilities.Service.BaseService.DoPause">DoPause()</h4>
+              <div class="markdown level1 summary"><p>When implemented in a derived class, executes when a Pause command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service pauses.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void DoPause()</code></pre>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L334">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoPowerEvent_" data-uid="WebApplications.Utilities.Service.BaseService.DoPowerEvent*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoPowerEvent_System_ServiceProcess_PowerBroadcastStatus_" data-uid="WebApplications.Utilities.Service.BaseService.DoPowerEvent(System.ServiceProcess.PowerBroadcastStatus)">DoPowerEvent(PowerBroadcastStatus)</h4>
+              <div class="markdown level1 summary"><p>When implemented in a derived class, executes when the computer&#39;s power status has changed. This applies to laptop computers when they go into suspended mode, which is not the same as a system shutdown.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual bool DoPowerEvent(PowerBroadcastStatus powerStatus)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.powerbroadcaststatus(v=vs.110).aspx">PowerBroadcastStatus</a></td>
+                    <td><span class="parametername">powerStatus</span></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.powerbroadcaststatus(v=vs.110).aspx">PowerBroadcastStatus</a> that indicates a notification from the system about its power status.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L343">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoSessionChange_" data-uid="WebApplications.Utilities.Service.BaseService.DoSessionChange*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoSessionChange_System_ServiceProcess_SessionChangeDescription_" data-uid="WebApplications.Utilities.Service.BaseService.DoSessionChange(System.ServiceProcess.SessionChangeDescription)">DoSessionChange(SessionChangeDescription)</h4>
+              <div class="markdown level1 summary"><p>Executes when a change event is received from a Terminal Server session.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void DoSessionChange(SessionChangeDescription changeDescription)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangedescription(v=vs.110).aspx">SessionChangeDescription</a></td>
+                    <td><span class="parametername">changeDescription</span></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangedescription(v=vs.110).aspx">SessionChangeDescription</a> structure that identifies the change type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L317">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoShutdown_" data-uid="WebApplications.Utilities.Service.BaseService.DoShutdown*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoShutdown" data-uid="WebApplications.Utilities.Service.BaseService.DoShutdown">DoShutdown()</h4>
+              <div class="markdown level1 summary"><p>When implemented in a derived class, executes when the system is shutting down. Specifies what should occur immediately prior to the system shutting down.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void DoShutdown()</code></pre>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L288">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoStart_" data-uid="WebApplications.Utilities.Service.BaseService.DoStart*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoStart_System_String___" data-uid="WebApplications.Utilities.Service.BaseService.DoStart(System.String[])">DoStart(String[])</h4>
+              <div class="markdown level1 summary"><p>When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void DoStart(string[] args)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>[]</td>
+                    <td><span class="parametername">args</span></td>
+                    <td><p>Data passed by the start command.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L296">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_DoStop_" data-uid="WebApplications.Utilities.Service.BaseService.DoStop*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_DoStop" data-uid="WebApplications.Utilities.Service.BaseService.DoStop">DoStop()</h4>
+              <div class="markdown level1 summary"><p>When implemented in a derived class, executes when a Stop command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service stops running.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void DoStop()</code></pre>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L365">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_ExecuteAsync_" data-uid="WebApplications.Utilities.Service.BaseService.ExecuteAsync*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_ExecuteAsync_System_Guid_System_String_System_IO_TextWriter_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.ExecuteAsync(System.Guid,System.String,System.IO.TextWriter,System.Threading.CancellationToken)">ExecuteAsync(Guid, String, TextWriter, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Executes the command line, and writes the result to the specified writer.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract Task ExecuteAsync(Guid id, string commandLine, TextWriter writer, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.guid(v=vs.110).aspx">Guid</a></td>
+                    <td><span class="parametername">id</span></td>
+                    <td><p>The identifier.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">commandLine</span></td>
+                    <td><p>The command line.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The result writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task(v=vs.110).aspx">Task</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L63">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Help_" data-uid="WebApplications.Utilities.Service.BaseService.Help*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Help_System_IO_TextWriter_System_String_System_String_" data-uid="WebApplications.Utilities.Service.BaseService.Help(System.IO.TextWriter,System.String,System.String)">Help(TextWriter, String, String)</h4>
+              <div class="markdown level1 summary"><p>Provides command help.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Help_Names&quot;, &quot;Cmd_Help_Description&quot;, false, 0, null)]
+protected abstract void Help(TextWriter writer, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_Help_Command_Description&quot;)] string command = null, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_Help_Parameter_Description&quot;)] string parameter = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">command</span></td>
+                    <td><p>Name of the command.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">parameter</span></td>
+                    <td><p>The parameter.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L77">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Install_" data-uid="WebApplications.Utilities.Service.BaseService.Install*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Install_System_IO_TextWriter_System_String_System_String_" data-uid="WebApplications.Utilities.Service.BaseService.Install(System.IO.TextWriter,System.String,System.String)">Install(TextWriter, String, String)</h4>
+              <div class="markdown level1 summary"><p>Install services.
+Sends the 
+<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangedescription(v=vs.110).aspx">SessionChangeDescription</a> to the service.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Install_Names&quot;, &quot;Cmd_Install_Description&quot;, false, 0, null)]
+public abstract void Install(TextWriter writer, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_Install_UserName_Description&quot;)] string userName = null, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_Install_Password_Description&quot;)] string password = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">userName</span></td>
+                    <td><p>The user name.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">password</span></td>
+                    <td><p>The password.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L125">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Pause_" data-uid="WebApplications.Utilities.Service.BaseService.Pause*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Pause_System_IO_TextWriter_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.Pause(System.IO.TextWriter,System.Threading.CancellationToken)">Pause(TextWriter, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Pauses this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Pause_Names&quot;, &quot;Cmd_Pause_Description&quot;, false, 0, null)]
+public abstract Task&lt;bool&gt; Pause(TextWriter writer, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L193">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Performance_" data-uid="WebApplications.Utilities.Service.BaseService.Performance*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Performance_System_IO_TextWriter_System_String_" data-uid="WebApplications.Utilities.Service.BaseService.Performance(System.IO.TextWriter,System.String)">Performance(TextWriter, String)</h4>
+              <div class="markdown level1 summary"><p>Gets the details of the performance counters loaded.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Performance_Names&quot;, &quot;Cmd_Performance_Description&quot;, true, 0, null)]
+public abstract void Performance(TextWriter writer, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_Performance_Category_Description&quot;)] string category = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">category</span></td>
+                    <td><p>The category.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L170">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_PowerEvent_" data-uid="WebApplications.Utilities.Service.BaseService.PowerEvent*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_PowerEvent_System_IO_TextWriter_System_ServiceProcess_PowerBroadcastStatus_" data-uid="WebApplications.Utilities.Service.BaseService.PowerEvent(System.IO.TextWriter,System.ServiceProcess.PowerBroadcastStatus)">PowerEvent(TextWriter, PowerBroadcastStatus)</h4>
+              <div class="markdown level1 summary"><p>Sends the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.powerbroadcaststatus(v=vs.110).aspx">PowerBroadcastStatus</a> to the service.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_PowerEvent_Names&quot;, &quot;Cmd_PowerEvent_Description&quot;, false, 0, null)]
+public abstract bool PowerEvent(TextWriter writer, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_PowerEvent_PowerStatus_Description&quot;)] PowerBroadcastStatus powerStatus)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.powerbroadcaststatus(v=vs.110).aspx">PowerBroadcastStatus</a></td>
+                    <td><span class="parametername">powerStatus</span></td>
+                    <td><p>The power status.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if failed, or the result of the call was <span class="xref">true</span>; <span class="xref">false</span> otherwise.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L262">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Run_" data-uid="WebApplications.Utilities.Service.BaseService.Run*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Run_WebApplications_Utilities_Service_RunMode_" data-uid="WebApplications.Utilities.Service.BaseService.Run(WebApplications.Utilities.Service.RunMode)">Run(RunMode)</h4>
+              <div class="markdown level1 summary"><p>Runs the service, either as a service or as a console application.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void Run(RunMode runMode = RunMode.Prompt | RunMode.Interactive | RunMode.Default)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Service.RunMode.html">RunMode</a></td>
+                    <td><span class="parametername">runMode</span></td>
+                    <td><p>The run mode.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L277">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_RunAsync_" data-uid="WebApplications.Utilities.Service.BaseService.RunAsync*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_RunAsync_WebApplications_Utilities_Service_RunMode_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.RunAsync(WebApplications.Utilities.Service.RunMode,System.Threading.CancellationToken)">RunAsync(RunMode, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Runs the service, either as a service or as a console application.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract Task RunAsync(RunMode runMode = RunMode.Prompt | RunMode.Interactive | RunMode.Default, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Service.RunMode.html">RunMode</a></td>
+                    <td><span class="parametername">runMode</span></td>
+                    <td><p>The run mode.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task(v=vs.110).aspx">Task</a></td>
+                    <td><p>An awaitable task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L181">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_SessionChange_" data-uid="WebApplications.Utilities.Service.BaseService.SessionChange*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_SessionChange_System_IO_TextWriter_System_ServiceProcess_SessionChangeReason_System_Int32_" data-uid="WebApplications.Utilities.Service.BaseService.SessionChange(System.IO.TextWriter,System.ServiceProcess.SessionChangeReason,System.Int32)">SessionChange(TextWriter, SessionChangeReason, Int32)</h4>
+              <div class="markdown level1 summary"><p>Sends the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangedescription(v=vs.110).aspx">SessionChangeDescription</a> to the service.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_SessionChange_Names&quot;, &quot;Cmd_SessionChange_Description&quot;, false, 0, null)]
+public abstract void SessionChange(TextWriter writer, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_SessionChange_ChangeReason_Description&quot;)] SessionChangeReason changeReason, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_SessionChange_SessionID_Description&quot;)] int sessionId)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.serviceprocess.sessionchangereason(v=vs.110).aspx">SessionChangeReason</a></td>
+                    <td><span class="parametername">changeReason</span></td>
+                    <td><p>The change reason.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">sessionId</span></td>
+                    <td><p>The session identifier.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L145">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Shutdown_" data-uid="WebApplications.Utilities.Service.BaseService.Shutdown*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Shutdown_System_IO_TextWriter_" data-uid="WebApplications.Utilities.Service.BaseService.Shutdown(System.IO.TextWriter)">Shutdown(TextWriter)</h4>
+              <div class="markdown level1 summary"><p>Shuts down this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Shutdown_Names&quot;, &quot;Cmd_Shutdown_Description&quot;, false, 0, null)]
+public abstract bool Shutdown(TextWriter writer)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L102">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_StartService_" data-uid="WebApplications.Utilities.Service.BaseService.StartService*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_StartService_System_IO_TextWriter_System_String___System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.StartService(System.IO.TextWriter,System.String[],System.Threading.CancellationToken)">StartService(TextWriter, String[], CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Starts this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Start_Names&quot;, &quot;Cmd_Start_Description&quot;, false, 0, null)]
+public abstract Task&lt;bool&gt; StartService(TextWriter writer, [ServiceCommandParameter(typeof (ServiceResources), &quot;Cmd_Start_Args_Description&quot;)] string[] args, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>[]</td>
+                    <td><span class="parametername">args</span></td>
+                    <td><p>The arguments.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L114">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_StopService_" data-uid="WebApplications.Utilities.Service.BaseService.StopService*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_StopService_System_IO_TextWriter_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.StopService(System.IO.TextWriter,System.Threading.CancellationToken)">StopService(TextWriter, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Stops this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Stop_Names&quot;, &quot;Cmd_Stop_Description&quot;, false, 0, null)]
+public abstract Task&lt;bool&gt; StopService(TextWriter writer, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/Commands.cs/#L89">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Service_BaseService_Uninstall_" data-uid="WebApplications.Utilities.Service.BaseService.Uninstall*"></a>
+              <h4 id="WebApplications_Utilities_Service_BaseService_Uninstall_System_IO_TextWriter_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Service.BaseService.Uninstall(System.IO.TextWriter,System.Threading.CancellationToken)">Uninstall(TextWriter, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Uninstall services.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ServiceCommand(typeof (ServiceResources), &quot;Cmd_Uninstall_Names&quot;, &quot;Cmd_Uninstall_Description&quot;, false, 0, null)]
+public abstract Task&lt;bool&gt; Uninstall(TextWriter writer, CancellationToken token = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td><p>The writer.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The token.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Service/BaseService.cs/#L55" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

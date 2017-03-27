@@ -1,0 +1,2110 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ConfigurationSection&lt;T&gt;
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ConfigurationSection&lt;T&gt;
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Configuration_ConfigurationSection_1" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1">Class ConfigurationSection&lt;T&gt;
+              </h1>
+              <div class="markdown level0 summary"><p>Represents a configuration element in a configuration file.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationelement(v=vs.110).aspx">ConfigurationElement</a></div>
+                  <div class="level2"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationsection(v=vs.110).aspx">ConfigurationSection</a></div>
+                  <div class="level3"><span class="xref">ConfigurationSection&lt;T&gt;</span></div>
+                  <div class="level4"><a class="xref" href="WebApplications.Utilities.Configuration.UtilityConfiguration.html">UtilityConfiguration</a></div>
+                  <div class="level4"><a class="xref" href="WebApplications.Utilities.Cryptography.Configuration.CryptographyConfiguration.html">CryptographyConfiguration</a></div>
+                  <div class="level4"><a class="xref" href="WebApplications.Utilities.Database.Configuration.DatabasesConfiguration.html">DatabasesConfiguration</a></div>
+                  <div class="level4"><a class="xref" href="WebApplications.Utilities.Logging.Configuration.LoggingConfiguration.html">LoggingConfiguration</a></div>
+                  <div class="level4"><a class="xref" href="WebApplications.Utilities.Performance.Configuration.PerformanceConfiguration.html">PerformanceConfiguration</a></div>
+                  <div class="level4"><a class="xref" href="WebApplications.Utilities.Scheduling.Configuration.SchedulerConfiguration.html">SchedulerConfiguration</a></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/fh19sky9(v=vs.110).aspx">ConfigurationSection.GetRuntimeObject()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms224439(v=vs.110).aspx">ConfigurationSection.SerializeSection(ConfigurationElement, String, ConfigurationSaveMode)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ee169415(v=vs.110).aspx">ConfigurationSection.ShouldSerializePropertyInTargetVersion(ConfigurationProperty, String, FrameworkName, ConfigurationElement)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642104(v=vs.110).aspx">ConfigurationSection.ShouldSerializeElementInTargetVersion(ConfigurationElement, String, FrameworkName)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642108(v=vs.110).aspx">ConfigurationSection.ShouldSerializeSectionInTargetVersion(FrameworkName)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134300(v=vs.110).aspx">ConfigurationSection.SectionInformation</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134129(v=vs.110).aspx">ConfigurationElement.IsReadOnly()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134139(v=vs.110).aspx">ConfigurationElement.SetReadOnly()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134130(v=vs.110).aspx">ConfigurationElement.ListErrors(IList)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/9kaww10k(v=vs.110).aspx">ConfigurationElement.InitializeDefault()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/cy9e8hzc(v=vs.110).aspx">ConfigurationElement.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/x2t3yh5a(v=vs.110).aspx">ConfigurationElement.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms224426(v=vs.110).aspx">ConfigurationElement.SetPropertyValue(ConfigurationProperty, Object, Boolean)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/yxcx3y27(v=vs.110).aspx">ConfigurationElement.SerializeToXmlElement(XmlWriter, String)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134126(v=vs.110).aspx">ConfigurationElement.DeserializeElement(XmlReader, Boolean)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134133(v=vs.110).aspx">ConfigurationElement.OnRequiredPropertyNotFound(String)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134134(v=vs.110).aspx">ConfigurationElement.PostDeserialize()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134135(v=vs.110).aspx">ConfigurationElement.PreSerialize(XmlWriter)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134131(v=vs.110).aspx">ConfigurationElement.OnDeserializeUnrecognizedAttribute(String, String)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642039(v=vs.110).aspx">ConfigurationElement.GetTransformedTypeString(String)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642109(v=vs.110).aspx">ConfigurationElement.GetTransformedAssemblyString(String)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134148(v=vs.110).aspx">ConfigurationElement.LockAttributes</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134146(v=vs.110).aspx">ConfigurationElement.LockAllAttributesExcept</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134149(v=vs.110).aspx">ConfigurationElement.LockElements</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134147(v=vs.110).aspx">ConfigurationElement.LockAllElementsExcept</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134150(v=vs.110).aspx">ConfigurationElement.LockItem</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/es150ftc(v=vs.110).aspx">ConfigurationElement.Item[ConfigurationProperty]</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/c8693ks1(v=vs.110).aspx">ConfigurationElement.Item[String]</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134142(v=vs.110).aspx">ConfigurationElement.ElementInformation</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134144(v=vs.110).aspx">ConfigurationElement.EvaluationContext</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134143(v=vs.110).aspx">ConfigurationElement.ElementProperty</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh136640(v=vs.110).aspx">ConfigurationElement.HasContext</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd412601(v=vs.110).aspx">ConfigurationElement.CurrentConfiguration</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Configuration</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public abstract class ConfigurationSection&lt;T&gt; : ConfigurationSection, IInternalConfigurationSection, IConfigurationSection, IDisposable, IInternalConfigurationElement, IConfigurationElement where T : ConfigurationSection&lt;T&gt;, IConfigurationElement, new ()</code></pre>
+              </div>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="constructors">Constructors
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L162">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1__ctor_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1__ctor" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.#ctor">ConfigurationSection()</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html">ConfigurationSection&lt;T&gt;</a> class.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected ConfigurationSection()</code></pre>
+              </div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>The selected value conflicts with a value that is already defined.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L219">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SectionName" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SectionName">SectionName</h4>
+              <div class="markdown level1 summary"><p>Gets the name of the configuration section.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly string SectionName</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SectionName_remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>If you do not explicitly define the section name using the <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSectionAttribute.html">ConfigurationSectionAttribute</a>
+then the name is calculated automatically from the type name using the following algorithm:</p>
+<ol><li>Take the type name.</li><li>Remove one of the following suffixes if present -
+  &#39;ConfigurationSection&#39;, &#39;Configuration&#39;, &#39;Section&#39;, &#39;Config&#39;.</li><li>Make the first character lower case (camel case).</li></ol>
+<p>For example: &#39;MyClassConfigurationSection&#39; will have a name of &#39;myClass&#39;.</p>
+</div>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L230">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Active_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Active*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Active" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Active">Active</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the active configuration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T Active { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>You cannot set the active configuration section to
+a <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_IsDisposed">IsDisposed</a> section.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>Error during initialization.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.unauthorizedaccessexception(v=vs.110).aspx">UnauthorizedAccessException</a></td>
+                    <td><p>The caller does not have the required permission. </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.ioexception(v=vs.110).aspx">IOException</a></td>
+                    <td><p>An I/O error occurs. </p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L638">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Children_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Children*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Children" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Children">Children</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IReadOnlyCollection&lt;IConfigurationElement&gt; Children { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh881542(v=vs.110).aspx">IReadOnlyCollection</a>&lt;<a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html">IConfigurationElement</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Children">IConfigurationElement.Children</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L635">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ConfigurationElementName_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ConfigurationElementName*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ConfigurationElementName" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ConfigurationElementName">ConfigurationElementName</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public string ConfigurationElementName { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_ConfigurationElementName">IConfigurationElement.ConfigurationElementName</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L954">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ElementDictionary_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ElementDictionary*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ElementDictionary" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ElementDictionary">ElementDictionary</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IReadOnlyDictionary&lt;XName, XElement&gt; ElementDictionary { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh136548(v=vs.110).aspx">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx">XElement</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_ElementDictionary">IConfigurationElement.ElementDictionary</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L931">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ElementNames_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ElementNames*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ElementNames" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ElementNames">ElementNames</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IReadOnlyCollection&lt;XName&gt; ElementNames { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh881542(v=vs.110).aspx">IReadOnlyCollection</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_ElementNames">IConfigurationElement.ElementNames</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L941">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Elements_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Elements*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Elements" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Elements">Elements</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IReadOnlyCollection&lt;XElement&gt; Elements { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh881542(v=vs.110).aspx">IReadOnlyCollection</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx">XElement</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Elements">IConfigurationElement.Elements</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L969">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ElementsClone_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ElementsClone*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ElementsClone" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ElementsClone">ElementsClone</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public Dictionary&lt;XName, string&gt; ElementsClone { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/xfhwa508(v=vs.110).aspx">Dictionary</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L527">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_FilePath_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.FilePath*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_FilePath" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.FilePath">FilePath</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public string FilePath { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationSection.html#WebApplications_Utilities_Configuration_IConfigurationSection_FilePath">IConfigurationSection.FilePath</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L632">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_FullPath_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.FullPath*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_FullPath" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.FullPath">FullPath</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public string FullPath { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_FullPath">IConfigurationElement.FullPath</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L524">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_HasFile_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.HasFile*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_HasFile" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.HasFile">HasFile</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool HasFile { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationSection.html#WebApplications_Utilities_Configuration_IConfigurationSection_HasFile">IConfigurationSection.HasFile</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L272">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_IsActive_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.IsActive*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_IsActive" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.IsActive">IsActive</h4>
+              <div class="markdown level1 summary"><p>Gets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value indicating whether this instance is the active configuration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool IsActive { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L543">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_IsDisposed_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.IsDisposed*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_IsDisposed" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.IsDisposed">IsDisposed</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool IsDisposed { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_IsDisposed">IConfigurationElement.IsDisposed</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L765">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Keys_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Keys*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Keys" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Keys">Keys</h4>
+              <div class="markdown level1 summary"><p>Gets the keys.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IEnumerable&lt;string&gt; Keys { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>&gt;</td>
+                    <td><p>The keys.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Keys">IConfigurationElement.Keys</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L613">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Parent_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Parent*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Parent" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Parent">Parent</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IConfigurationElement Parent { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html">IConfigurationElement</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Parent">IConfigurationElement.Parent</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L749">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Properties_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Properties*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Properties" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Properties">Properties</h4>
+              <div class="markdown level1 summary"><p>Gets the properties.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected IReadOnlyCollection&lt;ConfigurationProperty&gt; Properties { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh881542(v=vs.110).aspx">IReadOnlyCollection</a>&lt;<span class="xref">System.Configuration.ConfigurationProperty</span>&gt;</td>
+                    <td><p>The properties.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L777">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_PropertyValues_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.PropertyValues*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_PropertyValues" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.PropertyValues">PropertyValues</h4>
+              <div class="markdown level1 summary"><p>Gets the property values.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IReadOnlyDictionary&lt;string, object&gt; PropertyValues { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh136548(v=vs.110).aspx">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>&gt;</td>
+                    <td><p>The property values.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_PropertyValues">IConfigurationElement.PropertyValues</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L616">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Section_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Section*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Section" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Section">Section</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IConfigurationSection Section { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationSection.html">IConfigurationSection</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Section">IConfigurationElement.Section</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L771">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Values_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Values*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Values" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Values">Values</h4>
+              <div class="markdown level1 summary"><p>Gets the values.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public IEnumerable&lt;object&gt; Values { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>&gt;</td>
+                    <td><p>The values.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Values">IConfigurationElement.Values</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L282">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Xmlns_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Xmlns*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Xmlns" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Xmlns">Xmlns</h4>
+              <div class="markdown level1 summary"><p>Gets the XMLNS.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;xmlns&quot;, IsRequired = false)]
+public XNamespace Xmlns { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xnamespace(v=vs.110).aspx">XNamespace</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Xmlns_remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>This allows a configuration section to reference a specific namespace for Visual Studio intellisense support.
+Without this property, specifying a namespace on a configuration section will cause the configuration section
+to fail to load at runtime.</p>
+</div>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L195">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Create_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Create*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Create" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Create">Create()</h4>
+              <div class="markdown level1 summary"><p>Creates an instance of this section, and initializes it properly.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T Create()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html">ConfigurationSection&lt;T&gt;</a> of the correct type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>Error during initialization.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L546">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_DeserializeSection_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.DeserializeSection*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_DeserializeSection_System_Xml_XmlReader_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.DeserializeSection(System.Xml.XmlReader)">DeserializeSection(XmlReader)</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override void DeserializeSection(XmlReader reader)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.xmlreader(v=vs.110).aspx">XmlReader</a></td>
+                    <td><span class="parametername">reader</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms224434(v=vs.110).aspx">ConfigurationSection.DeserializeSection(XmlReader)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L556">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Dispose_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Dispose*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Dispose" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Dispose">Dispose()</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+              </div>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L576">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Dispose_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Dispose*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Dispose_System_Boolean_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+              <div class="markdown level1 summary"><p>Disposes the specified instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected virtual void Dispose(bool disposing)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><span class="parametername">disposing</span></td>
+                    <td><p>Whether this is disposing or finalizing.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Dispose_System_Boolean__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p><span class="paramref">disposing</span> indicates whether the method was invoked from the 
+<a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">Dispose()</a> implementation or from the finalizer. The implementation should check the
+parameter before  accessing other reference objects. Such objects should  only be accessed when the method 
+is called from the <a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">Dispose()</a> implementation (when the <span class="paramref">disposing</span> 
+parameter is equal to <span class="xref">true</span>). If the method is invoked from the finalizer
+(disposing is false), other objects should not be accessed. The reason is that objects are finalized in an 
+unpredictable order and so they, or any of their dependencies, might already have been finalized.</p>
+</div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L789">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_GetElement_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.GetElement*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_GetElement_System_Xml_Linq_XName_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.GetElement(System.Xml.Linq.XName)">GetElement(XName)</h4>
+              <div class="markdown level1 summary"><p>Gets this configuration element&#39;s child element by name.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected XElement GetElement(XName elementName)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a></td>
+                    <td><span class="parametername">elementName</span></td>
+                    <td><p>Name of the child element to retrieve.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx">XElement</a></td>
+                    <td><p>The child element; otherwise <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_GetElement_System_Xml_Linq_XName__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>This is a clone of the child element, modifying it will have no effect on the configuration.</p>
+<p>To update the configuration, use <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_SetElement_System_Xml_Linq_XName_System_Xml_Linq_XElement_">SetElement(XName, XElement)</a></p></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">elementName</span> is <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L315">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_GetOrAdd_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_GetOrAdd_System_Configuration_Configuration_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.GetOrAdd(System.Configuration.Configuration)">GetOrAdd(Configuration)</h4>
+              <div class="markdown level1 summary"><p>Gets the section from the specified configuration, or adds it.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T GetOrAdd(Configuration configuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configuration(v=vs.110).aspx">Configuration</a></td>
+                    <td><span class="parametername">configuration</span></td>
+                    <td><p>The configuration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>T.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">configuration</span> is <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>Error during initialization.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.directorynotfoundexception(v=vs.110).aspx">DirectoryNotFoundException</a></td>
+                    <td><p>The specified path is invalid (for example, it is on an unmapped drive). </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.unauthorizedaccessexception(v=vs.110).aspx">UnauthorizedAccessException</a></td>
+                    <td><p>The caller does not have the required permission. </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.ioexception(v=vs.110).aspx">IOException</a></td>
+                    <td><p>An I/O error occurs. </p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L679">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_GetProperty_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.GetProperty*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_GetProperty__1_System_String_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.GetProperty``1(System.String)">GetProperty&lt;T&gt;(String)</h4>
+              <div class="markdown level1 summary"><p>Gets the configuration property.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected T GetProperty&lt;T&gt;(string propertyName)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">propertyName</span></td>
+                    <td><p>The name of the property to get.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>The specified property, attribute or child element.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The property type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L569">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Init_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Init*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Init" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Init">Init()</h4>
+              <div class="markdown level1 summary"><p>Initializes this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override void Init()</code></pre>
+              </div>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134128(v=vs.110).aspx">ConfigurationElement.Init()</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>Invalid property type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L903">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_IsModified_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.IsModified*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_IsModified" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.IsModified">IsModified()</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override bool IsModified()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/kkza18sx(v=vs.110).aspx">ConfigurationSection.IsModified()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L393">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_LoadOrCreate_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.LoadOrCreate*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_LoadOrCreate_System_String_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.LoadOrCreate(System.String)">LoadOrCreate(String)</h4>
+              <div class="markdown level1 summary"><p>Loads the configuration section from the specified file.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T LoadOrCreate(string filename)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">filename</span></td>
+                    <td><p>The configuration file path.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>A new configuration section.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_LoadOrCreate_System_String__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>If the file does not exist, it will try to create one.</p></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>Error during initialization.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.ioexception(v=vs.110).aspx">IOException</a></td>
+                    <td><p>An I/O error occurs. </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.unauthorizedaccessexception(v=vs.110).aspx">UnauthorizedAccessException</a></td>
+                    <td><p>The caller does not have the required permission. </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.directorynotfoundexception(v=vs.110).aspx">DirectoryNotFoundException</a></td>
+                    <td><p>The specified path is invalid (for example, it is on an unmapped drive). </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentexception(v=vs.110).aspx">ArgumentException</a></td>
+                    <td><p><span class="paramref">filename</span> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <a class="xref" href="https://msdn.microsoft.com/en-us/library/94t917yh(v=vs.110).aspx">InvalidPathChars</a>. </p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L845">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_OnDeserializeUnrecognizedElement_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.OnDeserializeUnrecognizedElement*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_OnDeserializeUnrecognizedElement_System_String_System_Xml_XmlReader_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.OnDeserializeUnrecognizedElement(System.String,System.Xml.XmlReader)">OnDeserializeUnrecognizedElement(String, XmlReader)</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override bool OnDeserializeUnrecognizedElement(string elementName, XmlReader reader)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">elementName</span></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.xmlreader(v=vs.110).aspx">XmlReader</a></td>
+                    <td><span class="parametername">reader</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134132(v=vs.110).aspx">ConfigurationElement.OnDeserializeUnrecognizedElement(String, XmlReader)</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.invalidoperationexception(v=vs.110).aspx">InvalidOperationException</a></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.xmlreader(v=vs.110).aspx">XmlReader</a> is not positioned on a recognized node type.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.xmlexception(v=vs.110).aspx">XmlException</a></td>
+                    <td><p>The underlying <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.xmlreader(v=vs.110).aspx">XmlReader</a> throws an exception.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L910">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Reset_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Reset*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Reset_System_Configuration_ConfigurationElement_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Reset(System.Configuration.ConfigurationElement)">Reset(ConfigurationElement)</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override void Reset(ConfigurationElement parentElement)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationelement(v=vs.110).aspx">ConfigurationElement</a></td>
+                    <td><span class="parametername">parentElement</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134136(v=vs.110).aspx">ConfigurationElement.Reset(ConfigurationElement)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L923">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ResetModified_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ResetModified*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ResetModified" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ResetModified">ResetModified()</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override void ResetModified()</code></pre>
+              </div>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/43904a29(v=vs.110).aspx">ConfigurationSection.ResetModified()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L424">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Save_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Save*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Save_System_Configuration_ConfigurationSaveMode_System_Boolean_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Save(System.Configuration.ConfigurationSaveMode,System.Boolean)">Save(ConfigurationSaveMode, Boolean)</h4>
+              <div class="markdown level1 summary"><p>Saves the section.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public T Save(ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified, bool forceSaveAll = false)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationsavemode(v=vs.110).aspx">ConfigurationSaveMode</a></td>
+                    <td><span class="parametername">saveMode</span></td>
+                    <td><p>The save mode.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><span class="parametername">forceSaveAll</span></td>
+                    <td><p><span class="xref">true</span> to save even if the configuration was not modified.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>A new saved configuration section.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Save_System_Configuration_ConfigurationSaveMode_System_Boolean__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>After saving a configuration section it is disposed, so you must use the returned section.</p>
+</div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>The current section is not associated with a configuration.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.directorynotfoundexception(v=vs.110).aspx">DirectoryNotFoundException</a></td>
+                    <td><p>The specified path is invalid (for example, it is on an unmapped drive). </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.unauthorizedaccessexception(v=vs.110).aspx">UnauthorizedAccessException</a></td>
+                    <td><p>The caller does not have the required permission. </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.ioexception(v=vs.110).aspx">IOException</a></td>
+                    <td><p>An I/O error occurs. </p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L444">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SaveAs_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SaveAs*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SaveAs_System_String_System_Configuration_ConfigurationSaveMode_System_Boolean_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SaveAs(System.String,System.Configuration.ConfigurationSaveMode,System.Boolean)">SaveAs(String, ConfigurationSaveMode, Boolean)</h4>
+              <div class="markdown level1 summary"><p>Saves as.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public T SaveAs(string filename, ConfigurationSaveMode saveMode = ConfigurationSaveMode.Modified, bool forceSaveAll = false)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">filename</span></td>
+                    <td><p>The filename.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationsavemode(v=vs.110).aspx">ConfigurationSaveMode</a></td>
+                    <td><span class="parametername">saveMode</span></td>
+                    <td><p>The save mode.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><span class="parametername">forceSaveAll</span></td>
+                    <td><p><span class="xref">true</span> to save even if the configuration was not modified.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>A new saved configuration section.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SaveAs_System_String_System_Configuration_ConfigurationSaveMode_System_Boolean__remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>After saving a configuration section it is disposed, so you must use the returned section.</p>
+</div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>The current section is not associated with a configuration.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.directorynotfoundexception(v=vs.110).aspx">DirectoryNotFoundException</a></td>
+                    <td><p>The specified path is invalid (for example, it is on an unmapped drive). </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.unauthorizedaccessexception(v=vs.110).aspx">UnauthorizedAccessException</a></td>
+                    <td><p>The caller does not have the required permission. </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.ioexception(v=vs.110).aspx">IOException</a></td>
+                    <td><p>An I/O error occurs. </p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentexception(v=vs.110).aspx">ArgumentException</a></td>
+                    <td><p><span class="paramref">filename</span> is a zero-length string, contains only white space, or contains one or more invalid characters as defined by <a class="xref" href="https://msdn.microsoft.com/en-us/library/94t917yh(v=vs.110).aspx">InvalidPathChars</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L872">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SerializeElement_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SerializeElement*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SerializeElement_System_Xml_XmlWriter_System_Boolean_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SerializeElement(System.Xml.XmlWriter,System.Boolean)">SerializeElement(XmlWriter, Boolean)</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override bool SerializeElement(XmlWriter writer, bool serializeCollectionKey)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.xmlwriter(v=vs.110).aspx">XmlWriter</a></td>
+                    <td><span class="parametername">writer</span></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><span class="parametername">serializeCollectionKey</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134137(v=vs.110).aspx">ConfigurationElement.SerializeElement(XmlWriter, Boolean)</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>The current attribute is locked at a higher configuration level.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L811">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SetElement_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SetElement*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SetElement_System_Xml_Linq_XName_System_Xml_Linq_XElement_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SetElement(System.Xml.Linq.XName,System.Xml.Linq.XElement)">SetElement(XName, XElement)</h4>
+              <div class="markdown level1 summary"><p>Sets the configuration element&#39;s child element.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected void SetElement(XName elementName, XElement element)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a></td>
+                    <td><span class="parametername">elementName</span></td>
+                    <td><p>Name of the child element.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx">XElement</a></td>
+                    <td><span class="parametername">element</span></td>
+                    <td><p>The child element.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">elementName</span> is <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">element</span> is <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>The <span class="paramref">element</span> <a class="xref" href="https://msdn.microsoft.com/en-us/library/bb341787(v=vs.110).aspx">Name</a> doesn&#39;t match the specified <span class="paramref">elementName</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+                    <td><p>The configuration is read only.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L687">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SetProperty_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SetProperty*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_SetProperty__1_System_String___0_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.SetProperty``1(System.String,``0)">SetProperty&lt;T&gt;(String, T)</h4>
+              <div class="markdown level1 summary"><p>Sets the configuration property to the value specified.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected void SetProperty&lt;T&gt;(string propertyName, T value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">propertyName</span></td>
+                    <td><p>The name of the property to set.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The value to set.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The property type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L979">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ToString_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ToString*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ToString" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ToString">ToString()</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/Propogate Common Configuration Element Code.cs/#L891">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Unmerge_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Unmerge*"></a>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Unmerge_System_Configuration_ConfigurationElement_System_Configuration_ConfigurationElement_System_Configuration_ConfigurationSaveMode_" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Unmerge(System.Configuration.ConfigurationElement,System.Configuration.ConfigurationElement,System.Configuration.ConfigurationSaveMode)">Unmerge(ConfigurationElement, ConfigurationElement, ConfigurationSaveMode)</h4>
+              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override void Unmerge(ConfigurationElement sourceElement, ConfigurationElement parentElement, ConfigurationSaveMode saveMode)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationelement(v=vs.110).aspx">ConfigurationElement</a></td>
+                    <td><span class="parametername">sourceElement</span></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationelement(v=vs.110).aspx">ConfigurationElement</a></td>
+                    <td><span class="parametername">parentElement</span></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationsavemode(v=vs.110).aspx">ConfigurationSaveMode</a></td>
+                    <td><span class="parametername">saveMode</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms224427(v=vs.110).aspx">ConfigurationElement.Unmerge(ConfigurationElement, ConfigurationElement, ConfigurationSaveMode)</a></div>
+              <h3 id="events">Events
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L292">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ActiveChanged" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ActiveChanged">ActiveChanged</h4>
+              <div class="markdown level1 summary"><p>Occurs when the <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_Active">Active</a> ConfigurationSection is changed on disk.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static event ConfigurationSection&lt;T&gt;.ConfigurationChangedEventHandler ActiveChanged</code></pre>
+              </div>
+              <h5 class="eventType">Event Type</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.ConfigurationChangedEventHandler.html">ConfigurationSection.ConfigurationChangedEventHandler</a>&lt;&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L302">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_Changed" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.Changed">Changed</h4>
+              <div class="markdown level1 summary"><p>Occurs when the <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.html#WebApplications_Utilities_Configuration_ConfigurationSection_1_Active">Active</a> ConfigurationSection is changed on disk.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public event ConfigurationSection&lt;T&gt;.ConfigurationChangedEventHandler Changed</code></pre>
+              </div>
+              <h5 class="eventType">Event Type</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.ConfigurationChangedEventHandler.html">ConfigurationSection.ConfigurationChangedEventHandler</a>&lt;&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L297">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Configuration_ConfigurationSection_1_ConfigurationLoadError" data-uid="WebApplications.Utilities.Configuration.ConfigurationSection`1.ConfigurationLoadError">ConfigurationLoadError</h4>
+              <div class="markdown level1 summary"><p>Occurs when an error is thrown loading a configuration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static event ConfigurationSection&lt;T&gt;.ConfigurationLoadErrorEventHandler ConfigurationLoadError</code></pre>
+              </div>
+              <h5 class="eventType">Event Type</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationSection-1.ConfigurationLoadErrorEventHandler.html">ConfigurationSection.ConfigurationLoadErrorEventHandler</a>&lt;&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.ConfigurationExtensions.html#WebApplications_Utilities_ConfigurationExtensions_GetFullPath_WebApplications_Utilities_Configuration_IConfigurationElement_System_String_">ConfigurationExtensions.GetFullPath(IConfigurationElement, String)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationSection.cs/#L50" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

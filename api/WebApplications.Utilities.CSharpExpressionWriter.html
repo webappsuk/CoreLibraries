@@ -1,0 +1,1927 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CSharpExpressionWriter
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CSharpExpressionWriter
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_CSharpExpressionWriter" data-uid="WebApplications.Utilities.CSharpExpressionWriter">Class CSharpExpressionWriter
+              </h1>
+              <div class="markdown level0 summary"><p>Writes an <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a> tree to C# like code.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expressionvisitor(v=vs.110).aspx">ExpressionVisitor</a></div>
+                  <div class="level2"><span class="xref">CSharpExpressionWriter</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323929(v=vs.110).aspx">ExpressionVisitor.Visit(Expression)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324058(v=vs.110).aspx">ExpressionVisitor.Visit(ReadOnlyCollection&lt;Expression&gt;)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324100(v=vs.110).aspx">ExpressionVisitor.Visit&lt;T&gt;(ReadOnlyCollection&lt;T&gt;, Func&lt;T, T&gt;)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324027(v=vs.110).aspx">ExpressionVisitor.VisitAndConvert&lt;T&gt;(T, String)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324042(v=vs.110).aspx">ExpressionVisitor.VisitAndConvert&lt;T&gt;(ReadOnlyCollection&lt;T&gt;, String)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324067(v=vs.110).aspx">ExpressionVisitor.VisitLabelTarget(LabelTarget)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323920(v=vs.110).aspx">ExpressionVisitor.VisitMemberBinding(MemberBinding)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
+              <h5 id="WebApplications_Utilities_CSharpExpressionWriter_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public class CSharpExpressionWriter : ExpressionVisitor</code></pre>
+              </div>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2281">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_ToString_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.ToString*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_ToString" data-uid="WebApplications.Utilities.CSharpExpressionWriter.ToString">ToString()</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L60">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_ToString_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.ToString*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_ToString_System_Linq_Expressions_Expression_System_Boolean_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.ToString(System.Linq.Expressions.Expression,System.Boolean)">ToString(Expression, Boolean)</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents the <span class="paramref">expression</span> given.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static string ToString(Expression expression, bool fullTypeNames = false)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><span class="parametername">expression</span></td>
+                    <td><p>The expression.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><span class="parametername">fullTypeNames</span></td>
+                    <td><p>if set to <span class="xref">true</span> type names will be fully qualified.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents the <span class="paramref">expression</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L713">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitBinary_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitBinary*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitBinary_System_Linq_Expressions_BinaryExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitBinary(System.Linq.Expressions.BinaryExpression)">VisitBinary(BinaryExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.binaryexpression(v=vs.110).aspx">BinaryExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitBinary(BinaryExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.binaryexpression(v=vs.110).aspx">BinaryExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324046(v=vs.110).aspx">ExpressionVisitor.VisitBinary(BinaryExpression)</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.notimplementedexception(v=vs.110).aspx">NotImplementedException</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L900">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitBlock_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitBlock*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitBlock_System_Linq_Expressions_BlockExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitBlock(System.Linq.Expressions.BlockExpression)">VisitBlock(BlockExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.blockexpression(v=vs.110).aspx">BlockExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitBlock(BlockExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.blockexpression(v=vs.110).aspx">BlockExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323996(v=vs.110).aspx">ExpressionVisitor.VisitBlock(BlockExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1933">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitCatchBlock_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitCatchBlock*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitCatchBlock_System_Linq_Expressions_CatchBlock_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitCatchBlock(System.Linq.Expressions.CatchBlock)">VisitCatchBlock(CatchBlock)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.catchblock(v=vs.110).aspx">CatchBlock</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override CatchBlock VisitCatchBlock(CatchBlock node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.catchblock(v=vs.110).aspx">CatchBlock</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.catchblock(v=vs.110).aspx">CatchBlock</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324115(v=vs.110).aspx">ExpressionVisitor.VisitCatchBlock(CatchBlock)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L974">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitConditional_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitConditional*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitConditional_System_Linq_Expressions_ConditionalExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitConditional(System.Linq.Expressions.ConditionalExpression)">VisitConditional(ConditionalExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.conditionalexpression(v=vs.110).aspx">ConditionalExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitConditional(ConditionalExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.conditionalexpression(v=vs.110).aspx">ConditionalExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323943(v=vs.110).aspx">ExpressionVisitor.VisitConditional(ConditionalExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1043">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitConstant_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitConstant*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitConstant_System_Linq_Expressions_ConstantExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitConstant(System.Linq.Expressions.ConstantExpression)">VisitConstant(ConstantExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.constantexpression(v=vs.110).aspx">ConstantExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitConstant(ConstantExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.constantexpression(v=vs.110).aspx">ConstantExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324096(v=vs.110).aspx">ExpressionVisitor.VisitConstant(ConstantExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1058">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitDebugInfo_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitDebugInfo*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitDebugInfo_System_Linq_Expressions_DebugInfoExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitDebugInfo(System.Linq.Expressions.DebugInfoExpression)">VisitDebugInfo(DebugInfoExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.debuginfoexpression(v=vs.110).aspx">DebugInfoExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitDebugInfo(DebugInfoExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.debuginfoexpression(v=vs.110).aspx">DebugInfoExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd402770(v=vs.110).aspx">ExpressionVisitor.VisitDebugInfo(DebugInfoExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1245">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitDefault_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitDefault*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitDefault_System_Linq_Expressions_DefaultExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitDefault(System.Linq.Expressions.DefaultExpression)">VisitDefault(DefaultExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.defaultexpression(v=vs.110).aspx">DefaultExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitDefault(DefaultExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.defaultexpression(v=vs.110).aspx">DefaultExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324053(v=vs.110).aspx">ExpressionVisitor.VisitDefault(DefaultExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1081">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitDynamic_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitDynamic*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitDynamic_System_Linq_Expressions_DynamicExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitDynamic(System.Linq.Expressions.DynamicExpression)">VisitDynamic(DynamicExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.dynamicexpression(v=vs.110).aspx">DynamicExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitDynamic(DynamicExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.dynamicexpression(v=vs.110).aspx">DynamicExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323964(v=vs.110).aspx">ExpressionVisitor.VisitDynamic(DynamicExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2180">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitElementInit_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitElementInit*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitElementInit_System_Linq_Expressions_ElementInit_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitElementInit(System.Linq.Expressions.ElementInit)">VisitElementInit(ElementInit)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.elementinit(v=vs.110).aspx">ElementInit</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override ElementInit VisitElementInit(ElementInit node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.elementinit(v=vs.110).aspx">ElementInit</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.elementinit(v=vs.110).aspx">ElementInit</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323959(v=vs.110).aspx">ExpressionVisitor.VisitElementInit(ElementInit)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1260">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitExtension_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitExtension*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitExtension_System_Linq_Expressions_Expression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitExtension(System.Linq.Expressions.Expression)">VisitExtension(Expression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the extension expression.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitExtension(Expression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323938(v=vs.110).aspx">ExpressionVisitor.VisitExtension(Expression)</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.invalidoperationexception(v=vs.110).aspx">InvalidOperationException</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1279">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitGoto_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitGoto*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitGoto_System_Linq_Expressions_GotoExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitGoto(System.Linq.Expressions.GotoExpression)">VisitGoto(GotoExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.gotoexpression(v=vs.110).aspx">GotoExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitGoto(GotoExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.gotoexpression(v=vs.110).aspx">GotoExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323978(v=vs.110).aspx">ExpressionVisitor.VisitGoto(GotoExpression)</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.notsupportedexception(v=vs.110).aspx">NotSupportedException</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1513">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitIndex_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitIndex*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitIndex_System_Linq_Expressions_IndexExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitIndex(System.Linq.Expressions.IndexExpression)">VisitIndex(IndexExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.indexexpression(v=vs.110).aspx">IndexExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitIndex(IndexExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.indexexpression(v=vs.110).aspx">IndexExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323933(v=vs.110).aspx">ExpressionVisitor.VisitIndex(IndexExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1315">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitInvocation_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitInvocation*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitInvocation_System_Linq_Expressions_InvocationExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitInvocation(System.Linq.Expressions.InvocationExpression)">VisitInvocation(InvocationExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.invocationexpression(v=vs.110).aspx">InvocationExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitInvocation(InvocationExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.invocationexpression(v=vs.110).aspx">InvocationExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324010(v=vs.110).aspx">ExpressionVisitor.VisitInvocation(InvocationExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1337">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitLabel_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitLabel*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitLabel_System_Linq_Expressions_LabelExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitLabel(System.Linq.Expressions.LabelExpression)">VisitLabel(LabelExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.labelexpression(v=vs.110).aspx">LabelExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitLabel(LabelExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.labelexpression(v=vs.110).aspx">LabelExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323906(v=vs.110).aspx">ExpressionVisitor.VisitLabel(LabelExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1360">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitLambda_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitLambda*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitLambda__1_System_Linq_Expressions_Expression___0__" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitLambda``1(System.Linq.Expressions.Expression{``0})">VisitLambda&lt;T&gt;(Expression&lt;T&gt;)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/bb335710(v=vs.110).aspx">Expression&lt;TDelegate&gt;</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitLambda&lt;T&gt;(Expression&lt;T&gt; node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb335710(v=vs.110).aspx">Expression</a>&lt;T&gt;</td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the delegate.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><span class="xref">System.Linq.Expressions.ExpressionVisitor.VisitLambda&lt;T&gt;(System.Linq.Expressions.Expression&lt;T&gt;)</span></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2148">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitListInit_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitListInit*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitListInit_System_Linq_Expressions_ListInitExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitListInit(System.Linq.Expressions.ListInitExpression)">VisitListInit(ListInitExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.listinitexpression(v=vs.110).aspx">ListInitExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitListInit(ListInitExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.listinitexpression(v=vs.110).aspx">ListInitExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324106(v=vs.110).aspx">ExpressionVisitor.VisitListInit(ListInitExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1463">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitLoop_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitLoop*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitLoop_System_Linq_Expressions_LoopExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitLoop(System.Linq.Expressions.LoopExpression)">VisitLoop(LoopExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.loopexpression(v=vs.110).aspx">LoopExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitLoop(LoopExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.loopexpression(v=vs.110).aspx">LoopExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323983(v=vs.110).aspx">ExpressionVisitor.VisitLoop(LoopExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1495">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitMember_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMember*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitMember_System_Linq_Expressions_MemberExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMember(System.Linq.Expressions.MemberExpression)">VisitMember(MemberExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberexpression(v=vs.110).aspx">MemberExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitMember(MemberExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberexpression(v=vs.110).aspx">MemberExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd402768(v=vs.110).aspx">ExpressionVisitor.VisitMember(MemberExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2206">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberAssignment_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberAssignment*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberAssignment_System_Linq_Expressions_MemberAssignment_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberAssignment(System.Linq.Expressions.MemberAssignment)">VisitMemberAssignment(MemberAssignment)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberassignment(v=vs.110).aspx">MemberAssignment</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberassignment(v=vs.110).aspx">MemberAssignment</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberassignment(v=vs.110).aspx">MemberAssignment</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd402794(v=vs.110).aspx">ExpressionVisitor.VisitMemberAssignment(MemberAssignment)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2116">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberInit_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberInit*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberInit_System_Linq_Expressions_MemberInitExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberInit(System.Linq.Expressions.MemberInitExpression)">VisitMemberInit(MemberInitExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberinitexpression(v=vs.110).aspx">MemberInitExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitMemberInit(MemberInitExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberinitexpression(v=vs.110).aspx">MemberInitExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323891(v=vs.110).aspx">ExpressionVisitor.VisitMemberInit(MemberInitExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2252">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberListBinding_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberListBinding*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberListBinding_System_Linq_Expressions_MemberListBinding_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberListBinding(System.Linq.Expressions.MemberListBinding)">VisitMemberListBinding(MemberListBinding)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberlistbinding(v=vs.110).aspx">MemberListBinding</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberlistbinding(v=vs.110).aspx">MemberListBinding</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.memberlistbinding(v=vs.110).aspx">MemberListBinding</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324109(v=vs.110).aspx">ExpressionVisitor.VisitMemberListBinding(MemberListBinding)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2222">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberMemberBinding_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberMemberBinding*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitMemberMemberBinding_System_Linq_Expressions_MemberMemberBinding_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMemberMemberBinding(System.Linq.Expressions.MemberMemberBinding)">VisitMemberMemberBinding(MemberMemberBinding)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.membermemberbinding(v=vs.110).aspx">MemberMemberBinding</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.membermemberbinding(v=vs.110).aspx">MemberMemberBinding</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.membermemberbinding(v=vs.110).aspx">MemberMemberBinding</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd402789(v=vs.110).aspx">ExpressionVisitor.VisitMemberMemberBinding(MemberMemberBinding)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1541">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitMethodCall_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMethodCall*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitMethodCall_System_Linq_Expressions_MethodCallExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitMethodCall(System.Linq.Expressions.MethodCallExpression)">VisitMethodCall(MethodCallExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.methodcallexpression(v=vs.110).aspx">MethodCallExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitMethodCall(MethodCallExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.methodcallexpression(v=vs.110).aspx">MethodCallExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323893(v=vs.110).aspx">ExpressionVisitor.VisitMethodCall(MethodCallExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1715">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitNew_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitNew*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitNew_System_Linq_Expressions_NewExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitNew(System.Linq.Expressions.NewExpression)">VisitNew(NewExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.newexpression(v=vs.110).aspx">NewExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitNew(NewExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.newexpression(v=vs.110).aspx">NewExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323916(v=vs.110).aspx">ExpressionVisitor.VisitNew(NewExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1677">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitNewArray_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitNewArray*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitNewArray_System_Linq_Expressions_NewArrayExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitNewArray(System.Linq.Expressions.NewArrayExpression)">VisitNewArray(NewArrayExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.newarrayexpression(v=vs.110).aspx">NewArrayExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitNewArray(NewArrayExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.newarrayexpression(v=vs.110).aspx">NewArrayExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323960(v=vs.110).aspx">ExpressionVisitor.VisitNewArray(NewArrayExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1737">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitParameter_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitParameter*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitParameter_System_Linq_Expressions_ParameterExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitParameter(System.Linq.Expressions.ParameterExpression)">VisitParameter(ParameterExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.parameterexpression(v=vs.110).aspx">ParameterExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitParameter(ParameterExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.parameterexpression(v=vs.110).aspx">ParameterExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd402797(v=vs.110).aspx">ExpressionVisitor.VisitParameter(ParameterExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1751">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitRuntimeVariables_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitRuntimeVariables*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitRuntimeVariables_System_Linq_Expressions_RuntimeVariablesExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitRuntimeVariables(System.Linq.Expressions.RuntimeVariablesExpression)">VisitRuntimeVariables(RuntimeVariablesExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.runtimevariablesexpression(v=vs.110).aspx">RuntimeVariablesExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.runtimevariablesexpression(v=vs.110).aspx">RuntimeVariablesExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323884(v=vs.110).aspx">ExpressionVisitor.VisitRuntimeVariables(RuntimeVariablesExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1818">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitSwitch_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitSwitch*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitSwitch_System_Linq_Expressions_SwitchExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitSwitch(System.Linq.Expressions.SwitchExpression)">VisitSwitch(SwitchExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.switchexpression(v=vs.110).aspx">SwitchExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitSwitch(SwitchExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.switchexpression(v=vs.110).aspx">SwitchExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd402760(v=vs.110).aspx">ExpressionVisitor.VisitSwitch(SwitchExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1765">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitSwitchCase_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitSwitchCase*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitSwitchCase_System_Linq_Expressions_SwitchCase_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitSwitchCase(System.Linq.Expressions.SwitchCase)">VisitSwitchCase(SwitchCase)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.switchcase(v=vs.110).aspx">SwitchCase</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override SwitchCase VisitSwitchCase(SwitchCase node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.switchcase(v=vs.110).aspx">SwitchCase</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.switchcase(v=vs.110).aspx">SwitchCase</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd323972(v=vs.110).aspx">ExpressionVisitor.VisitSwitchCase(SwitchCase)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1875">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitTry_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitTry*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitTry_System_Linq_Expressions_TryExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitTry(System.Linq.Expressions.TryExpression)">VisitTry(TryExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.tryexpression(v=vs.110).aspx">TryExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitTry(TryExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.tryexpression(v=vs.110).aspx">TryExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd402754(v=vs.110).aspx">ExpressionVisitor.VisitTry(TryExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L1983">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitTypeBinary_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitTypeBinary*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitTypeBinary_System_Linq_Expressions_TypeBinaryExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitTypeBinary(System.Linq.Expressions.TypeBinaryExpression)">VisitTypeBinary(TypeBinaryExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.typebinaryexpression(v=vs.110).aspx">TypeBinaryExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitTypeBinary(TypeBinaryExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.typebinaryexpression(v=vs.110).aspx">TypeBinaryExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324021(v=vs.110).aspx">ExpressionVisitor.VisitTypeBinary(TypeBinaryExpression)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L2015">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_CSharpExpressionWriter_VisitUnary_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitUnary*"></a>
+              <h4 id="WebApplications_Utilities_CSharpExpressionWriter_VisitUnary_System_Linq_Expressions_UnaryExpression_" data-uid="WebApplications.Utilities.CSharpExpressionWriter.VisitUnary(System.Linq.Expressions.UnaryExpression)">VisitUnary(UnaryExpression)</h4>
+              <div class="markdown level1 summary"><p>Visits the children of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.unaryexpression(v=vs.110).aspx">UnaryExpression</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected override Expression VisitUnary(UnaryExpression node)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.unaryexpression(v=vs.110).aspx">UnaryExpression</a></td>
+                    <td><span class="parametername">node</span></td>
+                    <td><p>The expression to visit.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.linq.expressions.expression(v=vs.110).aspx">Expression</a></td>
+                    <td><p>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd324066(v=vs.110).aspx">ExpressionVisitor.VisitUnary(UnaryExpression)</a></div>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/CSharpExpressionWriter.cs/#L46" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

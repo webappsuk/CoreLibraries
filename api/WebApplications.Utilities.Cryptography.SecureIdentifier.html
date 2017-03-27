@@ -1,0 +1,1211 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class SecureIdentifier
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class SecureIdentifier
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Cryptography_SecureIdentifier" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier">Class SecureIdentifier
+              </h1>
+              <div class="markdown level0 summary"><p>A secure identifier that can be used safely in URLs, file names, etc. (as it&#39;s base32 encoded) and can be more
+secure than a GUID as it uses a cryptographically secure random number generator.  It also has a built in hash 
+to ensure only certain identifiers are valid, making it capable of rejecting invalid identifiers (for example
+during a DDOS attack).</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><span class="xref">SecureIdentifier</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Cryptography</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.Cryptography.dll</h6>
+              <h5 id="WebApplications_Utilities_Cryptography_SecureIdentifier_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public class SecureIdentifier : IComparable&lt;SecureIdentifier&gt;, IEquatable&lt;SecureIdentifier&gt;</code></pre>
+              </div>
+              <h3 id="constructors">Constructors
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L165">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier__ctor_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier__ctor_System_Byte_System_Collections_Generic_IReadOnlyList_System_Char__" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.#ctor(System.Byte,System.Collections.Generic.IReadOnlyList{System.Char})">SecureIdentifier(Byte, IReadOnlyList&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a> class.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public SecureIdentifier(byte length = 0, IReadOnlyList&lt;char&gt; digits = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><span class="parametername">length</span></td>
+                    <td><p>The length.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits used for base32 encoding/decoding.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L51">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_MinLength" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.MinLength">MinLength</h4>
+              <div class="markdown level1 summary"><p>The minimum length.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public const byte MinLength = 12</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L108">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_DefaultComparer_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.DefaultComparer*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_DefaultComparer" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.DefaultComparer">DefaultComparer</h4>
+              <div class="markdown level1 summary"><p>Gets the default comparer for base32 decoding.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static IEqualityComparer&lt;char&gt; DefaultComparer { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><p>The default comparer.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L87">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_DefaultDigits_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.DefaultDigits*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_DefaultDigits" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.DefaultDigits">DefaultDigits</h4>
+              <div class="markdown level1 summary"><p>Gets the default digits for base32 encoding/decoding.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static IReadOnlyList&lt;char&gt; DefaultDigits { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><p>The default digits.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L72">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_DefaultSize_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.DefaultSize*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_DefaultSize" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.DefaultSize">DefaultSize</h4>
+              <div class="markdown level1 summary"><p>Gets the default size.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static byte DefaultSize { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a></td>
+                    <td><p>The default size.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L352">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_CompareTo_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.CompareTo*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_CompareTo_System_Object_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.CompareTo(System.Object)">CompareTo(Object)</h4>
+              <div class="markdown level1 summary"><p>Compares this SecureIdentifier to an object, which will be cast to a SecureIdentifier during the comparision.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public int CompareTo(object other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">other</span></td>
+                    <td><p>The other.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L363">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_CompareTo_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.CompareTo*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_CompareTo_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.CompareTo(WebApplications.Utilities.Cryptography.SecureIdentifier)">CompareTo(SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Compares this SecureIdentifier to another.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public int CompareTo(SecureIdentifier other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">other</span></td>
+                    <td><p>The other.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/43hc6wht(v=vs.110).aspx">IComparable&lt;T&gt;.CompareTo(T)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L318">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_Equals_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.Equals*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_Equals_System_Object_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.Equals(System.Object)">Equals(Object)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>, is equal to this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> to compare with this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><code>true</code> if the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance; otherwise, <code>false</code>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L303">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_Equals_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.Equals*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_Equals_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.Equals(WebApplications.Utilities.Cryptography.SecureIdentifier)">Equals(SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Equalses the specified other.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool Equals(SecureIdentifier other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">other</span></td>
+                    <td><p>The other.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131190(v=vs.110).aspx">IEquatable&lt;T&gt;.Equals(T)</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.notimplementedexception(v=vs.110).aspx">NotImplementedException</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L428">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_GetHashCode_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.GetHashCode*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_GetHashCode" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.GetHashCode">GetHashCode()</h4>
+              <div class="markdown level1 summary"><p>Returns a hash code for this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. </p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L228">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_Parse_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.Parse*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_Parse_System_String_System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.Parse(System.String,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">Parse(String, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Parses the specified value as a <a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static SecureIdentifier Parse(string value, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The value to parse.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits used for base32 encoding/decoding.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer used for base32 decoding (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><p>SecureIdentifier.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptographicexception(v=vs.110).aspx">CryptographicException</a></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptographicexception(v=vs.110).aspx">CryptographicException</a></td>
+                    <td><p>The secure identifier is invalid</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentexception(v=vs.110).aspx">ArgumentException</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L295">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_ToString_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.ToString*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_ToString" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.ToString">ToString()</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L248">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_TryParse_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.TryParse*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_TryParse_System_String_WebApplications_Utilities_Cryptography_SecureIdentifier__System_Collections_Generic_IReadOnlyList_System_Char__System_Collections_Generic_IEqualityComparer_System_Char__" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.TryParse(System.String,WebApplications.Utilities.Cryptography.SecureIdentifier@,System.Collections.Generic.IReadOnlyList{System.Char},System.Collections.Generic.IEqualityComparer{System.Char})">TryParse(String, out SecureIdentifier, IReadOnlyList&lt;Char&gt;, IEqualityComparer&lt;Char&gt;)</h4>
+              <div class="markdown level1 summary"><p>Tries the parse.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static bool TryParse(string value, out SecureIdentifier result, IReadOnlyList&lt;char&gt; digits = null, IEqualityComparer&lt;char&gt; comparer = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The value.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">result</span></td>
+                    <td><p>The result. Out.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh192385(v=vs.110).aspx">IReadOnlyList</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">digits</span></td>
+                    <td><p>The digits used for base32 encoding/decoding.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms132151(v=vs.110).aspx">IEqualityComparer</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+                    <td><span class="parametername">comparer</span></td>
+                    <td><p>The character comparer used for base32 decoding (defaults to <a class="xref" href="WebApplications.Utilities.CharComparer.html#WebApplications_Utilities_CharComparer_Ordinal">Ordinal</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the <a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a> was parsed, <span class="xref">false</span> otherwise.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="operators">Operators
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L331">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Equality_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Equality*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Equality_WebApplications_Utilities_Cryptography_SecureIdentifier_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Equality(WebApplications.Utilities.Cryptography.SecureIdentifier,WebApplications.Utilities.Cryptography.SecureIdentifier)">Equality(SecureIdentifier, SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator ==.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator ==(SecureIdentifier left, SecureIdentifier right)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">left</span></td>
+                    <td><p>The left.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">right</span></td>
+                    <td><p>The right.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L404">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_GreaterThan_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_GreaterThan*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_GreaterThan_WebApplications_Utilities_Cryptography_SecureIdentifier_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_GreaterThan(WebApplications.Utilities.Cryptography.SecureIdentifier,WebApplications.Utilities.Cryptography.SecureIdentifier)">GreaterThan(SecureIdentifier, SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &gt;.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator&gt;(SecureIdentifier left, SecureIdentifier right)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">left</span></td>
+                    <td><p>The left.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">right</span></td>
+                    <td><p>The right.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L379">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_GreaterThanOrEqual_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_GreaterThanOrEqual*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_GreaterThanOrEqual_WebApplications_Utilities_Cryptography_SecureIdentifier_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_GreaterThanOrEqual(WebApplications.Utilities.Cryptography.SecureIdentifier,WebApplications.Utilities.Cryptography.SecureIdentifier)">GreaterThanOrEqual(SecureIdentifier, SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &gt;=.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator &gt;=(SecureIdentifier left, SecureIdentifier right)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">left</span></td>
+                    <td><p>The left.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">right</span></td>
+                    <td><p>The right.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L448">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Implicit_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Implicit*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Implicit_System_String__WebApplications_Utilities_Cryptography_SecureIdentifier" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Implicit(System.String)~WebApplications.Utilities.Cryptography.SecureIdentifier">Implicit(String to SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator explicit SecureIdentifier.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static implicit operator SecureIdentifier(string value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The value.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L437">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Implicit_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Implicit*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Implicit_WebApplications_Utilities_Cryptography_SecureIdentifier__System_String" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Implicit(WebApplications.Utilities.Cryptography.SecureIdentifier)~System.String">Implicit(SecureIdentifier to String)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator implicit string.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static implicit operator string (SecureIdentifier secureIdentifier)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">secureIdentifier</span></td>
+                    <td><p>The secure identifier.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L342">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Inequality_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Inequality*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_Inequality_WebApplications_Utilities_Cryptography_SecureIdentifier_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_Inequality(WebApplications.Utilities.Cryptography.SecureIdentifier,WebApplications.Utilities.Cryptography.SecureIdentifier)">Inequality(SecureIdentifier, SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator !=.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator !=(SecureIdentifier left, SecureIdentifier right)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">left</span></td>
+                    <td><p>The left.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">right</span></td>
+                    <td><p>The right.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L417">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_LessThan_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_LessThan*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_LessThan_WebApplications_Utilities_Cryptography_SecureIdentifier_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_LessThan(WebApplications.Utilities.Cryptography.SecureIdentifier,WebApplications.Utilities.Cryptography.SecureIdentifier)">LessThan(SecureIdentifier, SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &lt;.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator &lt;(SecureIdentifier left, SecureIdentifier right)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">left</span></td>
+                    <td><p>The left.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">right</span></td>
+                    <td><p>The right.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L391">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_LessThanOrEqual_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_LessThanOrEqual*"></a>
+              <h4 id="WebApplications_Utilities_Cryptography_SecureIdentifier_op_LessThanOrEqual_WebApplications_Utilities_Cryptography_SecureIdentifier_WebApplications_Utilities_Cryptography_SecureIdentifier_" data-uid="WebApplications.Utilities.Cryptography.SecureIdentifier.op_LessThanOrEqual(WebApplications.Utilities.Cryptography.SecureIdentifier,WebApplications.Utilities.Cryptography.SecureIdentifier)">LessThanOrEqual(SecureIdentifier, SecureIdentifier)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator &lt;=.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator &lt;=(SecureIdentifier left, SecureIdentifier right)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">left</span></td>
+                    <td><p>The left.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Cryptography.SecureIdentifier.html">SecureIdentifier</a></td>
+                    <td><span class="parametername">right</span></td>
+                    <td><p>The right.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>The result of the operator.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/SecureIdentifier.cs/#L44" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
