@@ -89,11 +89,11 @@ if ($LastExitCode -ne 0) {
 
 if (Test-Path "$docOutPath") {
     # Clear existing documentation
-    #Remove-Item "$docOutPath\*" -Recurse
+    Remove-Item "$docOutPath\*" -Recurse
 }
 
 # Finally confirmed all packages required to build docs
-#docfx "$_cd\docfx.json"
+docfx "$_cd\docfx.json"
 
 if ($LastExitCode -ne 0) {
     Write-Host ''
