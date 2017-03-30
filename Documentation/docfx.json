@@ -1,0 +1,71 @@
+﻿{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "**/**.csproj"
+          ],
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/*.Test.csproj"
+          ],
+          "cwd": "../"
+        }
+      ],
+      "dest": "obj/api",
+      "filter": "filterConfig.yml"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.yml"
+        ],
+        "cwd": "obj/api",
+        "dest": "api"
+      },
+      {
+        "files": [
+          "articles/**/*.{md,yml}",
+          "*.{md,yml}",
+          "toc.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**",
+          "articles/images/**"
+        ]
+      }
+    ],
+    "xref": [
+      "./packages/msdn.4.5.2.0.1.0-alpha-1611021200/content/msdn.4.5.2.zip",
+      "./packages/msdn.4.5.2.0.1.0-alpha-1611021200/content/namespaces.4.5.2.zip",
+      "http://nodatime.org/1.3.x.xrefmap.yml"
+    ],
+    "overwrite" : "specs/*.md",
+    "dest": "_site",
+    "globalMetadata": {
+      "_appTitle": "Web Applications UK Core Libraries Documentation",
+      "_appFaviconPath": "images/favicon.ico",
+      "_appLogoPath": "images/logo.svg",
+      "_enableSearch": true,
+      "_disableContribution": false,
+      "_appFooter": "© Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED"
+    },
+    "fileMetadata": {
+      "_disableBreadcrumb": {
+        "index.md": true
+      }
+    },
+    "template": [
+      "default",
+      "template"
+    ]
+  }
+}
