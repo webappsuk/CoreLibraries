@@ -1,0 +1,1450 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CancelableTask&lt;TResult&gt;
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CancelableTask&lt;TResult&gt;
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Threading_CancelableTask_1" data-uid="WebApplications.Utilities.Threading.CancelableTask`1">Class CancelableTask&lt;TResult&gt;
+              </h1>
+              <div class="markdown level0 summary"><p>Allows cancellation of a task.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><span class="xref">CancelableTask&lt;TResult&gt;</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Threading</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
+              <h5 id="WebApplications_Utilities_Threading_CancelableTask_1_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public class CancelableTask&lt;TResult&gt; : ICancelableTask, IDisposable</code></pre>
+              </div>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">TResult</span></td>
+                    <td><p>The type the task returns.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="constructors">Constructors
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L882">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1__ctor_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1__ctor_System_Func_System_Threading_CancellationToken__0__System_Threading_CancellationToken_System_Threading_Tasks_TaskCreationOptions_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.#ctor(System.Func{System.Threading.CancellationToken,`0},System.Threading.CancellationToken,System.Threading.Tasks.TaskCreationOptions)">CancelableTask(Func&lt;CancellationToken, TResult&gt;, CancellationToken, TaskCreationOptions)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask&lt;TResult&gt;</a> class.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CancelableTask(Func&lt;CancellationToken, TResult&gt; function, CancellationToken token = null, TaskCreationOptions creationOptions = TaskCreationOptions.None)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>, TResult&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The delegate that represents the code to execute in the task.
+When the function has completed, the task&#39;s Result property will be set to return the result value of the function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> that the new task will observe.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcreationoptions(v=vs.110).aspx">TaskCreationOptions</a></td>
+                    <td><span class="parametername">creationOptions</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcreationoptions(v=vs.110).aspx">TaskCreationOptions</a> used to customize the task&#39;s behavior.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L897">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1__ctor_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1__ctor_System_Func_System_Threading_CancellationToken_System_Threading_Tasks_Task__0___System_Threading_CancellationToken_System_Threading_Tasks_TaskCreationOptions_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.#ctor(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task{`0}},System.Threading.CancellationToken,System.Threading.Tasks.TaskCreationOptions)">CancelableTask(Func&lt;CancellationToken, Task&lt;TResult&gt;&gt;, CancellationToken, TaskCreationOptions)</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask&lt;TResult&gt;</a> class.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CancelableTask(Func&lt;CancellationToken, Task&lt;TResult&gt;&gt; function, CancellationToken token = null, TaskCreationOptions creationOptions = TaskCreationOptions.None)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;TResult&gt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The delegate that represents the code to execute in the task.
+When the function has completed, the task&#39;s Result property will be set to return the result value of the function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> that the new task will observe.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcreationoptions(v=vs.110).aspx">TaskCreationOptions</a></td>
+                    <td><span class="parametername">creationOptions</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcreationoptions(v=vs.110).aspx">TaskCreationOptions</a> used to customize the task&#39;s behavior.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L653">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Cancelled" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Cancelled">Cancelled</h4>
+              <div class="markdown level1 summary"><p>The cancelled task.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly CancelableTask&lt;TResult&gt; Cancelled</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L645">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Default" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Default">Default</h4>
+              <div class="markdown level1 summary"><p>A cancelable task that returns the <span class="xref">langword_csharp_default</span> value for the type <span class="typeparamref">TResult</span>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly CancelableTask&lt;TResult&gt; Default</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L768">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Exception_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Exception*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Exception" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Exception">Exception</h4>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html#WebApplications_Utilities_Threading_CancelableTask_1_Exception">Exception</a> that caused the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> to end prematurely. 
+If the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> completed successfully or has not yet thrown any exceptions, this will return <span class="xref">null</span>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public Exception Exception { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.exception(v=vs.110).aspx">Exception</a></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html#WebApplications_Utilities_Threading_CancelableTask_1_Exception">Exception</a> that caused the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> to end prematurely.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Exception">ICancelableTask.Exception</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L723">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_IsCanceled_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.IsCanceled*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_IsCanceled" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.IsCanceled">IsCanceled</h4>
+              <div class="markdown level1 summary"><p>Gets whether this <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> instance has completed execution due to being canceled.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool IsCanceled { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the task has completed due to being canceled; otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_IsCanceled">ICancelableTask.IsCanceled</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L734">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_IsCompleted_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.IsCompleted*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_IsCompleted" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.IsCompleted">IsCompleted</h4>
+              <div class="markdown level1 summary"><p>Gets whether this <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> has completed.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool IsCompleted { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the task has completed; otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_IsCompleted">ICancelableTask.IsCompleted</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L745">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_IsFaulted_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.IsFaulted*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_IsFaulted" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.IsFaulted">IsFaulted</h4>
+              <div class="markdown level1 summary"><p>Gets whether the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> completed due to an unhandled exception.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool IsFaulted { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if the task has thrown an unhandled exception; otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_IsFaulted">ICancelableTask.IsFaulted</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L779">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Result_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Result*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Result" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Result">Result</h4>
+              <div class="markdown level1 summary"><p>Gets the result value of this <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask&lt;TResult&gt;</a></p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TResult Result { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TResult</span></td>
+                    <td><p>The result.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L756">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Status_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Status*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Status" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Status">Status</h4>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskstatus(v=vs.110).aspx">TaskStatus</a> of this task.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TaskStatus Status { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskstatus(v=vs.110).aspx">TaskStatus</a></td>
+                    <td><p>The current <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskstatus(v=vs.110).aspx">TaskStatus</a> of this task instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Status">ICancelableTask.Status</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L703">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Task_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Task*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Task" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Task">Task</h4>
+              <div class="markdown level1 summary"><p>Gets the underlaying task that can be cancelled.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public Task&lt;TResult&gt; Task { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;TResult&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L909">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Cancel_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Cancel*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Cancel" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Cancel">Cancel()</h4>
+              <div class="markdown level1 summary"><p>Communicates a request for cancellation.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void Cancel()</code></pre>
+              </div>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Cancel">ICancelableTask.Cancel()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L942">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_CancelAfter_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.CancelAfter*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_CancelAfter_NodaTime_Duration_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.CancelAfter(NodaTime.Duration)">CancelAfter(Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified duration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void CancelAfter(Duration delay)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">delay</span></td>
+                    <td><p>The duration to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_CancelAfter_NodaTime_Duration_">ICancelableTask.CancelAfter(Duration)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L920">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_CancelAfter_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.CancelAfter*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_CancelAfter_System_Int32_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.CancelAfter(System.Int32)">CancelAfter(Int32)</h4>
+              <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> after the specified number of milliseconds.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void CancelAfter(int millisecondsDelay)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">millisecondsDelay</span></td>
+                    <td><p>The time span to wait before canceling this <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtokensource(v=vs.110).aspx">CancellationTokenSource</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_CancelAfter_System_Int32_">ICancelableTask.CancelAfter(Int32)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L931">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_CancelAfter_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.CancelAfter*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_CancelAfter_System_TimeSpan_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.CancelAfter(System.TimeSpan)">CancelAfter(TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified time span.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void CancelAfter(TimeSpan delay)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">delay</span></td>
+                    <td><p>The time span to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_CancelAfter_System_TimeSpan_">ICancelableTask.CancelAfter(TimeSpan)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L969">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_ConfigureAwait_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ConfigureAwait*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_ConfigureAwait_System_Boolean_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ConfigureAwait(System.Boolean)">ConfigureAwait(Boolean)</h4>
+              <div class="markdown level1 summary"><p>Configures an awaiter used to await this <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public ConfiguredTaskAwaitable&lt;TResult&gt; ConfigureAwait(bool continueOnCapturedContext)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><span class="parametername">continueOnCapturedContext</span></td>
+                    <td><p><span class="xref">true</span> to attempt to marshal the continuation back to the original context captured; otherwise, <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh138549(v=vs.110).aspx">ConfiguredTaskAwaitable</a>&lt;TResult&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L982">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith_System_Action_WebApplications_Utilities_Threading_CancelableTask__0__System_Threading_CancellationToken__System_Threading_CancellationToken_System_Threading_Tasks_TaskContinuationOptions_System_Threading_Tasks_TaskScheduler_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith(System.Action{WebApplications.Utilities.Threading.CancelableTask{`0},System.Threading.CancellationToken},System.Threading.CancellationToken,System.Threading.Tasks.TaskContinuationOptions,System.Threading.Tasks.TaskScheduler)">ContinueWith(Action&lt;CancelableTask&lt;TResult&gt;, CancellationToken&gt;, CancellationToken, TaskContinuationOptions, TaskScheduler)</h4>
+              <div class="markdown level1 summary"><p>Creates a continuation that executes when the target <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> completes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CancelableTask ContinueWith(Action&lt;CancelableTask&lt;TResult&gt;, CancellationToken&gt; continuationAction, CancellationToken token = null, TaskContinuationOptions options = TaskContinuationOptions.None, TaskScheduler scheduler = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549311(v=vs.110).aspx">Action</a>&lt;<a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>&gt;</td>
+                    <td><span class="parametername">continuationAction</span></td>
+                    <td><p>An action to run when the Task completes. When run, the delegate will be passed the completed task as an argument.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> that will be assigned to the new continuation task.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcontinuationoptions(v=vs.110).aspx">TaskContinuationOptions</a></td>
+                    <td><span class="parametername">options</span></td>
+                    <td><p>Options for when the continuation is scheduled and how it behaves.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a></td>
+                    <td><span class="parametername">scheduler</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a> to associate with the continuation task and to use for its execution.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a></td>
+                    <td><p>A new continuation <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1038">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith_System_Func_WebApplications_Utilities_Threading_CancelableTask__0__System_Threading_CancellationToken_System_Threading_Tasks_Task__System_Threading_CancellationToken_System_Threading_Tasks_TaskContinuationOptions_System_Threading_Tasks_TaskScheduler_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith(System.Func{WebApplications.Utilities.Threading.CancelableTask{`0},System.Threading.CancellationToken,System.Threading.Tasks.Task},System.Threading.CancellationToken,System.Threading.Tasks.TaskContinuationOptions,System.Threading.Tasks.TaskScheduler)">ContinueWith(Func&lt;CancelableTask&lt;TResult&gt;, CancellationToken, Task&gt;, CancellationToken, TaskContinuationOptions, TaskScheduler)</h4>
+              <div class="markdown level1 summary"><p>Creates a continuation that executes when the target <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> completes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CancelableTask ContinueWith(Func&lt;CancelableTask&lt;TResult&gt;, CancellationToken, Task&gt; continuationAction, CancellationToken token = null, TaskContinuationOptions options = TaskContinuationOptions.None, TaskScheduler scheduler = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;<a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task(v=vs.110).aspx">Task</a>&gt;</td>
+                    <td><span class="parametername">continuationAction</span></td>
+                    <td><p>An action to run when the Task completes. When run, the delegate will be passed the completed task as an argument.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> that will be assigned to the new continuation task.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcontinuationoptions(v=vs.110).aspx">TaskContinuationOptions</a></td>
+                    <td><span class="parametername">options</span></td>
+                    <td><p>Options for when the continuation is scheduled and how it behaves.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a></td>
+                    <td><span class="parametername">scheduler</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a> to associate with the continuation task and to use for its execution.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a></td>
+                    <td><p>A new continuation <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1008">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith__1_System_Func_WebApplications_Utilities_Threading_CancelableTask__0__System_Threading_CancellationToken___0__System_Threading_CancellationToken_System_Threading_Tasks_TaskContinuationOptions_System_Threading_Tasks_TaskScheduler_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith``1(System.Func{WebApplications.Utilities.Threading.CancelableTask{`0},System.Threading.CancellationToken,``0},System.Threading.CancellationToken,System.Threading.Tasks.TaskContinuationOptions,System.Threading.Tasks.TaskScheduler)">ContinueWith&lt;TNewResult&gt;(Func&lt;CancelableTask&lt;TResult&gt;, CancellationToken, TNewResult&gt;, CancellationToken, TaskContinuationOptions, TaskScheduler)</h4>
+              <div class="markdown level1 summary"><p>Creates a continuation that executes when the target <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> completes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CancelableTask&lt;TNewResult&gt; ContinueWith&lt;TNewResult&gt;(Func&lt;CancelableTask&lt;TResult&gt;, CancellationToken, TNewResult&gt; continuationAction, CancellationToken token = null, TaskContinuationOptions options = TaskContinuationOptions.None, TaskScheduler scheduler = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;<a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>, TNewResult&gt;</td>
+                    <td><span class="parametername">continuationAction</span></td>
+                    <td><p>An action to run when the Task completes. When run, the delegate will be passed the completed task as an argument.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> that will be assigned to the new continuation task.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcontinuationoptions(v=vs.110).aspx">TaskContinuationOptions</a></td>
+                    <td><span class="parametername">options</span></td>
+                    <td><p>Options for when the continuation is scheduled and how it behaves.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a></td>
+                    <td><span class="parametername">scheduler</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a> to associate with the continuation task and to use for its execution.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TNewResult&gt;</td>
+                    <td><p>A new continuation <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">TNewResult</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1066">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_ContinueWith__1_System_Func_WebApplications_Utilities_Threading_CancelableTask__0__System_Threading_CancellationToken_System_Threading_Tasks_Task___0___System_Threading_CancellationToken_System_Threading_Tasks_TaskContinuationOptions_System_Threading_Tasks_TaskScheduler_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.ContinueWith``1(System.Func{WebApplications.Utilities.Threading.CancelableTask{`0},System.Threading.CancellationToken,System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken,System.Threading.Tasks.TaskContinuationOptions,System.Threading.Tasks.TaskScheduler)">ContinueWith&lt;TNewResult&gt;(Func&lt;CancelableTask&lt;TResult&gt;, CancellationToken, Task&lt;TNewResult&gt;&gt;, CancellationToken, TaskContinuationOptions, TaskScheduler)</h4>
+              <div class="markdown level1 summary"><p>Creates a continuation that executes when the target <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> completes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public CancelableTask&lt;TNewResult&gt; ContinueWith&lt;TNewResult&gt;(Func&lt;CancelableTask&lt;TResult&gt;, CancellationToken, Task&lt;TNewResult&gt;&gt; continuationAction, CancellationToken token = null, TaskContinuationOptions options = TaskContinuationOptions.None, TaskScheduler scheduler = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;<a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task</a>&lt;TNewResult&gt;&gt;</td>
+                    <td><span class="parametername">continuationAction</span></td>
+                    <td><p>An action to run when the Task completes. When run, the delegate will be passed the completed task as an argument.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">token</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> that will be assigned to the new continuation task.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcontinuationoptions(v=vs.110).aspx">TaskContinuationOptions</a></td>
+                    <td><span class="parametername">options</span></td>
+                    <td><p>Options for when the continuation is scheduled and how it behaves.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a></td>
+                    <td><span class="parametername">scheduler</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a> to associate with the continuation task and to use for its execution.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TNewResult&gt;</td>
+                    <td><p>A new continuation <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">TNewResult</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1146">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Dispose_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Dispose*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Dispose" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Dispose">Dispose()</h4>
+              <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+              </div>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L679">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_FromException_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.FromException*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_FromException_System_Exception_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.FromException(System.Exception)">FromException(Exception)</h4>
+              <div class="markdown level1 summary"><p>Creates a <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd321424(v=vs.110).aspx">Task&lt;TResult&gt;</a> that&#39;s completed exceptionally with the specified exception.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CancelableTask&lt;TResult&gt; FromException(Exception exception)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.exception(v=vs.110).aspx">Exception</a></td>
+                    <td><span class="parametername">exception</span></td>
+                    <td><p>The exception with which to complete the task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;</td>
+                    <td><p>The faulted task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L663">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_FromResult_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.FromResult*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_FromResult__0_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.FromResult(`0)">FromResult(TResult)</h4>
+              <div class="markdown level1 summary"><p>Creates a <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask&lt;TResult&gt;</a> that&#39;s completed successfully with the specified result.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static CancelableTask&lt;TResult&gt; FromResult(TResult result)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TResult</span></td>
+                    <td><span class="parametername">result</span></td>
+                    <td><p>The result to store into the completed task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask</a>&lt;TResult&gt;</td>
+                    <td><p>The successfully completed task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L951">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_GetAwaiter_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.GetAwaiter*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_GetAwaiter" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.GetAwaiter">GetAwaiter()</h4>
+              <div class="markdown level1 summary"><p>Gets an awaiter used to await this <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask-1.html">CancelableTask&lt;TResult&gt;</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TaskAwaiter&lt;TResult&gt; GetAwaiter()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh138386(v=vs.110).aspx">TaskAwaiter</a>&lt;TResult&gt;</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1136">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Start_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Start*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Start_System_Threading_Tasks_TaskScheduler_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Start(System.Threading.Tasks.TaskScheduler)">Start(TaskScheduler)</h4>
+              <div class="markdown level1 summary"><p>Starts the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a>, scheduling it for execution to the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void Start(TaskScheduler scheduler = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a></td>
+                    <td><span class="parametername">scheduler</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskscheduler(v=vs.110).aspx">TaskScheduler</a> with which to associate and execute this task.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Start_System_Threading_Tasks_TaskScheduler_">ICancelableTask.Start(TaskScheduler)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1126">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_NodaTime_Duration_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait(NodaTime.Duration,System.Threading.CancellationToken)">Wait(Duration, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Waits for the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> to complete execution within a specified time interval.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool Wait(Duration timeout, CancellationToken cancellationToken = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">timeout</span></td>
+                    <td><p>A <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> that represents the number of milliseconds to wait, or a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> that represents -1 milliseconds to wait indefinitely.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">cancellationToken</span></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> to observe while waiting for the task to complete.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1102">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_System_Int32_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait(System.Int32,System.Threading.CancellationToken)">Wait(Int32, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Waits for the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> to complete execution within a specified number of milliseconds.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">millisecondsTimeout</span></td>
+                    <td><p>The number of milliseconds to wait, or <a class="xref" href="https://msdn.microsoft.com/en-us/library/65fh19xy(v=vs.110).aspx">Infinite</a> (-1) to wait indefinitely.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">cancellationToken</span></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> to observe while waiting for the task to complete.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Wait_System_Int32_System_Threading_CancellationToken_">ICancelableTask.Wait(Int32, CancellationToken)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1090">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait(System.Threading.CancellationToken)">Wait(CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Waits for the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> to complete execution.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void Wait(CancellationToken cancellationToken = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">cancellationToken</span></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> to observe while waiting for the task to complete.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Wait_System_Threading_CancellationToken_">ICancelableTask.Wait(CancellationToken)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L1114">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_Wait_System_TimeSpan_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.Wait(System.TimeSpan,System.Threading.CancellationToken)">Wait(TimeSpan, CancellationToken)</h4>
+              <div class="markdown level1 summary"><p>Waits for the <a class="xref" href="WebApplications.Utilities.Threading.CancelableTask.html">CancelableTask</a> to complete execution within a specified time interval.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool Wait(TimeSpan timeout, CancellationToken cancellationToken = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">timeout</span></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a> that represents the number of milliseconds to wait, or a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a> that represents -1 milliseconds to wait indefinitely.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a></td>
+                    <td><span class="parametername">cancellationToken</span></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a> to observe while waiting for the task to complete.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Wait_System_TimeSpan_System_Threading_CancellationToken_">ICancelableTask.Wait(TimeSpan, CancellationToken)</a></div>
+              <h3 id="eii">Explicit Interface Implementations
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L959">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_WebApplications_Utilities_Threading_ICancelableTask_GetAwaiter_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.WebApplications#Utilities#Threading#ICancelableTask#GetAwaiter*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_WebApplications_Utilities_Threading_ICancelableTask_GetAwaiter" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.WebApplications#Utilities#Threading#ICancelableTask#GetAwaiter">ICancelableTask.GetAwaiter()</h4>
+              <div class="markdown level1 summary"><p>Gets an awaiter used to await this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html">ICancelableTask</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">INotifyCompletion ICancelableTask.GetAwaiter()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.inotifycompletion(v=vs.110).aspx">INotifyCompletion</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_GetAwaiter">ICancelableTask.GetAwaiter()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L712">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_CancelableTask_1_WebApplications_Utilities_Threading_ICancelableTask_Task_" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.WebApplications#Utilities#Threading#ICancelableTask#Task*"></a>
+              <h4 id="WebApplications_Utilities_Threading_CancelableTask_1_WebApplications_Utilities_Threading_ICancelableTask_Task" data-uid="WebApplications.Utilities.Threading.CancelableTask`1.WebApplications#Utilities#Threading#ICancelableTask#Task">ICancelableTask.Task</h4>
+              <div class="markdown level1 summary"><p>Gets the underlaying task that can be cancelled.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">Task ICancelableTask.Task { get; }</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.tasks.task(v=vs.110).aspx">Task</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Threading.ICancelableTask.html#WebApplications_Utilities_Threading_ICancelableTask_Task">ICancelableTask.Task</a></div>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/CancelableTask.cs/#L638" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

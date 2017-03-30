@@ -1,0 +1,689 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct ApmWrap&lt;T&gt;
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct ApmWrap&lt;T&gt;
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Threading_ApmWrap_1" data-uid="WebApplications.Utilities.Threading.ApmWrap`1">Struct ApmWrap&lt;T&gt;
+              </h1>
+              <div class="markdown level0 summary"><p>A light-weight struct with the ability to associate an arbitrary piece of data of type T with any
+<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> object. When the asynchronous operation completes this data can be retrieved
+to complete processing.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/wb77sz3h(v=vs.110).aspx">ValueType.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Threading</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
+              <h5 id="WebApplications_Utilities_Threading_ApmWrap_1_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+[Obsolete(&quot;Consider using TPL or Async.&quot;)]
+public struct ApmWrap&lt;T&gt;</code></pre>
+              </div>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the data to embed.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Threading_ApmWrap_1_remarks"><strong>Remarks</strong></h5>
+              <div class="markdown level0 remarks"><p>This is typically used when you are implementing code that wraps an asynchronous operation and you
+wish to add some context or state of your own to complete the wrapping.</p>
+<p>Based on Jeff Ritcher&#39;s wintellect threading libraries.</p>
+</div>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L125">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_CreateCallback_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.CreateCallback*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_CreateCallback_System_AsyncCallback__0_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.CreateCallback(System.AsyncCallback,`0)">CreateCallback(AsyncCallback, T)</h4>
+              <div class="markdown level1 summary"><p>Creates an ApmWrap object around a callback method.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public AsyncCallback CreateCallback(AsyncCallback callback, T data)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
+                    <td><span class="parametername">callback</span></td>
+                    <td><p>The callback method that should be invoked when the operation completes.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><span class="parametername">data</span></td>
+                    <td><p>The data to embed in the ApmWrap object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
+                    <td><p>An ApmWrap object&#39;s completion method.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L73">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_Equals_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Equals*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_Equals_System_Object_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Equals(System.Object)">Equals(Object)</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value indicating whether this instance and the specified object are equal.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object to compare to this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the value of the <span class="paramref">obj</span> is equal to this instance; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/2dts52z7(v=vs.110).aspx">ValueType.Equals(Object)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L61">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_Equals_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Equals*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_Equals_WebApplications_Utilities_Threading_ApmWrap__0__" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Equals(WebApplications.Utilities.Threading.ApmWrap{`0})">Equals(ApmWrap&lt;T&gt;)</h4>
+              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value indicating whether this instance and the specified
+<a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap&lt;T&gt;</a> object are equal.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool Equals(ApmWrap&lt;T&gt; value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap</a>&lt;T&gt;</td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The ApmWrap object to compare to this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if <span class="paramref">value</span> is equal to this instance; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L84">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_GetHashCode_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.GetHashCode*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_GetHashCode" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.GetHashCode">GetHashCode()</h4>
+              <div class="markdown level1 summary"><p>Returns a hash code for this instance.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+              </div>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>A 32-bit signed integer hash code for this instance.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="overrides">Overrides</h5>
+              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/y3509fc2(v=vs.110).aspx">ValueType.GetHashCode()</a></div>
+              <h5 id="WebApplications_Utilities_Threading_ApmWrap_1_GetHashCode_remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p>Suitable for use in hashing algorithms and also for data structures like a hash table.</p>
+</div>
+              <h5 id="WebApplications_Utilities_Threading_ApmWrap_1_GetHashCode_seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">GetHashCode</a>()</div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L182">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_Unwrap_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Unwrap*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_Unwrap_System_IAsyncResult__" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Unwrap(System.IAsyncResult@)">Unwrap(ref IAsyncResult)</h4>
+              <div class="markdown level1 summary"><p>Unwraps an ApmWrap object and also retrieves the embedded data.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T Unwrap(ref IAsyncResult result)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></td>
+                    <td><span class="parametername">result</span></td>
+                    <td><p>The <span class="xref">langword_csharp_ref</span> to the wrapped IAsyncResult object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>The embedded data.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L169">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_Wrap_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Wrap*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_Wrap_System_IAsyncResult__0_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.Wrap(System.IAsyncResult,`0)">Wrap(IAsyncResult, T)</h4>
+              <div class="markdown level1 summary"><p>Creates an ApmWrap object around an asynchronous operation.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static IAsyncResult Wrap(IAsyncResult result, T data)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></td>
+                    <td><span class="parametername">result</span></td>
+                    <td><p>The original IAsyncResult object returned from the BeginXXX method.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><span class="parametername">data</span></td>
+                    <td><p>The data to embed in the ApmWrap object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></td>
+                    <td><p>An ApmWrap object that contains the originally-returned <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L144">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_WrapCallback_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.WrapCallback*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_WrapCallback_System_AsyncCallback__0_System_Threading_SynchronizationContext_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.WrapCallback(System.AsyncCallback,`0,System.Threading.SynchronizationContext)">WrapCallback(AsyncCallback, T, SynchronizationContext)</h4>
+              <div class="markdown level1 summary"><p>Creates an ApmWrap object around a callback method.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static AsyncCallback WrapCallback(AsyncCallback callback, T data, SynchronizationContext syncContext = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
+                    <td><span class="parametername">callback</span></td>
+                    <td><p>The callback method.</p>
+<p>This is called once the asynchronous operation completes.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><span class="parametername">data</span></td>
+                    <td><p>The data to embed.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.synchronizationcontext(v=vs.110).aspx">SynchronizationContext</a></td>
+                    <td><span class="parametername">syncContext</span></td>
+                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.synchronizationcontext(v=vs.110).aspx">SynchronizationContext</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
+                    <td><p>The internal callback stored within the created ApmWrap object.
+A <span class="xref">null</span> is returned if the <span class="paramref">callback</span> is null.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="operators">Operators
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L96">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_op_Equality_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.op_Equality*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_op_Equality_WebApplications_Utilities_Threading_ApmWrap__0__WebApplications_Utilities_Threading_ApmWrap__0__" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.op_Equality(WebApplications.Utilities.Threading.ApmWrap{`0},WebApplications.Utilities.Threading.ApmWrap{`0})">Equality(ApmWrap&lt;T&gt;, ApmWrap&lt;T&gt;)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator ==.</p>
+<p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> indicating whether two instances of
+<a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap&lt;T&gt;</a> are equal.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator ==(ApmWrap&lt;T&gt; obj1, ApmWrap&lt;T&gt; obj2)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap</a>&lt;T&gt;</td>
+                    <td><span class="parametername">obj1</span></td>
+                    <td><p>The first ApmWrap object to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap</a>&lt;T&gt;</td>
+                    <td><span class="parametername">obj2</span></td>
+                    <td><p>The second ApmWrap object to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L108">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_ApmWrap_1_op_Inequality_" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.op_Inequality*"></a>
+              <h4 id="WebApplications_Utilities_Threading_ApmWrap_1_op_Inequality_WebApplications_Utilities_Threading_ApmWrap__0__WebApplications_Utilities_Threading_ApmWrap__0__" data-uid="WebApplications.Utilities.Threading.ApmWrap`1.op_Inequality(WebApplications.Utilities.Threading.ApmWrap{`0},WebApplications.Utilities.Threading.ApmWrap{`0})">Inequality(ApmWrap&lt;T&gt;, ApmWrap&lt;T&gt;)</h4>
+              <div class="markdown level1 summary"><p>Implements the operator !=.</p>
+<p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> indicating whether two instances of
+<a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap&lt;T&gt;</a> are <strong>not</strong> equal.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool operator !=(ApmWrap&lt;T&gt; obj1, ApmWrap&lt;T&gt; obj2)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap</a>&lt;T&gt;</td>
+                    <td><span class="parametername">obj1</span></td>
+                    <td><p>The first ApmWrap object to compare.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Threading.ApmWrap-1.html">ApmWrap</a>&lt;T&gt;</td>
+                    <td><span class="parametername">obj2</span></td>
+                    <td><p>The second ApmWrap object to compare.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ApmWrap.cs/#L47" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

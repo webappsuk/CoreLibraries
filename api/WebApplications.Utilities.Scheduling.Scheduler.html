@@ -1,0 +1,1770 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Scheduler
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Scheduler
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Scheduling_Scheduler" data-uid="WebApplications.Utilities.Scheduling.Scheduler">Class Scheduler
+              </h1>
+              <div class="markdown level0 summary"><p>Implements a scheduler</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><span class="xref">Scheduler</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Scheduling</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.Scheduling.dll</h6>
+              <h5 id="WebApplications_Utilities_Scheduling_Scheduler_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static class Scheduler</code></pre>
+              </div>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L827">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.DefaultMaximumDuration*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration" data-uid="WebApplications.Utilities.Scheduling.Scheduler.DefaultMaximumDuration">DefaultMaximumDuration</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the maximum duration of an action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Duration DefaultMaximumDuration { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><p>The maximum duration of any action.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L868">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.DefaultMaximumHistory*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory" data-uid="WebApplications.Utilities.Scheduling.Scheduler.DefaultMaximumHistory">DefaultMaximumHistory</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the default maximum history.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static int DefaultMaximumHistory { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>The default maximum history.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+                    <td><p>The default maximum history cannot be negative.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L843">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Enabled_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Enabled*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Enabled" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Enabled">Enabled</h4>
+              <div class="markdown level1 summary"><p>Gets or sets a value indicating whether this <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html">Scheduler</a> is enabled.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool Enabled { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if enabled; otherwise, <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L903">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_NextDue_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.NextDue*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_NextDue" data-uid="WebApplications.Utilities.Scheduling.Scheduler.NextDue">NextDue</h4>
+              <div class="markdown level1 summary"><p>Gets the next due date and time (UTC).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant NextDue { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>The next due date and time.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L885">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_NextScheduledAction_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.NextScheduledAction*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_NextScheduledAction" data-uid="WebApplications.Utilities.Scheduling.Scheduler.NextScheduledAction">NextScheduledAction</h4>
+              <div class="markdown level1 summary"><p>Gets the next scheduled action (if any).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction NextScheduledAction { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>The next scheduled action.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L306">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableAction_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableAction,System.String,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableAction, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableAction action, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableAction.html">ScheduledAction.SchedulableAction</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L538">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableAction_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableAction,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableAction, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableAction action, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableAction.html">ScheduledAction.SchedulableAction</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L370">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableCancellableActionAsync_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableCancellableActionAsync,System.String,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableCancellableActionAsync, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableCancellableActionAsync action, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableCancellableActionAsync.html">ScheduledAction.SchedulableCancellableActionAsync</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L602">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableCancellableActionAsync_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableCancellableActionAsync,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableCancellableActionAsync, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableCancellableActionAsync action, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableCancellableActionAsync.html">ScheduledAction.SchedulableCancellableActionAsync</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L338">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableDueAction_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueAction,System.String,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableDueAction, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableDueAction action, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueAction.html">ScheduledAction.SchedulableDueAction</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L570">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableDueAction_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueAction,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableDueAction, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableDueAction action, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueAction.html">ScheduledAction.SchedulableDueAction</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L404">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableDueCancellableActionAsync_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueCancellableActionAsync,System.String,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableDueCancellableActionAsync, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableDueCancellableActionAsync action, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueCancellableActionAsync.html">ScheduledAction.SchedulableDueCancellableActionAsync</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L636">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_SchedulableDueCancellableActionAsync_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueCancellableActionAsync,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add(ScheduledAction.SchedulableDueCancellableActionAsync, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledAction Add(ScheduledAction.SchedulableDueCancellableActionAsync action, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.SchedulableDueCancellableActionAsync.html">ScheduledAction.SchedulableDueCancellableActionAsync</a></td>
+                    <td><span class="parametername">action</span></td>
+                    <td><p>The action.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L493">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableCancellableFunctionAsync_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableCancellableFunctionAsync,System.String,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableCancellableFunctionAsync, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableCancellableFunctionAsync function, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableCancellableFunctionAsync.html">ScheduledFunction.SchedulableCancellableFunctionAsync</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L715">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableCancellableFunctionAsync_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableCancellableFunctionAsync,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableCancellableFunctionAsync, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableCancellableFunctionAsync function, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableCancellableFunctionAsync.html">ScheduledFunction.SchedulableCancellableFunctionAsync</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L515">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableDueCancellableFunctionAsync_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableDueCancellableFunctionAsync,System.String,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueCancellableFunctionAsync, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueCancellableFunctionAsync function, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableDueCancellableFunctionAsync.html">ScheduledFunction.SchedulableDueCancellableFunctionAsync</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L737">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableDueCancellableFunctionAsync_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableDueCancellableFunctionAsync,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueCancellableFunctionAsync, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueCancellableFunctionAsync function, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableDueCancellableFunctionAsync.html">ScheduledFunction.SchedulableDueCancellableFunctionAsync</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L466">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableDueFunction_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableDueFunction,System.String,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueFunction, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueFunction function, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableDueFunction.html">ScheduledFunction.SchedulableDueFunction</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L693">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableDueFunction_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableDueFunction,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueFunction, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableDueFunction function, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableDueFunction.html">ScheduledFunction.SchedulableDueFunction</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L439">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableFunction_System_String_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableFunction,System.String,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableFunction, String, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableFunction function, string scheduleName, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableFunction.html">ScheduledFunction.SchedulableFunction</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">scheduleName</span></td>
+                    <td><p>Name of the schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L671">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Add_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Add__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__SchedulableFunction_WebApplications_Utilities_Scheduling_ISchedule_System_Int32_NodaTime_Duration_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Add``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0}.SchedulableFunction,WebApplications.Utilities.Scheduling.ISchedule,System.Int32,NodaTime.Duration)">Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableFunction, ISchedule, Int32, Duration)</h4>
+              <div class="markdown level1 summary"><p>Schedules the specified function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ScheduledFunction&lt;T&gt; Add&lt;T&gt;(ScheduledFunction&lt;T&gt;.SchedulableFunction function, ISchedule schedule, int maximumHistory = -1, Duration maximumDuration = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.SchedulableFunction.html">ScheduledFunction.SchedulableFunction</a>&lt;&gt;</td>
+                    <td><span class="parametername">function</span></td>
+                    <td><p>The function.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">maximumHistory</span></td>
+                    <td><p>The maximum history (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumHistory">DefaultMaximumHistory</a>).</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">maximumDuration</span></td>
+                    <td><p>The maximum duration (default to <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduler.html#WebApplications_Utilities_Scheduling_Scheduler_DefaultMaximumDuration">DefaultMaximumDuration</a>).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction&lt;T&gt;</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The return type</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L251">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_AddSchedule_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.AddSchedule*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_AddSchedule_WebApplications_Utilities_Scheduling_ISchedule_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.AddSchedule(WebApplications.Utilities.Scheduling.ISchedule)">AddSchedule(ISchedule)</h4>
+              <div class="markdown level1 summary"><p>Adds the <a class="xref" href="WebApplications.Utilities.Scheduling.Schedule.html">Schedule</a> with the specified <a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html#WebApplications_Utilities_Scheduling_ISchedule_Name">Name</a> - which must not be <span class="xref">null</span>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ISchedule AddSchedule(ISchedule schedule)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a> removed, if any; otherwise <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L207">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_GetSchedule_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.GetSchedule*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_GetSchedule_System_String_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.GetSchedule(System.String)">GetSchedule(String)</h4>
+              <div class="markdown level1 summary"><p>Gets the schedule with the specific name.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ISchedule GetSchedule(string name)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">name</span></td>
+                    <td><p>The name.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><p>ISchedule.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L795">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Remove_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Remove*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Remove_WebApplications_Utilities_Scheduling_Scheduled_ScheduledAction_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Remove(WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction)">Remove(ScheduledAction)</h4>
+              <div class="markdown level1 summary"><p>Removes the specified scheduled action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool Remove(ScheduledAction scheduledAction)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledAction.html">ScheduledAction</a></td>
+                    <td><span class="parametername">scheduledAction</span></td>
+                    <td><p>The scheduled action.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if removed, <span class="xref">false</span> otherwise.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L811">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_Remove_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Remove*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_Remove__1_WebApplications_Utilities_Scheduling_Scheduled_ScheduledFunction___0__" data-uid="WebApplications.Utilities.Scheduling.Scheduler.Remove``1(WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction{``0})">Remove&lt;T&gt;(ScheduledFunction&lt;T&gt;)</h4>
+              <div class="markdown level1 summary"><p>Removes the specified scheduled function.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool Remove&lt;T&gt;(ScheduledFunction&lt;T&gt; scheduledFunction)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Scheduled.ScheduledFunction-1.html">ScheduledFunction</a>&lt;T&gt;</td>
+                    <td><span class="parametername">scheduledFunction</span></td>
+                    <td><p>The scheduled action.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if removed, <span class="xref">false</span> otherwise.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L282">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_RemoveSchedule_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.RemoveSchedule*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_RemoveSchedule_System_String_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.RemoveSchedule(System.String)">RemoveSchedule(String)</h4>
+              <div class="markdown level1 summary"><p>Removes the schedule with the specified <span class="paramref">name</span>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static ISchedule RemoveSchedule(string name)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">name</span></td>
+                    <td><p>The name.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><p>The <a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a> removed, if any; otherwise <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L231">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Scheduling_Scheduler_TryGetSchedule_" data-uid="WebApplications.Utilities.Scheduling.Scheduler.TryGetSchedule*"></a>
+              <h4 id="WebApplications_Utilities_Scheduling_Scheduler_TryGetSchedule_System_String_WebApplications_Utilities_Scheduling_ISchedule__" data-uid="WebApplications.Utilities.Scheduling.Scheduler.TryGetSchedule(System.String,WebApplications.Utilities.Scheduling.ISchedule@)">TryGetSchedule(String, out ISchedule)</h4>
+              <div class="markdown level1 summary"><p>Tries to get the schedule with the specified <span class="paramref">name</span>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[ContractAnnotation(&quot;=&gt;true,schedule:notnull;=&gt;false,schedule:null&quot;)]
+public static bool TryGetSchedule(string name, out ISchedule schedule)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">name</span></td>
+                    <td><p>The name.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+                    <td><span class="parametername">schedule</span></td>
+                    <td><p>The schedule.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p><span class="xref">true</span> if found, <span class="xref">false</span> otherwise.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Scheduler.cs/#L46" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,2120 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Serialize
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Serialize
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Serialization_Serialize" data-uid="WebApplications.Utilities.Serialization.Serialize">Class Serialize
+              </h1>
+              <div class="markdown level0 summary"><p>A class used to assist in implementing serialization code, adds transparent support for Xml serialization
+(both <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.xmlelement(v=vs.110).aspx">XmlElement</a> and <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx">XElement</a>). Also adds easy support for mapping old types to new
+types, using <a class="xref" href="WebApplications.Utilities.Serialization.ExtendedSerializationBinder.html#WebApplications_Utilities_Serialization_ExtendedSerializationBinder_MapType_System_String_System_String_System_Type_">MapType(String, String, Type)</a>.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><span class="xref">Serialize</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Serialization</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.Serialization.dll</h6>
+              <h5 id="WebApplications_Utilities_Serialization_Serialize_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static class Serialize</code></pre>
+              </div>
+              <h5 id="WebApplications_Utilities_Serialization_Serialize_remarks"><strong>Remarks</strong></h5>
+              <div class="markdown level0 remarks"><p>A good article on surrogates can be found at (<a href="http://msdn.microsoft.com/en-gb/magazine/cc188950.aspx">http://msdn.microsoft.com/en-gb/magazine/cc188950.aspx</a>).</p>
+</div>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L83">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SurrogateSelector_" data-uid="WebApplications.Utilities.Serialization.Serialize.SurrogateSelector*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SurrogateSelector" data-uid="WebApplications.Utilities.Serialization.Serialize.SurrogateSelector">SurrogateSelector</h4>
+              <div class="markdown level1 summary"><p>Gets the standard <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.surrogateselector(v=vs.110).aspx">SurrogateSelector</a>,
+which includes support for additional types. Additional types can be registered to the surrogate
+selector with <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate_System_Type_System_Type_">AddOrUpdateSurrogate(Type, Type)</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static SurrogateSelector SurrogateSelector { get; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.surrogateselector(v=vs.110).aspx">SurrogateSelector</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.surrogateselector(v=vs.110).aspx">SurrogateSelector</a> object which contains both the standard surrogates
+and any additional surrogates added with the
+<a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate_System_Type_System_Type_">AddOrUpdateSurrogate(Type, Type)</a> in its list of checked surrogates.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L154">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate_" data-uid="WebApplications.Utilities.Serialization.Serialize.AddOrUpdateSurrogate*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate_System_Type_System_Type_" data-uid="WebApplications.Utilities.Serialization.Serialize.AddOrUpdateSurrogate(System.Type,System.Type)">AddOrUpdateSurrogate(Type, Type)</h4>
+              <div class="markdown level1 summary"><p>Adds a new serialization surrogate.
+If the surrogate already exists then it is instead updated.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static void AddOrUpdateSurrogate(Type inputType, Type surrogateType)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.type(v=vs.110).aspx">Type</a></td>
+                    <td><span class="parametername">inputType</span></td>
+                    <td><p>The type of the input.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.type(v=vs.110).aspx">Type</a></td>
+                    <td><span class="parametername">surrogateType</span></td>
+                    <td><p>The type of the surrogate to call when serializing/deserializing objects of type <span class="paramref">inputType</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">inputType</span> is a <span class="xref">null</span>.</p>
+<p>-or-</p>
+<p><span class="paramref">surrogateType</span> is a <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+                    <td><p><span class="paramref">surrogateType</span> was not a concrete type.</p>
+<p>-or-</p>
+<p><span class="paramref">surrogateType</span> must implement
+<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iserializationsurrogate(v=vs.110).aspx">ISerializationSurrogate</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L116">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate_" data-uid="WebApplications.Utilities.Serialization.Serialize.AddOrUpdateSurrogate*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate__1_System_Type_" data-uid="WebApplications.Utilities.Serialization.Serialize.AddOrUpdateSurrogate``1(System.Type)">AddOrUpdateSurrogate&lt;TInput&gt;(Type)</h4>
+              <div class="markdown level1 summary"><p>Adds a new serialization surrogate.
+If the surrogate already exists then it is instead updated.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static void AddOrUpdateSurrogate&lt;TInput&gt;(Type surrogateType)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.type(v=vs.110).aspx">Type</a></td>
+                    <td><span class="parametername">surrogateType</span></td>
+                    <td><p>The type of the surrogate, which will be used to control the serialization and deserialization
+for objects of type <span class="typeparamref">TInput</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">TInput</span></td>
+                    <td><p>The type of the input.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+                    <td><p><span class="paramref">surrogateType</span> was not a concrete type.</p>
+<p>-or-</p>
+<p><span class="paramref">surrogateType</span> must implement
+<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iserializationsurrogate(v=vs.110).aspx">ISerializationSurrogate</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L130">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate_" data-uid="WebApplications.Utilities.Serialization.Serialize.AddOrUpdateSurrogate*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_AddOrUpdateSurrogate__2" data-uid="WebApplications.Utilities.Serialization.Serialize.AddOrUpdateSurrogate``2">AddOrUpdateSurrogate&lt;TInput, TSurrogate&gt;()</h4>
+              <div class="markdown level1 summary"><p>Adds a new serialization surrogate.
+If the surrogate already exists then it is instead updated.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static void AddOrUpdateSurrogate&lt;TInput, TSurrogate&gt;()where TSurrogate : ISerializationSurrogate</code></pre>
+              </div>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">TInput</span></td>
+                    <td><p>The type of the input.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="parametername">TSurrogate</span></td>
+                    <td><p>The type of the surrogate to call when serializing/deserializing objects of type <span class="typeparamref">TInput</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L449">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization_System_Text_StringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization(System.Text.StringBuilder,System.Object,System.Object,System.Runtime.Serialization.StreamingContextStates)">AppendSerialization(StringBuilder, Object, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder AppendSerialization(this StringBuilder stringBuilder, object obj, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><span class="parametername">stringBuilder</span></td>
+                    <td><p>The string builder.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The serialization context state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L516">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization_System_Text_StringBuilder_System_Object_System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization(System.Text.StringBuilder,System.Object,System.Runtime.Serialization.IFormatter)">AppendSerialization(StringBuilder, Object, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder AppendSerialization(this StringBuilder stringBuilder, object obj, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><span class="parametername">stringBuilder</span></td>
+                    <td><p>The string builder.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L474">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization__1_System_Text_StringBuilder_System_Collections_Generic_IEnumerable___0__System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization``1(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{``0},System.Object,System.Runtime.Serialization.StreamingContextStates)">AppendSerialization&lt;T&gt;(StringBuilder, IEnumerable&lt;T&gt;, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder AppendSerialization&lt;T&gt;(this StringBuilder stringBuilder, IEnumerable&lt;T&gt; enumerable, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><span class="parametername">stringBuilder</span></td>
+                    <td><p>The string builder.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The serialization context state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">enumerable</span> is a <span class="xref">null</span></p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L498">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_AppendSerialization__1_System_Text_StringBuilder_System_Collections_Generic_IEnumerable___0__System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.AppendSerialization``1(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{``0},System.Runtime.Serialization.IFormatter)">AppendSerialization&lt;T&gt;(StringBuilder, IEnumerable&lt;T&gt;, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder AppendSerialization&lt;T&gt;(this StringBuilder stringBuilder, IEnumerable&lt;T&gt; enumerable, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><span class="parametername">stringBuilder</span></td>
+                    <td><p>The string builder.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">enumerable</span> is a <span class="xref">null</span></p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L686">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_Deserialize_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_Deserialize__1_System_Byte___System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize``1(System.Byte[],System.Object,System.Runtime.Serialization.StreamingContextStates)">Deserialize&lt;T&gt;(Byte[], Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Deserializes the data to an object tree.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T Deserialize&lt;T&gt;(this byte[] data, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><span class="parametername">data</span></td>
+                    <td><p>The data to deserialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The de-serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The de-serialization context state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>The deserialized object tree of type <span class="typeparamref">T</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the deserialized objects.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L702">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_Deserialize_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_Deserialize__1_System_Byte___System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize``1(System.Byte[],System.Runtime.Serialization.IFormatter)">Deserialize&lt;T&gt;(Byte[], IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Deserializes the data to an object tree.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T Deserialize&lt;T&gt;(this byte[] data, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><span class="parametername">data</span></td>
+                    <td><p>The data to deserialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>The deserialized object tree of type <span class="typeparamref">T</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the deserialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L647">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_Deserialize_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_Deserialize__1_System_String_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize``1(System.String,System.Object,System.Runtime.Serialization.StreamingContextStates)">Deserialize&lt;T&gt;(String, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Deserializes the data to an object tree.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T Deserialize&lt;T&gt;(this string data, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">data</span></td>
+                    <td><p>The data to deserialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The de-serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The de-serialization context state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>The deserialized object tree of type <span class="typeparamref">T</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the deserialized objects.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">data</span> is <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.formatexception(v=vs.110).aspx">FormatException</a></td>
+                    <td><p>The length of <span class="paramref">data</span> is not zero or a multiple of 4 (ignoring whitespace).</p>
+<p>-or-</p>
+<p>The format of the <span class="paramref">data</span> is invalid, contains either a non-base-64 character,
+more than two padding characters, or a non-white space-character among the padding characters.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L672">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_Deserialize_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_Deserialize__1_System_String_System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.Deserialize``1(System.String,System.Runtime.Serialization.IFormatter)">Deserialize&lt;T&gt;(String, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Deserializes the data to an object tree.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static T Deserialize&lt;T&gt;(this string data, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">data</span></td>
+                    <td><p>The data to deserialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">T</span></td>
+                    <td><p>The deserialized object tree of type <span class="typeparamref">T</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the deserialized objects.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">data</span> is <span class="xref">null</span>.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.formatexception(v=vs.110).aspx">FormatException</a></td>
+                    <td><p>The length of <span class="paramref">data</span> is not zero or a multiple of 4 (ignoring whitespace).</p>
+<p>-or-</p>
+<p>The format of the <span class="paramref">data</span> is invalid, contains either a non-base-64 character,
+more than two padding characters, or a non-white space-character among the padding characters.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L218">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_GetFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.GetFormatter*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_GetFormatter_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.GetFormatter(System.Object,System.Runtime.Serialization.StreamingContextStates)">GetFormatter(Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Returns an extended <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.formatters.binary.binaryformatter(v=vs.110).aspx">BinaryFormatter</a>
+(can serialize XML correctly).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static BinaryFormatter GetFormatter(object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The state of the serialization context.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.formatters.binary.binaryformatter(v=vs.110).aspx">BinaryFormatter</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.formatters.binary.binaryformatter(v=vs.110).aspx">BinaryFormatter</a> for serialization.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L241">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_GetSoapFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.GetSoapFormatter*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_GetSoapFormatter_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.GetSoapFormatter(System.Object,System.Runtime.Serialization.StreamingContextStates)">GetSoapFormatter(Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Returns an extended <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.formatters.soap.soapformatter(v=vs.110).aspx">SoapFormatter</a>
+(can serialize XML correctly).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[Obsolete(&quot;See http://social.msdn.microsoft.com/forums/en-US/netfxremoting/thread/c4d67e93-fa11-46d9-aa4f-b63960f6af91/&quot;)]
+public static SoapFormatter GetSoapFormatter(object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The state of the serialization context.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.formatters.soap.soapformatter(v=vs.110).aspx">SoapFormatter</a></td>
+                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.formatters.soap.soapformatter(v=vs.110).aspx">SoapFormatter</a> for serialization.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L264">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_GetXmlFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.GetXmlFormatter*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_GetXmlFormatter_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.GetXmlFormatter(System.Object,System.Runtime.Serialization.StreamingContextStates)">GetXmlFormatter(Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Returns an extended <a class="xref" href="WebApplications.Utilities.Serialization.XmlFormatter.html">XmlFormatter</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static XmlFormatter GetXmlFormatter(object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The state of the serialization context.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="WebApplications.Utilities.Serialization.XmlFormatter.html">XmlFormatter</a></td>
+                    <td><p>A <a class="xref" href="WebApplications.Utilities.Serialization.XmlFormatter.html">XmlFormatter</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L204">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_MapType_" data-uid="WebApplications.Utilities.Serialization.Serialize.MapType*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_MapType_System_String_System_String_System_Type_" data-uid="WebApplications.Utilities.Serialization.Serialize.MapType(System.String,System.String,System.Type)">MapType(String, String, Type)</h4>
+              <div class="markdown level1 summary"><p>Maps an old type to a new type during serialization.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static void MapType(string assemblyName, string typeName, Type newType)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">assemblyName</span></td>
+                    <td><p>The assembly name of the old type.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">typeName</span></td>
+                    <td><p>The name of the old type.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.type(v=vs.110).aspx">Type</a></td>
+                    <td><span class="parametername">newType</span></td>
+                    <td><p>The new type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.overflowexception(v=vs.110).aspx">OverflowException</a></td>
+                    <td><p>The type map contains the <a class="xref" href="https://msdn.microsoft.com/en-us/library/92chhbf3(v=vs.110).aspx">MaxValue</a> number of elements.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Serialization_Serialize_MapType_System_String_System_String_System_Type__seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.reflection.assembly(v=vs.110).aspx">Assembly</a></div>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.reflection.assemblyname(v=vs.110).aspx">AssemblyName</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L188">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_MapType_" data-uid="WebApplications.Utilities.Serialization.Serialize.MapType*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_MapType__1_System_String_System_String_" data-uid="WebApplications.Utilities.Serialization.Serialize.MapType``1(System.String,System.String)">MapType&lt;TNew&gt;(String, String)</h4>
+              <div class="markdown level1 summary"><p>Maps an old type to a new type during serialization.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static void MapType&lt;TNew&gt;(string assemblyName, string typeName)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">assemblyName</span></td>
+                    <td><p>The name of the assembly.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">typeName</span></td>
+                    <td><p>The name of the type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">TNew</span></td>
+                    <td><p>The new type.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.overflowexception(v=vs.110).aspx">OverflowException</a></td>
+                    <td><p>The type map contains the <a class="xref" href="https://msdn.microsoft.com/en-us/library/92chhbf3(v=vs.110).aspx">MaxValue</a> number of elements.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 id="WebApplications_Utilities_Serialization_Serialize_MapType__1_System_String_System_String__seealso">See Also</h5>
+              <div class="seealso">
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.reflection.assembly(v=vs.110).aspx">Assembly</a></div>
+                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.reflection.assemblyname(v=vs.110).aspx">AssemblyName</a></div>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L573">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray(System.Object,System.Object,System.Runtime.Serialization.StreamingContextStates)">SerializeToByteArray(Object, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static byte[] SerializeToByteArray(this object obj, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The serialization context state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><p><span class="paramref">obj</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L608">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray(System.Object,System.Runtime.Serialization.IFormatter)">SerializeToByteArray(Object, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static byte[] SerializeToByteArray(this object obj, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><p><span class="paramref">obj</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L555">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray__1_System_Collections_Generic_IEnumerable___0__System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray``1(System.Collections.Generic.IEnumerable{``0},System.Object,System.Runtime.Serialization.StreamingContextStates)">SerializeToByteArray&lt;T&gt;(IEnumerable&lt;T&gt;, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static byte[] SerializeToByteArray&lt;T&gt;(this IEnumerable&lt;T&gt; enumerable, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The serialization context state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><p><span class="paramref">enumerable</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L591">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray__1_System_Collections_Generic_IEnumerable___0__System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToByteArray``1(System.Collections.Generic.IEnumerable{``0},System.Runtime.Serialization.IFormatter)">SerializeToByteArray&lt;T&gt;(IEnumerable&lt;T&gt;, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static byte[] SerializeToByteArray&lt;T&gt;(this IEnumerable&lt;T&gt; enumerable, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+                    <td><p><span class="paramref">enumerable</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a> <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.array(v=vs.110).aspx">Array</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L284">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToString_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString(System.Object,System.Object,System.Runtime.Serialization.StreamingContextStates)">SerializeToString(Object, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes the specified object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static string SerializeToString(this object obj, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The state of the serialization context.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p><span class="paramref">obj</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L301">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToString_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString(System.Object,System.Runtime.Serialization.IFormatter)">SerializeToString(Object, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static string SerializeToString(this object obj, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p><span class="paramref">obj</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L322">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToString_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToString__1_System_Collections_Generic_IEnumerable___0__System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString``1(System.Collections.Generic.IEnumerable{``0},System.Object,System.Runtime.Serialization.StreamingContextStates)">SerializeToString&lt;T&gt;(IEnumerable&lt;T&gt;, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static string SerializeToString&lt;T&gt;(this IEnumerable&lt;T&gt; enumerable, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The state of the serialization context.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p><span class="paramref">enumerable</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">enumerable</span> is a <span class="xref">null</span></p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L345">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToString_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToString__1_System_Collections_Generic_IEnumerable___0__System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToString``1(System.Collections.Generic.IEnumerable{``0},System.Runtime.Serialization.IFormatter)">SerializeToString&lt;T&gt;(IEnumerable&lt;T&gt;, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static string SerializeToString&lt;T&gt;(this IEnumerable&lt;T&gt; enumerable, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><p><span class="paramref">enumerable</span> serialized to a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">enumerable</span> is a <span class="xref">null</span></p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L382">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder(System.Object,System.Object,System.Runtime.Serialization.StreamingContextStates)">SerializeToStringBuilder(Object, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder SerializeToStringBuilder(this object obj, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The state of the serialization context.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L363">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder(System.Object,System.Runtime.Serialization.IFormatter)">SerializeToStringBuilder(Object, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder SerializeToStringBuilder(this object obj, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">obj</span></td>
+                    <td><p>The object tree to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L428">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder__1_System_Collections_Generic_IEnumerable___0__System_Object_System_Runtime_Serialization_StreamingContextStates_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder``1(System.Collections.Generic.IEnumerable{``0},System.Object,System.Runtime.Serialization.StreamingContextStates)">SerializeToStringBuilder&lt;T&gt;(IEnumerable&lt;T&gt;, Object, StreamingContextStates)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder SerializeToStringBuilder&lt;T&gt;(this IEnumerable&lt;T&gt; enumerable, object context = null, StreamingContextStates contextState = StreamingContextStates.Other)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+                    <td><span class="parametername">context</span></td>
+                    <td><p>The serialization context.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.streamingcontextstates(v=vs.110).aspx">StreamingContextStates</a></td>
+                    <td><span class="parametername">contextState</span></td>
+                    <td><p>The serialization context state.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">enumerable</span> is a <span class="xref">null</span></p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L405">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder*"></a>
+              <h4 id="WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder__1_System_Collections_Generic_IEnumerable___0__System_Runtime_Serialization_IFormatter_" data-uid="WebApplications.Utilities.Serialization.Serialize.SerializeToStringBuilder``1(System.Collections.Generic.IEnumerable{``0},System.Runtime.Serialization.IFormatter)">SerializeToStringBuilder&lt;T&gt;(IEnumerable&lt;T&gt;, IFormatter)</h4>
+              <div class="markdown level1 summary"><p>Serializes object tree to base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static StringBuilder SerializeToStringBuilder&lt;T&gt;(this IEnumerable&lt;T&gt; enumerable, IFormatter formatter)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;T&gt;</td>
+                    <td><span class="parametername">enumerable</span></td>
+                    <td><p>The enumerable to serialize.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.runtime.serialization.iformatter(v=vs.110).aspx">IFormatter</a></td>
+                    <td><span class="parametername">formatter</span></td>
+                    <td><p>The formatter for the serialized object.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a></td>
+                    <td><p>Base64 encoded <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx">StringBuilder</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">T</span></td>
+                    <td><p>The type of the objects in the enumeration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">enumerable</span> is a <span class="xref">null</span></p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Serialization/Serialize.cs/#L52" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

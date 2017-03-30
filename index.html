@@ -1,57 +1,109 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
-<head>
-	<title>Reference</title>
-	<meta content="text/html; charset=utf-8" http-equiv="content-type">
-	<script src="search.js" type="text/javascript"></script>
-	<script type="text/javascript">
-<!--
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Web Applications UK - Core Libraries | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Web Applications UK - Core Libraries | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="styles/docfx.vendor.css">
+    <link rel="stylesheet" href="styles/docfx.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <meta property="docfx:navrel" content="toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+              <h1 id="web-applications-uk---core-libraries">Web Applications UK - Core Libraries</h1>
+              
+<p><img src="images/UK%20Logo%20%28Black%29.png" alt="Branding"></p>
+<h2 id="description">Description</h2>
+<p>This library contains a treasure trove of utilities built up over a decade by Web Applications UK for simplifying the building and deployment of enterprise scale .NET solutions. The code has been successfully used, in various forms, for a number of years in production environments driving millions of transactions.</p>
+<p>As part of our ethos to have a positive impact on our wider community we are open sourcing them for everyone&#39;s benefit. We&#39;ve also included the last three years of development history, showing how the utilities have evolved. Please let us know if you find the code useful in your own projects!</p>
+<p>We have carefully sanitised the code to protect our commercial customers interests, but if you do manage to spot any sensitive data please notify us directly using our support email.</p>
+<h2 id="using-the-libraries">Using the libraries</h2>
+<p>All the code documented here is available on GitHub, and is also available, in compiled form, on nuget.org, as a collection of 10 inter-connected NuGets and can be installed into your .NET projects using NuGet. Alternatively, you can look for the individual NuGet files, or the compiled binaries in the releases.</p>
+<p>The official NuGets are strongly named and digitally signed by Web Applications UK, using a separate, secure process, that guarantees the NuGets authenticity. Although you can build your own NuGets from the source included here, the ability to upload them to nuget.org is not provided to protect casual users. If you wish to use a customised version of a library prior to a formal release, we recommend building and including the dll directly (but remember to include the License!).</p>
+<p>We will accept relevant pull requests, and issues, so please consider contributing.</p>
 
-function CreateFrames() {
-	var rightPage = "title--.html";
-	var leftPage = "switch1--.html";
-	
-	if (location.search != "") {
-		rightPage = location.search.substring(1);
-	} else if (location.hash != "") {
-		rightPage = location.hash.substring(1);
-	}
-	
-	try {
-		leftPage = frames["vbdocswitch"].src;
-	} catch (ex) {}
-	
-	document.write('<frameset rows="*" cols="30%, *" frameborder="1" framespacing="3" bordercolor="#e9e8dc">');
-	document.write('<frame name="vbdocswitch" scrolling="NO" src="' + leftPage + '" frameborder="0" >');
-	document.write('<frame src="' + rightPage + '" name="vbdocright" onload="do_highlight()">');
-	document.write('</frameset>');
-}
-
-
-function redirectFrame() {
-	if (location.search != "") {
-		frames["vbdocright"].location.replace(location.search.substring(1));
-	} else if (location.hash != "") {
-		frames["vbdocright"].location.replace(location.hash.substring(1));
-	}
-}
-
-CreateFrames();
-window.onhashchange = redirectFrame;
-
-//-->
-	</script>	
-</head>
-<noscript>
-	<frameset rows="*" cols="30%, *" frameborder="1" framespacing="3" bordercolor="#e9e8dc">
-	  <frame name="vbdocswitch" scrolling="NO" src="switch1--.html" frameborder="0" >
-	  <frame src="title--.html" name="vbdocright" onload="do_highlight()">
-
-		<noframes>
-		<body bgcolor="#FFFFFF">
-			This page requires frames.
-		</body>
-		</noframes>
-
-	</frameset>
-</noscript> 
+            </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
 </html>

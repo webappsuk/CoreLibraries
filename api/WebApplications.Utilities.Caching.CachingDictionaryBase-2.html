@@ -1,0 +1,1731 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CachingDictionaryBase&lt;TKey, TValue&gt;
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CachingDictionaryBase&lt;TKey, TValue&gt;
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2">Class CachingDictionaryBase&lt;TKey, TValue&gt;
+              </h1>
+              <div class="markdown level0 summary"><p>Implements core functionality for caching classes.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><span class="xref">CachingDictionaryBase&lt;TKey, TValue&gt;</span></div>
+                  <div class="level2"><a class="xref" href="WebApplications.Utilities.Caching.CachingDictionary-2.html">CachingDictionary&lt;TKey, TValue&gt;</a></div>
+                  <div class="level2"><a class="xref" href="WebApplications.Utilities.Caching.EnhancedMemoryCache-2.html">EnhancedMemoryCache&lt;TKey, TValue&gt;</a></div>
+                  <div class="level2"><a class="xref" href="WebApplications.Utilities.Caching.EnhancedMemoryCacheNull-2.html">EnhancedMemoryCacheNull&lt;TKey, TValue&gt;</a></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities.Caching</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
+              <h5 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public abstract class CachingDictionaryBase&lt;TKey, TValue&gt; : ICaching&lt;TKey, TValue&gt;</code></pre>
+              </div>
+              <h5 class="typeParameters">Type Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="parametername">TKey</span></td>
+                    <td><p>The type of the key.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="parametername">TValue</span></td>
+                    <td><p>The type of the values.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="constructors">Constructors
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L49">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2__ctor_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.#ctor*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2__ctor" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.#ctor">CachingDictionaryBase()</h4>
+              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Caching.CachingDictionaryBase-2.html">CachingDictionaryBase&lt;TKey, TValue&gt;</a> class.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">protected CachingDictionaryBase()</code></pre>
+              </div>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L59">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_DefaultAbsoluteExpiration_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.DefaultAbsoluteExpiration*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_DefaultAbsoluteExpiration" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.DefaultAbsoluteExpiration">DefaultAbsoluteExpiration</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the default absolute expiration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TimeSpan DefaultAbsoluteExpiration { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_DefaultAbsoluteExpiration">ICaching&lt;TKey, TValue&gt;.DefaultAbsoluteExpiration</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L77">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_DefaultSlidingExpiration_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.DefaultSlidingExpiration*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_DefaultSlidingExpiration" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.DefaultSlidingExpiration">DefaultSlidingExpiration</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the default sliding expiration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TimeSpan DefaultSlidingExpiration { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_DefaultSlidingExpiration">ICaching&lt;TKey, TValue&gt;.DefaultSlidingExpiration</a></div>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L218">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0__1_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,`1)">AddOrUpdate(TKey, TValue)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key and value
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue AddOrUpdate(TKey key, TValue value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to either insert or update the existing value with.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_AddOrUpdate__0__1_">ICaching&lt;TKey, TValue&gt;.AddOrUpdate(TKey, TValue)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L234">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0__1_System_DateTimeOffset_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,`1,System.DateTimeOffset)">AddOrUpdate(TKey, TValue, DateTimeOffset)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key, value and absolute expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue AddOrUpdate(TKey key, TValue value, DateTimeOffset absoluteExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to either insert or update the existing value with.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_AddOrUpdate__0__1_System_DateTimeOffset_">ICaching&lt;TKey, TValue&gt;.AddOrUpdate(TKey, TValue, DateTimeOffset)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L478">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0__1_System_DateTimeOffset_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,`1,System.DateTimeOffset,System.TimeSpan)">AddOrUpdate(TKey, TValue, DateTimeOffset, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key, value, absolute expiration and sliding expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract TValue AddOrUpdate(TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to either insert or update the existing value with.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L252">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0__1_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,`1,System.TimeSpan)">AddOrUpdate(TKey, TValue, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key, value and sliding expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue AddOrUpdate(TKey key, TValue value, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to either insert or update the existing value with.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_AddOrUpdate__0__1_System_TimeSpan_">ICaching&lt;TKey, TValue&gt;.AddOrUpdate(TKey, TValue, TimeSpan)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L268">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0_System_Func__0__1__System_Func__0__1__1__" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,System.Func{`0,`1},System.Func{`0,`1,`1})">AddOrUpdate(TKey, Func&lt;TKey, TValue&gt;, Func&lt;TKey, TValue, TValue&gt;)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key and the add/update factories
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue AddOrUpdate(TKey key, Func&lt;TKey, TValue&gt; addValueFactory, Func&lt;TKey, TValue, TValue&gt; updateValueFactory)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to create the value that we want to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;TKey, TValue, TValue&gt;</td>
+                    <td><span class="parametername">updateValueFactory</span></td>
+                    <td><p>Used to update the value if it&#39;s already cached.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_AddOrUpdate__0_System_Func__0__1__System_Func__0__1__1__">ICaching&lt;TKey, TValue&gt;.AddOrUpdate(TKey, Func&lt;TKey, TValue&gt;, Func&lt;TKey, TValue, TValue&gt;)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L295">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0_System_Func__0__1__System_Func__0__1__1__System_DateTimeOffset_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,System.Func{`0,`1},System.Func{`0,`1,`1},System.DateTimeOffset)">AddOrUpdate(TKey, Func&lt;TKey, TValue&gt;, Func&lt;TKey, TValue, TValue&gt;, DateTimeOffset)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the key, the add/update factories and the absolute expiration values specified
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue AddOrUpdate(TKey key, Func&lt;TKey, TValue&gt; addValueFactory, Func&lt;TKey, TValue, TValue&gt; updateValueFactory, DateTimeOffset absoluteExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to create the value that we want to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;TKey, TValue, TValue&gt;</td>
+                    <td><span class="parametername">updateValueFactory</span></td>
+                    <td><p>Used to update the value if it&#39;s already cached.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether or not there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_AddOrUpdate__0_System_Func__0__1__System_Func__0__1__1__System_DateTimeOffset_">ICaching&lt;TKey, TValue&gt;.AddOrUpdate(TKey, Func&lt;TKey, TValue&gt;, Func&lt;TKey, TValue, TValue&gt;, DateTimeOffset)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L499">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0_System_Func__0__1__System_Func__0__1__1__System_DateTimeOffset_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,System.Func{`0,`1},System.Func{`0,`1,`1},System.DateTimeOffset,System.TimeSpan)">AddOrUpdate(TKey, Func&lt;TKey, TValue&gt;, Func&lt;TKey, TValue, TValue&gt;, DateTimeOffset, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key and the add/update factories
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public virtual TValue AddOrUpdate(TKey key, Func&lt;TKey, TValue&gt; addValueFactory, Func&lt;TKey, TValue, TValue&gt; updateValueFactory, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to create the value that we want to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;TKey, TValue, TValue&gt;</td>
+                    <td><span class="parametername">updateValueFactory</span></td>
+                    <td><p>Used to update the value if it&#39;s already cached.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L326">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_AddOrUpdate__0_System_Func__0__1__System_Func__0__1__1__System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.AddOrUpdate(`0,System.Func{`0,`1},System.Func{`0,`1,`1},System.TimeSpan)">AddOrUpdate(TKey, Func&lt;TKey, TValue&gt;, Func&lt;TKey, TValue, TValue&gt;, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the key, the add/update factories and the sliding expiration values specified
+(if an entry doesn&#39;t already exist otherwise the existing value is updated).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue AddOrUpdate(TKey key, Func&lt;TKey, TValue&gt; addValueFactory, Func&lt;TKey, TValue, TValue&gt; updateValueFactory, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to calculate the value we want to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx">Func</a>&lt;TKey, TValue, TValue&gt;</td>
+                    <td><span class="parametername">updateValueFactory</span></td>
+                    <td><p>Used to update the value if it&#39;s already cached.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or updated value depending on whether or not there&#39;s already an existing entry in the cache
+with the same key as <span class="paramref">key</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_AddOrUpdate__0_System_Func__0__1__System_Func__0__1__1__System_TimeSpan_">ICaching&lt;TKey, TValue&gt;.AddOrUpdate(TKey, Func&lt;TKey, TValue&gt;, Func&lt;TKey, TValue, TValue&gt;, TimeSpan)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L414">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_Clear_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.Clear*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_Clear" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.Clear">Clear()</h4>
+              <div class="markdown level1 summary"><p>Clears the cache.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract void Clear()</code></pre>
+              </div>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_Clear">ICaching&lt;TKey, TValue&gt;.Clear()</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L100">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_ContainsKey_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.ContainsKey*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_ContainsKey__0_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.ContainsKey(`0)">ContainsKey(TKey)</h4>
+              <div class="markdown level1 summary"><p>Checks whether an entry with the specified key currently exists within the cache.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract bool ContainsKey(TKey key)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the cache contains an entry with the same key value as <span class="paramref">key</span>;
+otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_ContainsKey__0_">ICaching&lt;TKey, TValue&gt;.ContainsKey(TKey)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L111">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0__1_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,`1)">GetOrAdd(TKey, TValue)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key and value
+(if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public virtual TValue GetOrAdd(TKey key, TValue value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to cache the value of.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_GetOrAdd__0__1_">ICaching&lt;TKey, TValue&gt;.GetOrAdd(TKey, TValue)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L127">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0__1_System_DateTimeOffset_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,`1,System.DateTimeOffset)">GetOrAdd(TKey, TValue, DateTimeOffset)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key and value along with the absolute expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue GetOrAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to cache the value of.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_GetOrAdd__0__1_System_DateTimeOffset_">ICaching&lt;TKey, TValue&gt;.GetOrAdd(TKey, TValue, DateTimeOffset)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L430">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0__1_System_DateTimeOffset_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,`1,System.DateTimeOffset,System.TimeSpan)">GetOrAdd(TKey, TValue, DateTimeOffset, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key, the value, the absolute expiration and the sliding expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract TValue GetOrAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The value.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L145">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0__1_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,`1,System.TimeSpan)">GetOrAdd(TKey, TValue, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key and value along with the sliding expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue GetOrAdd(TKey key, TValue value, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to cache the value of.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_GetOrAdd__0__1_System_TimeSpan_">ICaching&lt;TKey, TValue&gt;.GetOrAdd(TKey, TValue, TimeSpan)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L160">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0_System_Func__0__1__" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,System.Func{`0,`1})">GetOrAdd(TKey, Func&lt;TKey, TValue&gt;)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key and a factory to create the value
+(if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue GetOrAdd(TKey key, Func&lt;TKey, TValue&gt; addValueFactory)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to create the value we want to cache.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_GetOrAdd__0_System_Func__0__1__">ICaching&lt;TKey, TValue&gt;.GetOrAdd(TKey, Func&lt;TKey, TValue&gt;)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L177">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0_System_Func__0__1__System_DateTimeOffset_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,System.Func{`0,`1},System.DateTimeOffset)">GetOrAdd(TKey, Func&lt;TKey, TValue&gt;, DateTimeOffset)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key, the factory to create the value and the absolute expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue GetOrAdd(TKey key, Func&lt;TKey, TValue&gt; addValueFactory, DateTimeOffset absoluteExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to create the value we want to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_GetOrAdd__0_System_Func__0__1__System_DateTimeOffset_">ICaching&lt;TKey, TValue&gt;.GetOrAdd(TKey, Func&lt;TKey, TValue&gt;, DateTimeOffset)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L450">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0_System_Func__0__1__System_DateTimeOffset_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,System.Func{`0,`1},System.DateTimeOffset,System.TimeSpan)">GetOrAdd(TKey, Func&lt;TKey, TValue&gt;, DateTimeOffset, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key, the factory to create the value, the absolute expiration
+and the sliding expiration (if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public virtual TValue GetOrAdd(TKey key, Func&lt;TKey, TValue&gt; addValueFactory, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to create the value we want to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L199">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_GetOrAdd__0_System_Func__0__1__System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.GetOrAdd(`0,System.Func{`0,`1},System.TimeSpan)">GetOrAdd(TKey, Func&lt;TKey, TValue&gt;, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Inserts a new entry into the cache using the specified key, the factory to create the value and the sliding expiration
+(if an entry doesn&#39;t already exist otherwise the existing value is returned).</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public TValue GetOrAdd(TKey key, Func&lt;TKey, TValue&gt; addValueFactory, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx">Func</a>&lt;TKey, TValue&gt;</td>
+                    <td><span class="parametername">addValueFactory</span></td>
+                    <td><p>Used to create the value we want to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><p>Either the inserted or retrieved value depending on whether there&#39;s already an existing entry with the same key.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_GetOrAdd__0_System_Func__0__1__System_TimeSpan_">ICaching&lt;TKey, TValue&gt;.GetOrAdd(TKey, Func&lt;TKey, TValue&gt;, TimeSpan)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L373">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd__0__1_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd(`0,`1)">TryAdd(TKey, TValue)</h4>
+              <div class="markdown level1 summary"><p>Tries to insert an entry into the cache using the specified key and value.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool TryAdd(TKey key, TValue value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to cache.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the entry was inserted successfully; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_TryAdd__0__1_">ICaching&lt;TKey, TValue&gt;.TryAdd(TKey, TValue)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L388">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd__0__1_System_DateTimeOffset_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd(`0,`1,System.DateTimeOffset)">TryAdd(TKey, TValue, DateTimeOffset)</h4>
+              <div class="markdown level1 summary"><p>Tries to insert an entry into the cache using the specified key, value and absolute expiration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool TryAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the entry was inserted successfully; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_TryAdd__0__1_System_DateTimeOffset_">ICaching&lt;TKey, TValue&gt;.TryAdd(TKey, TValue, DateTimeOffset)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L530">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd__0__1_System_DateTimeOffset_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd(`0,`1,System.DateTimeOffset,System.TimeSpan)">TryAdd(TKey, TValue, DateTimeOffset, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Tries to insert an entry into the cache using the specified key, value, absolute expiration and sliding expiration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract bool TryAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetimeoffset(v=vs.110).aspx">DateTimeOffset</a></td>
+                    <td><span class="parametername">absoluteExpiration</span></td>
+                    <td><p>Sets when the cache entry will be expired.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the entry was inserted successfully; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L405">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryAdd__0__1_System_TimeSpan_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryAdd(`0,`1,System.TimeSpan)">TryAdd(TKey, TValue, TimeSpan)</h4>
+              <div class="markdown level1 summary"><p>Tries to insert an entry into the cache using the specified key, value and sliding expiration.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public bool TryAdd(TKey key, TValue value, TimeSpan slidingExpiration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The object to cache.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+                    <td><span class="parametername">slidingExpiration</span></td>
+                    <td><p>The duration to wait before expiring the cache (if no requests are made for it during that period).</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the entry was inserted successfully; otherwise returns <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_TryAdd__0__1_System_TimeSpan_">ICaching&lt;TKey, TValue&gt;.TryAdd(TKey, TValue, TimeSpan)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L352">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryGetValue_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryGetValue*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryGetValue__0__1__" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryGetValue(`0,`1@)">TryGetValue(TKey, out TValue)</h4>
+              <div class="markdown level1 summary"><p>Tries to retrieve the value using the specified key.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract bool TryGetValue(TKey key, out TValue value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The value retrieved.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the corresponding <span class="paramref">key</span> exists and the value was successfully retrieved;
+otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_TryGetValue__0__1__">ICaching&lt;TKey, TValue&gt;.TryGetValue(TKey, out TValue)</a></div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L363">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryRemove_" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryRemove*"></a>
+              <h4 id="WebApplications_Utilities_Caching_CachingDictionaryBase_2_TryRemove__0__1__" data-uid="WebApplications.Utilities.Caching.CachingDictionaryBase`2.TryRemove(`0,`1@)">TryRemove(TKey, out TValue)</h4>
+              <div class="markdown level1 summary"><p>Tries to remove an entry using the specified key.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public abstract bool TryRemove(TKey key, out TValue value)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="xref">TKey</span></td>
+                    <td><span class="parametername">key</span></td>
+                    <td><p>The unique identifier for the cache entry.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><span class="xref">TValue</span></td>
+                    <td><span class="parametername">value</span></td>
+                    <td><p>The value removed.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td><p>Returns <span class="xref">true</span> if the corresponding <span class="paramref">key</span> exists and the value was successfully removed;
+otherwise <span class="xref">false</span>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="implements">Implements</h5>
+                  <div><a class="xref" href="WebApplications.Utilities.Interfaces.Caching.ICaching-2.html#WebApplications_Utilities_Interfaces_Caching_ICaching_2_TryRemove__0__1__">ICaching&lt;TKey, TValue&gt;.TryRemove(TKey, out TValue)</a></div>
+              <h3 id="extensionmethods">Extension Methods</h3>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+              </div>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Caching/CachingDictionaryBase.cs/#L39" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

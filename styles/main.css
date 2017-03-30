@@ -1,0 +1,73 @@
+/*
+    Style the contents of the TOC and side affix to allow longer namespaces and items to be displayed in full.
+    The TOC enables the scrollbars upon overflow.
+    TODO: Can we enable drag to make the TOC wider when needed?
+*/
+.sidetoc {
+    min-width: 260px;
+    overflow-x: auto;
+}
+
+body .toc {
+    overflow-x: visible;
+}
+
+.sideaffix {
+    overflow: visible;
+}
+
+.affix > ul.level1 {
+    overflow: visible;
+}
+
+/*
+    Style the main content container. 
+    Width of 100% seems better than having it only in the centre of the screen
+*/
+.container {
+    width: 100%;
+    padding: inherit 20px;
+}
+
+/* 
+    Restrict logo in navbar.
+*/
+#logo {
+    height: 40px;
+    width: 40px;
+    margin: 5px 10px 5px 0px;
+}
+
+/*
+    Scrollbar theming for webkit only.
+*/
+::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+}
+
+::-webkit-scrollbar-track {
+      background-color: rgb(159, 159, 159);
+}
+
+::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.2)
+} /* this will style the thumb, ignoring the track */
+
+::-webkit-scrollbar-thumb:active {
+    background-color: rgba(0,0,0,0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0,0,0,0.4);
+}
+
+::-webkit-scrollbar-button {
+    width: 0px;
+    height: 0px;
+    display: none;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}

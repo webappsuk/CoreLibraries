@@ -1,0 +1,2097 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class TimeHelpers
+   | Web Applications UK Core Libraries Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class TimeHelpers
+   | Web Applications UK Core Libraries Documentation ">
+    <meta name="generator" content="docfx 2.13.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content">
+              
+              
+              <h1 id="WebApplications_Utilities_TimeHelpers" data-uid="WebApplications.Utilities.TimeHelpers">Class TimeHelpers
+              </h1>
+              <div class="markdown level0 summary"><p>Helper methods for working with NodaTime objects.</p>
+</div>
+              <div class="markdown level0 conceptual"></div>
+              <div class="inheritance">
+                <h5>Inheritance</h5>
+                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+                  <div class="level1"><span class="xref">TimeHelpers</span></div>
+              </div>
+              <div class="inheritedMembers">
+                <h5>Inherited Members</h5>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+                </div>
+                <div>
+                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+                </div>
+              </div>
+              <h6><strong>Namespace</strong>:WebApplications.Utilities</h6>
+              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
+              <h5 id="WebApplications_Utilities_TimeHelpers_syntax">Syntax</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">[PublicAPI]
+public static class TimeHelpers</code></pre>
+              </div>
+              <h3 id="fields">Fields
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L198">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_FileTimeEpoch" data-uid="WebApplications.Utilities.TimeHelpers.FileTimeEpoch">FileTimeEpoch</h4>
+              <div class="markdown level1 summary"><p>The file time epoch, 12:00 A.M. January 1, 1601.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Instant FileTimeEpoch</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L64">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_InfiniteDuration" data-uid="WebApplications.Utilities.TimeHelpers.InfiniteDuration">InfiniteDuration</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify an infinite waiting period, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration InfiniteDuration</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L69">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MaxDuration" data-uid="WebApplications.Utilities.TimeHelpers.MaxDuration">MaxDuration</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the maximum duration, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration MaxDuration</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L89">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MaxLocalDate" data-uid="WebApplications.Utilities.TimeHelpers.MaxLocalDate">MaxLocalDate</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the maximum local date, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDate.html">LocalDate</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly LocalDate MaxLocalDate</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDate.html">LocalDate</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L79">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MaxLocalDateTime" data-uid="WebApplications.Utilities.TimeHelpers.MaxLocalDateTime">MaxLocalDateTime</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the maximum local date time, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly LocalDateTime MaxLocalDateTime</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L99">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MaxLocalTime" data-uid="WebApplications.Utilities.TimeHelpers.MaxLocalTime">MaxLocalTime</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the maximum local time, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalTime.html">LocalTime</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly LocalTime MaxLocalTime</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalTime.html">LocalTime</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L74">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MinDuration" data-uid="WebApplications.Utilities.TimeHelpers.MinDuration">MinDuration</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the minimum duration, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration MinDuration</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L94">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MinLocalDate" data-uid="WebApplications.Utilities.TimeHelpers.MinLocalDate">MinLocalDate</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the minimum local date, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDate.html">LocalDate</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly LocalDate MinLocalDate</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDate.html">LocalDate</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L84">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MinLocalDateTime" data-uid="WebApplications.Utilities.TimeHelpers.MinLocalDateTime">MinLocalDateTime</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the minimum local date time, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly LocalDateTime MinLocalDateTime</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L104">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_MinLocalTime" data-uid="WebApplications.Utilities.TimeHelpers.MinLocalTime">MinLocalTime</h4>
+              <div class="markdown level1 summary"><p>A constant used to specify the minimum local time, for methods that accept a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalTime.html">LocalTime</a> parameter.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly LocalTime MinLocalTime</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalTime.html">LocalTime</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L174">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneDayPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneDayPeriod">OneDayPeriod</h4>
+              <div class="markdown level1 summary"><p>The one day <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneDayPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L129">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneHour" data-uid="WebApplications.Utilities.TimeHelpers.OneHour">OneHour</h4>
+              <div class="markdown level1 summary"><p>The one hour <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration OneHour</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L168">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneHourPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneHourPeriod">OneHourPeriod</h4>
+              <div class="markdown level1 summary"><p>The one hour <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneHourPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L114">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneMillisecond" data-uid="WebApplications.Utilities.TimeHelpers.OneMillisecond">OneMillisecond</h4>
+              <div class="markdown level1 summary"><p>The one millisecond <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration OneMillisecond</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L149">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneMillisecondPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneMillisecondPeriod">OneMillisecondPeriod</h4>
+              <div class="markdown level1 summary"><p>The one millisecond <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneMillisecondPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L124">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneMinute" data-uid="WebApplications.Utilities.TimeHelpers.OneMinute">OneMinute</h4>
+              <div class="markdown level1 summary"><p>The one minute <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration OneMinute</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L162">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneMinutePeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneMinutePeriod">OneMinutePeriod</h4>
+              <div class="markdown level1 summary"><p>The one minute <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneMinutePeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L186">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneMonthPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneMonthPeriod">OneMonthPeriod</h4>
+              <div class="markdown level1 summary"><p>The one month <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneMonthPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L119">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneSecond" data-uid="WebApplications.Utilities.TimeHelpers.OneSecond">OneSecond</h4>
+              <div class="markdown level1 summary"><p>The one second <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration OneSecond</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L156">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneSecondPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneSecondPeriod">OneSecondPeriod</h4>
+              <div class="markdown level1 summary"><p>The one second <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneSecondPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L134">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneStandardDay" data-uid="WebApplications.Utilities.TimeHelpers.OneStandardDay">OneStandardDay</h4>
+              <div class="markdown level1 summary"><p>The one standard day <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration OneStandardDay</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L139">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneStandardWeek" data-uid="WebApplications.Utilities.TimeHelpers.OneStandardWeek">OneStandardWeek</h4>
+              <div class="markdown level1 summary"><p>The one standard week <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration OneStandardWeek</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L109">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneTick" data-uid="WebApplications.Utilities.TimeHelpers.OneTick">OneTick</h4>
+              <div class="markdown level1 summary"><p>The one tick <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Duration OneTick</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L144">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneTickPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneTickPeriod">OneTickPeriod</h4>
+              <div class="markdown level1 summary"><p>The one tick <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneTickPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L180">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneWeekPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneWeekPeriod">OneWeekPeriod</h4>
+              <div class="markdown level1 summary"><p>The one week <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneWeekPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L192">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_TimeHelpers_OneYearPeriod" data-uid="WebApplications.Utilities.TimeHelpers.OneYearPeriod">OneYearPeriod</h4>
+              <div class="markdown level1 summary"><p>The one year <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static readonly Period OneYearPeriod</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="properties">Properties
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L261">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_Clock_" data-uid="WebApplications.Utilities.TimeHelpers.Clock*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_Clock" data-uid="WebApplications.Utilities.TimeHelpers.Clock">Clock</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the clock.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static IClock Clock { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.IClock.html">IClock</a></td>
+                    <td><p>The clock.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L241">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_DateTimeZoneProvider_" data-uid="WebApplications.Utilities.TimeHelpers.DateTimeZoneProvider*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_DateTimeZoneProvider" data-uid="WebApplications.Utilities.TimeHelpers.DateTimeZoneProvider">DateTimeZoneProvider</h4>
+              <div class="markdown level1 summary"><p>Gets or sets the date time zone provider.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static IDateTimeZoneProvider DateTimeZoneProvider { get; set; }</code></pre>
+              </div>
+              <h5 class="propertyValue">Property Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.IDateTimeZoneProvider.html">IDateTimeZoneProvider</a></td>
+                    <td><p>The date time zone provider.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h3 id="methods">Methods
+              </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L577">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_CeilingHour_" data-uid="WebApplications.Utilities.TimeHelpers.CeilingHour*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_CeilingHour_NodaTime_Instant_" data-uid="WebApplications.Utilities.TimeHelpers.CeilingHour(NodaTime.Instant)">CeilingHour(Instant)</h4>
+              <div class="markdown level1 summary"><p>Ceilings the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> to the nearest hour.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant CeilingHour(this Instant instant)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><span class="parametername">instant</span></td>
+                    <td><p>The instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>Instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L551">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_CeilingMinute_" data-uid="WebApplications.Utilities.TimeHelpers.CeilingMinute*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_CeilingMinute_NodaTime_Instant_" data-uid="WebApplications.Utilities.TimeHelpers.CeilingMinute(NodaTime.Instant)">CeilingMinute(Instant)</h4>
+              <div class="markdown level1 summary"><p>Ceilings the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> to the nearest minute.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant CeilingMinute(this Instant instant)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><span class="parametername">instant</span></td>
+                    <td><p>The instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>Instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L525">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_CeilingSecond_" data-uid="WebApplications.Utilities.TimeHelpers.CeilingSecond*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_CeilingSecond_NodaTime_Instant_" data-uid="WebApplications.Utilities.TimeHelpers.CeilingSecond(NodaTime.Instant)">CeilingSecond(Instant)</h4>
+              <div class="markdown level1 summary"><p>Ceilings the specified instant to the second.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant CeilingSecond(this Instant instant)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><span class="parametername">instant</span></td>
+                    <td><p>The instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>Instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L565">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_FloorHour_" data-uid="WebApplications.Utilities.TimeHelpers.FloorHour*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_FloorHour_NodaTime_Instant_" data-uid="WebApplications.Utilities.TimeHelpers.FloorHour(NodaTime.Instant)">FloorHour(Instant)</h4>
+              <div class="markdown level1 summary"><p>Floors the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> to the nearest hour.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant FloorHour(this Instant instant)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><span class="parametername">instant</span></td>
+                    <td><p>The instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>Instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L539">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_FloorMinute_" data-uid="WebApplications.Utilities.TimeHelpers.FloorMinute*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_FloorMinute_NodaTime_Instant_" data-uid="WebApplications.Utilities.TimeHelpers.FloorMinute(NodaTime.Instant)">FloorMinute(Instant)</h4>
+              <div class="markdown level1 summary"><p>Floors the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> to the nearest minute.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant FloorMinute(this Instant instant)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><span class="parametername">instant</span></td>
+                    <td><p>The instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>Instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L513">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_FloorSecond_" data-uid="WebApplications.Utilities.TimeHelpers.FloorSecond*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_FloorSecond_NodaTime_Instant_" data-uid="WebApplications.Utilities.TimeHelpers.FloorSecond(NodaTime.Instant)">FloorSecond(Instant)</h4>
+              <div class="markdown level1 summary"><p>Floors the specified instant to the second.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant FloorSecond(this Instant instant)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><span class="parametername">instant</span></td>
+                    <td><p>The instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td><p>Instant.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L451">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_Hours_" data-uid="WebApplications.Utilities.TimeHelpers.Hours*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_Hours_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.Hours(NodaTime.Duration)">Hours(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the hours component of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static int Hours(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L231">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_InstantFromFileTimeUtc_" data-uid="WebApplications.Utilities.TimeHelpers.InstantFromFileTimeUtc*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_InstantFromFileTimeUtc_System_Int64_" data-uid="WebApplications.Utilities.TimeHelpers.InstantFromFileTimeUtc(System.Int64)">InstantFromFileTimeUtc(Int64)</h4>
+              <div class="markdown level1 summary"><p>Gets an <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a> from file time ticks.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static Instant InstantFromFileTimeUtc(long fileTimeTicks)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int64(v=vs.110).aspx">Int64</a></td>
+                    <td><span class="parametername">fileTimeTicks</span></td>
+                    <td><p>The number of 100-nanosecond intervals that have elapsed since <a class="xref" href="WebApplications.Utilities.TimeHelpers.html#WebApplications_Utilities_TimeHelpers_FileTimeEpoch">FileTimeEpoch</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L659">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_IsNegative_" data-uid="WebApplications.Utilities.TimeHelpers.IsNegative*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_IsNegative_NodaTime_Period_NodaTime_LocalDate_" data-uid="WebApplications.Utilities.TimeHelpers.IsNegative(NodaTime.Period,NodaTime.LocalDate)">IsNegative(Period, LocalDate)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified period is negative, relative to a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool IsNegative(this Period period, LocalDate local)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td><span class="parametername">period</span></td>
+                    <td><p>The period.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDate.html">LocalDate</a></td>
+                    <td><span class="parametername">local</span></td>
+                    <td><p>The local.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L629">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_IsNegative_" data-uid="WebApplications.Utilities.TimeHelpers.IsNegative*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_IsNegative_NodaTime_Period_NodaTime_LocalDateTime_" data-uid="WebApplications.Utilities.TimeHelpers.IsNegative(NodaTime.Period,NodaTime.LocalDateTime)">IsNegative(Period, LocalDateTime)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified period is negative, relative to a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool IsNegative(this Period period, LocalDateTime local)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td><span class="parametername">period</span></td>
+                    <td><p>The period.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a></td>
+                    <td><span class="parametername">local</span></td>
+                    <td><p>The local.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L644">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_IsPositive_" data-uid="WebApplications.Utilities.TimeHelpers.IsPositive*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_IsPositive_NodaTime_Period_NodaTime_LocalDate_" data-uid="WebApplications.Utilities.TimeHelpers.IsPositive(NodaTime.Period,NodaTime.LocalDate)">IsPositive(Period, LocalDate)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified period is positive, relative to a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool IsPositive(this Period period, LocalDate local)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td><span class="parametername">period</span></td>
+                    <td><p>The period.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDate.html">LocalDate</a></td>
+                    <td><span class="parametername">local</span></td>
+                    <td><p>The local.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L614">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_IsPositive_" data-uid="WebApplications.Utilities.TimeHelpers.IsPositive*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_IsPositive_NodaTime_Period_NodaTime_LocalDateTime_" data-uid="WebApplications.Utilities.TimeHelpers.IsPositive(NodaTime.Period,NodaTime.LocalDateTime)">IsPositive(Period, LocalDateTime)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified period is positive, relative to a <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool IsPositive(this Period period, LocalDateTime local)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td><span class="parametername">period</span></td>
+                    <td><p>The period.</p>
+</td>
+                  </tr>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.LocalDateTime.html">LocalDateTime</a></td>
+                    <td><span class="parametername">local</span></td>
+                    <td><p>The local.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L593">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_IsZero_" data-uid="WebApplications.Utilities.TimeHelpers.IsZero*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_IsZero_NodaTime_Period_" data-uid="WebApplications.Utilities.TimeHelpers.IsZero(NodaTime.Period)">IsZero(Period)</h4>
+              <div class="markdown level1 summary"><p>Determines whether the specified period is zero.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static bool IsZero(this Period period)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Period.html">Period</a></td>
+                    <td><span class="parametername">period</span></td>
+                    <td><p>The period.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L294">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_LoadTzdb_" data-uid="WebApplications.Utilities.TimeHelpers.LoadTzdb*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_LoadTzdb_System_String_" data-uid="WebApplications.Utilities.TimeHelpers.LoadTzdb(System.String)">LoadTzdb(String)</h4>
+              <div class="markdown level1 summary"><p>Loads a time zone database.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static IDateTimeZoneProvider LoadTzdb(string path = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">path</span></td>
+                    <td><p>The path of the database file to load, or <span class="xref">null</span> to use the path in the configuration.
+If no path is given in the config, the default NodaTime <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZoneProviders.html">Tzdb</a> will be used.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.IDateTimeZoneProvider.html">IDateTimeZoneProvider</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L379">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_Milliseconds_" data-uid="WebApplications.Utilities.TimeHelpers.Milliseconds*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_Milliseconds_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.Milliseconds(NodaTime.Duration)">Milliseconds(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the milliseconds component of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static int Milliseconds(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L427">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_Minutes_" data-uid="WebApplications.Utilities.TimeHelpers.Minutes*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_Minutes_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.Minutes(NodaTime.Duration)">Minutes(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the minutes component of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static int Minutes(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L403">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_Seconds_" data-uid="WebApplications.Utilities.TimeHelpers.Seconds*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_Seconds_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.Seconds(NodaTime.Duration)">Seconds(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the seconds component of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static int Seconds(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L282">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_SetDateTimeZoneProvider_" data-uid="WebApplications.Utilities.TimeHelpers.SetDateTimeZoneProvider*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_SetDateTimeZoneProvider_System_String_" data-uid="WebApplications.Utilities.TimeHelpers.SetDateTimeZoneProvider(System.String)">SetDateTimeZoneProvider(String)</h4>
+              <div class="markdown level1 summary"><p>Sets the <a class="xref" href="WebApplications.Utilities.TimeHelpers.html#WebApplications_Utilities_TimeHelpers_DateTimeZoneProvider">DateTimeZoneProvider</a> to the time zone database given.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static void SetDateTimeZoneProvider(string path = null)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+                    <td><span class="parametername">path</span></td>
+                    <td><p>The path of the database file to load, or <span class="xref">null</span> to use the path in the configuration.
+If no path is given in the config, the default NodaTime <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZoneProviders.html">Tzdb</a> will be used.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L475">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_StandardDays_" data-uid="WebApplications.Utilities.TimeHelpers.StandardDays*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_StandardDays_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.StandardDays(NodaTime.Duration)">StandardDays(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the standard days component of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static int StandardDays(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L499">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_StandardWeeks_" data-uid="WebApplications.Utilities.TimeHelpers.StandardWeeks*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_StandardWeeks_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.StandardWeeks(NodaTime.Duration)">StandardWeeks(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the standard weeks component of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a>.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static int StandardWeeks(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L439">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_TotalHours_" data-uid="WebApplications.Utilities.TimeHelpers.TotalHours*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_TotalHours_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.TotalHours(NodaTime.Duration)">TotalHours(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the value of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> expressed in whole and fractional hours.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static double TotalHours(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.double(v=vs.110).aspx">Double</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L367">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_TotalMilliseconds_" data-uid="WebApplications.Utilities.TimeHelpers.TotalMilliseconds*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_TotalMilliseconds_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.TotalMilliseconds(NodaTime.Duration)">TotalMilliseconds(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the value of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> expressed in whole and fractional milliseconds.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static double TotalMilliseconds(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.double(v=vs.110).aspx">Double</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L415">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_TotalMinutes_" data-uid="WebApplications.Utilities.TimeHelpers.TotalMinutes*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_TotalMinutes_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.TotalMinutes(NodaTime.Duration)">TotalMinutes(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the value of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> expressed in whole and fractional minutes.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static double TotalMinutes(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.double(v=vs.110).aspx">Double</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L391">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_TotalSeconds_" data-uid="WebApplications.Utilities.TimeHelpers.TotalSeconds*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_TotalSeconds_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.TotalSeconds(NodaTime.Duration)">TotalSeconds(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the value of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> expressed in whole and fractional seconds.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static double TotalSeconds(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.double(v=vs.110).aspx">Double</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L463">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_TotalStandardDays_" data-uid="WebApplications.Utilities.TimeHelpers.TotalStandardDays*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_TotalStandardDays_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.TotalStandardDays(NodaTime.Duration)">TotalStandardDays(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the value of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> expressed in whole and fractional standard days.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static double TotalStandardDays(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.double(v=vs.110).aspx">Double</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L487">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_TimeHelpers_TotalStandardWeeks_" data-uid="WebApplications.Utilities.TimeHelpers.TotalStandardWeeks*"></a>
+              <h4 id="WebApplications_Utilities_TimeHelpers_TotalStandardWeeks_NodaTime_Duration_" data-uid="WebApplications.Utilities.TimeHelpers.TotalStandardWeeks(NodaTime.Duration)">TotalStandardWeeks(Duration)</h4>
+              <div class="markdown level1 summary"><p>Gets the value of the <a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a> expressed in whole and fractional standard days.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public static double TotalStandardWeeks(this Duration duration)</code></pre>
+              </div>
+              <h5 class="parameters">Parameters</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+                    <td><span class="parametername">duration</span></td>
+                    <td><p>The duration.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h5 class="returns">Returns</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.double(v=vs.110).aspx">Double</a></td>
+                    <td><p>System.Double.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
+                        </article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/TimeHelpers.cs/#L44" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © Copyright 2017 <a href='http://www.webappuk.com'>Web Applications UK Ltd</a> Core Libraries documentation, ALL RIGHTS RESERVED
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
