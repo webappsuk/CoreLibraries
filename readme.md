@@ -19,7 +19,7 @@ We will accept relevant pull requests, and issues, so please consider [contribut
 Building the libraries
 ----------------------
 
-The libraries are built using [Visual Studio 2015](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx).  They can also be built using msbuild, and for that reason build dependencies are included as project references in projects (see ["Incorrect solution build ordering when using msbuild.exe"](http://blogs.msdn.com/b/visualstudio/archive/2010/12/21/incorrect-solution-build-ordering-when-using-msbuild-exe.aspx)).
+The libraries are built using [Visual Studio 2017](https://www.visualstudio.com/downloads/).  They can also be built using msbuild, and for that reason build dependencies are included as project references in projects (see ["Incorrect solution build ordering when using msbuild.exe"](http://blogs.msdn.com/b/visualstudio/archive/2010/12/21/incorrect-solution-build-ordering-when-using-msbuild-exe.aspx)).
 
 We are big fans of [ReSharper](https://www.jetbrains.com/resharper/download/) and recommend using it.  All our code makes use of [ReSharper code annotations](https://www.jetbrains.com/resharper/help/Code_Analysis__Code_Annotations.html) to refine code inspection. 
 
