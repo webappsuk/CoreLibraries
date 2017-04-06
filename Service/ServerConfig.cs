@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
 using WebApplications.Utilities.Annotations;
@@ -176,7 +177,7 @@ namespace WebApplications.Utilities.Service
             int maximumConnections = 1,
             TimeSpan heartbeat = default(TimeSpan))
         {
-            if (maximumConnections < 1)
+            if (maximumConnections < 0)
                 throw new ArgumentOutOfRangeException(
                     "maximumConnections",
                     CommonResources.NamedPipeServer_MaxConnections);

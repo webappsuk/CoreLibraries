@@ -25,35 +25,255 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
     /// <summary>
     /// Base class for all hashing cryptographic providers.
     /// </summary>
-    public abstract class HashingCryptographyProvider : CryptographyProvider
+    public class HashingCryptographyProvider : CryptographyProvider
     {
         /// <inheritdoc />
         public override bool CanEncrypt => true;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="HashingCryptographyProvider" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="providerElement">The provider element (if any).</param>
-        /// <param name="configuration">The provider element (if any).</param>
-        /// <param name="preservesLength">
-        ///   <see langword="true" /> if the provider preserves the length.</param>
+        /// <param name="configuration">The configuration.</param>
         protected HashingCryptographyProvider(
             [NotNull] string name,
-            [CanBeNull] ProviderElement providerElement = null,
-            [CanBeNull] XElement configuration = null,
-            bool preservesLength = true)
-            : base(name, providerElement, configuration, preservesLength)
+            [NotNull] XElement configuration)
+            : base(name, configuration, false)
         {
+        }
+        
+        #region Static shortcuts
+        /// <summary>
+        /// Computes the hash of a string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
+        /// <returns>The hash in bytes.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static byte[] GetHash([NotNull] string input, [CanBeNull] HashAlgorithm algorithm = null)
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(input);
+            if (algorithm != null)
+                return algorithm.ComputeHash(buffer);
+
+            using (algorithm = new SHA256Cng())
+                return algorithm.ComputeHash(buffer);
+        }
+
+        /// <summary>
+        /// Computes the hash of a string and returns it as a base 64 encoded string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
+        /// <returns>The hash in a base 64 encoded string.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string GetHashString([NotNull] string input, [CanBeNull] HashAlgorithm algorithm = null)
+            => Convert.ToBase64String(GetHash(input, algorithm));
+
+        /// <summary>
+        /// Computes the hash.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
+        /// <returns>The hash in bytes.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static byte[] GetHash([NotNull]byte[] buffer, int offset = 0, int count = -1, [CanBeNull] HashAlgorithm algorithm = null)
+        {
+            if (count < 0) count = buffer.Length;
+            // ReSharper disable AssignNullToNotNullAttribute
+            if (algorithm != null)
+                return offset != 0 || count != buffer.Length
+                    ? algorithm.ComputeHash(buffer, offset, count)
+                    : algorithm.ComputeHash(buffer);
+
+            using (algorithm = new SHA256Cng())
+                return offset != 0 || count != buffer.Length
+                    ? algorithm.ComputeHash(buffer, offset, count)
+                    : algorithm.ComputeHash(buffer);
+            // ReSharper restore AssignNullToNotNullAttribute
+        }
+
+        /// <summary>
+        /// Computes the hash and returns it as a base 64 encoded string.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
+        /// <returns>The hash in a base 64 encoded string.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string GetHashString(
+            [NotNull] byte[] buffer,
+            int offset = 0,
+            int count = -1,
+            [CanBeNull] HashAlgorithm algorithm = null)
+            => Convert.ToBase64String(GetHash(buffer, offset, count, algorithm));
+
+        /// <summary>
+        /// Computes the hash from an input stream.
+        /// </summary>
+        /// <param name="inputStream">The input stream.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
+        /// <returns>The hash in bytes.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static byte[] GetHash([NotNull]Stream inputStream, [CanBeNull] HashAlgorithm algorithm = null)
+        {
+            if (algorithm != null)
+                return algorithm.ComputeHash(inputStream);
+            using (algorithm = new SHA256Cng())
+                return algorithm.ComputeHash(inputStream);
+        }
+
+        /// <summary>
+        /// Computes the hash from an input stream and returns it as a base 64 encoded string.
+        /// </summary>
+        /// <param name="inputStream">The input stream.</param>
+        /// <param name="algorithm">The algorithm (defaults to <see cref="SHA256Cng"/>).</param>
+        /// <returns>The hash in a base 64 encoded string.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string GetHashString([NotNull] Stream inputStream, [CanBeNull] HashAlgorithm algorithm = null)
+            => Convert.ToBase64String(GetHash(inputStream, algorithm));
+        #endregion
+
+        /// <summary>
+        /// Gets the algorithm.
+        /// </summary>
+        /// <returns>A <see cref="System.Security.Cryptography.HashAlgorithm"/>.</returns>
+        [NotNull]
+        protected virtual HashAlgorithm GetAlgorithm()
+        {
+            HashAlgorithm algorithm = CryptoConfig.CreateFromName(Name) as HashAlgorithm;
+            if (algorithm == null) throw new InvalidOperationException(string.Format(Resources.HashingCryptographyProvider_GetEncryptor_Create_Failed, Name));
+            return algorithm;
+        }
+
+        /// <summary>
+        /// Computes the hash of a string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>The hash in bytes.</returns>
+        [NotNull]
+        [PublicAPI]
+        public byte[] ComputeHash([NotNull] string input) => GetHash(input, GetAlgorithm());
+
+        /// <summary>
+        /// Computes the hash of a string and returns it as a base 64 encoded string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>The hash in a base 64 encoded string.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ComputeHashString([NotNull] string input) => GetHashString(input, GetAlgorithm());
+
+        /// <summary>
+        /// Computes the hash.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        /// <returns>The hash in bytes.</returns>
+        [NotNull]
+        [PublicAPI]
+        public byte[] ComputeHash([NotNull] byte[] buffer, int offset = 0, int count = -1)
+            => GetHash(buffer, offset, count, GetAlgorithm());
+
+        /// <summary>
+        /// Computes the hash and returns it as a base 64 encoded string.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        /// <returns>The hash in a base 64 encoded string.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ComputeHashString([NotNull]byte[] buffer, int offset = 0, int count = -1)
+            => GetHashString(buffer, offset, count, GetAlgorithm());
+
+        /// <summary>
+        /// Computes the hash from an input stream.
+        /// </summary>
+        /// <param name="inputStream">The input stream.</param>
+        /// <returns>The hash in bytes.</returns>
+        [NotNull]
+        [PublicAPI]
+        public byte[] ComputeHash([NotNull]Stream inputStream)
+            => GetHash(inputStream, GetAlgorithm());
+
+        /// <summary>
+        /// Computes the hash from an input stream and returns it as a base 64 encoded string.
+        /// </summary>
+        /// <param name="inputStream">The input stream.</param>
+        /// <returns>The hash in a base 64 encoded string.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ComputeHashString([NotNull]Stream inputStream)
+            => GetHashString(inputStream, GetAlgorithm());
+
+        /// <inheritdoc />
+        public sealed override ICryptoTransform GetEncryptor()
+        {
+            HashAlgorithm algorithm = GetAlgorithm();
+            return new CryptoTransform<HashAlgorithm>(
+                algorithm,
+                (a, inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset) =>
+                    a.TransformBlock(inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset),
+                (a, inputBuffer, inputOffset, inputCount) =>
+                    a.TransformFinalBlock(inputBuffer, inputOffset, inputCount),
+                algorithm.InputBlockSize,
+                algorithm.OutputBlockSize,
+                algorithm.CanTransformMultipleBlocks,
+                algorithm.CanReuseTransform);
+        }
+
+        /// <inheritdoc />
+        public sealed override ICryptoTransform GetDecryptor()
+        {
+            throw new CryptographicException(Resources.CryptographyProvider_Decryption_Not_Supported);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="CryptographyProvider" /> from an <see cref="AsymmetricAlgorithm" />.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="algorithm">The algorithm.</param>
+        /// <param name="configurationElement">The optional configuration element.</param>
+        /// <returns>A <see cref="CryptographyProvider" />.</returns>
+        /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
+        [NotNull]
+        internal static HashingCryptographyProvider Create(
+            [NotNull] string name,
+            [NotNull] HashAlgorithm algorithm,
+            [CanBeNull] XElement configurationElement = null)
+        {
+            // Check for keyed hashing algorithmns
+            KeyedHashAlgorithm keyed = algorithm as KeyedHashAlgorithm;
+            if (keyed != null) return KeyedHashingCryptographyProvider.Create(name, keyed, configurationElement);
+
+            // Simple hashing algorithm, no real configuration.
+            if (configurationElement == null)
+                configurationElement = new XElement("configuration");
+
+            return new HashingCryptographyProvider(name, configurationElement);
         }
     }
 }

@@ -3483,6 +3483,31 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Randomizes the order of an enumerable.
+        /// </summary>
+        /// <typeparam name="T">The item type.</typeparam>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <returns>A random order version of the initial enumerable.</returns>
+        [NotNull]
+        public static IReadOnlyList<T> Randomize<T>([NotNull] [InstantHandle] this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
+
+            T[] array = enumerable.ToArray();
+            int n = array.Length;
+            while (n > 1)
+            {
+                n--;
+                int k = ThreadLocal.Random.Next(n + 1);
+                T value = array[k];
+                array[k] = array[n];
+                array[n] = value;
+            }
+
+            return array;
+        }
+
+        /// <summary>
         /// Chooses a random item from the specified enumerable.
         /// </summary>
         /// <typeparam name="T">The item type.</typeparam>
@@ -3493,7 +3518,7 @@ namespace WebApplications.Utilities
         {
             if (enumerable == null) throw new ArgumentNullException(nameof(enumerable));
 
-            IList<T> list = enumerable as IList<T> ?? enumerable.ToArray();
+            IReadOnlyList<T> list = enumerable as IReadOnlyList<T> ?? enumerable.ToArray();
             return list.Count > 0
                 // ReSharper disable once PossibleNullReferenceException
                 ? list[ThreadLocal.Random.Next(list.Count)]
@@ -4472,7 +4497,7 @@ namespace WebApplications.Utilities
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             if (sequence == null) throw new ArgumentNullException(nameof(sequence));
 
-            IList<T> list = collection as IList<T>;
+            List<T> list = collection as List<T>;
             if (list != null)
             {
                 list.AddRange(sequence);

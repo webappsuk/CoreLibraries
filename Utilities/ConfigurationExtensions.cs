@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Web;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Reflect;
@@ -92,8 +93,7 @@ namespace WebApplications.Utilities
         /// Gets the associated configuration file paths.
         /// </summary>
         [NotNull]
-        private static readonly Func<System.Configuration.Configuration, IReadOnlyCollection<string>>
-            _getConfigFilePaths;
+        private static readonly Func<System.Configuration.Configuration, IReadOnlyCollection<string>> _getConfigFilePaths;
 
         /// <summary>
         /// Gets the configuration file paths for a given <see cref="System.Configuration.Configuration"/>.
@@ -111,6 +111,11 @@ namespace WebApplications.Utilities
         /// </summary>
         static ConfigurationExtensions()
         {
+            // Detect whether we are running in an ASP.NET website, note that the context may not be propogated to
+            // background threads so cannot be relied upon exclusively.
+            IsWeb = HttpContext.Current != null ||
+                    HttpRuntime.AppDomainAppId != null;
+
             ParameterExpression configuration = Expression.Parameter(typeof(System.Configuration.Configuration), "configuration");
             ParameterExpression streamInfos = Expression.Parameter(typeof(ICollection), "streamInfos");
             ParameterExpression index = Expression.Parameter(typeof(int), "index");
@@ -173,16 +178,26 @@ namespace WebApplications.Utilities
         [NotNull]
         public static string GetFullPath([CanBeNull] this IConfigurationElement parent, [CanBeNull] string configurationElementName)
         {
-            if (string.IsNullOrEmpty(configurationElementName))
+            if (String.IsNullOrEmpty(configurationElementName))
                 configurationElementName = "?";
 
             // Short cut
             if (parent == null) return configurationElementName;
 
-            if (char.IsLetterOrDigit(configurationElementName[0]))
+            if (Char.IsLetterOrDigit(configurationElementName[0]))
                 configurationElementName = "." + configurationElementName;
             return parent.FullPath + configurationElementName;
         }
 
+        /// <summary>
+        /// The time in milliseconds that events are buffered for.
+        /// </summary>
+        public const int EventBufferMs = 250;
+
+        /// <summary>
+        /// <see langword="true"/> if the library is running in ASP.NET.
+        /// </summary>
+        [PublicAPI]
+        public static readonly bool IsWeb;
     }
 }

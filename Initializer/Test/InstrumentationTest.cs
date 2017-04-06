@@ -23,6 +23,11 @@ namespace WebApplications.Utilities.Initializer.Test
         private const string TestAppProjectName = "WebApplications.Utilities.Initializer.TestApp";
 
         /// <summary>
+        /// The name of directory containing the test project.
+        /// </summary>
+        private const string TestAppProjectDirectoryName = "TestApp";
+
+        /// <summary>
         /// The build message indicitive of success.
         /// </summary>
         private const string AddedMessage =
@@ -84,7 +89,7 @@ namespace WebApplications.Utilities.Initializer.Test
 
             while (directory != root)
             {
-                string[] subDirs = Directory.GetDirectories(directory, TestAppProjectName, SearchOption.AllDirectories);
+                string[] subDirs = Directory.GetDirectories(directory, TestAppProjectDirectoryName, SearchOption.AllDirectories);
 
                 if (subDirs.Length > 0)
                 {

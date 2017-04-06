@@ -1,64 +1,69 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-  <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <PropertyGroup>
-      <ProjectGuid>{3626816D-EB33-4ED0-AF95-FD7CA6C6D99A}</ProjectGuid>
-      <OutputType>Library</OutputType>
-      <RootNamespace>WebApplications.Utilities.Initializer</RootNamespace>
-      <AssemblyName>WebApplications.Utilities.Initializer</AssemblyName>
-      <DefineConstants>ILMerge</DefineConstants>
-    </PropertyGroup>
-    <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
-    <ItemGroup>
-      <Reference Include="Microsoft.Build" />
-      <Reference Include="Microsoft.Build.Framework" />
-      <Reference Include="Microsoft.Build.Tasks.v4.0" />
-      <Reference Include="Microsoft.Build.Utilities.v4.0" />
-      <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-        <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
-      <Reference Include="Mono.Cecil.Mdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-        <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
-      <Reference Include="Mono.Cecil.Pdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-        <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
-      <Reference Include="Mono.Cecil.Rocks, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-        <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
-        <Private>True</Private>
-      </Reference>
-      <Reference Include="System" />
-      <Reference Include="System.Core" />
-      <Reference Include="System.Xml.Linq" />
-      <Reference Include="System.Data.DataSetExtensions" />
-      <Reference Include="Microsoft.CSharp" />
-      <Reference Include="System.Data" />
-      <Reference Include="System.Xml" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="ModuleInitializer.cs.pp" />
-      <Compile Include="../Utilities/Annotations/Annotations.cs" />
-      <Compile Include="Injector.cs" />
-      <Compile Include="Output.cs" />
-      <Compile Include="OutputCollection.cs" />
-      <Compile Include="OutputImportance.cs" />
-      <Compile Include="Properties\AssemblyInfo.cs" />
-      <Compile Include="InjectModuleInitializer.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="packages.config" />
-    </ItemGroup>
-    <!-- Set up merge -->
-    <ItemGroup>
-      <MergeAsm Include="$(OutputPath)Merged\WebApplications.Utilities.Initializer.dll">
-        <Inputs>$(OutputPath)WebApplications.Utilities.Initializer.dll;$(OutputPath)Mono.Cecil.dll;$(OutputPath)Mono.Cecil.Mdb.dll;$(OutputPath)Mono.Cecil.Pdb.dll;$(OutputPath)Mono.Cecil.Rocks.dll</Inputs>
-        <Snk>$(AssemblyOriginatorKeyFile)</Snk>
-        <InProject>false</InProject>
-      </MergeAsm>
-    </ItemGroup>
-    <PropertyGroup>
-      <SignFilePath>$(OutputPath)Merged\WebApplications.Utilities.Initializer.dll</SignFilePath>
-    </PropertyGroup>
-  </Project>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{3626816D-EB33-4ED0-AF95-FD7CA6C6D99A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WebApplications.Utilities.Initializer</RootNamespace>
+    <AssemblyName>WebApplications.Utilities.Initializer</AssemblyName>
+    <DefineConstants>ILMerge</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
+  <ItemGroup>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Tasks.v4.0" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ModuleInitializer.cs.pp" />
+    <Compile Include="..\Utilities\Annotations\Annotations.cs">
+      <Link>Annotations.cs</Link>
+    </Compile>
+    <Compile Include="Injector.cs" />
+    <Compile Include="Output.cs" />
+    <Compile Include="OutputCollection.cs" />
+    <Compile Include="OutputImportance.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="InjectModuleInitializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <!-- Set up merge -->
+  <ItemGroup>
+    <MergeAsm Include="$(OutputPath)Merged\WebApplications.Utilities.Initializer.dll">
+      <Inputs>$(OutputPath)WebApplications.Utilities.Initializer.dll;$(OutputPath)Mono.Cecil.dll;$(OutputPath)Mono.Cecil.Mdb.dll;$(OutputPath)Mono.Cecil.Pdb.dll;$(OutputPath)Mono.Cecil.Rocks.dll</Inputs>
+      <Snk>$(AssemblyOriginatorKeyFile)</Snk>
+      <InProject>false</InProject>
+    </MergeAsm>
+  </ItemGroup>
+  <PropertyGroup>
+    <SignFilePath>$(OutputPath)Merged\WebApplications.Utilities.Initializer.dll</SignFilePath>
+  </PropertyGroup>
+</Project>

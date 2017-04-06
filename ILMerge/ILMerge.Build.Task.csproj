@@ -1,41 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-  <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <PropertyGroup>
-      <ProjectGuid>{D45DFBAF-5019-4435-80FB-1FA2EC48F23A}</ProjectGuid>
-      <OutputType>Library</OutputType>
-      <RootNamespace>ILMerge.Build.Task</RootNamespace>
-      <AssemblyName>ILMerge.Build.Task</AssemblyName>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <ProjectGuid>{D45DFBAF-5019-4435-80FB-1FA2EC48F23A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ILMerge.Build.Task</RootNamespace>
+    <AssemblyName>ILMerge.Build.Task</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
+  <ItemGroup>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Utilities/Annotations/Annotations.cs" />
+    <Compile Include="ILMerge.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Target Name="CopyILMergeExeLocal" BeforeTargets="AfterBuild">
+    <!-- Find the ILMerge tools, look in nuget packages first, then use included version. -->
+    <ItemGroup Condition="!Exists('$(ILMergeTool)')">
+      <ILMergePackage Include="$(SlnDir)packages\ilmerge.*\tools\ILMerge.exe" />
+    </ItemGroup>
+    <PropertyGroup Condition="!Exists('$(ILMergeTool)') AND '@(ILMergePackage)'!=''">
+      <ILMergeTool>@(ILMergePackage)</ILMergeTool>
+      <ILMergeTool Condition="$(ILMergeTool.Contains(';'))">$(ILMergeTool.Substring(0, $(ILMergeTool.IndexOf(';'))))</ILMergeTool>
     </PropertyGroup>
-    <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
-    <ItemGroup>
-      <Reference Include="Microsoft.Build" />
-      <Reference Include="Microsoft.Build.Framework" />
-      <Reference Include="Microsoft.Build.Utilities.v4.0" />
-      <Reference Include="System" />
-      <Reference Include="System.Xml" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Include="../Utilities/Annotations/Annotations.cs" />
-      <Compile Include="BuildEngineExtensions.cs" />
-      <Compile Include="ILMerge.cs" />
-      <Compile Include="Properties\AssemblyInfo.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="app.config" />
-      <None Include="packages.config" />
-    </ItemGroup>
-
-    <Target Name="CopyILMergeExeLocal" BeforeTargets="AfterBuild">
-      <!-- Find the ILMerge tools, look in nuget packages first, then use included version. -->
-      <ItemGroup Condition="!Exists('$(ILMergeTool)')">
-        <ILMergePackage Include="$(SlnDir)packages\ilmerge.*\tools\ILMerge.exe" />
-      </ItemGroup>
-      <PropertyGroup Condition="!Exists('$(ILMergeTool)') AND '@(ILMergePackage)'!=''">
-        <ILMergeTool>@(ILMergePackage)</ILMergeTool>
-        <ILMergeTool Condition="$(ILMergeTool.Contains(';'))">$(ILMergeTool.Substring(0, $(ILMergeTool.IndexOf(';'))))</ILMergeTool>
-      </PropertyGroup>
-      <Error Text="Could not locate ILMerge.exe." Condition="!Exists('$(ILMergeTool)')" />
-      <Copy SourceFiles="$(ILMergeTool)" DestinationFolder="$(OutputPath)"/> 
-    </Target>
-  </Project>
+    <Error Text="Could not locate ILMerge.exe." Condition="!Exists('$(ILMergeTool)')" />
+    <Copy SourceFiles="$(ILMergeTool)" DestinationFolder="$(OutputPath)" />
+  </Target>
+</Project>

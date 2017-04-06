@@ -10,8 +10,8 @@
   <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
   <ItemGroup>
     <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(SolutionDir)packages\NodaTime.1.3.1\lib\net35-Client\NodaTime.dll</HintPath>
+      <HintPath>..\packages\NodaTime.1.3.2\lib\net35-Client\NodaTime.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -30,8 +30,9 @@
     <Compile Include="Configuration\ProviderCollection.cs" />
     <Compile Include="Configuration\ProviderElement.cs" />
     <Compile Include="CryptographyProvider.cs" />
-    <Compile Include="HashAlgorithmExtensions.cs" />
+    <Compile Include="CryptographyExtensions.cs" />
     <Compile Include="HashingCryptographyProvider.cs" />
+    <Compile Include="KeyedHashingCryptographyProvider.cs" />
     <Compile Include="PBKDF2.cs" />
     <Compile Include="RandomCryptographyProvider.cs" />
     <Compile Include="Configuration\CryptographyConfiguration.cs" />
@@ -48,9 +49,6 @@
     <Compile Include="XmlCryptoExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Keys\ConfigPrivate1.kez" />
-    <EmbeddedResource Include="Keys\ConfigPrivate2.kez" />
-    <EmbeddedResource Include="Keys\ConfigPrivate3.kez" />
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

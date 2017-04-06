@@ -23,11 +23,11 @@
   </metadata>
   <files>
     <file src="BuildTasks\bin\Release\AnyCPU\WebApplications.Utilities.BuildTasks.dll" target="tools\WebApplications.Utilities.BuildTasks.dll" />
-    <file src="Utility.targets" target="build\Utility.targets" />
-    <file src="..\ILMerge\ILMerge.targets" target="build\ILMerge.targets" />
+    <file src="WebApplications.Utilities.targets" target="build\WebApplications.Utilities.targets" />
+    <file src="..\ILMerge\ILMerge.targets" target="tools\ILMerge.targets" />
     <file src="..\ILMerge\bin\Release\AnyCPU\ILMerge.Build.Task.dll" target="tools\ILMerge.Build.Task.dll" />
     <file src="..\ILMerge\bin\Release\AnyCPU\ILMerge.exe" target="tools\ILMerge.exe" />
-    <file src="..\Initializer\InjectModuleInitializer.targets" target="build\InjectModuleInitializer.targets" />
+    <file src="..\Initializer\InjectModuleInitializer.targets" target="tools\InjectModuleInitializer.targets" />
     <file src="..\Initializer\bin\Release\AnyCPU\Merged\WebApplications.Utilities.Initializer.dll" target="tools\WebApplications.Utilities.Initializer.dll" />
     <file src="..\Initializer\ModuleInitializer.cs.pp" target="content\ModuleInitializer.cs.pp" />
     <file src="Resources\*.*" target="tools\Resources" />

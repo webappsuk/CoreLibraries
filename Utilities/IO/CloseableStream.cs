@@ -61,6 +61,25 @@ namespace WebApplications.Utilities.IO
         /// Create a stream that will invoke the specified <paramref name="onClose"/> action when the <paramref name="stream"/> is closed/disposed.
         /// </summary>
         /// <param name="stream">The stream to wrap</param>
+        /// <param name="disposable">The object to dispose after the specified <paramref name="stream"/> is closed.</param>
+        /// <param name="onError">The optional function to call if the underlying stream errors on close (<paramref name="disposable" /> will still be disposed after
+        /// <paramref name="onError"/>), return <see langword="true"/> to suppress the exception.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="disposable"/> is <see langword="null" />.</exception>
+        [PublicAPI]
+        public CloseableStream(
+            [NotNull] Stream stream,
+            [NotNull] IDisposable disposable,
+            Func<Exception, bool> onError = null)
+            :this(stream, disposable.Dispose, onError)
+        {
+            if (disposable == null) throw new ArgumentNullException(nameof(disposable));
+        }
+
+        /// <summary>
+        /// Create a stream that will invoke the specified <paramref name="onClose"/> action when the <paramref name="stream"/> is closed/disposed.
+        /// </summary>
+        /// <param name="stream">The stream to wrap</param>
         /// <param name="onClose">The action to call after the specified <paramref name="stream"/> is closed.</param>
         /// <param name="onError">The optional function to call if the underlying stream errors on close (<paramref name="onClose" /> will still be called after
         /// <paramref name="onError"/>), return <see langword="true"/> to suppress the exception.</param>

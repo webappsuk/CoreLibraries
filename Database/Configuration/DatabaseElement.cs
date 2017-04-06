@@ -163,7 +163,7 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             // Grab the default load balanced connection for the database.
             // ReSharper disable once PossibleNullReferenceException

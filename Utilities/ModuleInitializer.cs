@@ -25,8 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.ComponentModel;
 using NodaTime;
+using System.ComponentModel;
+using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Converters;
 
@@ -54,6 +55,7 @@ namespace WebApplications.Utilities
             TypeDescriptor.AddAttributes(typeof(LocalDateTime), new TypeConverterAttribute(typeof(LocalDateTimeConverter)));
             TypeDescriptor.AddAttributes(typeof(Duration), new TypeConverterAttribute(typeof(DurationConverter)));
             TypeDescriptor.AddAttributes(typeof(Period), new TypeConverterAttribute(typeof(PeriodConverter)));
+            TypeDescriptor.AddAttributes(typeof(XNamespace), new TypeConverterAttribute(typeof(XNamespaceConverter)));
         }
     }
 }

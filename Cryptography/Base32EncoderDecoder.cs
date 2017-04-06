@@ -27,7 +27,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Cryptography
@@ -35,22 +36,24 @@ namespace WebApplications.Utilities.Cryptography
     /// <summary>
     /// Extension methods supporting clean Base32 encoding, with custom digits (skips easily confused characters).
     /// </summary>
-    /// <remarks></remarks>
     [PublicAPI]
     public static class Base32EncoderDecoder
     {
         /// <summary>
+        /// Size of the regular byte in bits
+        /// </summary>
+        private const int InByteSize = 8;
+
+        /// <summary>
+        /// Size of converted byte in bits
+        /// </summary>
+        private const int OutByteSize = 5;
+
+        /// <summary>
         /// The digits for a base 32 number system.
         /// </summary>
         [NotNull]
-        private static readonly char[] _digits = "123456789ABCDEFGHJKMNPQRSTUVWXYZ".ToCharArray();
-
-        /// <summary>
-        /// Gets the default digits.
-        /// </summary>
-        /// <remarks></remarks>
-        [NotNull]
-        public static IEnumerable<char> DefaultDigits => _digits;
+        public static readonly IReadOnlyList<char> DefaultDigits = "123456789ABCDEFGHJKMNPQRSTUVWXYZ".ToCharArray();
 
         /// <summary>
         /// Encodes a Guid into a Base32 string.
@@ -60,10 +63,21 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns></returns>
         /// <remarks></remarks>
         /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.UInt32.MaxValue" /> elements.</exception>
-        public static string Base32Encode(Guid guid, IEnumerable<char> digits = null)
-        {
-            return Base32Encode(guid.ToByteArray(), digits);
-        }
+        [NotNull]
+        public static string Base32Encode(this Guid guid, [CanBeNull] IReadOnlyList<char> digits = null)
+            => Base32Encode(guid.ToByteArray(), digits);
+
+        /// <summary>
+        /// Encodes a Guid into a Base32 string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="digits">The digits.</param>
+        /// <returns>System.String.</returns>
+        /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.UInt32.MaxValue" /> elements.</exception>
+        [ContractAnnotation("input:notnull=>notnull;input:null=>null")]
+        public static string Base32Encode([CanBeNull] this string input, [CanBeNull] IReadOnlyList<char> digits = null) 
+            => Base32Encode(input != null ? Encoding.Unicode.GetBytes(input) : null, digits);
+
 
         /// <summary>
         /// Encodes a byte[] into a Base32 string.
@@ -73,167 +87,329 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns></returns>
         /// <remarks></remarks>
         /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.UInt32.MaxValue" /> elements.</exception>
-        public static string Base32Encode(byte[] bytes, IEnumerable<char> digits = null)
+        [ContractAnnotation("bytes:notnull=>notnull;bytes:null=>null")]
+        public static string Base32Encode([CanBeNull] this byte[] bytes, [CanBeNull] IReadOnlyList<char> digits = null)
         {
-            char[] digitsArray = digits?.ToArray() ?? _digits;
-
             if (bytes == null)
-                return digitsArray[0].ToString();
+                return null;
 
             uint inputLength = (uint)bytes.Length;
-            uint lastBit = (inputLength * 8) - 1;
 
             if (inputLength < 1)
-                return digitsArray[0].ToString();
+                return string.Empty;
 
-            // Pad bytes by 8 bytes
-            byte[] buffer = new byte[inputLength + 9];
-            Buffer.BlockCopy(bytes, 0, buffer, 0, (int)inputLength);
-            bytes = buffer;
-
-            // Keeps track of the bit currently in position 0 of our 64 bit data cache
-            uint currentBit = 0;
-            // Keeps track of the next bit currently not in the cache
-            uint nextBit = 0;
-            // Keeps track of the current character being output
-            uint charIndex = 0;
-
-            // Holds 64 bits at a time.
-            UInt64 data = 0;
+            if (digits == null) digits = DefaultDigits;
+            else if (digits.Count < 32)
+                throw new ArgumentException(nameof(digits), Resources.Base32EncoderDecoder_Base32Encode_Invalid_Digits);
 
             // Calculate the output length
-            // Note log(256)/log(32) is 1.6 - we are converting from base 256 (a byte) to base 32 - also 8/5.
-            uint outputLength = (uint)Math.Ceiling(1.6 * inputLength);
+            uint outputLength = (uint) Math.Ceiling((double)inputLength * InByteSize / OutByteSize);
 
             // Create the output character cache
             char[] output = new char[outputLength];
+            
+            // Position in the input buffer
+            int p = 0;
 
-            // Get the first 16 bytes into 
-            while (currentBit <= lastBit)
+            // Offset inside a single byte that <bytesPosition> points to (from left to right)
+            // 0 - highest bit, 7 - lowest bit
+            int sp = 0;
+
+            // Byte to look up in the dictionary
+            byte o = 0;
+
+            // The number of bits filled in the current output byte
+            int op = 0;
+
+            // The current character position.
+            int c = 0;
+
+            // Iterate through input buffer until we reach past the end of it
+            while (p < bytes.Length)
             {
-                if (currentBit + 11 > nextBit)
-                {
-                    // Calculate the next byte
-                    uint nextByte = nextBit >> 3;
-                    // Create a 64 bit number for quick processing
-                    UInt64 nextBlock = BitConverter.ToUInt64(bytes, (int)nextByte);
+                // Calculate the number of bits we can extract out of current input byte to fill missing bits in the output byte
+                int bitsAvailableInByte = Math.Min(InByteSize - sp, OutByteSize - op);
 
-                    // Calculate bit offset
-                    uint rem = (nextByte << 3) - currentBit;
-                    data |= nextBlock << (int)rem;
-                    nextBit = (nextByte * 8) + 64 - rem;
+                // Make space in the output byte
+                o <<= bitsAvailableInByte;
+
+                // Extract the part of the input byte and move it to the output byte
+                o |= (byte)(bytes[p] >> (InByteSize - (sp + bitsAvailableInByte)));
+
+                // Update current sub-byte position
+                sp += bitsAvailableInByte;
+
+                // Check overflow
+                if (sp >= InByteSize)
+                {
+                    // Move to the next byte
+                    p++;
+                    sp = 0;
                 }
 
-                // Set digit for least significant 5 bits
-                output[charIndex++] = digitsArray[data & 31];
+                // Update current base32 byte completion
+                op += bitsAvailableInByte;
 
-                // Shift data cache left 5 bits
-                data >>= 5;
-                currentBit += 5;
+                // Check overflow or end of input array
+                if (op < OutByteSize) continue;
+
+                // Drop the overflow bits
+                o &= 0x1F;  // 0x1F = 00011111 in binary
+
+                // Add current Base32 byte and convert it to character
+                output[c++] = digits[o];
+
+                // Move to the next byte
+                op = 0;
             }
 
-            // Return the character array as a string
+            // Check if we have a remainder
+            if (op < 1) return new string(output);
+
+            // Move to the right bits
+            o <<= (OutByteSize - op);
+
+            // Drop the overflow bits
+            o &= 0x1F;  // 0x1F = 00011111 in binary
+
+            // Add current Base32 byte and convert it to character
+            output[c] = digits[o];
+
             return new string(output);
         }
 
         /// <summary>
-        /// Decodes a base 32 string in a Guid.
+        /// Tries to convert base32 string to a GUID.
         /// </summary>
-        /// <param name="number">The number.</param>
-        /// <param name="guid">The GUID.</param>
+        /// <param name="base32String">Base32 string to convert.</param>
         /// <param name="digits">The digits.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
-        /// <exception cref="ArgumentNullException">buffer is <see langword="null" />.</exception>
-        /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.Int32.MaxValue" /> elements.</exception>
-        public static bool TryBase32DecodeGuid(string number, out Guid guid, IEnumerable<char> digits = null)
+        /// <param name="comparer">The character comparer (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns>The decoded GUID.</returns>
+        public static Guid Base32DecodeGuid(
+            [NotNull] this string base32String,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
         {
-            byte[] bytes = new byte[16];
-            if (!TryBase32Decode(number, bytes, digits))
+            if (base32String == null || base32String.Length != 26)
+                throw new CryptographicException(Resources.Base32EncoderDecoder_Base32DecodeGuid_Invalid);
+            Guid guid;
+            if (!TryBase32DecodeGuid(base32String, out guid, digits, comparer))
+                throw new CryptographicException(Resources.Base32EncoderDecoder_Base32DecodeGuid_Invalid);
+            return guid;
+        }
+
+        /// <summary>
+        /// Tries to convert base32 string to a string.
+        /// </summary>
+        /// <param name="base32String">Base32 string to convert.</param>
+        /// <param name="digits">The digits.</param>
+        /// <param name="comparer">The character comparer (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns>The decoded string.</returns>
+        public static string Base32DecodeString(
+            [CanBeNull] this string base32String,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
+        {
+            string output;
+            if (!TryBase32DecodeString(base32String, out output, digits, comparer))
+                throw new CryptographicException(Resources.Base32EncoderDecoder_Base32DecodeString_Invalid);
+            return output;
+        }
+
+        /// <summary>
+        /// Tries to convert base32 string to a byte array.
+        /// </summary>
+        /// <param name="base32String">Base32 string to convert.</param>
+        /// <param name="digits">The digits.</param>
+        /// <param name="comparer">The character comparer (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns>The decoded byte array.</returns>
+        public static byte[] Base32Decode(
+            [CanBeNull] this string base32String,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
+        {
+            byte[] output;
+            if (!TryBase32Decode(base32String, out output, digits, comparer))
+                throw new CryptographicException(Resources.Base32EncoderDecoder_Base32Decode_Invalid);
+            return output;
+        }
+
+        /// <summary>
+        /// Tries to convert base32 string to a GUID.
+        /// </summary>
+        /// <param name="base32String">Base32 string to convert.</param>
+        /// <param name="output">The output.</param>
+        /// <param name="digits">The digits.</param>
+        /// <param name="comparer">The character comparer (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns><see langword="true"/> if the string was successfully decoded; otherwise <see langword="false"/>.</returns>
+        public static bool TryBase32DecodeGuid(
+            [NotNull] this string base32String,
+            out Guid output,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (base32String == null || base32String.Length != 26)
             {
-                guid = Guid.Empty;
+                output = Guid.Empty;
                 return false;
             }
-            guid = new Guid(bytes);
+
+            byte[] outputBytes = new byte[16];
+            if (!TryBase32Decode(base32String, outputBytes, 0, 16, digits, comparer))
+            {
+                output = Guid.Empty;
+                return false;
+            }
+
+            output = new Guid(outputBytes);
             return true;
         }
 
         /// <summary>
-        /// Decodes a base 32 string into a byte[] starting at index 0.  Fails if the buffer is too small, or the string contains invalid characters.
+        /// Tries to convert base32 string to string.
         /// </summary>
-        /// <param name="number">The number.</param>
-        /// <param name="buffer">The buffer.</param>
+        /// <param name="base32String">Base32 string to convert.</param>
+        /// <param name="output">The output.</param>
         /// <param name="digits">The digits.</param>
-        /// <returns><see langword="true"/> if decode succeeded; otherwise <see langword="false"/>.</returns>
-        /// <remarks></remarks>
-        /// <exception cref="ArgumentNullException">buffer is <see langword="null" />.</exception>
-        /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.Int32.MaxValue" /> elements.</exception>
-        public static bool TryBase32Decode(string number, [NotNull] byte[] buffer, IEnumerable<char> digits = null)
+        /// <param name="comparer">The character comparer (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns><see langword="true"/> if the string was successfully decoded; otherwise <see langword="false"/>.</returns>
+        public static bool TryBase32DecodeString(
+            [CanBeNull] this string base32String,
+            out string output,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
         {
-            return TryBase32Decode(number, buffer, 0, digits);
+            byte[] outputBytes;
+            if (!TryBase32Decode(base32String, out outputBytes, digits, comparer))
+            {
+                output = null;
+                return false;
+            }
+
+            if (outputBytes == null) output = null;
+            else if (outputBytes.Length < 1) output = string.Empty;
+            else output = Encoding.Unicode.GetString(outputBytes);
+            return true;
         }
 
         /// <summary>
-        /// Decodes a base 32 string into a byte[].  Fails if the buffer is too small, or the string contains invalid characters.
+        /// Tries to convert base32 string to array of bytes.
         /// </summary>
-        /// <param name="number">The number.</param>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="startIndex">The start index.</param>
+        /// <param name="base32String">Base32 string to convert.</param>
+        /// <param name="outputBytes">The output bytes.</param>
         /// <param name="digits">The digits.</param>
-        /// <returns><see langword="true"/> if decode succeeded; otherwise <see langword="false"/>.</returns>
-        /// <remarks></remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> is <see langword="null" />.</exception>
-        /// <exception cref="OverflowException">The buffer is multidimensional and contains more than <see cref="F:System.Int32.MaxValue" /> elements.</exception>
+        /// <param name="comparer">The character comparer (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns><see langword="true"/> if the string was successfully decoded; otherwise <see langword="false"/>.</returns>
         public static bool TryBase32Decode(
-            string number,
-            [NotNull] byte[] buffer,
-            int startIndex,
-            IEnumerable<char> digits = null)
+            [CanBeNull] this string base32String,
+            out byte[] outputBytes,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
         {
-            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-
-            char[] digitsArray = digits?.ToArray() ?? _digits;
-
-            if (string.IsNullOrEmpty(number))
-                return true;
-
-            int inputLength = number.Length;
-            int bufferLength = buffer.Length;
-            // Calculate the output length
-            // Note log(256)/log(32) is 1.6 - we are converting from base 256 (a byte) to base 32 - also 8/5.
-            int outputLength = (int)Math.Ceiling(inputLength / 1.6);
-
-            // If our buffer is smaller than the output length.
-            // Note we allow the buffer to be one byte smaller than the potential decoded length, due to bit
-            // alignment, however, the last byte must be decoded to zero.
-            if ((startIndex + bufferLength) < (outputLength - 1))
-                return false;
-
-            byte[] bytes = new byte[outputLength];
-            char[] characters = number.ToUpper().ToCharArray();
-            int charIndex = 0;
-            while (charIndex < inputLength)
+            if (base32String == null)
             {
-                int index = Array.IndexOf(digitsArray, characters[charIndex]);
-                if (index < 0)
-                    return false;
-                uint a = (uint)index;
-
-                int bit = charIndex * 5;
-                int mb = bit % 8;
-                int byt = bit >> 3;
-                bytes[byt] |= (byte)(a << mb);
-                if (mb > 3)
-                    bytes[byt + 1] |= (byte)(a >> (8 - mb));
-                charIndex++;
+                outputBytes = null;
+                return true;
+            }
+            if (base32String == string.Empty)
+            {
+                outputBytes = Array<byte>.Empty;
+                return true;
             }
 
-            if (((startIndex + bufferLength) < outputLength) &&
-                (bytes[outputLength - 1] != 0))
-                return false;
+            outputBytes = new byte[base32String.Length * OutByteSize / InByteSize];
+            return TryBase32Decode(base32String, outputBytes, 0, -1, digits, comparer);
+        }
 
-            // Copy result into buffer
-            Buffer.BlockCopy(bytes, 0, buffer, startIndex, bufferLength - startIndex);
+        /// <summary>
+        /// Tries to convert base32 string to array of bytes.
+        /// </summary>
+        /// <param name="base32String">Base32 string to convert.</param>
+        /// <param name="buffer">The buffer to fill.</param>
+        /// <param name="offset">The offset in the buffer.</param>
+        /// <param name="length">The length (if set will ensure that length bytes are filled).</param>
+        /// <param name="digits">The digits.</param>
+        /// <param name="comparer">The character comparer (defaults to <see cref="CharComparer.Ordinal"/>).</param>
+        /// <returns>
+        ///   <see langword="true" /> if the string was successfully decoded; otherwise <see langword="false" />.</returns>
+        public static bool TryBase32Decode(
+            [CanBeNull] this string base32String,
+            [NotNull] byte[] buffer,
+            int offset = 0,
+            int length = -1,
+            [CanBeNull] IReadOnlyList<char> digits = null,
+            [CanBeNull] IEqualityComparer<char> comparer = null)
+        {
+            // Check if string is null
+            if (string.IsNullOrEmpty(base32String))
+                return length < 1;
+
+            if (digits == null)
+                digits = DefaultDigits;
+            else if (digits.Count < 32)
+                throw new ArgumentException(nameof(digits), Resources.Base32EncoderDecoder_Base32Encode_Invalid_Digits);
+
+            if (comparer == null) comparer = CharComparer.Ordinal;
+
+            // Calculate output length
+            int ol = base32String.Length * OutByteSize / InByteSize;
+            if (length < 0) length = ol;
+            else if (length != ol) return false;
+
+            // Check we have enough room in buffer for specified length
+            int end = offset + length;
+            if (end > buffer.Length) return false;
+
+            // Position in the string
+            int p = 0;
+
+            // Offset inside the character in the string
+            int sp = 0;
+
+            // The number of bits filled in the current output byte
+            int op = 0;
+
+            // Normally we would iterate on the input array but in this case we actually iterate on the output array
+            // We do it because output array doesn't have overflow bits, while input does and it will cause output array overflow if we don't stop in time
+            while (offset < end)
+            {
+                // Look up current character in the dictionary to convert it to byte
+                int c = digits.IndexOf(base32String[p], comparer);
+
+                // Check if found
+                if (c < 0) return false;
+
+                // Calculate the number of bits we can extract out of current input character to fill missing bits in the output byte
+                int bitsAvailableInByte = Math.Min(OutByteSize - sp, InByteSize - op);
+
+                // Make space in the output byte
+                buffer[offset] <<= bitsAvailableInByte;
+
+                // Extract the part of the input character and move it to the output byte
+                buffer[offset] |= (byte)(c >> (OutByteSize - (sp + bitsAvailableInByte)));
+
+                // Update current sub-byte position
+                op += bitsAvailableInByte;
+
+                // Check overflow
+                if (op >= InByteSize)
+                {
+                    // Move to the next byte
+                    offset++;
+                    op = 0;
+                }
+
+                // Update current base32 byte completion
+                sp += bitsAvailableInByte;
+
+                // Check overflow or end of input array
+                if (sp < OutByteSize) continue;
+
+                // Move to the next character
+                p++;
+                sp = 0;
+            }
 
             return true;
         }

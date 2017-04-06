@@ -28,7 +28,6 @@
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Cryptography.Configuration;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -44,16 +43,14 @@ namespace WebApplications.Utilities.Cryptography
         /// Initializes a new instance of the <see cref="AsymmetricCryptographyProvider" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="providerElement">The provider element (if any).</param>
-        /// <param name="configuration">The configuration (if any).</param>
+        /// <param name="configuration">The configuration.</param>
         /// <param name="preservesLength">
         ///   <see langword="true" /> if the provider preserves the length.</param>
         protected AsymmetricCryptographyProvider(
             [NotNull] string name,
-            [CanBeNull] ProviderElement providerElement = null,
-            [CanBeNull] XElement configuration = null,
+            [NotNull] XElement configuration,
             bool preservesLength = true)
-            : base(name, providerElement, configuration, preservesLength)
+            : base(name, configuration, preservesLength)
         {
         }
 
@@ -65,31 +62,17 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>A <see cref="CryptographyProvider" />.</returns>
         /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
         [NotNull]
-        public static CryptographyProvider Create(
+        public static AsymmetricCryptographyProvider Create(
             [NotNull] AsymmetricAlgorithm algorithm,
-            [CanBeNull] XElement configurationElement = null) => Create(algorithm, null, configurationElement);
-
-        /// <summary>
-        /// Creates a <see cref="CryptographyProvider" /> from an <see cref="AsymmetricAlgorithm" />.
-        /// </summary>
-        /// <param name="algorithm">The algorithm.</param>
-        /// <param name="providerElement">The optional provider element.</param>
-        /// <param name="configurationElement">The optional configuration element.</param>
-        /// <returns>A <see cref="CryptographyProvider" />.</returns>
-        /// <exception cref="CryptographicException">The algorithm is unsupported.</exception>
-        [NotNull]
-        internal static CryptographyProvider Create(
-            [NotNull] AsymmetricAlgorithm algorithm,
-            [CanBeNull] ProviderElement providerElement,
-            [CanBeNull] XElement configurationElement)
+            [CanBeNull] XElement configurationElement = null)
         {
             // TODO We currently only support RSA
             RSACryptoServiceProvider rsa = algorithm as RSACryptoServiceProvider;
             if (rsa == null)
                 throw new CryptographicException(
-                    string.Format("Unknown, or unsupported, cryptographic provider '{0}'.", algorithm.GetType()));
+                    string.Format(Resources.AsymmetricCryptographyProvider_Create_Unknown_Cryptography_Provider, algorithm.GetType()));
 
-            return RSACryptographyProvider.Create(rsa, providerElement, configurationElement);
+            return RSACryptographyProvider.Create(rsa, configurationElement);
         }
     }
 }

@@ -274,6 +274,22 @@ namespace ILMerge.Build.Task
         public string ILMergeTool { get; set; }
 
         /// <summary>
+        /// Gets or sets the target framework version.
+        /// </summary>
+        /// <value>The target framework version.</value>
+        [Required]
+        [UsedImplicitly]
+        public string TargetFrameworkVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the target platform.
+        /// </summary>
+        /// <value>The target platform.</value>
+        [Required]
+        [UsedImplicitly]
+        public string TargetPlatform { get; set; }
+
+        /// <summary>
         /// Executes the task.
         /// </summary>
         public override bool Execute()
@@ -296,8 +312,8 @@ namespace ILMerge.Build.Task
             if (MergeXml) commandLine.AppendSwitch("/xmldocs");
 
             TargetDotNetFrameworkVersion frameworkVersion;
-            string framework = BuildEngine.GetEnvironmentVariable("TargetFrameworkVersion").FirstOrDefault();
-            switch (framework)
+            string framework;
+            switch (TargetFrameworkVersion?.Trim().ToLowerInvariant())
             {
                 //v2.0, v3.0, v3.5, v4.0, v4.5, and v4.5.1.
                 case "v2.0":
@@ -329,8 +345,7 @@ namespace ILMerge.Build.Task
             }
 
             DotNetFrameworkArchitecture platformArchitecture;
-            string platform = BuildEngine.GetEnvironmentVariable("Platform").FirstOrDefault();
-            switch (platform)
+            switch (TargetPlatform?.Trim().ToLowerInvariant())
             {
                 case "x86":
                     platformArchitecture = DotNetFrameworkArchitecture.Bitness32;
@@ -352,10 +367,10 @@ namespace ILMerge.Build.Task
             Log.LogMessage(
                 MessageImportance.Normal,
                 "Merge Framework: {0}, {1}",
-                framework,
+                TargetFrameworkVersion,
                 toolPath);
 
-            commandLine.AppendSwitch("/targetplatform:" + framework + "," + toolPath);
+            commandLine.AppendSwitch($"/targetplatform:{framework},{toolPath}");
 
             if (LibraryPath != null)
             {
@@ -421,11 +436,6 @@ namespace ILMerge.Build.Task
             }
         }
 
-        private static string ConvertEmptyToNull(string iti)
-        {
-            if (!string.IsNullOrEmpty(iti))
-                return iti;
-            return null;
-        }
+        private static string ConvertEmptyToNull(string iti) => !string.IsNullOrEmpty(iti) ? iti : null;
     }
 }

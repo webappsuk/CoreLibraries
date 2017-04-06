@@ -26,7 +26,9 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,7 +85,7 @@ namespace WebApplications.Utilities.Test
             long bytes = GC.GetTotalMemory(true);
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Garbage collection"));
-            Trace.WriteLine(string.Format("Memory: {0}K", bytes / 1024));
+            Trace.WriteLine($"Memory: {bytes / 1024}K");
 
             // Check that we have l
             Assert.IsTrue(referenceDictionary.Count <= elements);
@@ -129,6 +131,21 @@ namespace WebApplications.Utilities.Test
                 });
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Checking '{0}' elements", weakCount));
+        }
+
+        [TestMethod]
+        [Timeout(5000)]
+        public void TestWeakConcurrentDictionaryKeysAndValues()
+        {
+            WeakConcurrentDictionary<string, string> weakConcurrentDictionary =
+                new WeakConcurrentDictionary<string, string>
+                {
+                    { "A", "a" },
+                    { "B", "b" }
+                };
+
+            CollectionAssert.AreEquivalent(new[] { "A", "B" }, (ICollection)weakConcurrentDictionary.Keys, "Keys property failed to return values.");
+            CollectionAssert.AreEquivalent(new[] {"a", "b"}, (ICollection) weakConcurrentDictionary.Values, "Values property failed to return values.");
         }
 
         [TestMethod]

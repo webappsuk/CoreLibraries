@@ -88,6 +88,60 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unknown, or unsupported, cryptographic provider &apos;{0}&apos;..
+        /// </summary>
+        internal static string AsymmetricCryptographyProvider_Create_Unknown_Cryptography_Provider {
+            get {
+                return ResourceManager.GetString("AsymmetricCryptographyProvider_Create_Unknown_Cryptography_Provider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid Base32 encoded byte array..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32Decode_Invalid {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32Decode_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid Base32 encoded Guid..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32DecodeGuid_Invalid {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32DecodeGuid_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid Base32 encoded string..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32DecodeString_Invalid {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32DecodeString_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Must specify at least 32 digits for encoding..
+        /// </summary>
+        internal static string Base32EncoderDecoder_Base32Encode_Invalid_Digits {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_Base32Encode_Invalid_Digits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified digits contains comparable duplicates..
+        /// </summary>
+        internal static string Base32EncoderDecoder_TryBase32Decode_Duplicate_Digits {
+            get {
+                return ResourceManager.GetString("Base32EncoderDecoder_TryBase32Decode_Duplicate_Digits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot decrypt a node of type &apos;{0}&apos;..
         /// </summary>
         internal static string Cryptographer_Decrypt_CannotDecryptNode {
@@ -142,6 +196,15 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The cryptographic provider cannot perform decryption..
+        /// </summary>
+        internal static string CryptographyProvider_Decryption_Not_Supported {
+            get {
+                return ResourceManager.GetString("CryptographyProvider_Decryption_Not_Supported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot persist the current cryptography provider to the configuration as no configuration could be found..
         /// </summary>
         internal static string CryptographyProvider_SaveToConfiguration_No_Configuration {
@@ -187,6 +250,24 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to create hashing algorithm with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string HashingCryptographyProvider_GetEncryptor_Create_Failed {
+            get {
+                return ResourceManager.GetString("HashingCryptographyProvider_GetEncryptor_Create_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create keyed hashing algorithm with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed {
+            get {
+                return ResourceManager.GetString("KeyedHashingCryptographyProvider_GetEncryptor_Create_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password cannot be empty.
         /// </summary>
         internal static string PBKDF2_PasswordEmpty {
@@ -201,6 +282,15 @@ namespace WebApplications.Utilities.Cryptography {
         internal static string PBKDF2_SaltEmpty {
             get {
                 return ResourceManager.GetString("PBKDF2_SaltEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create random number generator with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string RandomCryptographyProvider_GetEncryptor_Create_Failed {
+            get {
+                return ResourceManager.GetString("RandomCryptographyProvider_GetEncryptor_Create_Failed", resourceCulture);
             }
         }
         
@@ -223,11 +313,47 @@ namespace WebApplications.Utilities.Cryptography {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The cryptographic provider cannot perform encryption..
+        /// </summary>
+        internal static string RSACryptographyProvider_Encryption_Not_Supported {
+            get {
+                return ResourceManager.GetString("RSACryptographyProvider_Encryption_Not_Supported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Length cannot be less than {0} bytes as that would be too insecure..
         /// </summary>
         internal static string SecureIdentifier_Ctor_Invalid_Length_Supplied {
             get {
                 return ResourceManager.GetString("SecureIdentifier_Ctor_Invalid_Length_Supplied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The configured secure identifier digits are invalid, must be exactly 32 unique digits..
+        /// </summary>
+        internal static string SecureIdentifier_LoadConfiguration_Invalid_Digits {
+            get {
+                return ResourceManager.GetString("SecureIdentifier_LoadConfiguration_Invalid_Digits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The configured secure identifier size &apos;{0}&apos; is invalid, must be between &apos;{1}&apos; and 255 inclusive..
+        /// </summary>
+        internal static string SecureIdentifier_LoadConfiguration_Invalid_Size {
+            get {
+                return ResourceManager.GetString("SecureIdentifier_LoadConfiguration_Invalid_Size", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The secure identifier is invalid..
+        /// </summary>
+        internal static string SecureIdentifier_Parse_Invalid {
+            get {
+                return ResourceManager.GetString("SecureIdentifier_Parse_Invalid", resourceCulture);
             }
         }
         
@@ -246,6 +372,15 @@ namespace WebApplications.Utilities.Cryptography {
         internal static string SecureIdentifier_SecureIdentifier_Invalid_Byte_Array_Supplied {
             get {
                 return ResourceManager.GetString("SecureIdentifier_SecureIdentifier_Invalid_Byte_Array_Supplied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create symmetric algorithm with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string SymmetricCryptographyProvider_Create_Failed {
+            get {
+                return ResourceManager.GetString("SymmetricCryptographyProvider_Create_Failed", resourceCulture);
             }
         }
     }

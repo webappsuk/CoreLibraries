@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using WebApplications.Utilities.Annotations;
@@ -77,6 +78,15 @@ namespace WebApplications.Utilities.Initializer
         public string StrongNameKeyPair { get; set; }
 
         /// <summary>
+        /// Gets or sets the directories that are searched for assemblies referenced by the assemly <see cref="AssemblyFile" />.
+        /// The directory containing said assembly is included by default.
+        /// </summary>
+        /// <value>
+        /// The assembly search dirs.
+        /// </value>
+        public virtual ITaskItem[] AssemblySearchDirs { get; set; }
+
+        /// <summary>
         /// When overridden in a derived class, executes the task.
         /// </summary>
         /// <returns>true if the task successfully executed; otherwise, false.</returns>
@@ -84,8 +94,18 @@ namespace WebApplications.Utilities.Initializer
         public override bool Execute()
         {
             Debug.Assert(Log != null);
-            foreach (Output output in
-                Injector.Inject(AssemblyFile, TypeName, MethodName, StrongNameKeyPair, UseIsolatedAppDomain))
+
+            string[] searchDirs = AssemblySearchDirs == null
+                ? new string[0]
+                : AssemblySearchDirs.Select(ti => ti.ItemSpec).ToArray();
+
+            foreach (Output output in Injector.Inject(
+                    AssemblyFile,
+                    TypeName,
+                    MethodName,
+                    StrongNameKeyPair,
+                    UseIsolatedAppDomain,
+                    searchDirs))
                 switch (output.Importance)
                 {
                     case OutputImportance.Error:

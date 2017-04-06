@@ -27,6 +27,9 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using WebApplications.Testing;
@@ -39,20 +42,57 @@ namespace WebApplications.Utilities.Cryptography.Test
     public class CryptographyConfigurationTests : CryptographyTestBase
     {
         [TestMethod]
-        public void Create_Provider_And_Save()
+        public void Create_Providers_And_Save()
         {
-            CryptographyConfiguration configuration = CryptographyConfiguration.Active;
-            ProviderCollection providers = configuration.Providers;
-            Assert.IsNotNull(providers);
-
-            // Generate unknown key
-            string key;
-            do
+            // Supported algorithmns (see https://msdn.microsoft.com/en-us/library/system.security.cryptography.cryptoconfig(v=vs.110).aspx)
+            string[] names = new[]
             {
-                key = Tester.RandomString(10, minLength: 5);
-            } while (providers[key] != null);
+                // Asymmetric algorithms
+                "RSA",
+                /*
+                "DSA",
+                "ECDH",
+                "ECDsa"
+                */
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(key));
+                // Symmetric algorithms
+                "AES",
+                "DES",
+                "3DES",
+                "RC2",
+                "Rijndael",
+
+                // Hashing algorithms
+                "MD5",
+                "RIPEMD160",
+                "SHA",
+                "SHA256",
+                "SHA384",
+                "SHA512",
+
+                // Keyed hashing algorithms
+                "HMACMD5",
+                "HMACRIPEMD160",
+                "HMACSHA1",
+                "HMACSHA256",
+                "HMACSHA384",
+                "HMACSHA512",
+                "MACTripleDES",
+                
+                // Random number generator
+                "RandomNumberGenerator"
+            };
+
+            int providerCount = names.Length;
+
+            CryptographyConfiguration configuration = CryptographyConfiguration.Active;
+            Trace.WriteLine($"Configuration file : {configuration.FilePath}");
+
+            ProviderCollection providerCollection = configuration.Providers;
+            Assert.IsNotNull(providerCollection);
+
+            // Generate random keys for each algorithm
+            string[] keys = names.Select(n => $"{n}-{Guid.NewGuid()}").ToArray();
 
             // Detect changes to configuration
             EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
@@ -63,27 +103,91 @@ namespace WebApplications.Utilities.Cryptography.Test
                 ewh.Set();
             };
 
-            CryptographyProvider provider = configuration.GetOrAddProvider(key, () => RSACryptographyProvider.Create());
+            // Add providers
+            CryptographyProvider[] providers = new CryptographyProvider[providerCount];
+            for (int k = 0; k < providerCount; k++)
+            {
+                bool added = false;
+                providers[k] = CryptographyConfiguration.Active.GetOrAddProvider(
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    keys[k],
+                    () =>
+                    {
+                        added = true;
+                        return CryptographyProvider.Create(names[k]);
+                    });
+
+                Assert.IsTrue(added);
+            }
+
             // Wait for the configuration changed event to fire
             Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(5)), "Configuration changed event did not fire.");
-            Assert.IsNotNull(provider);
-            Assert.IsInstanceOfType(provider, typeof(RSACryptographyProvider));
+            CollectionAssert.AllItemsAreNotNull(providers);
+            CollectionAssert.AllItemsAreInstancesOfType(providers, typeof(CryptographyProvider));
 
             configuration = CryptographyConfiguration.Active;
-            CryptographyProvider provider2 = configuration.GetProvider(key);
-            Assert.IsNotNull(provider2);
-            Assert.AreEqual(
-                provider.Configuration.ToString(SaveOptions.DisableFormatting),
-                provider2.Configuration.ToString(SaveOptions.DisableFormatting));
 
-            // Remove provider from configuration
-            configuration.Providers.Remove(key);
+
+            for (int k = 0; k < providerCount; k++)
+            {
+                CryptographyProvider provider = providers[k];
+                Assert.IsNotNull(provider);
+
+                string key = keys[k];
+                Assert.IsNotNull(key);
+                Assert.AreEqual(key, provider.Id, "The provider did not have it's ID set!");
+                Assert.IsNotNull(provider.Configuration);
+
+                CryptographyProvider reloadProvider = configuration.GetProvider(key);
+                Assert.IsNotNull(reloadProvider);
+                Assert.AreEqual(key, reloadProvider.Id, "The loaded provider did not have it's ID set!");
+
+                // Check configs match
+                Tuple<XObject, XObject> difference = provider.Configuration.DeepEquals(
+                    reloadProvider.Configuration,
+                    XObjectComparisonOptions.Semantic);
+
+                Assert.IsNull(difference, $"Configurations do not match {difference?.Item1} : {difference?.Item2}");
+
+                if (reloadProvider.CanEncrypt)
+                {
+                    // Test encryption
+                    string random = Tester.RandomString(minLength: 1);
+                    string encrypted = provider.EncryptToString(random);
+                    Assert.IsNotNull(encrypted);
+                    Assert.IsFalse(random == encrypted, "Expected and actual string are equal.");
+
+                    if (reloadProvider.CanDecrypt)
+                    {
+                        string decrypted = provider.DecryptToString(encrypted);
+                        Assert.IsNotNull(decrypted);
+                        Assert.IsTrue(
+                            random == decrypted,
+                            "Expected: {0}\r\n  Actual: {1}",
+                            Convert.ToBase64String(Encoding.Unicode.GetBytes(random)),
+                            Convert.ToBase64String(Encoding.Unicode.GetBytes(decrypted)));
+                    }
+                }
+
+
+                // Remove provider from configuration
+                configuration.Providers.Remove(key);
+            }
+
+            // Re-save configuration
             configuration.Save();
 
             // Wait for the configuration changed event to fire
             Assert.IsTrue(ewh.WaitOne(TimeSpan.FromSeconds(1)), "Configuration changed event did not fire.");
-            provider2 = configuration.GetProvider(key);
-            Assert.IsNull(provider2);
+
+            for (int k = 0; k < providerCount; k++)
+            {
+                string key = keys[k];
+                Assert.IsNotNull(key);
+                Assert.IsNull(
+                    configuration.GetProvider(key),
+                    "The provider with key '{key'} was not removed successfully.");
+            }
         }
     }
 }

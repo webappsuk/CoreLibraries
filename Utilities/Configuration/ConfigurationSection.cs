@@ -34,7 +34,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
-using System.Web;
 using System.Web.Configuration;
 using System.Xml;
 using System.Xml.Linq;
@@ -52,11 +51,6 @@ namespace WebApplications.Utilities.Configuration
     public abstract partial class ConfigurationSection<T> : ConfigurationSection, IInternalConfigurationSection
         where T : ConfigurationSection<T>, IConfigurationElement, new()
     {
-        /// <summary>
-        /// The time in milliseconds that events are buffered for.
-        /// </summary>
-        public const int EventBufferMs = 250;
-
         #region Delegates
         /// <summary>
         /// Handles changes in configuration.
@@ -88,6 +82,8 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         private BufferedAction<string> _changeAction;
 
+        private string _filePath;
+
         /// <summary>
         /// Initializes static members of the <see cref="ConfigurationSection{T}" /> class.
         /// </summary>
@@ -110,7 +106,7 @@ namespace WebApplications.Utilities.Configuration
                         }
                     },
                     // ReSharper restore EventExceptionNotDocumented, AssignNullToNotNullAttribute
-                    EventBufferMs);
+                    ConfigurationExtensions.EventBufferMs);
 
             // Try to find attribute
             ConfigurationSectionAttribute attribute =
@@ -162,17 +158,16 @@ namespace WebApplications.Utilities.Configuration
         /// Initializes a new instance of the <see cref="ConfigurationSection{T}" /> class.
         /// </summary>
         /// <exception cref="ConfigurationErrorsException">The selected value conflicts with a value that is already defined.</exception>
+        // ReSharper disable once NotNullMemberIsNotInitialized
         protected ConfigurationSection()
         {
             // Set up change buffer
             _changeAction =
                 new BufferedAction<string>(
                     // ReSharper disable once EventExceptionNotDocumented, AssignNullToNotNullAttribute
-                    changes => Changed?.Invoke((T)this, new ConfigurationChangedEventArgs((T)this, changes)),
-                    EventBufferMs);
+                    changes => Changed?.Invoke((T)this, new ConfigurationChangedEventArgs((T)this, changes)), ConfigurationExtensions.EventBufferMs);
 
             // This will get set during initialization
-            LineNumber = -1;
             ((IInternalConfigurationElement)this).ConfigurationElementName = $"<{SectionName}>";
 
             // As our system supports change notification, we can default the restart on external changes to false.
@@ -210,7 +205,7 @@ namespace WebApplications.Utilities.Configuration
         /// </summary>
         /// <remarks>
         ///   <para>If you do not explicitly define the section name using the <see cref="ConfigurationSectionAttribute"/>
-        ///   then  the name is calculated automatically from the type name using the following algorithm:</para>
+        ///   then the name is calculated automatically from the type name using the following algorithm:</para>
         ///   <list type="number">
         ///     <item><description>Take the type name.</description></item>
         ///     <item><description>Remove one of the following suffixes if present -
@@ -227,10 +222,6 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         ///   Gets or sets the active configuration.
         /// </summary>
-        /// <remarks>
-        ///   <para>Once set as active a configuration is marked as read only.</para>
-        ///   <para>Setting the active configuration to <see langword="null"/> will load the default configuration.</para>
-        /// </remarks>
         /// <exception cref="ObjectDisposedException" accessor="set">You cannot set the active configuration section to
         /// a <see cref="IsDisposed">disposed</see> section.</exception>
         /// <exception cref="ConfigurationErrorsException" accessor="get">Error during initialization.</exception>
@@ -252,10 +243,9 @@ namespace WebApplications.Utilities.Configuration
                     if (active != null && !active.IsDisposed) return active;
 
                     // ReSharper disable ExceptionNotDocumented
-                    return _active = GetOrAdd(
-                        HttpContext.Current == null
-                            ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
-                            : WebConfigurationManager.OpenWebConfiguration(null));
+                    return _active = GetOrAdd(ConfigurationExtensions.IsWeb
+                            ? WebConfigurationManager.OpenWebConfiguration("~/")
+                            : ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None));
                     // ReSharper restore ExceptionNotDocumented
                 }
             }
@@ -270,6 +260,7 @@ namespace WebApplications.Utilities.Configuration
                     if (Equals(active, value)) return;
                     if (value.IsDisposed) throw new ObjectDisposedException(typeof(T).ToString());
                     _active = value;
+                    _activeChangeAction.Run(value.FullPath);
                 }
             }
         }
@@ -322,15 +313,15 @@ namespace WebApplications.Utilities.Configuration
         /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission. </exception>
         /// <exception cref="IOException">An I/O error occurs. </exception>
         [NotNull]
-        public static T GetOrAdd([NotNull] System.Configuration.Configuration configuration)
+        public static T GetOrAdd([CanBeNull] System.Configuration.Configuration configuration = null)
         {
-            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
-
             // Get the section.
             T section;
             try
             {
-                section = configuration.GetSection(SectionName) as T;
+                section = configuration != null
+                    ? configuration.GetSection(SectionName) as T
+                    : ConfigurationManager.GetSection(SectionName) as T;
             }
             // ReSharper disable once CatchAllClause
             catch (Exception e)
@@ -345,18 +336,45 @@ namespace WebApplications.Utilities.Configuration
                 throw;
             }
 
-            // Return if found.
-            if (section != null) return section;
+            // If we don't have a section create one.
+            if (section == null)
+            {
+                // Calculate the most appropriate configuration (if we don't have one already).
+                if (configuration == null)
+                    configuration = ConfigurationExtensions.IsWeb
+                        ? WebConfigurationManager.OpenWebConfiguration("~/")
+                        : ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            // Create new configuration and set it as the active one.
-            section = Create();
+                // Create new configuration
+                section = Create();
 
-            // Add to existing configuration and save
-            configuration.Sections.Add(SectionName, section);
+                // Add to existing configuration
+                configuration.Sections.Add(SectionName, section);
 
-            // If the section has an associated file, save and reload.
-            if (section.HasFile)
-                section = section.Save();
+                // If the configuration doesn't yet have a file we're done.
+                if (!configuration.HasFile) return section;
+
+                try
+                {
+                    // Attempt to save configuration and reload the section.
+                    configuration.Save();
+
+                    ConfigurationManager.RefreshSection(SectionName);
+                    section = configuration.GetSection(SectionName) as T ?? section;
+                }
+                catch (Exception e)
+                {
+                    // Intercept exception to throw
+                    ExceptionDispatchInfo edi = ExceptionDispatchInfo.Capture(e);
+                    // ReSharper disable once AssignNullToNotNullAttribute, EventExceptionNotDocumented
+                    ConfigurationLoadError?.Invoke(new ConfigurationLoadEventArgs(SectionName, edi));
+                }
+            }
+
+            // If we don't have a file path, but our configuration does, then set it.
+            if (!section.HasFile &&
+                section.CurrentConfiguration?.HasFile == true)
+                section.FilePath = section.CurrentConfiguration.FilePath;
             return section;
         }
 
@@ -506,10 +524,20 @@ namespace WebApplications.Utilities.Configuration
         public bool HasFile => !string.IsNullOrWhiteSpace(FilePath);
 
         /// <inheritdoc />
-        public string FilePath { get; private set; }
+        public string FilePath
+        {
+            get { return _filePath; }
+            private set
+            {
+                if (_filePath == value) return;
+                if (!string.IsNullOrWhiteSpace(_filePath))
+                    ConfigurationFileWatcher.UnWatch(this);
 
-        /// <inheritdoc />
-        public int LineNumber { get; private set; }
+                _filePath = value;
+                if (!string.IsNullOrWhiteSpace(_filePath))
+                    ConfigurationFileWatcher.Watch(this);
+            }
+        }
 
         /// <inheritdoc />
         public bool IsDisposed { get; private set; }
@@ -517,21 +545,9 @@ namespace WebApplications.Utilities.Configuration
         /// <inheritdoc />
         protected override void DeserializeSection(XmlReader reader)
         {
-            // Grab file info
+            // Grab file path
             IConfigErrorInfo errorInfo = reader as IConfigErrorInfo;
-            if (errorInfo != null)
-            {
-                FilePath = errorInfo.Filename;
-                LineNumber = errorInfo.LineNumber;
-                ConfigurationFileWatcher.Watch(this);
-            }
-            else
-            {
-                // Take our best guess
-                FilePath = CurrentConfiguration?.FilePath;
-                LineNumber = 0;
-                ConfigurationFileWatcher.Watch(this);
-            }
+            FilePath = errorInfo != null ? errorInfo.Filename : CurrentConfiguration?.FilePath;
             
             base.DeserializeSection(reader);
         }
@@ -634,6 +650,7 @@ namespace WebApplications.Utilities.Configuration
             /// The section name.
             /// </summary>
             [NotNull]
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public readonly string SectionName;
 
             /// <summary>

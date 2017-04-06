@@ -455,6 +455,94 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             Assert.AreEqual(-1, nonQueryResult);
         }
 
+        [TestMethod]
+        public async Task ExecuteNonQuery_WithOutputParameters_ExecutesSuccessfully()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create((Connection)LocalDatabaseConnectionString, "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            Out<int> inputOutput = new Out<int>(inputOutputVal);
+            Out<int> output = new Out<int>();
+
+            int nonQueryResult = program.ExecuteNonQuery(inputVal, inputOutput, output);
+            Assert.AreEqual(-1, nonQueryResult);
+
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+
+            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            Assert.AreEqual(inputVal, output.OutputValue.Value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidCastException))]
+        public async Task ExecuteNonQuery_WithOutputParametersNull_ThrowsException()
+        {
+            SqlProgram<int?, Out<int?>, Out<int>> program =
+                await SqlProgram<int?, Out<int?>, Out<int>>.Create((Connection)LocalDatabaseConnectionString, "spOutputParameters");
+            
+            Out<int?> inputOutput = new Out<int?>(null);
+            Out<int> output = new Out<int>();
+
+            int nonQueryResult = program.ExecuteNonQuery(null, null, output);
+            Assert.AreEqual(-1, nonQueryResult);
+
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsInstanceOfType(output.OutputError, typeof(InvalidCastException));
+
+            Assert.AreEqual(null, inputOutput.OutputValue.Value);
+            Assert.AreEqual(null, output.OutputValue.Value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task ExecuteNonQueryAll_WithOutputParametersAndOut_ThrowsArgumentException()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                    "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            Out<int> inputOutput = new Out<int>(inputOutputVal);
+            Out<int> output = new Out<int>();
+
+            program.ExecuteNonQueryAll(inputVal, inputOutput, output);
+        }
+
+        [TestMethod]
+        public async Task ExecuteNonQueryAll_WithOutputParametersAndMultiOut_ExecutesSuccessfully()
+        {
+            SqlProgram<int, Out<int>, Out<int>> program =
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                    "spOutputParameters");
+
+            const int inputVal = 123;
+            const int inputOutputVal = 321;
+
+            MultiOut<int> inputOutput = new MultiOut<int>(inputOutputVal);
+            MultiOut<int> output = new MultiOut<int>();
+
+            int[] nonQueryResult = program.ExecuteNonQueryAll(inputVal, inputOutput, output).ToArray();
+            Assert.AreEqual(2, nonQueryResult.Length);
+            Assert.IsTrue(nonQueryResult.All(i => i == -1));
+            
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+
+            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            Assert.AreEqual(inputVal, output.OutputValue.Value);
+
+            Assert.IsTrue(inputOutput.All(o => o.OutputValue.Value == inputOutputVal * 2));
+            Assert.IsTrue(output.All(o => o.OutputValue.Value == inputVal));
+        }
+
         private class TestType
         {
             public string Name { get; set; }

@@ -88,9 +88,9 @@ namespace WebApplications.Utilities.Initializer
         /// <param name="typeName">Name of the type.</param>
         /// <param name="methodName">Name of the method.</param>
         /// <param name="strongNameKeyPair">The strong name key pair.</param>
-        /// <param name="useIsolatedAppDomain">if set to <c>true</c> uses a new <see cref="AppDomain"/>.</param>
-        /// <returns>Any errors; otherwise <see langword="null"/>.</returns>
-        /// <remarks></remarks>
+        /// <param name="useIsolatedAppDomain">if set to <c>true</c> uses a new <see cref="AppDomain" />.</param>
+        /// <param name="assemblySearchDirs">The directories that are searched for referenced assemblies.</param>
+        /// <returns>Any errors; otherwise <see langword="null" />.</returns>
         [NotNull]
         [ItemNotNull]
         public static IEnumerable<Output> Inject(
@@ -98,13 +98,14 @@ namespace WebApplications.Utilities.Initializer
             string typeName,
             string methodName,
             string strongNameKeyPair,
-            bool useIsolatedAppDomain)
+            bool useIsolatedAppDomain,
+            string[] assemblySearchDirs)
         {
             Injector injector;
             if (!useIsolatedAppDomain)
             {
                 injector = new Injector();
-                return injector.DoInject(assemblyFile, typeName, methodName, strongNameKeyPair);
+                return injector.DoInject(assemblyFile, typeName, methodName, strongNameKeyPair, assemblySearchDirs);
             }
 
             AppDomain childDomain = null;
@@ -126,7 +127,7 @@ namespace WebApplications.Utilities.Initializer
                 Debug.Assert(injector != null);
 
                 // Call the DoInject method on the injector in the child domain.
-                return injector.DoInject(assemblyFile, typeName, methodName, strongNameKeyPair);
+                return injector.DoInject(assemblyFile, typeName, methodName, strongNameKeyPair, assemblySearchDirs);
             }
             finally
             {
@@ -142,6 +143,7 @@ namespace WebApplications.Utilities.Initializer
         /// <param name="typeName">Name of the type.</param>
         /// <param name="methodName">Name of the method.</param>
         /// <param name="strongNameKeyPair">The strong name key pair.</param>
+        /// <param name="assemblySearchDirs">The directories that are searched for referenced assemblies.</param>
         /// <returns>Any errors; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         [SecuritySafeCritical]
@@ -151,7 +153,8 @@ namespace WebApplications.Utilities.Initializer
             string assemblyFile,
             string typeName,
             string methodName,
-            string strongNameKeyPair)
+            string strongNameKeyPair,
+            string[] assemblySearchDirs)
         {
             OutputCollection outputCollection = new OutputCollection();
             try
@@ -233,8 +236,19 @@ namespace WebApplications.Utilities.Initializer
                 // Look for PDB file.
                 string pdbFile = Path.ChangeExtension(assemblyFile, ".pdb");
 
+                // Create resolver for assemblies
+                DefaultAssemblyResolver asmResolver = new DefaultAssemblyResolver();
+
+                // Add the search directories to the resolver
+                string assemblyDir = Path.GetDirectoryName(Path.GetFullPath(assemblyFile));
+                asmResolver.AddSearchDirectory(Path.GetFullPath(assemblyDir));
+                foreach (string dir in assemblySearchDirs.Select(Path.GetFullPath).Distinct())
+                    if (!string.Equals(dir, assemblyDir))
+                        asmResolver.AddSearchDirectory(dir);
+
                 // Read the assembly definition
                 ReaderParameters readParams = new ReaderParameters(ReadingMode.Immediate);
+                readParams.AssemblyResolver = asmResolver;
                 bool hasPdb = false;
                 if (File.Exists(pdbFile))
                 {
