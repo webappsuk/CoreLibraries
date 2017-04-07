@@ -93,54 +93,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// The weekday.
         /// </summary>
         public readonly WeekDay WeekDay;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class, used by configuration system.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="month">The month.</param>
-        /// <param name="week">The week.</param>
-        /// <param name="day">The day.</param>
-        /// <param name="weekDay">The week day.</param>
-        /// <param name="hour">The hour.</param>
-        /// <param name="minute">The minute.</param>
-        /// <param name="second">The second.</param>
-        /// <param name="minimumTimeSpan">The minimum gap.</param>
-        /// <param name="calendar">The calendar ID.</param>
-        /// <param name="timeZone">The time zone ID.</param>
-        /// <param name="options">The options.</param>
-        [UsedImplicitly]
-        private PeriodicSchedule(
-            [CanBeNull] string name,
-            Month month = Month.Every,
-            Week week = Week.Every,
-            Day day = Day.Every,
-            WeekDay weekDay = WeekDay.Every,
-            Hour hour = Hour.Zeroth,
-            Minute minute = Minute.Zeroth,
-            Second second = Second.Zeroth,
-            TimeSpan minimumTimeSpan = default(TimeSpan),
-            [CanBeNull] string calendar = null,
-            [CanBeNull] string timeZone = null,
-            ScheduleOptions options = ScheduleOptions.None)
-            : this(
-                month,
-                week,
-                day,
-                weekDay,
-                hour,
-                minute,
-                second,
-                minimumTimeSpan < TimeSpan.Zero ? Duration.Zero : Duration.FromTimeSpan(minimumTimeSpan),
-                // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-                string.IsNullOrWhiteSpace(calendar) ? CalendarSystem.Iso : CalendarSystem.ForId(calendar),
-                string.IsNullOrWhiteSpace(timeZone) ? DateTimeZone.Utc : TimeHelpers.DateTimeZoneProvider[timeZone],
-                // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
-                options,
-                name)
-        {
-        }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="PeriodicSchedule" /> class.
         /// </summary>
@@ -152,8 +105,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="minute">The minute.</param>
         /// <param name="second">The second.</param>
         /// <param name="minimumGap">The minimum gap.</param>
-        /// <param name="calendarSystem">The calendar.</param>
-        /// <param name="dateTimeZone">The time zone.</param>
+        /// <param name="calendar">The calendar.</param>
+        /// <param name="timeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         public PeriodicSchedule(
             Month month = Month.Every,
@@ -164,8 +117,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Minute minute = Minute.Zeroth,
             Second second = Second.Zeroth,
             Duration minimumGap = default(Duration),
-            [CanBeNull] CalendarSystem calendarSystem = null,
-            [CanBeNull] DateTimeZone dateTimeZone = null,
+            [CanBeNull] CalendarSystem calendar = null,
+            [CanBeNull] DateTimeZone timeZone = null,
             ScheduleOptions options = ScheduleOptions.None)
             : this(
                 month,
@@ -177,8 +130,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 second,
                 minimumGap < Duration.Zero ? Duration.Zero : minimumGap,
                 // ReSharper disable AssignNullToNotNullAttribute
-                calendarSystem ?? CalendarSystem.Iso,
-                dateTimeZone ?? DateTimeZone.Utc,
+                calendar ?? CalendarSystem.Iso,
+                timeZone ?? DateTimeZone.Utc,
                 // ReSharper restore AssignNullToNotNullAttribute
                 options,
                 null)
@@ -197,8 +150,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="minute">The minute.</param>
         /// <param name="second">The second.</param>
         /// <param name="minimumGap">The minimum gap.</param>
-        /// <param name="calendarSystem">The calendar.</param>
-        /// <param name="dateTimeZone">The time zone.</param>
+        /// <param name="calendar">The calendar.</param>
+        /// <param name="timeZone">The time zone.</param>
         /// <param name="options">The options.</param>
         public PeriodicSchedule(
             [CanBeNull] string name,
@@ -210,8 +163,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Minute minute = Minute.Zeroth,
             Second second = Second.Zeroth,
             Duration minimumGap = default(Duration),
-            [CanBeNull] CalendarSystem calendarSystem = null,
-            [CanBeNull] DateTimeZone dateTimeZone = null,
+            [CanBeNull] CalendarSystem calendar = null,
+            [CanBeNull] DateTimeZone timeZone = null,
             ScheduleOptions options = ScheduleOptions.None)
             : this(
                 month,
@@ -223,8 +176,8 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 second,
                 minimumGap < Duration.Zero ? Duration.Zero : minimumGap,
                 // ReSharper disable AssignNullToNotNullAttribute
-                calendarSystem ?? CalendarSystem.Iso,
-                dateTimeZone ?? DateTimeZone.Utc,
+                calendar ?? CalendarSystem.Iso,
+                timeZone ?? DateTimeZone.Utc,
                 // ReSharper restore AssignNullToNotNullAttribute
                 options,
                 name)

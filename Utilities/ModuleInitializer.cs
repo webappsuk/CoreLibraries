@@ -55,6 +55,8 @@ namespace WebApplications.Utilities
             TypeDescriptor.AddAttributes(typeof(LocalDateTime), new TypeConverterAttribute(typeof(LocalDateTimeConverter)));
             TypeDescriptor.AddAttributes(typeof(Duration), new TypeConverterAttribute(typeof(DurationConverter)));
             TypeDescriptor.AddAttributes(typeof(Period), new TypeConverterAttribute(typeof(PeriodConverter)));
+            TypeDescriptor.AddAttributes(typeof(CalendarSystem), new TypeConverterAttribute(typeof(CalendarSystemConverter)));
+            TypeDescriptor.AddAttributes(typeof(DateTimeZone), new TypeConverterAttribute(typeof(DateTimeZoneConverter)));
             TypeDescriptor.AddAttributes(typeof(XNamespace), new TypeConverterAttribute(typeof(XNamespaceConverter)));
         }
     }
