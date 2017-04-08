@@ -158,7 +158,7 @@ namespace WebApplications.Utilities
                  * word boundaries.  Note this implicitly 'normalizes line endings' as only the first character of
                  * white space is preserved, so only on line ending character will be kept.
                  * 
-                 * It makes not sense to allow this in conjunction with trim as line breaks are effectively treated the
+                 * It makes no sense to allow this in conjunction with trim as line breaks are effectively treated the
                  * same as any white space.
                  */
                 case TextOptions.CollapseWhiteSpace:
@@ -285,84 +285,6 @@ namespace WebApplications.Utilities
             // Store mapped string and the map.
             Mapped = builder.ToString();
             Map = map.ToArray();
-
-#if false
-    // Create map
-            List<int> map = new List<int>();
-            bool ignoreWhiteSpace = options.HasFlag(TextOptions.IgnoreWhiteSpace);
-            bool collapseWhiteSpace = ignoreWhiteSpace || options.HasFlag(TextOptions.CollapseWhiteSpace);
-            bool normalizeLineEndings = ignoreWhiteSpace || options.HasFlag(TextOptions.NormalizeLineEndings);
-            bool trim = ignoreWhiteSpace || options.HasFlag(TextOptions.Trim);
-
-            int o = 0;
-            int l = 0;
-            int lnws = -1;
-            int i = 0;
-            int end;
-
-            // Logic for adding a map
-            Action<int, int> addMap = (int s, int e) =>
-            {
-                int mc = map.Count;
-                int len = e - s;
-                Count += len;
-                map.Add(s);
-                map.Add(len);
-                map.Add(Count);
-            };
-
-            // TODO Not working for most tests!
-
-            // ReSharper disable EventExceptionNotDocumented
-            while (i < length)
-            {
-                char c = Original[i++];
-
-                // Check for white space
-                if (char.IsWhiteSpace(c))
-                {
-                    if (collapseWhiteSpace && (ignoreWhiteSpace || lnws < i - 2))
-                    {
-                        if (lnws - o >= 0 && lnws >= 0)
-                            addMap(o, 1 + lnws);
-
-                        o = ignoreWhiteSpace ? i : i - 1;
-                        lnws = -1;
-                        continue;
-                    }
-                    if ((c == '\r' || c == '\n') && (i < length))
-                    {
-                        c = Original[i];
-                        if (c == '\r' || c == '\n')
-                        {
-                            end = trim ? lnws : i - 1;
-                            if (end - o >= 0)
-                                addMap(o, 1 + end);
-
-                            i++;
-                            o = i;
-                            lnws = -1;
-
-                            // TODO We have a line ending
-                            continue;
-                        }
-                    }
-
-                    if (trim && lnws < 0)
-                        o = i;
-                }
-                else
-                    lnws = i - 1;
-            }
-
-            end = ignoreWhiteSpace || trim ? lnws : i - 1;
-            if (end - o >= 0)
-                addMap(o, 1 + end);
-
-            // ReSharper restore EventExceptionNotDocumented
-            // Store map
-            Map = map.ToArray();
-#endif
         }
 
         /// <inheritdoc />

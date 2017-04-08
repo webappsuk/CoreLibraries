@@ -117,7 +117,7 @@ namespace WebApplications.Utilities.Difference
                 else if (textOptions.HasFlag(TextOptions.NormalizeLineEndings))
                     // Just normalize line endings - treat '\r' and '\n\ as the same
                     comparer = (x, y) => x == '\r' || x == '\n' ? y == '\r' || y == '\n' : oc(x, y);
-            }
+            } // TODO else we don't really need to map - optimize
 
             // Map strings based on text options
             StringMap aMap = a.ToMapped(textOptions);
@@ -217,7 +217,7 @@ namespace WebApplications.Utilities.Difference
             int offsetB,
             int lengthB,
             TextOptions textOptions,
-            [NotNull] Func<char, char, bool> comparer)
+            [NotNull] Func<string, string, bool> comparer)
         {
             if (a == null) throw new ArgumentNullException(nameof(a));
             if (b == null) throw new ArgumentNullException(nameof(b));
@@ -227,6 +227,8 @@ namespace WebApplications.Utilities.Difference
             A = a;
             B = b;
 
+
+            /* TODO REVIEW
             if (textOptions != TextOptions.None)
             {
                 // Wrap the comparer with an additional check to handle special characters.
@@ -237,13 +239,28 @@ namespace WebApplications.Utilities.Difference
                 else if (textOptions.HasFlag(TextOptions.NormalizeLineEndings))
                     // Just normalize line endings - treat '\r' and '\n\ as the same
                     comparer = (x, y) => x == '\r' || x == '\n' ? y == '\r' || y == '\n' : oc(x, y);
-            }
+            } // TODO else we don't really need to map - optimize
+            */
 
             // Map strings based on text options
             StringMap aMap = a.ToMapped(textOptions);
             StringMap bMap = b.ToMapped(textOptions);
 
-            throw new NotImplementedException("Only character tokenization is currently implemented.");
+            // Perform diff on mapped string
+            Differences<string> chunks =
+                aMap.ToTokens(tokenStrategy).ToArray().Diff(bMap.ToTokens(tokenStrategy).ToArray(), comparer);
+
+            // Special case simple equality
+            if (chunks.Count < 2)
+            {
+                Chunk<string> chunk = chunks.Single();
+                // ReSharper disable once PossibleNullReferenceException
+                _chunks = new[] { new StringChunk(chunk.AreEqual, a, 0, b, 0) };
+                return;
+            }
+
+            // TODO Rebuild string chunks.
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />

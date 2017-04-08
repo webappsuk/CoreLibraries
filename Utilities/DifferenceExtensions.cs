@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Difference;
@@ -177,7 +178,7 @@ namespace WebApplications.Utilities
                     0,
                     b.Length,
                     textOptions,
-                    (x, y) => comparer.Equals(x, y));
+                    (x,y) => StringComparer.CurrentCulture.Equals(x,y)); // TODO
             // ReSharper restore ExceptionNotDocumented
         }
 
@@ -262,7 +263,8 @@ namespace WebApplications.Utilities
             [NotNull] Func<char, char, bool> comparer)
             => tokenStrategy == TextTokenStrategy.Character
                 ? new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, comparer)
-                : new StringDifferences(tokenStrategy, a, 0, a.Length, b, 0, b.Length, textOptions, comparer);
+                : new StringDifferences(tokenStrategy, a, 0, a.Length, b, 0, b.Length, textOptions,
+                    (x, y) => StringComparer.CurrentCulture.Equals(x, y)); // TODO
 
         /// <summary>
         /// Find the differences between two strings.
@@ -326,7 +328,7 @@ namespace WebApplications.Utilities
                     offsetB,
                     lengthB,
                     textOptions,
-                    (x, y) => comparer.Equals(x, y));
+                    (x, y) => StringComparer.CurrentCulture.Equals(x, y)); // TODO
             // ReSharper restore ExceptionNotDocumented
         }
 
@@ -449,7 +451,7 @@ namespace WebApplications.Utilities
                         offsetB,
                         lengthB,
                         textOptions,
-                        comparer);
+                    (x, y) => StringComparer.CurrentCulture.Equals(x, y)); // TODO
 
         /// <summary>
         /// Find the differences between two collections.
@@ -595,6 +597,81 @@ namespace WebApplications.Utilities
         public static StringMap ToMapped(
             [NotNull] this string input,
             TextOptions options = TextOptions.Default) => new StringMap(input, options);
+
+        /// <summary>
+        /// Tokenizes a string (optionally using the <see paramref="textOptions">text options</see>).
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="strategy">The token strategy.</param>
+        /// <param name="options">The text options.</param>
+        /// <returns>An enumeration of <see cref="string" />.</returns>
+        [NotNull]
+        public static IEnumerable<string> ToTokens(
+            [NotNull] this string input,
+            TextTokenStrategy strategy,
+            TextOptions options = TextOptions.None)
+            => options == TextOptions.None
+                    ? ToTokens((IEnumerable<char>)input, strategy)
+                    : ToTokens(input.ToMapped(options), strategy);
+
+        /// <summary>
+        /// Tokenizes an enumeration of characters.
+        /// </summary>
+        /// <param name="characters">The characters.</param>
+        /// <param name="strategy">The token strategy.</param>
+        /// <returns>An enumeration of <see cref="string"/>.</returns>
+        [NotNull]
+        public static IEnumerable<string> ToTokens([NotNull] this IEnumerable<char> characters, TextTokenStrategy strategy)
+        {
+            switch (strategy)
+            {
+                case TextTokenStrategy.Character:
+                    // Just case characters to a string
+                    foreach (char c in characters)
+                        yield return c.ToString();
+                    break;
+                case TextTokenStrategy.Word:
+                    // See ftp://www.unicode.org/Public/UNIDATA/auxiliary/WordBreakTest.html
+
+                    // TODO This is not a direct implementation of the above spec.
+                    
+                    StringBuilder wordBuilder = new StringBuilder();
+                    bool? inWord = null;
+                    foreach (char c in characters)
+                    {
+                        // Check for word boundary changes.
+                        bool isWord = c.IsWord();
+                        if (inWord == null) inWord = isWord;
+                        else if (inWord.Value != isWord)
+                        {
+                            // Changed boundary.
+                            yield return wordBuilder.ToString();
+                            wordBuilder.Clear();
+                            inWord = isWord;
+                        }
+
+                        // Add character to builder
+                        wordBuilder.Append(c);
+                    }
+
+                    // If we have anything else, yield it.
+                    if (wordBuilder.Length > 0)
+                        yield return wordBuilder.ToString();
+                    break;
+                case TextTokenStrategy.Line:
+                    // See ftp://www.unicode.org/Public/UNIDATA/auxiliary/LineBreakTest.html
+                    throw new NotImplementedException();
+                    break;
+                case TextTokenStrategy.FullSentence:
+                case TextTokenStrategy.Sentence:
+                    // See ftp://www.unicode.org/Public/7.0.0/ucd/auxiliary/SentenceBreakTest.html
+                    // except we only break on lines if we are using the 'Sentence' strategy
+                    throw new NotImplementedException();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(strategy), strategy, null);
+            }
+        }
 
         /// <summary>
         /// The word categories.
