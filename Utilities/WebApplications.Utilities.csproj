@@ -170,6 +170,12 @@
     <Compile Include="ReadOnlyMap.cs" />
     <Compile Include="ReadOnlyOffsetMap.cs" />
     <Compile Include="StringMap.cs" />
+    <Compile Include="Text\TextExtensions.cs" />
+    <Compile Include="Text\UnicodeCharacterDatabaseLoader1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UnicodeCharacterDatabaseLoader.tt</DependentUpon>
+    </Compile>
     <Compile Include="Threading\BufferedAction.cs" />
     <Compile Include="Threading\BufferedActionGeneric.cs">
       <DependentUpon>BufferedActionGeneric.tt</DependentUpon>
@@ -336,6 +342,10 @@
     <None Include="packages.config" />
     <None Include="Resources\iso4217.ccy">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Text\UnicodeCharacterDatabaseLoader.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UnicodeCharacterDatabaseLoader1.cs</LastGenOutput>
     </None>
     <None Include="web.config.transform" />
     <None Include="app.config.transform" />

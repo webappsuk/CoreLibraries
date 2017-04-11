@@ -40,26 +40,19 @@ namespace WebApplications.Utilities.Difference
         /// <summary>
         /// Differences are calculated per word (based on word boundaries).
         /// </summary>
-        /// <remarks><para>This follows the Unicode Standard, as shown in the Word Break Chart (see ftp://www.unicode.org/Public/UNIDATA/auxiliary/WordBreakTest.html ). </para></remarks>
+        /// <remarks><para>This follows the Unicode Standard, as shown in the Word Break Chart (see http://www.unicode.org/Public/UNIDATA/auxiliary/WordBreakTest.html). </para></remarks>
         Word,
 
         /// <summary>
         /// Differences are calculated per line.
         /// </summary>
-        /// <remarks><para>This follows the Unicode Standard, as shown in the Line Break Chart (see ftp://www.unicode.org/Public/UNIDATA/auxiliary/LineBreakTest.html ). </para></remarks>
+        /// <remarks><para>This follows the Unicode Standard, as shown in the Line Break Chart (see http://www.unicode.org/Public/UNIDATA/auxiliary/LineBreakTest.html). </para></remarks>
         Line,
-
-        /// <summary>
-        /// Differences are calculated per full sentence (ignoring line breaks).
-        /// </summary>
-        /// <remarks><para>This follows the Unicode Standard, as shown in the Sentence Break Chart (see ftp://www.unicode.org/Public/7.0.0/ucd/auxiliary/SentenceBreakTest.html ),
-        /// except it ignores line breaks (i.e. breaks caused by CR, LR or SEP). </para></remarks>
-        FullSentence,
 
         /// <summary>
         /// Differences are calculated per sentence.
         /// </summary>
-        /// <remarks><para>This follows the Unicode Standard, as shown in the Sentence Break Chart (see ftp://www.unicode.org/Public/7.0.0/ucd/auxiliary/SentenceBreakTest.html ). </para></remarks>
+        /// <remarks><para>This follows the Unicode Standard, as shown in the Sentence Break Chart (see http://www.unicode.org/Public/7.0.0/ucd/auxiliary/SentenceBreakTest.html). </para></remarks>
         Sentence
     }
 }

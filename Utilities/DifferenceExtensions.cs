@@ -1,4 +1,4 @@
-#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+#region ï¿½ Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
 // Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -178,7 +178,7 @@ namespace WebApplications.Utilities
                     0,
                     b.Length,
                     textOptions,
-                    (x,y) => StringComparer.CurrentCulture.Equals(x,y)); // TODO
+                    (x, y) => StringComparer.CurrentCulture.Equals(x, y)); // TODO
             // ReSharper restore ExceptionNotDocumented
         }
 
@@ -263,7 +263,15 @@ namespace WebApplications.Utilities
             [NotNull] Func<char, char, bool> comparer)
             => tokenStrategy == TextTokenStrategy.Character
                 ? new StringDifferences(a, 0, a.Length, b, 0, b.Length, textOptions, comparer)
-                : new StringDifferences(tokenStrategy, a, 0, a.Length, b, 0, b.Length, textOptions,
+                : new StringDifferences(
+                    tokenStrategy,
+                    a,
+                    0,
+                    a.Length,
+                    b,
+                    0,
+                    b.Length,
+                    textOptions,
                     (x, y) => StringComparer.CurrentCulture.Equals(x, y)); // TODO
 
         /// <summary>
@@ -451,7 +459,7 @@ namespace WebApplications.Utilities
                         offsetB,
                         lengthB,
                         textOptions,
-                    (x, y) => StringComparer.CurrentCulture.Equals(x, y)); // TODO
+                        (x, y) => StringComparer.CurrentCulture.Equals(x, y)); // TODO
 
         /// <summary>
         /// Find the differences between two collections.
@@ -611,8 +619,8 @@ namespace WebApplications.Utilities
             TextTokenStrategy strategy,
             TextOptions options = TextOptions.None)
             => options == TextOptions.None
-                    ? ToTokens((IEnumerable<char>)input, strategy)
-                    : ToTokens(input.ToMapped(options), strategy);
+                ? ToTokens((IEnumerable<char>)input, strategy)
+                : ToTokens(input.ToMapped(options), strategy);
 
         /// <summary>
         /// Tokenizes an enumeration of characters.
@@ -621,7 +629,9 @@ namespace WebApplications.Utilities
         /// <param name="strategy">The token strategy.</param>
         /// <returns>An enumeration of <see cref="string"/>.</returns>
         [NotNull]
-        public static IEnumerable<string> ToTokens([NotNull] this IEnumerable<char> characters, TextTokenStrategy strategy)
+        public static IEnumerable<string> ToTokens(
+            [NotNull] this IEnumerable<char> characters,
+            TextTokenStrategy strategy)
         {
             switch (strategy)
             {
@@ -629,12 +639,13 @@ namespace WebApplications.Utilities
                     // Just case characters to a string
                     foreach (char c in characters)
                         yield return c.ToString();
-                    break;
+                    yield break;
+
                 case TextTokenStrategy.Word:
-                    // See ftp://www.unicode.org/Public/UNIDATA/auxiliary/WordBreakTest.html
+                    // See http://www.unicode.org/Public/UNIDATA/auxiliary/WordBreakTest.html
 
                     // TODO This is not a direct implementation of the above spec.
-                    
+
                     StringBuilder wordBuilder = new StringBuilder();
                     bool? inWord = null;
                     foreach (char c in characters)
@@ -659,12 +670,11 @@ namespace WebApplications.Utilities
                         yield return wordBuilder.ToString();
                     break;
                 case TextTokenStrategy.Line:
-                    // See ftp://www.unicode.org/Public/UNIDATA/auxiliary/LineBreakTest.html
+                    // See http://www.unicode.org/Public/UNIDATA/auxiliary/LineBreakTest.html
                     throw new NotImplementedException();
                     break;
-                case TextTokenStrategy.FullSentence:
                 case TextTokenStrategy.Sentence:
-                    // See ftp://www.unicode.org/Public/7.0.0/ucd/auxiliary/SentenceBreakTest.html
+                    // See http://www.unicode.org/Public/7.0.0/ucd/auxiliary/SentenceBreakTest.html
                     // except we only break on lines if we are using the 'Sentence' strategy
                     throw new NotImplementedException();
                     break;
@@ -702,5 +712,6 @@ namespace WebApplications.Utilities
         /// The '\w' word character also includes the <see cref="UnicodeCategory.NonSpacingMark">NonSpacingMark</see><see cref="UnicodeCategory">unicode category</see>.
         /// </para></remarks>
         public static bool IsWord(this char c) => _wordCategories.Contains(char.GetUnicodeCategory(c));
+        
     }
 }
