@@ -171,6 +171,7 @@
     <Compile Include="ReadOnlyOffsetMap.cs" />
     <Compile Include="StringMap.cs" />
     <Compile Include="Text\TextExtensions.cs" />
+    <Compile Include="Text\UnicodeChar.cs" />
     <Compile Include="Text\UnicodeCharacterDatabaseLoader1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
