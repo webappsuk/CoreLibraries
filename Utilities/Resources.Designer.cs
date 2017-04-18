@@ -1240,6 +1240,105 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value must be a Char or UChar..
+        /// </summary>
+        internal static string UChar_CompareTo_Not_A_Character {
+            get {
+                return ResourceManager.GetString("UChar_CompareTo_Not_A_Character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot cast from UChar to {0}..
+        /// </summary>
+        internal static string UChar_Invalid_Cast {
+            get {
+                return ResourceManager.GetString("UChar_Invalid_Cast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The character is part of a surrogate pair, so cannot be converted to a UChar on it&apos;s own..
+        /// </summary>
+        internal static string UChar_Invalid_Char_Surrogate {
+            get {
+                return ResourceManager.GetString("UChar_Invalid_Char_Surrogate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The code point must be between {0:X} and {1:X}..
+        /// </summary>
+        internal static string UChar_Invalid_Code_Point {
+            get {
+                return ResourceManager.GetString("UChar_Invalid_Code_Point", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The code point must not lie between {0:X} and {1:X} as these are used by high and low surrogates..
+        /// </summary>
+        internal static string UChar_Invalid_Code_Point_Surrogate {
+            get {
+                return ResourceManager.GetString("UChar_Invalid_Code_Point_Surrogate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A valid high surrogate character is between {0:X} and {1:X}, inclusive..
+        /// </summary>
+        internal static string UChar_Invalid_High_Surrogate {
+            get {
+                return ResourceManager.GetString("UChar_Invalid_High_Surrogate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A valid low surrogate character is between {0:X} and {1:X}, inclusive..
+        /// </summary>
+        internal static string UChar_Invalid_Low_Surrogate {
+            get {
+                return ResourceManager.GetString("UChar_Invalid_Low_Surrogate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The UChar cannot be represented by a single character as it is a surrogate pair..
+        /// </summary>
+        internal static string UChar_Not_A_Character {
+            get {
+                return ResourceManager.GetString("UChar_Not_A_Character", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The string must be of length 1, unless specifying a surrogate pair, in which case it must be length 2..
+        /// </summary>
+        internal static string UChar_Parse_Invalid_Length {
+            get {
+                return ResourceManager.GetString("UChar_Parse_Invalid_Length", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The second character is not a valid high surrogate..
+        /// </summary>
+        internal static string UChar_Parse_Not_Valid_High_Surrogate {
+            get {
+                return ResourceManager.GetString("UChar_Parse_Not_Valid_High_Surrogate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first character is not a valid low surrogate..
+        /// </summary>
+        internal static string UChar_Parse_Not_Valid_Low_Surrogate {
+            get {
+                return ResourceManager.GetString("UChar_Parse_Not_Valid_Low_Surrogate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The source must not be empty.
         /// </summary>
         internal static string UtilityExtensions_SourceEmpty {

@@ -558,4 +558,37 @@
   <data name="StringDifferences_StringDifferences_IgnoreWhiteSpace_Invalid" xml:space="preserve">
     <value>Cannot use the 'IgnoreWhiteSpace' text option with any text tokenization strategy other than 'Character' as it would correct prevent tokenization.</value>
   </data>
+  <data name="UChar_Invalid_Code_Point" xml:space="preserve">
+    <value>The code point must be between {0:X} and {1:X}.</value>
+  </data>
+  <data name="UChar_Invalid_Code_Point_Surrogate" xml:space="preserve">
+    <value>The code point must not lie between {0:X} and {1:X} as these are used by high and low surrogates.</value>
+  </data>
+  <data name="UChar_Invalid_Char_Surrogate" xml:space="preserve">
+    <value>The character is part of a surrogate pair, so cannot be converted to a UChar on it's own.</value>
+  </data>
+  <data name="UChar_Invalid_High_Surrogate" xml:space="preserve">
+    <value>A valid high surrogate character is between {0:X} and {1:X}, inclusive.</value>
+  </data>
+  <data name="UChar_Invalid_Low_Surrogate" xml:space="preserve">
+    <value>A valid low surrogate character is between {0:X} and {1:X}, inclusive.</value>
+  </data>
+  <data name="UChar_CompareTo_Not_A_Character" xml:space="preserve">
+    <value>The value must be a Char or UChar.</value>
+  </data>
+  <data name="UChar_Not_A_Character" xml:space="preserve">
+    <value>The UChar cannot be represented by a single character as it is a surrogate pair.</value>
+  </data>
+  <data name="UChar_Invalid_Cast" xml:space="preserve">
+    <value>Cannot cast from UChar to {0}.</value>
+  </data>
+  <data name="UChar_Parse_Invalid_Length" xml:space="preserve">
+    <value>The string must be of length 1, unless specifying a surrogate pair, in which case it must be length 2.</value>
+  </data>
+  <data name="UChar_Parse_Not_Valid_Low_Surrogate" xml:space="preserve">
+    <value>The first character is not a valid low surrogate.</value>
+  </data>
+  <data name="UChar_Parse_Not_Valid_High_Surrogate" xml:space="preserve">
+    <value>The second character is not a valid high surrogate.</value>
+  </data>
 </root>
