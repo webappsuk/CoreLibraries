@@ -455,7 +455,7 @@ namespace WebApplications.Utilities.Globalization
         }
 
         /// <summary>
-        /// Gets the fall back cultures for the specified culture, in order of preference, from the <see cref="CurrencyInfoProvider.Current"/> provider.
+        /// Gets the fall back cultures for the specified culture, in order of preference, from the <see cref="CultureInfoProvider.Current"/> provider.
         /// </summary>
         /// <param name="culture">The culture.</param>
         /// <returns>

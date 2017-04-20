@@ -88,9 +88,6 @@ namespace WebApplications.Utilities.Globalization
             // Neutral and invariant cultures do not have a region
 #if BUILD_TASKS
             if (!cultureInfo.IsNeutralCulture && !string.IsNullOrEmpty(cultureInfo.Name))
-#else
-            if (!cultureInfo.IsNeutralCulture && !cultureInfo.IsInvariant())
-#endif
                 try
                 {
                     RegionInfo = new RegionInfo(cultureInfo.Name);
@@ -99,6 +96,17 @@ namespace WebApplications.Utilities.Globalization
                 {
                     // There is no region for the culture
                 }
+#else
+            if (!cultureInfo.IsNeutralCulture && !cultureInfo.IsInvariant())
+                try
+                {
+                    RegionInfo = new RegionInfo(cultureInfo.Name);
+                }
+                catch (ArgumentException)
+                {
+                    // There is no region for the culture
+                }
+#endif
         }
     }
 }

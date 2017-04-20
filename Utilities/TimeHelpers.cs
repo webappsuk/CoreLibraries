@@ -28,13 +28,21 @@
 using NodaTime;
 using NodaTime.TimeZones;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
+using NodaTime.Text;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Globalization;
+#if !BUILD_TASKS
 using WebApplications.Utilities.Configuration;
+#endif
 
 namespace WebApplications.Utilities
 {
@@ -44,6 +52,116 @@ namespace WebApplications.Utilities
     [PublicAPI]
     public static class TimeHelpers
     {
+        [NotNull]
+        private static IClock _clock;
+
+        /// <summary>
+        /// Gets or sets the clock.
+        /// </summary>
+        /// <value>The clock.</value>
+        [NotNull]
+        public static IClock Clock
+        {
+            get
+            {
+                Debug.Assert(_clock != null);
+                return _clock;
+            }
+            set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(value));
+                _clock = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes the <see cref="TimeHelpers"/> class.
+        /// </summary>
+        // ReSharper disable once NotNullMemberIsNotInitialized - _dateTimeZoneProvider is set by SetDateTimeZoneProvider
+        static TimeHelpers()
+        {
+#if !BUILD_TASKS
+            SetDateTimeZoneProvider();
+#endif
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _clock = SystemClock.Instance;
+        }
+
+        #region Parsing
+        /// <summary>
+        /// Attempts to parse the given <paramref name="text"/> according to the rules of the <paramref name="pattern"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to parse.</typeparam>
+        /// <param name="pattern">The pattern to attempt parse with.</param>
+        /// <param name="text">The text to parse.</param>
+        /// <param name="value">The parsed value if successful, otherwise <see langword="default{T}"/>.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="pattern"/> was <see langword="null"/>.</exception>
+        public static bool TryParse<T>([NotNull] this IPattern<T> pattern, string text, out T value)
+        {
+            if (pattern == null) throw new ArgumentNullException(nameof(pattern));
+
+            ParseResult<T> result = pattern.Parse(text);
+            Debug.Assert(result != null);
+            if (result.Success)
+            {
+                value = result.Value;
+                return true;
+            }
+            value = default(T);
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to parse the given <paramref name="text"/> according to the rules of any of the <paramref name="patterns"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to parse.</typeparam>
+        /// <param name="patterns">The pattern to attempt to parse with.</param>
+        /// <param name="text">The text to parse.</param>
+        /// <param name="value">The parsed value if successful, otherwise <see langword="default{T}"/>.</param>
+        /// <returns><c>true</c> if parsed, <c>false</c> otherwise.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="patterns"/> or one of its elements was <see langword="null"/>.</exception>
+        public static bool TryParseAny<T>(
+            [NotNull] this IEnumerable<IPattern<T>> patterns,
+            string text,
+            out T value) => TryParseAny(patterns, text, out value, out _);
+
+        /// <summary>
+        /// Attempts to parse the given <paramref name="text" /> according to the rules of any of the <paramref name="patterns" />.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to parse.</typeparam>
+        /// <param name="patterns">The pattern to attempt to parse with.</param>
+        /// <param name="text">The text to parse.</param>
+        /// <param name="value">The parsed value if successful, otherwise <see langword="default{T}" />.</param>
+        /// <param name="matched">The matched pattern.</param>
+        /// <returns><c>true</c> if parsed, <c>false</c> otherwise.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="patterns" /> or one of its elements was <see langword="null" />.</exception>
+        public static bool TryParseAny<T>([NotNull] this IEnumerable<IPattern<T>> patterns, string text, out T value, out IPattern<T> matched)
+        {
+            if (patterns == null) throw new ArgumentNullException(nameof(patterns));
+
+            foreach (IPattern<T> pattern in patterns)
+            {
+                if (pattern == null) throw new ArgumentNullException(nameof(pattern));
+
+                ParseResult<T> result = pattern.Parse(text);
+                Debug.Assert(result != null);
+                if (result.Success)
+                {
+                    value = result.Value;
+                    matched = pattern;
+                    return true;
+                }
+            }
+
+            value = default(T);
+            matched = null;
+            return false;
+        }
+        #endregion
+
+#if !BUILD_TASKS
         /// <summary>
         /// The current date time zone provider.
         /// </summary>
@@ -54,9 +172,6 @@ namespace WebApplications.Utilities
         /// Whether <see cref="_dateTimeZoneProvider"/> was loaded from the config.
         /// </summary>
         private static bool _isFromConfig;
-
-        [NotNull]
-        private static IClock _clock;
 
         /// <summary>
         /// A constant used to specify an infinite waiting period, for methods that accept a <see cref="Duration"/> parameter.
@@ -197,19 +312,7 @@ namespace WebApplications.Utilities
         /// </summary>
         public static readonly Instant FileTimeEpoch = Instant.FromUtc(1601, 1, 1, 0, 0);
 
-        /// <summary>
-        /// Initializes the <see cref="TimeHelpers"/> class.
-        /// </summary>
-        // ReSharper disable once NotNullMemberIsNotInitialized - _dateTimeZoneProvider is set by SetDateTimeZoneProvider
-        static TimeHelpers()
-        {
-            SetDateTimeZoneProvider();
-
-            // ReSharper disable once AssignNullToNotNullAttribute
-            _clock = SystemClock.Instance;
-        }
-
-        /// <summary>
+       /// <summary>
         /// Called when the utility configuration changes. If the <see cref="UtilityConfiguration.TimeZoneDB"/> property changes, the database will be reloaded.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -248,28 +351,9 @@ namespace WebApplications.Utilities
             }
             set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 _dateTimeZoneProvider = value;
                 _isFromConfig = false;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the clock.
-        /// </summary>
-        /// <value>The clock.</value>
-        [NotNull]
-        public static IClock Clock
-        {
-            get
-            {
-                Debug.Assert(_clock != null);
-                return _clock;
-            }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("value");
-                _clock = value;
             }
         }
 
@@ -357,6 +441,173 @@ namespace WebApplications.Utilities
 
             return provider;
         }
+
+        /// <summary>
+        /// The instant patterns.
+        /// </summary>
+        [NotNull]
+        [ItemNotNull]
+        private static readonly InstantPattern[] _instantPatterns =
+        {
+            InstantPattern.ExtendedIsoPattern,
+            InstantPattern.GeneralPattern
+        };
+
+        /// <summary>
+        /// Gets the instant patterns.
+        /// </summary>
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns>An enumeration of instant patterns.</returns>
+        [NotNull]
+        [ItemNotNull]
+        public static IEnumerable<InstantPattern> GetInstantPatterns(CultureInfo cultureInfo = null)
+        {
+            // Default, culture invariant parsers
+            foreach (InstantPattern pattern in _instantPatterns)
+                yield return pattern;
+
+            // Get specific culture
+            if (cultureInfo == null) cultureInfo = CultureInfo.CurrentCulture;
+            if (cultureInfo.IsInvariant()) yield break;
+
+            // Culture specific patterns
+            foreach (InstantPattern pattern in _instantPatterns)
+                yield return pattern.WithCulture(cultureInfo);
+        }
+
+        /// <summary>
+        /// The duration patterns.
+        /// </summary>
+        [NotNull]
+        [ItemNotNull]
+        private static readonly DurationPattern[] _durationPatterns =
+        {
+            DurationPattern.RoundtripPattern,
+            DurationPattern.CreateWithInvariantCulture("-H:mm:ss.FFFFFFF"),
+            DurationPattern.CreateWithInvariantCulture("-D.hh:mm:ss.FFFFFFF")
+        };
+
+        /// <summary>
+        /// Gets the duration patterns.
+        /// </summary>
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns>An enumeration of duration patterns.</returns>
+        [NotNull]
+        [ItemNotNull]
+        public static IEnumerable<DurationPattern> GetDurationPatterns(CultureInfo cultureInfo = null)
+        {
+            // Default, culture invariant parsers
+            foreach (DurationPattern pattern in _durationPatterns)
+                yield return pattern;
+
+            // Get specific culture
+            if (cultureInfo == null) cultureInfo = CultureInfo.CurrentCulture;
+            if (cultureInfo.IsInvariant()) yield break;
+
+            // Culture specific patterns (if any)
+            foreach (DurationPattern pattern in _durationPatterns)
+                yield return pattern.WithCulture(cultureInfo);
+        }
+
+        /// <summary>
+        /// The local date time patterns.
+        /// </summary>
+        [NotNull]
+        [ItemNotNull]
+        private static readonly LocalDateTimePattern[] _localDateTimePatterns =
+        {
+            LocalDateTimePattern.FullRoundtripPattern,
+            LocalDateTimePattern.BclRoundtripPattern,
+            LocalDateTimePattern.ExtendedIsoPattern,
+            LocalDateTimePattern.GeneralIsoPattern,
+        };
+
+        /// <summary>
+        /// Gets the local date time patterns.
+        /// </summary>
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns>An enumeration of local date time patterns.</returns>
+        [NotNull]
+        [ItemNotNull]
+        public static IEnumerable<LocalDateTimePattern> GetLocalDateTimePatterns(CultureInfo cultureInfo = null)
+        {
+            // Default, culture invariant parsers
+            foreach (LocalDateTimePattern pattern in _localDateTimePatterns)
+                yield return pattern;
+
+            // Get specific culture
+            if (cultureInfo == null) cultureInfo = CultureInfo.CurrentCulture;
+            if (cultureInfo.IsInvariant()) yield break;
+
+            // Culture specific patterns
+            foreach (LocalDateTimePattern pattern in _localDateTimePatterns)
+                yield return pattern.WithCulture(cultureInfo);
+        }
+
+        /// <summary>
+        /// The period patterns.
+        /// </summary>
+        [NotNull]
+        [ItemNotNull]
+        private static readonly PeriodPattern[] _periodPatterns =
+        {
+            PeriodPattern.RoundtripPattern,
+            PeriodPattern.NormalizingIsoPattern,
+        };
+
+        /// <summary>
+        /// Gets the local date time patterns.
+        /// </summary>
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns>An enumeration of local date time patterns.</returns>
+        [NotNull]
+        [ItemNotNull]
+        public static IEnumerable<PeriodPattern> GetPeriodPatterns(CultureInfo cultureInfo = null) 
+            // Currently there's nothing culture-specific about period patterns.
+            => _periodPatterns;
+
+        /// <summary>
+        /// The zoned date time patterns.
+        /// </summary>
+        [NotNull]
+        [ItemNotNull]
+        private static readonly ZonedDateTimePattern[] _zonedDateTimePatterns =
+        {
+            ZonedDateTimePattern.ExtendedFormatOnlyIsoPattern,
+            ZonedDateTimePattern.GeneralFormatOnlyIsoPattern
+        };
+
+        /// <summary>
+        /// Gets the zoned date time patterns.
+        /// </summary>
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <param name="dateTimeZoneProvider">The date time zone provider.</param>
+        /// <returns>An enumeration of zoned date time patterns.</returns>
+        [NotNull]
+        [ItemNotNull]
+        public static IEnumerable<ZonedDateTimePattern> GetZonedDateTimePatterns(CultureInfo cultureInfo = null, IDateTimeZoneProvider dateTimeZoneProvider = null)
+        {
+            if (dateTimeZoneProvider == null) dateTimeZoneProvider = DateTimeZoneProvider;
+
+            int l = _zonedDateTimePatterns.Length;
+            ZonedDateTimePattern[] patterns = new ZonedDateTimePattern[l];
+            // Default, culture invariant parsers
+            for (int i = 0; i < l; i++)
+            {
+                ZonedDateTimePattern pattern = _zonedDateTimePatterns[i].WithZoneProvider(dateTimeZoneProvider);
+                yield return pattern;
+                patterns[i] = pattern;
+            }
+
+            // Get specific culture
+            if (cultureInfo == null) cultureInfo = CultureInfo.CurrentCulture;
+            if (cultureInfo.IsInvariant()) yield break;
+
+            // Culture specific patterns
+            foreach (ZonedDateTimePattern pattern in patterns)
+                yield return pattern.WithCulture(cultureInfo);
+        }
+
 
         #region Duration
         /// <summary>
@@ -592,7 +843,7 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         public static bool IsZero([NotNull] this Period period)
         {
-            if (period == null) throw new ArgumentNullException("period");
+            if (period == null) throw new ArgumentNullException(nameof(period));
 
             return period.Ticks == 0 &&
                    period.Milliseconds == 0 &&
@@ -615,7 +866,7 @@ namespace WebApplications.Utilities
         [Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDateTime local)
         {
-            if (period == null) throw new ArgumentNullException("period");
+            if (period == null) throw new ArgumentNullException(nameof(period));
 
             return (local + period) > local;
         }
@@ -630,7 +881,7 @@ namespace WebApplications.Utilities
         [Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDateTime local)
         {
-            if (period == null) throw new ArgumentNullException("period");
+            if (period == null) throw new ArgumentNullException(nameof(period));
 
             return (local + period) < local;
         }
@@ -645,7 +896,7 @@ namespace WebApplications.Utilities
         [Pure]
         public static bool IsPositive([NotNull] this Period period, LocalDate local)
         {
-            if (period == null) throw new ArgumentNullException("period");
+            if (period == null) throw new ArgumentNullException(nameof(period));
 
             return (local + period) > local;
         }
@@ -660,10 +911,12 @@ namespace WebApplications.Utilities
         [Pure]
         public static bool IsNegative([NotNull] this Period period, LocalDate local)
         {
-            if (period == null) throw new ArgumentNullException("period");
+            if (period == null) throw new ArgumentNullException(nameof(period));
 
             return (local + period) < local;
         }
         #endregion
+
+#endif
     }
 }

@@ -36,8 +36,8 @@
         $(BuildDependsOn); UtilitiesTarget
       </BuildDependsOn>
     </PropertyGroup>
-	
-	<!-- Import additional targets -->
+  
+  <!-- Import additional targets -->
     <Import Project="$(MSBuildThisFileDirectory)..\Tools\ILMerge.targets" Condition="$(DefineConstants.Contains('ILMerge')) AND Exists('$(MSBuildThisFileDirectory)..\Tools\ILMerge.targets')" />
     <Import Project="$(MSBuildThisFileDirectory)..\Tools\InjectModuleInitializer.targets" Condition="$(DefineConstants.Contains('ModuleInitializer')) AND Exists('$(MSBuildThisFileDirectory)..\Tools\InjectModuleInitializer.targets')" />
   </Project>

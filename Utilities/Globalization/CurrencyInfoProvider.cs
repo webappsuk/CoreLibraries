@@ -33,6 +33,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using NodaTime;
+using NodaTime.Text;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.IO;
 #if !BUILD_TASKS
@@ -49,19 +51,33 @@ namespace WebApplications.Utilities.Globalization
     public class CurrencyInfoProvider
         : ICurrencyInfoProvider
     {
+        /// <summary>
+        /// The published instant patterns, used in XML, both new format (accurate to the tick) and legacy format (accurate to the day).
+        /// </summary>
+        [NotNull]
+        private static readonly InstantPattern[] _publishedPatterns = {
+            InstantPattern.ExtendedIsoPattern,
+            InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd")
+        };
+
+        /// <summary>
+        /// The minimum number of ticks in the legacy format (corresponds to 1 Jan, 2005 in old-style ticks, and 1 Jan, 3974 in new-style ticks).
+        /// </summary>
+        private const long _legacyTicksBase = 0x8C6BDABF8998000;
+
 #if !BUILD_TASKS
         /// <summary>
         /// A <see cref="ICurrencyInfoProvider"/> with no currencies!
         /// </summary>
         private class EmptyCurrencyInfoProvider : ICurrencyInfoProvider
         {
-            private readonly DateTime _published;
+            private readonly Instant _published;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="EmptyCurrencyInfoProvider"/> class.
             /// </summary>
             /// <param name="published">The published.</param>
-            public EmptyCurrencyInfoProvider(DateTime published)
+            public EmptyCurrencyInfoProvider(Instant published)
             {
                 _published = published;
             }
@@ -69,18 +85,12 @@ namespace WebApplications.Utilities.Globalization
             /// <summary>
             /// The date this provider was published.
             /// </summary>
-            public DateTime Published
-            {
-                get { return _published; }
-            }
+            public Instant Published => _published;
 
             /// <summary>
             /// The currencies in the provider.
             /// </summary>
-            public IEnumerable<CurrencyInfo> All
-            {
-                get { return Enumerable.Empty<CurrencyInfo>(); }
-            }
+            public IEnumerable<CurrencyInfo> All => Enumerable.Empty<CurrencyInfo>();
 
             /// <summary>
             /// Gets the number of currencies specified in the provider.
@@ -88,10 +98,7 @@ namespace WebApplications.Utilities.Globalization
             /// <value>
             /// The count.
             /// </value>
-            public int Count
-            {
-                get { return 0; }
-            }
+            public int Count => 0;
 
             /// <summary>
             /// Retrieves a <see cref="CurrencyInfo" /> with the ISO Code specified.
@@ -169,10 +176,10 @@ namespace WebApplications.Utilities.Globalization
         [NotNull]
         public static ICurrencyInfoProvider Current
         {
-            get { return _current; }
+            get => _current;
             set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 _current = value;
                 _isFromConfig = false;
             }
@@ -186,7 +193,7 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="System.IO.FileLoadException">An exception was thrown while loading the currency information from the ISO 4217 file.</exception>
         static CurrencyInfoProvider()
         {
-            _current = Empty = new EmptyCurrencyInfoProvider(DateTime.MinValue);
+            _current = Empty = new EmptyCurrencyInfoProvider(Instant.MinValue);
 
             SetCurrentProvider();
         }
@@ -293,31 +300,23 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         public const int BinaryHeader = 0x59434324;
 
-        private readonly DateTime _published;
-
         /// <summary>
         /// Stores currency info (by code).
         /// </summary>
         [NotNull]
         private readonly IReadOnlyDictionary<string, CurrencyInfo> _currencyInfos;
 
+
         /// <summary>
         /// The date this file was published.
         /// </summary>
-        public DateTime Published
-        {
-            get { return _published; }
-        }
+        public Instant Published { get; }
 
         /// <summary>
         /// The currencies in the file.
         /// </summary>
         [ItemNotNull]
-        public IEnumerable<CurrencyInfo> All
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            get { return _currencyInfos.Values; }
-        }
+        public IEnumerable<CurrencyInfo> All => _currencyInfos.Values;
 
         /// <summary>
         /// Gets the number of currencies specified in the provider.
@@ -325,22 +324,20 @@ namespace WebApplications.Utilities.Globalization
         /// <value>
         /// The count.
         /// </value>
-        public int Count
-        {
-            get { return _currencyInfos.Count; }
-        }
+        public int Count => _currencyInfos.Count;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CurrencyInfoProvider" /> class.
         /// </summary>
         /// <param name="published">The date this file was published.</param>
         /// <param name="currencies">The currencies in the file.</param>
-        public CurrencyInfoProvider(DateTime published, [ItemNotNull] [NotNull] IEnumerable<CurrencyInfo> currencies)
+        public CurrencyInfoProvider(Instant published, [ItemNotNull] [NotNull] IEnumerable<CurrencyInfo> currencies)
         {
-            if (currencies == null) throw new ArgumentNullException("currencies");
-            _published = published;
+            Published = published;
             // ReSharper disable once PossibleNullReferenceException
-            _currencyInfos = currencies.Distinct().ToDictionary(c => c.Code, StringComparer.InvariantCultureIgnoreCase);
+            _currencyInfos =
+                currencies?.Distinct().ToDictionary(c => c.Code, StringComparer.InvariantCultureIgnoreCase) ??
+                throw new ArgumentNullException(nameof(currencies));
         }
 
         /// <summary>
@@ -385,7 +382,7 @@ namespace WebApplications.Utilities.Globalization
         [CanBeNull]
         public static CurrencyInfoProvider LoadFromXml([NotNull] string xml)
         {
-            if (xml == null) throw new ArgumentNullException("xml");
+            if (xml == null) throw new ArgumentNullException(nameof(xml));
 
             using (StringReader reader = new StringReader(xml))
                 return LoadFromXml(reader);
@@ -399,22 +396,20 @@ namespace WebApplications.Utilities.Globalization
         [CanBeNull]
         public static CurrencyInfoProvider LoadFromXml([NotNull] TextReader reader)
         {
-            if (reader == null) throw new ArgumentNullException("reader");
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
 
             string xml = reader.ReadToEnd();
             XDocument doc = XDocument.Parse(xml); //.Load(reader);
 
-            DateTime published;
+            Instant published;
 
             // ReSharper disable once PossibleNullReferenceException
             XAttribute pubAttr = doc.Root.Attribute("Pblshd");
             if (pubAttr == null ||
-                !DateTime.TryParse(
+                !_publishedPatterns.TryParseAny(
                     pubAttr.Value,
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal,
                     out published))
-                published = DateTime.UtcNow;
+                published = TimeHelpers.Clock.Now;
 
             XElement ccyTbl = doc.Root.Element("CcyTbl");
             if (ccyTbl == null)
@@ -491,7 +486,7 @@ namespace WebApplications.Utilities.Globalization
         [NotNull]
         public static CurrencyInfoProvider LoadFromBinary([NotNull] Stream stream, bool leaveOpen = false)
         {
-            if (stream == null) throw new ArgumentNullException("stream");
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
 
             using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen))
             {
@@ -499,7 +494,15 @@ namespace WebApplications.Utilities.Globalization
                 if (reader.ReadInt32() != BinaryHeader)
                     throw new InvalidDataException("The currency info file was an invalid format.");
 
-                DateTime published = DateTime.SpecifyKind(DateTime.FromBinary(reader.ReadInt64()), DateTimeKind.Utc);
+                long publishedTicks = reader.ReadInt64();
+
+                // For legacy files, ticks were stored based on the the DateTime.Ticks format, this is now changed to Instant.Ticks which are different.
+                // we can detect based on the size of the date, a date past the year 3974 is considered to be in legacy format.
+                Instant published = publishedTicks > _legacyTicksBase
+                    ? Instant.FromDateTimeUtc(
+                        DateTime.SpecifyKind(DateTime.FromBinary(publishedTicks), DateTimeKind.Utc))
+                    : new Instant(publishedTicks);
+
                 int count = reader.ReadInt32();
 
                 List<CurrencyInfo> currencies = new List<CurrencyInfo>(count);
@@ -536,7 +539,7 @@ namespace WebApplications.Utilities.Globalization
         /// </exception>
         public CurrencyInfo Get(string currencyCode)
         {
-            if (currencyCode == null) throw new ArgumentNullException("currencyCode");
+            if (currencyCode == null) throw new ArgumentNullException(nameof(currencyCode));
             CurrencyInfo currencyInfo;
             _currencyInfos.TryGetValue(currencyCode, out currencyInfo);
             return currencyInfo;
@@ -554,7 +557,7 @@ namespace WebApplications.Utilities.Globalization
         /// </exception>
         public CurrencyInfo Get(RegionInfo regionInfo)
         {
-            if (regionInfo == null) throw new ArgumentNullException("regionInfo");
+            if (regionInfo == null) throw new ArgumentNullException(nameof(regionInfo));
             CurrencyInfo currencyInfo;
             _currencyInfos.TryGetValue(regionInfo.ISOCurrencySymbol, out currencyInfo);
             return currencyInfo;
