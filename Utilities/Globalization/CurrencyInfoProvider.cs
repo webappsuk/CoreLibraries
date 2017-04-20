@@ -157,6 +157,12 @@ namespace WebApplications.Utilities.Globalization
         public static readonly ICurrencyInfoProvider Empty;
 
         /// <summary>
+        /// The built-in currency provider.
+        /// </summary>
+        [NotNull]
+        public static readonly ICurrencyInfoProvider BuiltIn;
+
+        /// <summary>
         /// The current provider.
         /// </summary>
         [NotNull]
@@ -179,8 +185,7 @@ namespace WebApplications.Utilities.Globalization
             get => _current;
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _current = value;
+                _current = value ?? throw new ArgumentNullException(nameof(value));
                 _isFromConfig = false;
             }
         }
@@ -193,8 +198,10 @@ namespace WebApplications.Utilities.Globalization
         /// <exception cref="System.IO.FileLoadException">An exception was thrown while loading the currency information from the ISO 4217 file.</exception>
         static CurrencyInfoProvider()
         {
-            _current = Empty = new EmptyCurrencyInfoProvider(Instant.MinValue);
-
+            Empty = new EmptyCurrencyInfoProvider(Instant.MinValue);
+            // Load built-in resources.
+            using (MemoryStream stream = new MemoryStream(Resources.iso4217))
+                _current = BuiltIn = Load(stream);
             SetCurrentProvider();
         }
 
@@ -213,7 +220,8 @@ namespace WebApplications.Utilities.Globalization
         }
 
         /// <summary>
-        /// Sets the current provider.
+        /// Sets the current provider to the currencies specified in the path, or defaults to the <see cref="M:UtilityConfiguration.Active.ISO4217"/> configured provider path,
+        /// or falls back to the <see cref="BuiltIn"/> provider.
         /// </summary>
         /// <param name="path">The path.</param>
         public static void SetCurrentProvider(string path = null)
@@ -223,7 +231,8 @@ namespace WebApplications.Utilities.Globalization
         }
 
         /// <summary>
-        /// Loads the currency info provider from the path given.
+        /// Loads the currency info provider from the path given, or defaults to the <see cref="M:UtilityConfiguration.Active.ISO4217"/> configured provider path,
+        /// or falls back to the <see cref="BuiltIn"/> provider.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns></returns>
@@ -235,7 +244,7 @@ namespace WebApplications.Utilities.Globalization
         {
             path = path ?? UtilityConfiguration.Active.ISO4217;
             if (string.IsNullOrWhiteSpace(path))
-                return Empty;
+                return BuiltIn;
 
             Uri uri = new Uri(path.TrimStart('\\', '/'), UriKind.RelativeOrAbsolute);
             if (!uri.IsAbsoluteUri)

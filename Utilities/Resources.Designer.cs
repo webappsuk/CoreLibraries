@@ -700,6 +700,16 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] iso4217 {
+            get {
+                object obj = ResourceManager.GetObject("iso4217", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maximum capacity is {0}..
         /// </summary>
         internal static string LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity {
