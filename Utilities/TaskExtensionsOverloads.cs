@@ -1,6 +1,5 @@
 ﻿ 
- 
-#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
 // Solution: WebApplications.Utilities 
 // Project: WebApplications.Utilities
 // File: TaskExtensionOverloads.cs
@@ -19,7 +18,7 @@
 // otherwise infringe its copyright or other intellectual property rights in the
 // Software.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
 #endregion
 
 using System;

@@ -1,5 +1,4 @@
-﻿ 
-#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
 // Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 

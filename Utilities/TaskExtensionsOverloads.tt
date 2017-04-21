@@ -2,16 +2,10 @@
 <#@ output extension=".cs" #>
 <#@ Assembly Name="System.Core.dll" #>
 <#@ Assembly Name="System.Windows.Forms.dll" #>
-<#@ import namespace="System" #>
-<#@ import namespace="System.IO" #>
-<#@ import namespace="System.Diagnostics" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Collections" #>
-<#@ import namespace="System.Collections.Generic" #> 
 <#@ import namespace="System.Text" #> 
 <#
 int maxParameters = 15;
-#>#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+#>#region © Copyright Web Applications (UK) Ltd, <#= DateTime.Today.Year #>.  All rights reserved.
 // Solution: WebApplications.Utilities 
 // Project: WebApplications.Utilities
 // File: TaskExtensionOverloads.cs
@@ -30,7 +24,7 @@ int maxParameters = 15;
 // otherwise infringe its copyright or other intellectual property rights in the
 // Software.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// © Copyright Web Applications (UK) Ltd, <#= DateTime.Today.Year #>.  All rights reserved.
 #endregion
 
 using System;

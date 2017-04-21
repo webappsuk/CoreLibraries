@@ -1,16 +1,6 @@
-﻿
-
-
-
-
-
-
-
-
- 
- 
-#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿ 
+#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +34,6 @@ using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
 {
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -103,7 +92,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -165,7 +153,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -229,7 +216,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -295,7 +281,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -363,7 +348,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -433,7 +417,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -505,7 +488,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -579,7 +561,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -655,7 +636,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -733,7 +713,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -813,7 +792,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -895,7 +873,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -979,7 +956,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1065,7 +1041,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1153,7 +1128,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1243,7 +1217,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1335,7 +1308,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1429,7 +1401,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1525,7 +1496,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1623,7 +1593,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1723,7 +1692,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1825,7 +1793,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -1929,7 +1896,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2035,7 +2001,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2143,7 +2108,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2253,7 +2217,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2365,7 +2328,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2479,7 +2441,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2595,7 +2556,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2713,7 +2673,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2833,7 +2792,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -2955,7 +2913,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -3079,7 +3036,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32, arg33 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -3205,7 +3161,6 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32, arg33, arg34 });
         }
     }
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -3333,6 +3288,5 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32, arg33, arg34, arg35 });
         }
     }
-
 }
  

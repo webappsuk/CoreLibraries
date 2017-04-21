@@ -59,5 +59,36 @@ namespace WebApplications.Utilities.Threading
         {
             return _semaphore.WaitAsync(token);
         }
+
+        /// <summary>
+        /// Locks on all the given locks.
+        /// </summary>
+        /// <param name="locks">The locks to wait on. Can contain null elements.</param>
+        /// <returns></returns>
+        /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
+        [NotNull]
+        public static Task<IDisposable> LockAllAsync([NotNull] params AsyncLock[] locks)
+        {
+            return LockAllAsync(default(CancellationToken), locks);
+        }
+
+        /// <summary>
+        /// Locks on all the given locks.
+        /// </summary>
+        /// <param name="token">The optional cancellation token.</param>
+        /// <param name="locks">The locks to wait on. Can contain null elements.</param>
+        /// <returns></returns>
+        /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
+        [NotNull]
+        public static Task<IDisposable> LockAllAsync(
+            CancellationToken token,
+            [NotNull] params AsyncLock[] locks)
+        {
+            AsyncSemaphore[] semaphores = new AsyncSemaphore[locks.Length];
+            for (int i = 0; i < locks.Length; i++)
+                semaphores[i] = locks[i]?._semaphore;
+
+            return AsyncSemaphore.WaitAllAsync(token, semaphores);
+        }
     }
 }

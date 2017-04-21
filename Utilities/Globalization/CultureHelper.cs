@@ -25,12 +25,17 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+// TODO Remove when migrated to .net standard project format
+#define NET452
+
 #region Using Namespaces
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using WebApplications.Utilities.Annotations;
 
@@ -531,5 +536,91 @@ namespace WebApplications.Utilities.Globalization
             if (!yielded.Contains(extendedCultureInfo))
                 yield return extendedCultureInfo;
         }
+
+#if NET452
+        /// <summary>
+        /// Function for getting the hash code for a string from a <see cref="CompareInfo"/> with the specified <see cref="CompareOptions"/>.
+        /// </summary>
+        [NotNull]
+        private static readonly Func<CompareInfo, string, CompareOptions, int> _getHashCode = CreateGetHashCodeFunc();
+
+        /// <summary>
+        /// Gets the hash code for a string based on specified comparison options.
+        /// </summary>
+        /// <param name="compareInfo">The compare information to use.</param>
+        /// <param name="str">The string whose hash code is to be returned.</param>
+        /// <param name="options">A value that determines how strings are compared.</param>
+        /// <returns>A 32-bit signed integer hash code. </returns>
+        public static int GetHashCode([NotNull] this CompareInfo compareInfo, [NotNull] string str, CompareOptions options)
+        {
+            if (compareInfo == null) throw new ArgumentNullException(nameof(compareInfo));
+            if (str == null) throw new ArgumentNullException(nameof(str));
+            return _getHashCode(compareInfo, str, options);
+        }
+
+        [NotNull]
+        private static Func<CompareInfo, string, CompareOptions, int> CreateGetHashCodeFunc()
+        {
+
+            MethodInfo getHashCodeMethod = typeof(CompareInfo).GetMethod(
+                "GetHashCode",
+                BindingFlags.Public | BindingFlags.Instance,
+                null,
+                new[] { typeof(string), typeof(CompareOptions) },
+                null);
+
+            ParameterExpression compInfoParam = Expression.Parameter(typeof(CompareInfo));
+            ParameterExpression strParam = Expression.Parameter(typeof(string));
+            ParameterExpression compOptionsParam = Expression.Parameter(typeof(CompareOptions));
+
+            if (getHashCodeMethod != null)
+            {
+                return Expression.Lambda<Func<CompareInfo, string, CompareOptions, int>>(
+                        Expression.Call(compInfoParam, getHashCodeMethod, strParam, compOptionsParam),
+                        compInfoParam,
+                        strParam,
+                        compOptionsParam)
+                    .Compile();
+            }
+
+            getHashCodeMethod = typeof(CompareInfo).GetMethod(
+                "GetHashCodeOfString",
+                BindingFlags.NonPublic | BindingFlags.Instance,
+                null,
+                new[] { typeof(string), typeof(CompareOptions) },
+                null);
+
+            if (getHashCodeMethod != null)
+            {
+                return Expression.Lambda<Func<CompareInfo, string, CompareOptions, int>>(
+                        Expression.Condition(
+                            Expression.Equal(compOptionsParam, Expression.Constant(CompareOptions.Ordinal)),
+                            Expression.Call(strParam, nameof(GetHashCode), null),
+                            Expression.Condition(
+                                Expression.Equal(
+                                    compOptionsParam,
+                                    Expression.Constant(CompareOptions.OrdinalIgnoreCase)),
+                                Expression.Call(
+                                    Expression.Constant(StringComparer.OrdinalIgnoreCase),
+                                    nameof(StringComparer.GetHashCode),
+                                    null,
+                                    strParam),
+                                Expression.Call(compInfoParam, getHashCodeMethod, strParam, compOptionsParam))),
+                        compInfoParam,
+                        strParam,
+                        compOptionsParam)
+                    .Compile();
+            }
+
+            return (ci, str, opts) =>
+            {
+                if (opts == CompareOptions.Ordinal)
+                    return str.GetHashCode();
+                if (opts == CompareOptions.OrdinalIgnoreCase)
+                    return StringComparer.OrdinalIgnoreCase.GetHashCode(str);
+                return ci.GetSortKey(str, opts).GetHashCode();
+            };
+        }
+#endif
     }
 }

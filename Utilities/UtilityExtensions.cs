@@ -43,7 +43,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Security;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
@@ -182,10 +181,7 @@ namespace WebApplications.Utilities
         /// </summary>
         [NotNull]
         public static readonly char[] DefaultSplitChars = { ' ', ',', '\t', '\r', '\n', '|' };
-
-        [NotNull]
-        private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
-
+        
         /// <summary>
         /// The URI for the current AppDomains <see cref="AppDomain.BaseDirectory"/>.
         /// </summary>
@@ -1824,7 +1820,10 @@ namespace WebApplications.Utilities
         public static IEnumerable<string> SplitLines([NotNull] this string input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
-            return _lineSplitter.Split(input);
+            StringReader reader = new StringReader(input);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+                yield return line;
         }
 
         /// <summary>
@@ -1972,11 +1971,94 @@ namespace WebApplications.Utilities
             if (dict == null) throw new ArgumentNullException(nameof(dict));
             if (ReferenceEquals(key, null)) throw new ArgumentNullException(nameof(key));
             if (valueFactory == null) throw new ArgumentNullException(nameof(valueFactory));
-            TValue val;
-            if (!dict.TryGetValue(key, out val))
+
+            if (!dict.TryGetValue(key, out TValue val))
                 dict.Add(key, val = valueFactory(key));
             return val;
         }
+
+        /// <summary>
+        /// Adds a key/value pair to the <see cref="Dictionary{TKey,TValue}"/> if the key does not already 
+        /// exist, or updates a key/value pair in the <see cref="Dictionary{TKey,TValue}"/> if the key 
+        /// already exists.
+        /// </summary>
+        /// <param name="dict">The dictionary update.</param>
+        /// <param name="key">The key to be added or whose value should be updated</param>
+        /// <param name="addValue">The value to be added for an absent key</param>
+        /// <param name="updateValueFactory">The function used to generate a new value for an existing key based on 
+        /// the key's existing value</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is a null reference
+        /// (Nothing in Visual Basic).</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="updateValueFactory"/> is a null reference
+        /// (Nothing in Visual Basic).</exception>
+        /// <exception cref="T:System.OverflowException">The dictionary contains too many
+        /// elements.</exception>
+        /// <returns>The new value for the key.  This will be either be the result of addValueFactory (if the key was 
+        /// absent) or the result of updateValueFactory (if the key was present).</returns>
+        public static TValue AddOrUpdate<TKey, TValue>(
+            [NotNull] this Dictionary<TKey, TValue> dict,
+            [NotNull] TKey key, 
+            TValue addValue,
+            [NotNull] Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            if (dict == null) throw new ArgumentNullException(nameof(dict));
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (updateValueFactory == null) throw new ArgumentNullException(nameof(updateValueFactory));
+
+            if (dict.TryGetValue(key, out TValue existingValue))
+            {
+                TValue newValue = updateValueFactory(key, existingValue);
+                dict[key] = newValue;
+                return newValue;
+            }
+
+            dict.Add(key, addValue);
+            return addValue;
+        }
+
+        /// <summary>
+        /// Adds a key/value pair to the <see cref="Dictionary{TKey,TValue}"/> if the key does not already 
+        /// exist, or updates a key/value pair in the <see cref="Dictionary{TKey,TValue}"/> if the key 
+        /// already exists.
+        /// </summary>
+        /// <param name="dict">The dictionary update.</param>
+        /// <param name="key">The key to be added or whose value should be updated</param>
+        /// <param name="addValueFactory">The function used to generate a value for an absent key</param>
+        /// <param name="updateValueFactory">The function used to generate a new value for an existing key
+        /// based on the key's existing value</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is a null reference
+        /// (Nothing in Visual Basic).</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="addValueFactory"/> is a null reference
+        /// (Nothing in Visual Basic).</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="updateValueFactory"/> is a null reference
+        /// (Nothing in Visual Basic).</exception>
+        /// <exception cref="T:System.OverflowException">The dictionary contains too many
+        /// elements.</exception>
+        /// <returns>The new value for the key.  This will be either be the result of addValueFactory (if the key was 
+        /// absent) or the result of updateValueFactory (if the key was present).</returns>
+        public static TValue AddOrUpdate<TKey, TValue>(
+            [NotNull] this Dictionary<TKey, TValue> dict,
+            [NotNull]TKey key,
+            [NotNull]Func<TKey, TValue> addValueFactory,
+            [NotNull]Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            if (dict == null) throw new ArgumentNullException(nameof(dict));
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (addValueFactory == null) throw new ArgumentNullException(nameof(addValueFactory));
+            if (updateValueFactory == null) throw new ArgumentNullException(nameof(updateValueFactory));
+
+            if (dict.TryGetValue(key, out TValue existingValue))
+            {
+                TValue newValue = updateValueFactory(key, existingValue);
+                dict[key] = newValue;
+                return newValue;
+            }
+
+            TValue addValue = addValueFactory(key);
+            dict.Add(key, addValue);
+            return addValue;
+        }
+
 
         /// <summary>
         /// Attempts to parse the given <paramref name="text"/> according to the rules of the <paramref name="pattern"/>.
@@ -4418,6 +4500,36 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Gets the index of the first element in the <paramref name="source" /> enumerable that matches the <paramref name="predicate"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the enumerable.</typeparam>
+        /// <param name="source">The source enumerable.</param>
+        /// <param name="predicate">The predicate to use.</param>
+        /// <returns>The index of the value if found; otherwise -1.</returns>
+        /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
+        [Pure]
+        public static int IndexOf<T>(
+            [NotNull] [InstantHandle] this IEnumerable<T> source,
+            [NotNull] [InstantHandle] Predicate<T> predicate)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+            int index = 0;
+
+            foreach (T item in source)
+            {
+                if (predicate(item))
+                    return index;
+                index++;
+                if (index < 0)
+                    throw new ArgumentException("The length of the enumerable exceeded Int32.MaxValue");
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// Gets the last index of the <paramref name="value"/> in the <paramref name="source"/> enumerable.
         /// </summary>
         /// <typeparam name="T">The type of the elements in the enumerable.</typeparam>
@@ -4435,6 +4547,11 @@ namespace WebApplications.Utilities
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             if (comparer == null) comparer = EqualityComparer<T>.Default;
+
+            if (source is T[] array)
+                return Array.FindLastIndex(array, v => comparer.Equals(value, v));
+            if (source is List<T> list)
+                return list.FindLastIndex(v => comparer.Equals(value, v));
 
             int result = -1;
             int index = 0;
@@ -4469,12 +4586,53 @@ namespace WebApplications.Utilities
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (equals == null) throw new ArgumentNullException(nameof(@equals));
 
+            if (source is T[] array)
+                return Array.FindLastIndex(array, v => equals(value, v));
+            if (source is List<T> list)
+                return list.FindLastIndex(v => equals(value, v));
+
             int result = -1;
             int index = 0;
 
             foreach (T item in source)
             {
                 if (equals(item, value))
+                    result = index;
+                index++;
+                if (index < 0)
+                    throw new ArgumentException("The length of the enumerable exceeded Int32.MaxValue");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the index of the last element in the <paramref name="source" /> enumerable that matches the <paramref name="predicate"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the enumerable.</typeparam>
+        /// <param name="source">The source enumerable.</param>
+        /// <param name="predicate">The predicate to use.</param>
+        /// <returns>The last index of the value if found; otherwise -1.</returns>
+        /// <exception cref="System.ArgumentException">The length of the enumerable exceeded Int32.MaxValue</exception>
+        [Pure]
+        public static int LastIndexOf<T>(
+            [NotNull] [InstantHandle] this IEnumerable<T> source,
+            [NotNull] [InstantHandle] Predicate<T> predicate)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+            if (source is T[] array)
+                return Array.FindLastIndex(array, predicate);
+            if (source is List<T> list)
+                return list.FindLastIndex(predicate);
+
+            int result = -1;
+            int index = 0;
+
+            foreach (T item in source)
+            {
+                if (predicate(item))
                     result = index;
                 index++;
                 if (index < 0)

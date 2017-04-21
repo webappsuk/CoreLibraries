@@ -136,8 +136,13 @@ namespace WebApplications.Utilities.Threading
                     waiter.TrySetCanceled();
                     return waiter.Task;
                 }
+
+                // If the token gets canceled, need to cancel the TCS
+                if (token.CanBeCanceled)
+                    token.Register(() => waiter.TrySetCanceled());
+
                 _waiters.Enqueue(waiter);
-                return waiter.Task.WithCancellation(token);
+                return waiter.Task;
             }
         }
 
@@ -189,7 +194,7 @@ namespace WebApplications.Utilities.Threading
             CancellationToken token,
             [NotNull] params AsyncSemaphore[] semaphores)
         {
-            if (semaphores == null) throw new ArgumentNullException("semaphores");
+            if (semaphores == null) throw new ArgumentNullException(nameof(semaphores));
             token.ThrowIfCancellationRequested();
 
             List<AsyncSemaphore> sems = new List<AsyncSemaphore>(semaphores.Length);
@@ -210,10 +215,13 @@ namespace WebApplications.Utilities.Threading
             AllReleaser releaser = new AllReleaser(semaphores.Count);
             try
             {
+                // If the same semaphore was passed multiple times, it could cause a deadlock
+                HashSet<AsyncSemaphore> seen = new HashSet<AsyncSemaphore>();
+
                 for (int i = 0; i < semaphores.Count; i++)
                 {
                     AsyncSemaphore sem = semaphores[i];
-                    if (sem == null) continue;
+                    if (sem == null || !seen.Add(sem)) continue;
 
                     await sem.WaitAsync(token).ConfigureAwait(false);
                     releaser.Semaphores[i] = sem;
@@ -287,11 +295,7 @@ namespace WebApplications.Utilities.Threading
             /// <value>
             /// <see langword="true" /> if this instance is default; otherwise, <see langword="false" />.
             /// </value>
-            public bool IsDefault
-            {
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                get { return _semaphores == null; }
-            }
+            public bool IsDefault => _semaphores == null;
 
             /// <summary>
             /// Gets the semaphores to release.
@@ -319,9 +323,7 @@ namespace WebApplications.Utilities.Threading
                 for (int i = 0; i < semaphores.Length; i++)
                     try
                     {
-                        AsyncSemaphore sem = Interlocked.Exchange(ref semaphores[i], null);
-                        if (sem != null)
-                            sem.Release();
+                        Interlocked.Exchange(ref semaphores[i], null)?.Release();
                     }
                     catch (Exception e)
                     {
@@ -329,9 +331,9 @@ namespace WebApplications.Utilities.Threading
                         ex.Add(e);
                     }
 
-                if (ex == null ||
-                    ex.Count < 1)
+                if (ex == null || ex.Count < 1)
                     return;
+
                 // ReSharper disable once AssignNullToNotNullAttribute
                 if (ex.Count < 2) ex[0].ReThrow();
                 throw new AggregateException(ex);

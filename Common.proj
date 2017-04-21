@@ -9,7 +9,7 @@
       <FileAlignment>512</FileAlignment>
       <OldToolsVersion>4.0</OldToolsVersion>
       <RestorePackages>true</RestorePackages>
-      <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+      <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
       <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
 
       <!-- Force the solution directory to the same as the file -->
@@ -100,6 +100,19 @@
 
     <!-- Standard includes -->
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+    <!-- Text Templating includes -->
+    <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
+    <PropertyGroup Condition="'$(TransformOutOfDateOnly)' == ''">
+      <TransformOnBuild>True</TransformOnBuild>
+      <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
+      <TransformOutOfDateOnly Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'NuGet'">false</TransformOutOfDateOnly>
+    </PropertyGroup>
+    <ItemGroup>
+      <T4ParameterValues Include="ProjectDir">
+        <Value>$(ProjectDir)</Value>
+      </T4ParameterValues>
+    </ItemGroup>
 
     <!-- NuGet package restore -->
     <Import Project="$(SlnDir).nuget\NuGet.targets" Condition="Exists('$(SlnDir)\.nuget\NuGet.targets')" />
